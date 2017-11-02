@@ -1,0 +1,97 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: Introduction
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Introduction}
+\label{chap:introduction}
+
+The \ac{PMI} has been used for quite some time as a means of exchanging wireup information needed for inter-process communication.
+Two versions (PMI-1 and PMI-2) have been released as part of the MPICH effort.
+While PMI-2 demonstrates better scaling properties than its PMI-1 predecessor, attaining rapid launch and wireup of the roughly 1 million processes executing across 100 thousand nodes expected for exascale operations remains challenging.
+
+\ac{PMIx} represents an attempt to resolve these questions by providing an extended version of the \ac{PMI} definitions specifically designed to support clusters up to and including exascale sizes.
+The overall objective of the project is not to branch the existing definitions -- in fact, PMIx fully supports both of the existing PMI-1 and PMI-2 APIs -- but rather to:
+
+\begin{compactalphaenum}
+\item augment and extend those APIs to eliminate some current restrictions that impact scalability,
+\item establish a standards-like body for maintaining the definitions, and
+\item provide a reference implementation of the PMIx standard that demonstrates the desired level of scalability.
+\end{compactalphaenum}
+
+Complete information about the \ac{PMIx} standard and affiliated projects can be found at the \ac{PMIx} web site: \url{www.pmix.org}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Charter}
+
+The charter of the PMIx community is to:
+\begin{itemize}
+\item Define a set of agnostic APIs (not affiliated with any specific programming model code base) to support interactions between application processes and the \ac{SMS}.
+\item Develop an open source (non-copy-left licensed) standalone ``convenience'' library to facilitate adoption of the \ac{PMIx} standard.
+\item Retain transparent backward compatibility with the existing PMI-1 and PMI-2 definitions, any future \ac{PMI} releases, and across all \ac{PMIx} versions.
+\item Support the ``Instant On'' initiative for rapid startup of applications at exascale and beyond.
+\item Work with the \ac{HPC} community to define and implement new APIs that support evolving programming model requirements for application interactions with the \ac{SMS}.
+\end{itemize}
+
+Participation in the \ac{PMIx} community is open to anyone, and not restricted to only code contributors to the reference implementation. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview}
+
+\ldots
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Who should use the standard?}
+
+\ldots
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{What is defined in the standard}
+
+\ldots
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{What is \emph{not} defined in the standard}
+
+The \ac{PMIx} Standard does not include anything, either stated or implied, regarding implementation.
+It instead focuses exclusively on defining APIs and associated attribute key strings, and describing the expected behavior of those entities.
+How that behavior is realized is entirely at the discretion of the implementer.
+
+As previously noted, system environments and \ac{PMIx} library implementers are free to return ``not supported'' for any request. Thus, users should plan accordingly.
+
+%%%%%%%%%%%
+\subsection{The PMIx Reference Implementation}
+
+Note that the definition of the \ac{PMIx} Standard is not contingent upon use of the \ac{PMIx} Reference Implementation.
+Any implementation that supports the defined APIs is a \ac{PMIx} Standard compliant implementation, and some environments have chosen to pursue their own custom implementation.
+The \ac{PMIx} Reference Implementation is provided solely for the following purposes:
+\begin{itemize}
+\item Validation of the standard.\\
+No proposed change and/or extension to the \ac{PMIx} standard is accepted without an accompanying prototype implementation in the \ac{PMIx} Reference Implementation.
+This ensures that the proposal has undergone at least some minimal level of scrutiny and testing before being considered.
+\item Ease of adoption.\\
+The \ac{PMIx} Reference Implementation is designed to be particularly easy for resource managers (and the \ac{SMS} in general) to adopt, thus facilitating a rapid uptake into that community for application portability.
+Both client and server \ac{PMIx} libraries are included, along with examples of client usage and server-side integration.
+A list of supported environments and versions is provided on the \ac{PMIx} web site \url{www.pmix.org}
+\end{itemize}
+
+The \ac{PMIx} Reference Implementation targets support for the Linux operating system.
+A reasonable effort is made to support all major, modern Linux distributions; however, validation is limited to the most recent 2-3 releases of RedHat Enterprise Linux (RHEL), Fedora, CentOS, and SUSE Linux Enterprise Server (SLES).
+In addition, development support is maintained for Mac OSX.
+Production support for vendor-specific operating systems is included as provided by the vendor.
+
+%%%%%%%%%%%
+\subsection{The PMIx Reference Server}
+
+\ldots
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Organization of this document}
+
+The remainder of this document is structured as follows:
+
+\begin{itemize}
+\item \ldots
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

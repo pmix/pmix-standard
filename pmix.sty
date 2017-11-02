@@ -1,0 +1,471 @@
+% This is pmix.sty, the preamble and style definitions for the PMIx specification.
+%
+% This specification file, and latex structure was derived from/inspired by the OpenMP specification. So some similarity between the two latex files is expected.
+%
+% Quick list of the environments, commands and macros supported. Search below for more details.
+%
+%    \binding                   % makes header of the same name
+%    \comments
+%    \constraints
+%    \crossreferences
+%    \descr
+%    \effect
+%    \format
+%    \restrictions
+%    \summary
+%    \syntax
+%    
+%    \code{}                    % monospace, bold
+%    \plc{}                     % for any kind of placeholder: italic
+%    \begin{codepar}            % for blocks of verbatim code: monospace, bold
+%
+%    \specref{}                 % formats the cross-reference "Section X on page Y"
+%    
+%    \notestart                 % black horizontal rule for Notes
+%    \noteend
+%    
+%    \cspecificstart            % blue horizontal rule for C-specific text
+%    \cspecificend
+%    
+%    \fortranspecificstart      % blue horizontal rule for Fortran-specific text
+%    \fortranspecificend
+%    
+%    \glossaryterm              % for use in formatting glossary entries
+%    \glossarydefstart
+%    \glossarydefend
+%
+%    \compactitem               % single-spaced itemized lists for the Examples doc
+%    \cexample                  % C/C++ code example for the Examples doc
+%    \fexample                  % Fortran code example for the Examples doc
+
+
+\usepackage{comment}            % allow use of \begin{comment}
+\usepackage{ifpdf,ifthen}       % allow conditional tests in LaTeX definitions
+\usepackage{makecell}           % Allows common formatting in cells with \thread & \makecell
+
+\usepackage[T1]{fontenc}        % Allow us to use underscore freely in the document
+\catcode`\_=12                  % Use \sb for subscripts
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Document data
+%
+\author{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fonts
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{courier}
+\usepackage{helvet}
+\usepackage[utf8]{inputenc}
+
+% Main body serif font:
+\usepackage{tgtermes}
+\usepackage[T1]{fontenc}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Graphic elements
+
+\usepackage{graphicx}
+\usepackage{framed}    % for making boxes with \begin{framed}
+\usepackage{tikz}      % for flow charts, diagrams, arrows
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Page formatting
+
+\usepackage[paperwidth=7.5in, paperheight=9in, 
+            top=0.75in, bottom=1.0in, left=1.4in, right=0.6in]{geometry}
+
+\usepackage{changepage}   % allows left/right-page margin readjustments
+
+\setlength{\oddsidemargin}{0.45in}
+\setlength{\evensidemargin}{0.185in}
+\raggedbottom
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Paragraph formatting
+
+\usepackage{setspace}     % allows use of \singlespacing, \onehalfspacing
+\usepackage{needspace}    % allows use of \needspace to keep lines together
+\usepackage{parskip}      % removes paragraph indenting
+
+\raggedright
+\usepackage[raggedrightboxes]{ragged2e}  % is this needed?
+
+\lefthyphenmin=60         % only hyphenate if the left part is >= this many chars
+\righthyphenmin=60        % only hyphenate if the right part is >= this many chars
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bulleted (itemized) lists
+%    Align bullets with section header
+%    Align text left
+%    Small bullets
+%    \compactitem for single-spaced lists (used in the Examples doc)
+
+\usepackage{enumitem}     % for setting margins on lists
+\setlist{leftmargin=*}    % don't indent bullet items
+\renewcommand{\labelitemi}{{\normalsize$\bullet$}} % bullet size
+
+% There is a \compactitem defined in package parlist (and perhaps others), however,
+% we'll define our own version of compactitem in terms of package enumitem that
+% we already use:
+\newenvironment{compactitem}
+{\begin{itemize}[itemsep=-1.2ex]}
+{\end{itemize}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Enumerated list with lowercase alphabet lettering
+%    \alphaenum for default-spaced lists
+%    \compactalphaenum for single-spaced lists
+
+% There is a \compactitem defined in package parlist (and perhaps others), however,
+% we'll define our own version of compactitem in terms of package enumitem that
+% we already use:
+\newenvironment{alphaenum}
+{\begin{enumerate}[label=\alph*)]}
+{\end{enumerate}}
+
+\newenvironment{compactalphaenum}
+{\begin{enumerate}[label=\alph*),itemsep=-1.2ex]}
+{\end{enumerate}}
+
+% Argument list for an interface, for use in a \begin{arglist} section
+% \argin      Input argument
+% \argout     Output argument
+% \arginout   Input/Output argument
+% \argreturn  Value returned
+%%% Old Method using tables.... line numbers didn't work if a cell wrapped...
+%\newlength\argdesclen
+%\setlength\argdesclen{\dimexpr \linewidth -13em -4\tabcolsep}
+%\newenvironment{arglist}{%
+%    \begin{edtable}{tabular}{p{3em}p{10em}p{\argdesclen}}}
+%    {\end{edtable}\vspace{.25em}}
+%
+%\newcommand{\argin}[2]{\textbf{IN} & \code{#1} & #2\\}
+%\newcommand{\argout}[2]{\textbf{OUT} & \code{#1} & #2\\}
+%\newcommand{\arginout}[2]{\textbf{INOUT} & \code{#1} & #2\\}
+
+\newenvironment{arglist}
+{\begin{description}[style=nextline,labelindent=\parindent,leftmargin=*,itemindent=\dimexpr-17pt-\labelsep\relax,itemsep=-1.3ex]}
+{\end{description}}
+
+\newcommand{\argin}[2]{\item[IN ~~~~\code{#1}] #2}
+\newcommand{\argout}[2]{\item[OUT ~~~\code{#1}] #2}
+\newcommand{\arginout}[2]{\item[INOUT ~\code{#1}] #2}
+
+% Constant list
+%   \declareconstitem  Declare constant with description
+\newenvironment{constantdesc}
+{\begin{description}[style=nextline,labelindent=\parindent,leftmargin=*,itemindent=\dimexpr-17pt-\labelsep\relax,itemsep=-1.3ex]}
+{\end{description}}
+
+\newcommand{\declareconstitem}[1]{\item[\code{#1}] \index{#1}}
+
+% Attribute list
+%   \declareattritem  Declare an attribute with a description
+\newenvironment{attributedesc}
+{\begin{description}[style=nextline,labelindent=\parindent,leftmargin=*,itemindent=\dimexpr-17pt-\labelsep\relax,itemsep=-1.3ex]}
+{\end{description}}
+
+\newcommand{\declareattritem}[1]{\item[\code{#1}] \index{#1}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tables
+
+% This allows tables to flow across page breaks, headers on each new page, etc.
+\usepackage{supertabular}
+\usepackage{caption}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Line numbering
+
+\usepackage[pagewise,edtable]{lineno}       % for line numbers on left side of the page
+\pagewiselinenumbers
+\setlength\linenumbersep{6em}
+\renewcommand\linenumberfont{\normalfont\small\sffamily}
+\nolinenumbers            % start with line numbers off
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Footers
+
+\usepackage{fancyhdr}     % makes right/left footers
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\cfoot{}
+\renewcommand{\headrulewidth}{0pt}
+
+% Left side on even pages:
+% This requires that \footerText be defined in the master document:
+\fancyfoot[LE]{\bfseries \thepage \mdseries \hspace{2em} \footerText}
+\fancyhfoffset[E]{4em}
+
+% Right side on odd pages:
+\fancyfoot[RO]{\mdseries  \leftmark \hspace{2em} \bfseries \thepage}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Section header format - we use four levels: \chapter \section \subsection \subsubsection.
+
+\usepackage{titlesec}     % format headers with \titleformat{}
+
+% Format and spacing for chapter, section, subsection, and subsubsection headers:
+
+\setcounter{secnumdepth}{4}          % show numbers down to subsubsection level
+
+\titleformat{\chapter}[display]%
+{\normalfont\sffamily\upshape\Huge\bfseries\nolinenumbers\fontsize{20}{20}\selectfont}%
+{\normalfont\sffamily\scshape\large\bfseries\nolinenumbers \hspace{-0.7in} \MakeUppercase%
+    {\chaptertitlename} \thechapter}%
+{0em}{}[\vspace{1.0em}\hrule]
+% {<left>}{<before-sep>}{<after-sep>}
+\titlespacing{\chapter}{0ex}{0em plus 1em minus 1em}{1em plus 1em minus 1em}[10em]
+
+\titleformat{\section}[hang]{\huge\bfseries\sffamily\fontsize{16}{16}\selectfont}{\thesection}{1.0em}{}
+% {<left>}{<before-sep>}{<after-sep>}
+\titlespacing{\section}{-5em}{2em plus 1em minus 1em}{1em plus 0.5em minus 0em}[10em]
+
+\titleformat{\subsection}[hang]{\LARGE\bfseries\sffamily\fontsize{14}{14}\selectfont}{\thesubsection}{1.0em}{}
+\titlespacing{\subsection}{-5em}{2em plus 1em minus 2.0em}{0.75em plus 0.5em minus 0em}[10em]
+
+\titleformat{\subsubsection}[hang]{\needspace{1\baselineskip}%
+\Large\bfseries\sffamily\fontsize{12}{12}\selectfont}{\thesubsubsection}{1.0em}{}
+\titlespacing{\subsubsection}{-5em}{0.5em plus 1em minus 1em}{0.5em plus 0.5em minus 0em}[10em]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macros for minor headers: Summary, Syntax, Description, etc.
+% These headers are defined in terms of \paragraph
+
+\titleformat{\paragraph}[block]{\large\bfseries\sffamily\fontsize{11}{11}\selectfont}{}{}{}
+\titlespacing{\paragraph}{0em}{1.0em plus 0.55em minus 0.5em}{0.0em plus 0.55em minus 0.0em}
+
+% Use one of the convenience macros below, or \littleheader{} for an arbitrary header
+\newcommand{\littleheader}[1] {\paragraph*{#1}}
+
+\newcommand{\comments} {\littleheader{Comments}}
+\newcommand{\descr} {\littleheader{Description}}
+\newcommand{\format} {\littleheader{Format}}
+\newcommand{\summary} {\littleheader{Summary}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Code and placeholder semantic tagging.
+%
+% When possible, prefer semantic tags instead of typographic tags. The
+% following semantics tags are defined here:
+%
+%     \code{}     % for bold monospace keywords, code, operators, etc.
+%     \plc{}      % for italic placeholder names, grammar, etc.
+%
+% For function prototypes or other code snippets, you can use \code{} as
+% the outer wrapper, and use \plc{{} inside. Example:
+%
+%     \code{\#pragma omp directive ( \plc{some-placeholder-identifier} :}
+%
+% To format text in italics for emphasis (rather than text as a placeholder),
+% use the generic \emph{} command. Example:
+%
+%     This sentence \emph{emphasizes some non-placeholder words}.
+
+% Enable \alltt{} for formatting blocks of code:
+\usepackage{alltt}
+
+% This sets the default \code{} font to tt (monospace) and bold:
+\newcommand{\code}[1]{{\texttt{\textbf{#1}}}}
+\newcommand{\nspace}[1]{{\textrm{\textmd{ }}}}
+
+% This defines the \plc{} placeholder font to be tt normal slanted:
+\newcommand{\var}[1] {{\textrm{\textmd{\itshape{#1}}}}}
+\newcommand{\plc}[1] {\var{#1}}
+
+
+% Environment for a paragraph of literal code, single-spaced, no outline, no indenting:
+\newenvironment{codepar}[1]
+{\begin{alltt}\bfseries #1}
+{\end{alltt}}
+
+\usepackage{setspace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macros for the black and blue lines and arrows delineating language-specific
+% and notes sections. Example:
+%
+%   \fortranspecificstart
+%   This is text that applies to Fortran.
+%   \fortranspecificend
+
+% local parameters for use \linewitharrows and \notelinewitharrows:
+\newlength{\sbsz}\setlength{\sbsz}{0.05in}  % size of arrows
+\newlength{\sblw}\setlength{\sblw}{1.35pt}  % line width (thickness)
+\newlength{\sbtw}                           % text width
+\newlength{\sblen}                          % total width of horizontal rule
+\newlength{\sbht}                           % height of arrows
+\newlength{\sbhadj}                         % vertical adjustment for aligning arrows with the line
+\newlength{\sbns}\setlength{\sbns}{7\baselineskip}       % arg for \needspace for downward arrows
+
+% \notelinewitharrows is a helper command that makes a black Note marker:
+%     arg 1 = 1 or -1 for up or down arrows
+%     arg 2 = solid or dashed or loosely dashed, etc.
+\newcommand{\notelinewitharrows}[2]{%
+    \needspace{0.1\baselineskip}%
+    \vbox{\begin{tikzpicture}%
+        \setlength{\sblen}{\linewidth}%
+        \setlength{\sbht}{#1\sbsz}\setlength{\sbht}{1.4\sbht}%
+        \setlength{\sbhadj}{#1\sblw}\setlength{\sbhadj}{0.25\sbhadj}%
+        \filldraw (\sblen, 0) -- (\sblen - \sbsz, \sbht) -- (\sblen - 2\sbsz, 0) -- (\sblen, 0);
+        \draw[line width=\sblw, #2] (2\sbsz - \sblw, \sbhadj) -- (\sblen - 2\sbsz + \sblw, \sbhadj);
+        \filldraw (0, 0) -- (\sbsz, \sbht) -- (0 + 2\sbsz, 0) -- (0, 0);
+    \end{tikzpicture}}}
+
+% \advicelinewitharrows is a helper command that makes a red horizontal line, up or down arrows, and some text:
+% arg 1 = 1 or -1 for up or down arrows
+% arg 2 = solid or dashed or loosely dashed, etc.
+% arg 3 = text
+% arg 4 = text width
+\newcommand{\advicelinewitharrows}[4]{%
+    \needspace{0.1\baselineskip}%
+    \vbox to 1\baselineskip {\begin{tikzpicture}%
+        \setlength{\sbtw}{#4}%
+        \setlength{\sblen}{\linewidth}%
+        \setlength{\sbht}{#1\sbsz}\setlength{\sbht}{1.4\sbht}%
+        \setlength{\sbhadj}{#1\sblw}\setlength{\sbhadj}{0.25\sbhadj}%
+        \filldraw[color=red!40] (\sblen, 0) -- (\sblen - \sbsz, \sbht) -- (\sblen - 2\sbsz, 0) -- (\sblen, 0);
+        \draw[line width=\sblw, color=red!40, #2] (2\sbsz - \sblw, \sbhadj) -- (0.5\sblen - 0.5\sbtw, \sbhadj);
+        \draw[line width=\sblw, color=red!40, #2] (0.5\sblen + 0.5\sbtw, \sbhadj) -- (\sblen - 2\sbsz + \sblw, \sbhadj);
+        \filldraw[color=red!40] (0, 0) -- (\sbsz, \sbht) -- (0 + 2\sbsz, 0) -- (0, 0);
+        \node[color=red!90] at (0.5\sblen, 0) {\large  \textsf{\textup{#3}}};
+    \end{tikzpicture}}}
+
+% \linewitharrows is a helper command that makes a blue horizontal line, up or down arrows, and some text:
+% arg 1 = 1 or -1 for up or down arrows
+% arg 2 = solid or dashed or loosely dashed, etc.
+% arg 3 = text
+% arg 4 = text width
+\newcommand{\linewitharrows}[4]{%
+    \needspace{0.1\baselineskip}%
+    \vbox to 1\baselineskip {\begin{tikzpicture}%
+        \setlength{\sbtw}{#4}%
+        \setlength{\sblen}{\linewidth}%
+        \setlength{\sbht}{#1\sbsz}\setlength{\sbht}{1.4\sbht}%
+        \setlength{\sbhadj}{#1\sblw}\setlength{\sbhadj}{0.25\sbhadj}%
+        \filldraw[color=blue!40] (\sblen, 0) -- (\sblen - \sbsz, \sbht) -- (\sblen - 2\sbsz, 0) -- (\sblen, 0);
+        \draw[line width=\sblw, color=blue!40, #2] (2\sbsz - \sblw, \sbhadj) -- (0.5\sblen - 0.5\sbtw, \sbhadj);
+        \draw[line width=\sblw, color=blue!40, #2] (0.5\sblen + 0.5\sbtw, \sbhadj) -- (\sblen - 2\sbsz + \sblw, \sbhadj);
+        \filldraw[color=blue!40] (0, 0) -- (\sbsz, \sbht) -- (0 + 2\sbsz, 0) -- (0, 0);
+        \node[color=blue!90] at (0.5\sblen, 0) {\large  \textsf{\textup{#3}}};
+    \end{tikzpicture}}}
+
+\newcommand{\VSPb}{\vspace{0.5ex plus 5ex minus 0.25ex}}
+\newcommand{\VSPa}{\vspace{0.25ex plus 5ex minus 0.25ex}}
+
+% C
+\newcommand{\cspecificstart}{\needspace{\sbns}\linewitharrows{-1}{solid}{C}{3em}}
+\newcommand{\cspecificend}{\linewitharrows{1}{solid}{C}{3em}\VSPa}
+
+% Fortran
+\newcommand{\fortranspecificstart}{\VSPb\linewitharrows{-1}{solid}{Fortran}{6em}\VSPa}
+\newcommand{\fortranspecificend}{\VSPb\linewitharrows{1}{solid}{Fortran}{6em}\VSPa}
+
+% Note
+\newcommand{\notestart}{\VSPb\notelinewitharrows{-1}{solid}\VSPa}
+\newcommand{\noteend}{\VSPb\notelinewitharrows{1}{solid}\VSPa}
+% convenience macro for formatting the word "Note:" at the beginning of note blocks:
+\newcommand{\noteheader}{{\textrm{\textsf{\textbf\textup\normalsize{{{{Note: }}}}}}}}
+
+% Rationale
+\newcommand{\rationalestart}{\VSPb\advicelinewitharrows{-1}{solid}{Rationale}{7em}\VSPa}
+\newcommand{\rationaleend}{\VSPb\advicelinewitharrows{1}{solid}{}{0em}\VSPa}
+
+% Advice to users
+\newcommand{\adviceuserstart}{\VSPb\advicelinewitharrows{-1}{solid}{Advice to users}{10em}\VSPa}
+\newcommand{\adviceuserend}{\VSPb\advicelinewitharrows{1}{solid}{}{0em}\VSPa}
+
+% Advice to implementers
+\newcommand{\adviceimplstart}{\VSPb\advicelinewitharrows{-1}{solid}{Advice to implementers}{14em}\VSPa}
+\newcommand{\adviceimplend}{\VSPb\advicelinewitharrows{1}{solid}{}{0em}\VSPa}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Glossary formatting
+
+\newcommand{\glossaryterm}[1]{\needspace{1ex}
+\begin{adjustwidth}{-0.75in}{0.0in}
+\nolinenumbers\parbox[b][-0.95\baselineskip][t]{1.4in}{\flushright \textbf{#1}}
+\end{adjustwidth}\linenumbers}
+
+\newcommand{\glossarydefstart}{
+\begin{adjustwidth}{0.79in}{0.0in}}
+
+\newcommand{\glossarydefend}{
+\end{adjustwidth}\vspace{-1.5\baselineskip}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Indexing and Table of Contents
+
+\usepackage{imakeidx}
+\usepackage[nodotinlabels]{titletoc}   % required for its [nodotinlabels] option
+
+% Clickable links in TOC and index:
+\usepackage[hyperindex=true,linktocpage=true]{hyperref}
+\hypersetup{
+  bookmarksnumbered = true,
+  bookmarksopen     = false,
+  colorlinks  = true, % Colors links instead of red boxes
+  urlcolor    = blue, % Color for external links
+  linkcolor   = blue  % Color for internal links
+}
+
+% \url styled in Roman font.
+\urlstyle{rm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cross reference macros
+% This defines:
+%     \specref          cross reference label as "Section X on page Y"
+%     \refsection       Link this label to a specific section label in the document
+%
+%     \declarstruct     Mark the declaration of a structure
+%     \refstruct        Reference the structure declaration
+%
+%     \declareapi       Mark the declaration of an API function
+%     \refapi           Reference the API declaration
+%
+
+\newcommand{\specref}[1]{Section~\ref{#1} on page~\pageref{#1}}
+
+\newcommand{\refsection}[2]{\hyperref[#1]{#2}}
+
+\newcommand{\declarestruct}[1]{\index{#1!Defintion|textbf} \label{struct:#1} \code{#1}}
+\newcommand{\refstruct}[1]{\index{#1} \hyperref[struct:#1]{\code{#1} }}
+\newcommand{\structref}[1] {\refstruct{#1}}
+\newcommand{\specrefstruct}[1]{Section~\ref{struct:#1} on page~\pageref{#1}}
+
+\newcommand{\declareapi}[1]{\index{#1!Defintion|textbf} \label{api:#1}}
+\newcommand{\refapi}[1]{\index{#1} \hyperref[api:#1]{\code{#1} }}
+\newcommand{\argapi}[1] {\refapi{#1}}
+
+\newcommand{\refconst}[1]{\hyperref[chap:struct]{\code{#1} }}
+
+\newcommand{\declareattr}[1]{\index{#1!Defintion|textbf} \label{attr:#1}}
+\newcommand{\refattr}[1]{\index{#1} \hyperref[attr:#1]{\code{#1} }}
+
+\newcommand{\refarg}[1] {{\textrm{\textmd{\itshape{#1}}}}}
+\newcommand{\argref}[1] {\refarg{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Set default fonts:
+\rmfamily\mdseries\upshape\normalsize
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

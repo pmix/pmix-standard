@@ -1,0 +1,1495 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: API Server
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Server-Side API}
+\label{chap:api_server}
+
+\ldots
+
+%%%%%%%%%%%
+\section{Startup and Shutdown}
+\label{chap:api_server:startup}
+
+Initialization and finalization routines for \ac{PMIx} servers.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_init}}
+\declareapi{PMIx_server_init}
+
+%%%%
+\summary
+
+Initialize the PMIx server.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_server_init(pmix_server_module_t *module,
+                               pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{module}{\refstruct{pmix_server_module_t} structure (handle)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Initialize the server support library, and provide a pointer to a \refapi{pmix_server_module_t} structure containing the caller's callback functions.
+The array of \refstruct{pmix_info_t} structs is used to pass additional info that may be required by the server when initializing.
+For example, a user/group ID to set on the rendezvous file for the Unix Domain Socket.
+It also may include the \refconst{PMIX_SERVER_TOOL_SUPPORT} key, thereby indicating that the daemon is willing to accept connection requests from tools.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_finalize}}
+\declareapi{PMIx_server_finalize}
+
+%%%%
+\summary
+
+Finalize the PMIx server library.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_server_finalize(void)
+\end{codepar}
+\cspecificend
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Finalize the server support library.
+If internal communication mechanism is in-use, the server will shut it down at this time.
+All memory usage is released.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_generate_regex}}
+\declareapi{PMIx_generate_regex}
+
+%%%%
+\summary
+
+Generate a regular expression representation of the input string.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_generate_regex(const char *input, char **regex)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{input}{String to process (string)}
+\argout{regex}{Regular expression representation of \refarg{input} (string)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Given a semicolon-separated list of \refarg{input} values, generate a regular expression that can be passed down to the \ac{PMIx} client for parsing.
+The caller is responsible for free'ing the resulting string.
+
+If values have leading zero's, then that is preserved.
+You have to add back any prefix/suffix for node names.
+
+% JJH Format this
+% * If values have leading zero's, then that is preserved. You
+% * have to add back any prefix/suffix for node names
+% * odin[009-015,017-023,076-086]
+% *
+% *     "pmix:odin[009-015,017-023,076-086]"
+% *
+% * Note that the "pmix" at the beginning of each regex indicates
+% * that the PMIx native parser is to be used by the client for
+% * parsing the provided regex. Other parsers may be supported - see
+% * the pmix_client.h header for a list.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_generate_ppn}}
+\declareapi{PMIx_generate_ppn}
+
+%%%%
+\summary
+
+Generate a regular expression representation of the input string.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_generate_ppn(const char *input, char **ppn)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{input}{String to process (string)}
+\argout{regex}{Regular expression representation of \refarg{input} (string)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+The input is expected to consist of a comma-separated list of ranges.
+
+% JJH Format this
+% * of ranges. Thus, an input of:
+% *     "1-4;2-5;8,10,11,12;6,7,9"
+% * would generate a regex of
+% *     "[pmix:2x(3);8,10-12;6-7,9]"
+% *
+% * Note that the "pmix" at the beginning of each regex indicates
+% * that the PMIx native parser is to be used by the client for
+% * parsing the provided regex. Other parsers may be supported - see
+% * the pmix_client.h header for a list.
+% */
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_register_nspace}}
+\declareapi{PMIx_server_register_nspace}
+
+%%%%
+\summary
+
+Setup the data about a particular namespace so it can be passed to any child process upon startup.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_server_register_nspace(const char nspace[], int nlocalprocs,
+                                          pmix_info_t info[], size_t ninfo,
+                                          pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{nspace}{namespace (string)}
+\argin{nlocalprocs}{number of local processes (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+The PMIx connection procedure provides an opportunity for the host PMIx server to pass job-related info down to a child process.
+This might include the number of processes in the job, relative local ranks of the processes within the job, and other information of use to the process.
+The server is free to determine which, if any, of the supported elements it will provide (See \refsection{chap:struct}{Data Structures and Types} for values).
+
+The PMIx server must register \emph{all} namespaces that will participate in collective operations with local processes.
+This means that the server must register a namespace even if it will not host any local procs from within that nspace \emph{if} any local process might at some point perform a collective operation involving one or more processes from that namespace.
+This is necessary so that the collective operation can know when it is locally complete.
+
+The caller must also provide the number of local processes that will be launched within this namespace.
+This is required for the PMIx server library to correctly handle collectives as a collective operation call can occur before all the processes have been started.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_deregister_nspace}}
+\declareapi{PMIx_server_deregister_nspace}
+
+%%%%
+\summary
+
+Deregister a namespace.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+void PMIx_server_deregister_nspace(const char nspace[],
+                                   pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{nspace}{Namespace (string)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Deregister the specified \refarg{nspace} and purge all objects relating to it, including any client information from that namespace.
+This is intended to support persistent PMIx servers by providing an opportunity for the host \ac{RM} to tell the PMIx server library to release all memory for a completed job.
+
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_register_client}}
+\declareapi{PMIx_server_register_client}
+
+%%%%
+\summary
+
+Register a client process with the PMIx server library.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_server_register_client(const pmix_proc_t *proc,
+                                          uid_t uid, gid_t gid,
+                                          void *server_object,
+                                          pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{uid}{user id (integer)}
+\argin{gid}{group id (integer)}
+\argin{server_object}{(memory reference)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Register a client process with the PMIx server library.
+The expected user ID and group ID of the child process helps the server library to properly authenticate clients as they connect by requiring the two values to match.
+
+The host server can also, if it desires, provide an object it wishes to be returned when a server function is called that relates to a specific process.
+For example, the host server may have an object that tracks the specific client.
+Passing the object to the library allows the library to return that object when the client calls ``finalize'', thus allowing the host server to access the object without performing a lookup.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_deregister_client}}
+\declareapi{PMIx_server_deregister_client}
+
+%%%%
+\summary
+
+Deregister a client and purge all data relating to it.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+void PMIx_server_deregister_client(const pmix_proc_t *proc,
+                                   pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+
+%%%%
+\descr
+
+The \refapi{PMIx_server_deregister_nspace} API will automatically delete all client information for that namespace.
+This API is therefore intended solely for use in exception cases.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_setup_fork}}
+\declareapi{PMIx_server_setup_fork}
+
+%%%%
+\summary
+
+Setup the environment of a child process to be forked by the host.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_server_setup_fork(const pmix_proc_t *proc, char ***env)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{env}{Environment array (array of strings)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Setup the environment of a child process to be forked by the host so it can correctly interact with the PMIx server.
+The PMIx client needs some setup information so it can properly connect back to the server.
+This function will set appropriate environmental variables for this purpose.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_dmodex_request}}
+\declareapi{PMIx_server_dmodex_request}
+\declareapi{pmix_dmodex_response_fn_t}
+
+%%%%
+\summary
+
+Define a function by which the host server can request modex data from the local PMIx server.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_dmodex_response_fn_t)(pmix_status_t status,
+                                          char *data, size_t sz,
+                                          void *cbdata);
+
+pmix_status_t PMIx_server_dmodex_request(const pmix_proc_t *proc,
+                                         pmix_dmodex_response_fn_t cbfunc,
+                                         void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{cbfunc}{Callback function \refapi{pmix_dmodex_response_fn_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Define a function by which the host server can request modex data from the local PMIx server.
+This is used to support the direct modex operation (i.e., where data is cached locally on each PMIx server for its own local clients, and is obtained on-demand for remote requests.
+Upon receiving a request from a remote server, the host server will call this function to pass the request into the PMIx server.
+The PMIx server will return a blob (once it becomes available) via the \refarg{cbfunc} - the host server shall send the blob back to the original requestor.
+
+The callback function used by the PMIx server to return direct modex requests to the host server.
+The PMIx server will free the data blob upon return from the response function.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_setup_application}}
+\declareapi{PMIx_server_setup_application}
+\declareapi{pmix_setup_application_cbfunc_t}
+
+%%%%
+\summary
+
+Provide a function by which the resource manager can request any application-specific environmental variables prior to launch of an application.
+ 
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_setup_application_cbfunc_t)(pmix_status_t status,
+                                                pmix_info_t info[], size_t ninfo,
+                                                void *provided_cbdata,
+                                                pmix_op_cbfunc_t cbfunc, void *cbdata)
+
+pmix_status_t PMIx_server_setup_application(const char nspace[],
+                                            pmix_info_t info[], size_t ninfo,
+                                            pmix_setup_application_cbfunc_t cbfunc,
+                                            void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{nspace}{namespace (string)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_setup_application_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Provide a function by which the resource manager can request any application-specific environmental variables prior to launch of an application.
+For example, network libraries may opt to provide security credentials for the application.
+This is defined as a non-blocking operation in case network libraries need to perform some action before responding.
+The returned env will be distributed along with the application
+
+In the callback function, the returned \refarg{info} array is owned by the PMIx server library and will be free'd when the provided \refarg{cbfunc} is called.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_setup_local_support}}
+\declareapi{PMIx_server_setup_local_support}
+
+%%%%
+\summary
+
+Provide a function by which the local PMIx server can perform any application-specific operations prior to spawning local clients of a given application.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_server_setup_local_support(const char nspace[],
+                                              pmix_info_t info[], size_t ninfo,
+                                              pmix_op_cbfunc_t cbfunc, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{nspace}{Namespace (string)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Provide a function by which the local PMIx server can perform any application-specific operations prior to spawning local clients of a given application.
+For example, a network library might need to setup the local driver for ``instant on'' addressing.
+
+
+%%%%%%%%%%%
+\section{Server Function Pointers}
+
+The PMIx Server will set the function pointers in the \refapi{pmix_server_module_t} structure that they then pass to \refapi{PMIx_server_init}.
+That module structure and associated function references is defined in this section.
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_module_t} Module}
+\declareapi{pmix_server_module_t}
+
+%%%%
+\summary
+
+List of function pointers that a PMIx server passes to \refapi{PMIx_server_init} during startup.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_server_module_2_0_0_t {
+    /* v1x interfaces */
+    pmix_server_client_connected_fn_t   client_connected;
+    pmix_server_client_finalized_fn_t   client_finalized;
+    pmix_server_abort_fn_t              abort;
+    pmix_server_fencenb_fn_t            fence_nb;
+    pmix_server_dmodex_req_fn_t         direct_modex;
+    pmix_server_publish_fn_t            publish;
+    pmix_server_lookup_fn_t             lookup;
+    pmix_server_unpublish_fn_t          unpublish;
+    pmix_server_spawn_fn_t              spawn;
+    pmix_server_connect_fn_t            connect;
+    pmix_server_disconnect_fn_t         disconnect;
+    pmix_server_register_events_fn_t    register_events;
+    pmix_server_deregister_events_fn_t  deregister_events;
+    pmix_server_listener_fn_t           listener;
+    /* v2x interfaces */
+    pmix_server_notify_event_fn_t       notify_event;
+    pmix_server_query_fn_t              query;
+    pmix_server_tool_connection_fn_t    tool_connected;
+    pmix_server_log_fn_t                log;
+    pmix_server_alloc_fn_t              allocate;
+    pmix_server_job_control_fn_t        job_control;
+    pmix_server_monitor_fn_t            monitor;
+} pmix_server_module_t;
+\end{codepar}
+\cspecificend
+
+%%%%
+\descr
+
+NOTE: for performance purposes, the host server is required to return as quickly as possible from all functions.
+Execution of the function is thus to be done asynchronously so as to allow the PMIx server support library to handle multiple client requests as quickly and scalably as possible.
+
+All data passed to the host server functions is ``owned'' by the PMIX server support library and MUST NOT be free'd.
+Data returned by the host server via callback function is owned by the host server, which is free to release it upon return from the callback.
+
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_client_connected_fn_t}}
+\declareapi{pmix_server_client_connected_fn_t}
+
+%%%%
+\summary
+
+Notify the host server that a client connected to this server.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_client_connected_fn_t)(
+                             const pmix_proc_t *proc, void* server_object,
+                             pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{server_object}{object reference (memory reference)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Notify the host server that a client connected to us.
+Note that the client will be in a blocked state until the host server executes the callback function, thus allowing the PMIx server support library to release the client.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_client_finalized_fn_t}}
+\declareapi{pmix_server_client_finalized_fn_t}
+
+%%%%
+\summary
+
+Notify the host server that a client called \refapi{PMIx_Finalize}.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_client_finalized_fn_t)(
+                             const pmix_proc_t *proc, void* server_object,
+                             pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{server_object}{object reference (memory reference)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Notify the host server that a client called \refapi{PMIx_Finalize}.
+Note that the client will be in a blocked state until the host server executes the callback function, thus allowing the PMIx server support library to release the client.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_abort_fn_t}}
+\declareapi{pmix_server_abort_fn_t}
+
+%%%%
+\summary
+
+Notify PMIx Server that a local client called \refapi{PMIx_Abort}.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_abort_fn_t)(
+                             const pmix_proc_t *proc, void *server_object,
+                             int status, const char msg[],
+                             pmix_proc_t procs[], size_t nprocs,
+                             pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{server_object}{object reference (memory reference)}
+\argin{status}{exit status (integer)}
+\argin{msg}{exit status message (string)}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+A local client called \refapi{PMIx_Abort}.
+Note that the client will be in a blocked state until the host server executes the callback function, thus allowing the PMIx server support library to release the client.
+The array of \refarg{procs} indicates which processes are to be terminated.
+A \code{NULL} indicates that all processes in the client's namespace are to be terminated.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_fencenb_fn_t}}
+\declareapi{pmix_server_fencenb_fn_t}
+
+%%%%
+\summary
+
+At least one client called either \refapi{PMIx_Fence} or \refapi{PMIx_Fence_nb}.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_fencenb_fn_t)(
+                             const pmix_proc_t procs[], size_t nprocs,
+                             const pmix_info_t info[], size_t ninfo,
+                             char *data, size_t ndata,
+                             pmix_modex_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{data}{(string)}
+\argin{ndata}{(integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_modex_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+At least one client called either \refapi{PMIx_Fence} or \refapi{PMIx_Fence_nb}.
+In either case, the host server will be called via a non-blocking function to execute the specified operation once all participating local processes have contributed.
+All processes in the specified \refarg{procs} array are required to participate in the \refapi{PMIx_Fence}/\refapi{PMIx_Fence_nb} operation.
+The callback is to be executed once each daemon hosting at least one participant has called the host server's \refapi{pmix_server_fencenb_fn_t} function.
+
+The provided data is to be collectively shared with all PMIx servers involved in the fence operation, and returned in the modex \refarg{cbfunc}.
+A \code{NULL} data value indicates that the local processes had no data to contribute.
+
+The array of \refarg{info} structs is used to pass user-requested options to the server.
+This can include directives as to the algorithm to be used to execute the fence operation.
+The directives are optional \emph{unless} the \emph{mandatory} flag has been set - in such cases, the host \ac{RM} is required to return an error if the directive cannot be met.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_dmodex_req_fn_t}}
+\declareapi{pmix_server_dmodex_req_fn_t}
+
+%%%%
+\summary
+
+Used by the PMIx server to request its local host contact the PMIx server on the remote node that hosts the specified proc to obtain and return a direct modex blob for that proc.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_dmodex_req_fn_t)(
+                             const pmix_proc_t *proc,
+                             const pmix_info_t info[], size_t ninfo,
+                             pmix_modex_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_modex_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Used by the PMIx server to request its local host contact the PMIx server on the remote node that hosts the specified proc to obtain and return a direct modex blob for that proc.
+
+The array of \refarg{info} structs is used to pass user-requested options to the server.
+This can include a timeout to preclude an indefinite wait for data that may never become available.
+The directives are optional \emph{unless} the \emph{mandatory} flag has been set - in such cases, the host \ac{RM} is required to return an error if the directive cannot be met.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_publish_fn_t}}
+\declareapi{pmix_server_publish_fn_t}
+
+%%%%
+\summary
+
+Publish data per the PMIx API specification.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_publish_fn_t)(
+                             const pmix_proc_t *proc,
+                             const pmix_info_t info[], size_t ninfo,
+                             pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Publish data per the PMIx API specification.
+The callback is to be executed upon completion of the operation.
+The default data range is expected to be \refconst{PMIX_SESSION}, and the default persistence \refconst{PMIX_PERSIST_SESSION}.
+These values can be modified by including the respective \refstruct{pmix_info_t} struct in the \refarg{info} array.
+
+Note that the host server is not required to guarantee support for any specific range - i.e., the server does not need to return an error if the data store doesn't support range-based isolation.
+However, the server must return an error (a) if the key is duplicative within the storage range, and (b) if the server does not allow overwriting of published info by the original publisher - it is left to the discretion of the host server to allow info-key-based flags to modify this behavior.
+
+The persistence indicates how long the server should retain the data.
+
+The identifier of the publishing process is also provided and is expected to be returned on any subsequent lookup request.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_lookup_fn_t}}
+\declareapi{pmix_server_lookup_fn_t}
+
+%%%%
+\summary
+
+Lookup published data.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_lookup_fn_t)(
+                             const pmix_proc_t *proc, char **keys,
+                             const pmix_info_t info[], size_t ninfo,
+                             pmix_lookup_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{keys}{(array of strings)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_lookup_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Lookup published data.
+The host server will be passed a NULL-terminated array of string keys.
+
+The array of \refarg{info} structs is used to pass user-requested options to the server.
+This can include a wait flag to indicate that the server should wait for all data to become available before executing the callback function, or should immediately callback with whatever data is available.
+In addition, a timeout can be specified on the wait to preclude an indefinite wait for data that may never be published.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_unpublish_fn_t}}
+\declareapi{pmix_server_unpublish_fn_t}
+
+%%%%
+\summary
+
+Delete data from the data store.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_unpublish_fn_t)(
+                             const pmix_proc_t *proc, char **keys,
+                             const pmix_info_t info[], size_t ninfo,
+                             pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{keys}{(array of strings)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Delete data from the data store.
+The host server will be passed a NULL-terminated array of string keys, plus potential directives such as the data range within which the keys should be deleted.
+The callback is to be executed upon completion of the delete procedure.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_spawn_fn_t}}
+\declareapi{pmix_server_spawn_fn_t}
+
+%%%%
+\summary
+
+Spawn a set of applications/processes as per the PMIx API.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_spawn_fn_t)(
+                             const pmix_proc_t *proc,
+                             const pmix_info_t job_info[], size_t ninfo,
+                             const pmix_app_t apps[], size_t napps,
+                             pmix_spawn_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{job_info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{jobinfo} array (integer)}
+\argin{apps}{Array of \refstruct{pmix_app_t} structures (array of handles)}
+\argin{napps}{Number of elements in the \refarg{apps} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_spawn_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Spawn a set of applications/processes as per the PMIx API.
+Note that applications are not required to be MPI or any other programming model.
+Thus, the host server cannot make any assumptions as to their required support.
+The callback function is to be executed once all processes have been started.
+An error in starting any application or process in this request shall cause all applications and processes in the request to be terminated, and an error returned to the originating caller.
+
+Note that a timeout can be specified in the job_info array to indicate that failure to start the requested job within the given time should result in termination to avoid hangs.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_connect_fn_t}}
+\declareapi{pmix_server_connect_fn_t}
+
+%%%%
+\summary
+
+Record the specified processes as ``connected''.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_connect_fn_t)(
+                             const pmix_proc_t procs[], size_t nprocs,
+                             const pmix_info_t info[], size_t ninfo,
+                             pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Record the specified processes as ``connected''.
+This means that the resource manager should treat the failure of any process in the specified group as a reportable event, and take appropriate action.
+The callback function is to be called once all participating processes have called connect.
+Note that a process can only engage in \textbf{one} connect operation involving the identical set of processes at a time.
+However, a process \emph{can} be simultaneously engaged in multiple connect operations, each involving a different set of processes.
+
+Note also that this is a collective operation within the client library, and thus the client will be blocked until all processes participate.
+Thus, the \refarg{info} array can be used to pass user directives, including a timeout.
+The directives are optional \emph{unless} the \emph{mandatory} flag has been set - in such cases, the host RM is required to return an error if the directive cannot be met.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_disconnect_fn_t}}
+\declareapi{pmix_server_disconnect_fn_t}
+
+%%%%
+\summary
+
+Disconnect a previously connected set of processes.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_disconnect_fn_t)(
+                             const pmix_proc_t procs[], size_t nprocs,
+                             const pmix_info_t info[], size_t ninfo,
+                             pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Disconnect a previously connected set of processes.
+An error should be returned if the specified set of processes was not previously ``connected''.
+As above, a process may be involved in multiple simultaneous disconnect operations.
+However, a process is not allowed to reconnect to a set of ranges that has not fully completed disconnect (i.e., you have to fully disconnect before you can reconnect to the same group of processes).
+
+Note also that this is a collective operation within the client library, and thus the client will be blocked until all processes participate.
+Thus, the \refarg{info} array can be used to pass user directives, including a timeout.
+The directives are optional \emph{unless} the \emph{mandatory} flag has been set - in such cases, the host RM is required to return an error if the directive cannot be met.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_register_events_fn_t}}
+\declareapi{pmix_server_register_events_fn_t}
+
+%%%%
+\summary
+
+Register to receive notifications for the specified events.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+ typedef pmix_status_t (*pmix_server_register_events_fn_t)(
+                              pmix_status_t *codes, size_t ncodes,
+                              const pmix_info_t info[], size_t ninfo,
+                              pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{codes}{Array of \refstruct{pmix_status_t} structures (array of handles)}
+\argin{ncodes}{Number of elements in the \refarg{codes} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Register to receive notifications for the specified events.
+The resource manager is \emph{required} to pass along to the local PMIx server all events that directly relate to a registered namespace.
+However, the RM may have access to events beyond those (e.g., environmental events).
+The PMIx server will register to receive environmental events that match specific PMIx event codes.
+If the host RM supports such notifications, it will need to translate its own internal event codes to fit into a corresponding PMIx event code - any specific info beyond that can be passed in via the \refstruct{pmix_info_t} upon notification.
+
+The \refarg{info} array included in this API is reserved for possible future directives to further steer notification.
+
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_deregister_events_fn_t}}
+\declareapi{pmix_server_deregister_events_fn_t}
+
+%%%%
+\summary
+
+Deregister to receive notifications for the specified events.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+ typedef pmix_status_t (*pmix_server_deregister_events_fn_t)(
+                              pmix_status_t *codes, size_t ncodes,
+                              pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{codes}{Array of \refstruct{pmix_status_t} structures (array of handles)}
+\argin{ncodes}{Number of elements in the \refarg{codes} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Deregister to receive notifications for the specified environmental events for which the PMIx server has previously registered.
+The host RM remains required to notify of any job-related events.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_notify_event_fn_t}}
+\declareapi{pmix_server_notify_event_fn_t}
+
+%%%%
+\summary
+
+Notify the specified processes of an event.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_notify_event_fn_t)(pmix_status_t code,
+                                                       const pmix_proc_t *source,
+                                                       pmix_data_range_t range,
+                                                       pmix_info_t info[], size_t ninfo,
+                                                       pmix_op_cbfunc_t cbfunc, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{code}{\refstruct{pmix_status_t} structure (handle)}
+\argin{source}{\refstruct{pmix_proc_t} (handle)}
+\argin{range}{\refstruct{pmix_data_range_t} (handle)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Notify the specified processes of an event generated either by the PMIx server itself, or by one of its local clients.
+The process generating the event is provided in the source parameter.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_connection_cbfunc_t}}
+\declareapi{pmix_connection_cbfunc_t}
+
+%%%%
+\summary
+
+Callback function for incoming connection requests from local clients.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_connection_cbfunc_t)(
+                    int incoming_sd, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{incoming_sd}{(integer)}
+\argin{cbdata}{ (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Callback function for incoming connection requests from local clients.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_listener_fn_t}}
+\declareapi{pmix_server_listener_fn_t}
+
+%%%%
+\summary
+
+Register a socket the host server can monitor for connection requests.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_listener_fn_t)(
+                             int listening_sd,
+                             pmix_connection_cbfunc_t cbfunc,
+                             void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{incoming_sd}{(integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_connection_cbfunc_t} (function reference)}
+\argin{cbdata}{ (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Register a socket the host server can monitor for connection requests, harvest them, and then call our internal callback function for further processing.
+A listener thread is essential to efficiently harvesting connection requests from large numbers of local clients such as occur when running on large SMPs.
+The host server listener is required to call accept on the incoming connection request, and then passing the resulting soct to the provided cbfunc.
+A NULL for this function will cause the internal PMIx server to spawn its own listener thread.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_query_fn_t}}
+\declareapi{pmix_server_query_fn_t}
+
+%%%%
+\summary
+
+Query information from the resource manager.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_query_fn_t)(
+                             pmix_proc_t *proct,
+                             pmix_query_t *queries, size_t nqueries,
+                             pmix_info_cbfunc_t cbfunc,
+                             void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proct}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{queries}{Array of \refstruct{pmix_query_t} structures (array of handles)}
+\argin{nqueries}{Number of elements in the \refarg{queries} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Query information from the resource manager.
+The query will include the nspace/rank of the process that is requesting the info, an array of \refstruct{pmix_query_t} describing the request, and a callback function/data for the return.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_tool_connection_cbfunc_t}}
+\declareapi{pmix_tool_connection_cbfunc_t}
+
+%%%%
+\summary
+
+Callback function for incoming tool connections.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_tool_connection_cbfunc_t)(
+                    pmix_status_t status,
+                    pmix_proc_t *proc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{status}{\refstruct{pmix_status_t} structure (handle)}
+\argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{cbdata}{Data to be passed (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Callback function for incoming tool connections.
+The host RM shall provide an nspace/rank for the connecting tool.
+We assume that a \code{rank=0} will be the normal assignment, but allow for the future possibility of a parallel set of tools connecting, and thus each proc requiring a rank.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_tool_connection_fn_t}}
+\declareapi{pmix_server_tool_connection_fn_t}
+
+%%%%
+\summary
+
+Register that a tool has connected to the server.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_server_tool_connection_fn_t)(
+                    pmix_info_t *info, size_t ninfo,
+                    pmix_tool_connection_cbfunc_t cbfunc,
+                    void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_tool_connection_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+
+%%%%
+\descr
+
+Register that a tool has connected to the server, and request that the tool be assigned an nspace/rank for further interactions.
+The optional \refstruct{pmix_info_t} array can be used to pass qualifiers for the connection request:
+
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_USERID} effective userid of the tool
+%
+\declareconstitem{PMIX_GRPID} effective groupid of the tool
+%
+\declareconstitem{PMIX_FWD_STDOUT} forward any stdout to this tool
+%
+\declareconstitem{PMIX_FWD_STDERR} forward any stderr to this tool
+%
+\declareconstitem{PMIX_FWD_STDIN} forward stdin from this tool to any processes spawned on its behalf
+%
+\end{constantdesc}
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_log_fn_t}}
+\declareapi{pmix_server_log_fn_t}
+
+%%%%
+\summary
+
+Log data on behalf of a client.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_server_log_fn_t)(
+                    const pmix_proc_t *client,
+                    const pmix_info_t data[], size_t ndata,
+                    const pmix_info_t directives[], size_t ndirs,
+                    pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{client}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{data}{Array of info structures (array of handles)}
+\argin{ndata}{Number of elements in the \refarg{data} array (integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+
+%%%%
+\descr
+
+Log data on behalf of a client.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_alloc_fn_t}}
+\declareapi{pmix_server_alloc_fn_t}
+
+%%%%
+\summary
+
+Request allocation modifications on behalf of a client.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_alloc_fn_t)(
+                             const pmix_proc_t *client,
+                             pmix_alloc_directive_t directive,
+                             const pmix_info_t data[], size_t ndata,
+                             pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{client}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{directive}{(handle)}
+\argin{data}{Array of info structures (array of handles)}
+\argin{ndata}{Number of elements in the \refarg{data} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Request allocation modifications on behalf of a client.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_job_control_fn_t}}
+\declareapi{pmix_server_job_control_fn_t}
+
+%%%%
+\summary
+
+Execute a job control action on behalf of a client.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_job_control_fn_t)(
+                             const pmix_proc_t *requestor,
+                             const pmix_proc_t targets[], size_t ntargets,
+                             const pmix_info_t directives[], size_t ndirs,
+                             pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{requestor}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{targets}{Array of proc structures (array of handles)}
+\argin{ntargets}{Number of elements in the \refarg{targets} array (integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Execute a job control action on behalf of a client.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_monitor_fn_t}}
+\declareapi{pmix_server_monitor_fn_t}
+
+%%%%
+\summary
+
+Request that a client be monitored for activity.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+/* Request that a client be monitored for activity */
+typedef pmix_status_t (*pmix_server_monitor_fn_t)(
+                             const pmix_proc_t *requestor,
+                             const pmix_info_t *monitor, pmix_status_t error,
+                             const pmix_info_t directives[], size_t ndirs,
+                             pmix_info_cbfunc_t cbfunc, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{requestor}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{monitor}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{error}{(integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Request that a client be monitored for activity.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

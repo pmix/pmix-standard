@@ -1,0 +1,78 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: Terms and Conventions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{PMIx Terms and Conventions}
+\label{chap:terms}
+
+Define ``attributes'' and how they are used, intent is to allow for definition of flexible APIs that can change behavior based on attributes instead of modifying function signature.
+Include description of data types.
+
+This document borrows freely from other standards (most notably from the \ac{MPI} and OpenMP standards) in its use of notation and conventions in an attempt to reduce confusion.
+
+%%%%%%%%%%%
+\section{Notional Conventions}
+
+Some sections of this document describe programming language specific examples or APIs.
+Text that applies only to programs for which the base language is C is show as follows:
+
+\cspecificstart
+C specific text...
+\begin{codepar}
+int foo = 42;
+\end{codepar}
+\cspecificend
+
+Some text is for information only, and is not part of the normative specification.
+These take three forms, described in their examples below:
+
+\notestart
+\noteheader
+General text...
+\noteend
+
+\rationalestart
+Throughout this document, the rationale for the design choices made in the interface specification is set off in this section.
+Some readers may wish to skip these sections, while readers interested in interface design may want to read them carefully.
+\rationaleend
+
+\adviceuserstart
+Throughout this document, material aimed at users and that illustrates usage is set off in this section.
+Some readers may wish to skip these sections, while readers interested in programming in \ac{MPI} may want to read them carefully.
+\adviceuserend
+
+\adviceimplstart
+Throughout this document, material that is primarily commentary to implementers is set off in this section.
+Some readers may wish to skip these sections, while readers interested in \ac{PMIx} implementations may want to read them carefully. 
+\adviceimplend
+
+%%%%%%%%%%%
+\section{Semantics}
+
+The following terms will be taken to mean:
+
+\begin{itemize}
+\item \emph{shall} and \emph{will} indicate that the specified behavior is \emph{required} of all conforming implementations
+\item \emph{should} and \emph{may} indicate behaviors that a quality implementation would include, but are not required of all conforming implementations
+\end{itemize}
+
+%%%%%%%%%%%
+\section{Naming Conventions}
+
+\ldots
+
+%%%%%%%%%%%
+\section{Procedure Conventions}
+
+While current \ac{PMIx} Reference Implementation is solely based on the C programming language, it is not the intent of the \ac{PMIx} Standard to preclude the use of other languages.
+Accordingly, the procedure specifications in the \ac{PMIx} Standard are written in a language-independent syntax with the arguments marked as IN, OUT, or INOUT.
+The meanings of these are:
+\begin{itemize}
+\item IN:
+The call may use the input value but does not update the argument from the perspective of the caller at any time during the call?s execution, 
+\item OUT:
+The call may update the argument but does not use its input value
+\item INOUT:
+The call may both use and update the argument. 
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

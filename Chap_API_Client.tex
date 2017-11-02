@@ -1,0 +1,1309 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: API Client
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Client-Side API}
+\label{chap:api_client}
+
+\ldots
+
+%%%%%%%%%%%
+\section{Startup and Shutdown}
+\label{chap:api_client:startup}
+
+Initialization and finalization routines for \ac{PMIx} clients.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Init}}
+\declareapi{PMIx_Init}
+
+%%%%
+\summary
+
+Initialize the PMIx client.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Init(pmix_proc_t *proc,
+                        pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{proc}{proc structure (handle)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Initialize the PMIx client, returning the process identifier assigned to this client's application in the provided \refstruct{pmix_proc_t} struct.
+Passing a value of \code{NULL} for this parameter is allowed if the user wishes solely to initialize the PMIx system and does not require return of the identifier at that time.
+
+When called, the PMIx client shall check for the required connection information of the local PMIx server and establish the connection.
+If the information is not found, or the server connection fails, then an appropriate error constant shall be returned.
+
+If successful, the function shall return \refconst{PMIX_SUCCESS} and fill the \refarg{proc} structure with the server-assigned namespace and rank of the process within the application.
+In addition, all startup information provided by the resource manager shall be made available to the client process via subsequent calls to \refapi{PMIx_Get}.
+
+The PMIx client library shall be reference counted, and so multiple calls to \refapi{PMIx_Init} are allowed by the standard.
+Thus, one way for an application process to obtain its namespace and rank is to simply call \refapi{PMIx_Init} with a non-NULL \refarg{proc} parameter.
+Note that each call to \refapi{PMIx_Init} must be balanced with a call to \refapi{PMIx_Finalize} to maintain the reference count.
+
+Each call to \refapi{PMIx_Init} may contain an array of \refstruct{pmix_info_t} structures passing directives to the PMIx client library.
+This might include information about the location of temporary directories set up for the application, or constraints on communication protocols for connecting to the local PMIx server.
+Multiple calls to \refapi{PMIx_Init} shall not include conflicting directives (e.g., a directive indicating that one particular communication method be used to connect to the server, followed by a subsequent call that includes a directive that a different method be used).
+The \refapi{PMIx_Init} function will return an error when directives that conflict with prior directives are encountered.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Finalize}}
+\declareapi{PMIx_Finalize}
+
+%%%%
+\summary
+
+Finalize the PMIx client library.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Finalize(const pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Decrement the PMIx client library reference count.
+When the reference count reaches zero, the library will finalize the PMIx client, closing the connection with the local PMIx server and releasing all internally allocated memory.
+
+By default, \refapi{PMIx_Finalize} will not include an internal barrier operation.
+Users desiring a barrier as part of the finalize operation can request it by including the \refattr{PMIX_EMBED_BARRIER} attribute in the provided \refstruct{pmix_info_t} array.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Initialized}}
+\declareapi{PMIx_Initialized}
+
+%%%%
+\summary
+
+Determines if the PMIx library has been initialized.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+int PMIx_Initialized(void)
+\end{codepar}
+\cspecificend
+
+A value of \code{1} (true) will be returned if the PMIx library has been initialized, and \code{0} (false) otherwise.
+
+\rationalestart
+The return value is an integer for historical reasons as that was the signature of prior PMI libraries.
+\rationaleend
+
+%%%%
+\descr
+
+Check to see if the PMIx library has been initialized using any of the init functions:
+\refapi{PMIx_Init}, \refapi{PMIx_server_init}, or \refapi{PMIx_tool_init}.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Abort}}
+\declareapi{PMIx_Abort}
+
+%%%%
+\summary
+
+Abort the specified process.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Abort(int status, const char msg[],
+                         pmix_proc_t procs[], size_t nprocs)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{status}{Error code to return to invoking environment (integer)}
+\argin{msg}{String message to be returned to user (string)}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Request that the host resource manager print the provided message and abort the provided array of \refarg{procs}.
+A Unix or POSIX environment should handle the provided status as a return error code from the main program that launched the application.
+A \code{NULL} for the \refarg{procs} array indicates that all processes in the caller's namespace are to be aborted, including itself.
+Passing a \code{NULL} \refarg{msg} parameter is allowed.
+
+\adviceuserstart
+The response to this request is somewhat dependent on the specific \acl{RM} and its configuration (e.g., some resource managers will not abort the application if the provided status is zero unless specifically configured to do so, and some cannot abort subsets of processes in an application), and thus lies outside the control of PMIx itself.
+However, the PMIx client library shall inform the \ac{RM} of the request that the specified \refarg{procs} be aborted, regardless of the value of the provided status.
+
+Note that race conditions caused by multiple processes calling \refapi{PMIx_Abort} are left to the server implementation to resolve with regard to which status is returned and what messages (if any) are printed.
+\adviceuserend
+
+
+%%%%%%%%%%%
+\section{Key/Value Management}
+\label{chap:api_client:keyvalue}
+
+\ldots
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Put}}
+\declareapi{PMIx_Put}
+
+%%%%
+\summary
+
+Push a key/value pair into the client's namespace.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+/* Push a value into the client's namespace. The client library will cache
+ * the information locally until _PMIx_Commit_ is called. The provided scope
+ * value is passed to the local PMIx server, which will distribute the data
+ * as directed. */
+pmix_status_t PMIx_Put(pmix_scope_t scope,
+                       const char key[], pmix_value_t *val)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{scope}{Distribution scope of the provided value (handle)}
+\argin{key}{key (string)}
+\argin{value}{Reference to a \refstruct{pmix_value_t} structure (handle)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Push a value into the client's namespace.
+The client library will cache the information locally until \refapi{PMIx_Commit} is called.
+
+The provided \refarg{scope} is passed to the local PMIx server, which will distribute the data to other processes according to the provided scope.
+The \refstruct{pmix_scope_t} values are defined in \specrefstruct{pmix_scope_t}.
+Specific implementations may support different scope values, but all implementations must support at least \code{PMIX\_GLOBAL}.
+
+The \refstruct{pmix_value_t} structure supports both string and binary values.
+Implementations will support heterogeneous environments by properly converting binary values between host architectures, and will copy the provided \refarg{value} into internal memory.
+
+\adviceimplstart
+The \refapi{PMIx_Data_pack}/\refapi{PMIx_Data_unpack} routines are provided to assist in meeting the heterogeneity requirement.
+\adviceimplend
+
+\adviceuserstart
+The value is copied by the PMIx client library.
+Thus, the application is free to release and/or modify the value once the call to \refapi{PMIx_Put} has completed.
+\adviceuserend
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Get}}
+\declareapi{PMIx_Get}
+
+%%%%
+\summary
+
+Retrieve a key/value pair from the client's namespace.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Get(const pmix_proc_t *proc, const char key[],
+                       const pmix_info_t info[], size_t ninfo,
+                       pmix_value_t **val)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{process reference (handle)}
+\argin{key}{key to retrieve (string)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\argout{val}{value (handle)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Retrieve information for the specified \refarg{key} as published by the process identified in the given \refstruct{pmix_proc_t}, returning a pointer to the value in the given address.
+
+This is a blocking operation - the caller will block until the specified data has been \refapi{PMIx_Put} by the specified rank in the \refarg{proc} structure.
+The caller is responsible for freeing all memory associated with the returned \refarg{value} when no longer required.
+
+The \refarg{info} array is used to pass user requests regarding the get operation.
+This can include the \refattr{PMIX_TIMEOUT} attribute.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Get_nb}}
+\declareapi{PMIx_Get_nb}
+
+%%%%
+\summary
+
+Nonblocking \refapi{PMIx_Get} operation.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Get_nb(const pmix_proc_t *proc, const char key[],
+                          const pmix_info_t info[], size_t ninfo,
+                          pmix_value_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{proc}{process reference (handle)}
+\argin{key}{key to retrieve (string)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+The callback function will be executed once the specified data has been \refapi{PMIx_Put} by the identified process and retrieved by the local server.
+The \argref{info} array is used as described by the \refapi{PMIx_Get} routine.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Commit}}
+\declareapi{PMIx_Commit}
+
+%%%%
+\summary
+
+Push all previously \refapi{PMIx_Put} values to the local PMIx server.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Commit(void)
+\end{codepar}
+\cspecificend
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+This is an asynchronous operation.
+The PMIx library will immediately return to the caller while the data is transmitted to the local server in the background.
+
+\adviceuserstart
+The local PMIx server will cache the information locally.
+Meaning that the committed data will not be circulated during \refapi{PMIx_Commit}.
+Availability of the data upon completion of \refapi{PMIx_Commit} is therefore implementation-dependent.
+\adviceuserend
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Fence}}
+\declareapi{PMIx_Fence}
+
+%%%%
+\summary
+
+Execute a blocking barrier across the processes identified in the specified array.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Fence(const pmix_proc_t procs[], size_t nprocs,
+                         const pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
+\argin{nprocs}{Number of element in the \refarg{procs} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Passing a \code{NULL} pointer as the \refarg{procs} parameter indicates that the fence is to span all processes in the client's namespace.
+Each provided \refstruct{pmix_proc_t} struct can pass \refconst{PMIX_RANK_WILDCARD} to indicate that all processes in the given namespace are participating.
+
+The \refarg{info} array is used to pass user requests regarding the fence operation.
+This can include:
+
+\begin{attributedesc}
+%
+\declareattritem{PMIX_COLLECT_DATA} (string)
+A boolean indicating whether or not the barrier operation is to return the \emph{put} data from all participating processes.
+A value of \emph{false} indicates that the callback is just used as a release and no data is to be returned at that time.
+A value of \emph{true} indicates that all \emph{put} data is to be collected by the barrier.
+Returned data is cached at the server to reduce memory footprint, and can be retrieved as needed by calls to \refapi{PMIx_Get}/\refapi{PMIx_Get_nb}.
+%
+\declareattritem{PMIX_COLLECTIVE_ALGO} (string)
+A comma-delimited string indicating the algorithm to be used for executing the barrier, in priority order.
+%
+\declareattritem{PMIX_COLLECTIVE_ALGO_REQD} (string)
+Instructs the host \ac{RM} that it should return an error if none of the specified algorithms are available.
+Otherwise, the \ac{RM} is to use one of the algorithms if possible, but is otherwise free to use any of its available methods to execute the operation.
+%
+\declareattritem{PMIX_TIMEOUT} (string)
+Maximum time for the fence to execute before declaring an error.
+By default, the \ac{RM} shall terminate the operation and notify participants if one or more of the indicated \refarg{procs} fails during the fence.
+However, the timeout parameter can help avoid ``hangs'' due to programming errors that prevent one or more processes from reaching the ``fence''.
+%
+\end{attributedesc}
+
+Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence} is to \emph{not} collect the data.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Fence_nb}}
+\declareapi{PMIx_Fence_nb}
+
+%%%%
+\summary
+
+Execute a nonblocking \refapi{PMIx_Fence} across the processes identified in the specified array of processes.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Fence_nb(const pmix_proc_t procs[], size_t nprocs,
+                            const pmix_info_t info[], size_t ninfo,
+                            pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
+\argin{nprocs}{Number of element in the \refarg{procs} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Nonblocking \refapi{PMIx_Fence} routine.
+Note that the function will return an error if a \code{NULL} callback function is given.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Publish}}
+\declareapi{PMIx_Publish}
+
+%%%%
+\summary
+
+Publish data for later access via \refapi{PMIx_Lookup}.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Publish(const pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Publish the data in the \refarg{info} array for lookup.
+By default, the data will be published into the \refconst{PMIX_SESSION} range and with \refconst{PMIX_PERSIST_APP} persistence.
+Changes to those values, and any additional directives, can be included in the \refstruct{pmix_info_t} array.
+
+Note that the keys must be unique within the specified data range or else an error will be returned (first published wins).
+Attempts to access the data by processes outside of the provided data range will be rejected.
+
+The persistence parameter instructs the server as to how long the data is to be retained.
+
+The blocking form will block until the server confirms that the data has been posted and is available.
+The non-blocking form will return immediately, executing the callback when the server confirms availability of the data.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Publish_nb}}
+\declareapi{PMIx_Publish_nb}
+
+%%%%
+\summary
+
+Nonblocking \refapi{PMIx_Publish} routine.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo,
+                              pmix_op_cbfunc_t cbfunc, void *cbdata)
+
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Nonblocking \refapi{PMIx_Publish} routine.
+Note that the function will return an error if a \code{NULL} callback function is given.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Lookup}}
+\declareapi{PMIx_Lookup}
+
+%%%%
+\summary
+
+Lookup information published by this or another process with \refapi{PMIx_Publish} or \refapi{PMIx_Publish_nb}.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Lookup(pmix_pdata_t data[], size_t ndata,
+                          const pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{data}{Array of publishable data structures (array of handles)}
+\argin{ndata}{Number of elements in the \refarg{data} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Lookup information published by this or another process.
+By default, the search will be conducted across the \refconst{PMIX_SESSION} range.
+Changes to the range, and any additional directives, can be provided in the \refstruct{pmix_info_t} array.
+
+Note that the search is also constrained to only data published by the current user (i.e., the search will not return data published by an application being executed by another user).
+There currently is no option to override this behavior - such an option may become available later via an appropriate \refstruct{pmix_info_t} directive.
+
+The \argref{data} parameter consists of an array of \refstruct{pmix_pdata_t} struct with the keys specifying the requested information.
+Data will be returned for each key in the associated \refarg{info} struct.
+Any key that cannot be found will return with a data type of \refconst{PMIX_UNDEF}.
+The function will return \refconst{PMIX_SUCCESS} if \emph{any} values can be found, so the caller must check each data element to ensure it was returned.
+
+The proc field in each \refstruct{pmix_pdata_t} struct will contain the namespace/rank of the process that published the data.
+
+\adviceuserstart
+Although this is a blocking function, it will \emph{not} wait by default for the requested data to be published.
+Instead, it will block for the time required by the server to lookup its current data and return any found items.
+Thus, the caller is responsible for ensuring that data is published prior to executing a lookup, or for retrying until the requested data is found.
+\adviceuserend
+
+Optionally, the \refarg{info} array can be used to modify this behavior by including:
+%%%%%%%%%%%%%%%%%%5 JJH RETURN HERE
+% *
+% * (a) PMIX_WAIT - wait for the requested data to be published. The
+% *     server is to wait until all data has become available.
+% *
+% * (b) PMIX_TIMEOUT - max time to wait for data to become available.
+% *
+% */
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Lookup_nb}}
+\declareapi{PMIx_Lookup_nb}
+
+%%%%
+\summary
+
+Nonblocking version of \refapi{PMIx_Lookup}.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Lookup_nb(char **keys,
+                             const pmix_info_t info[], size_t ninfo,
+                             pmix_lookup_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{keys}{Array to be provided to the callback (array of strings)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function (handle)}
+\argin{cbdata}{Callback data to be provided to the callback function (pointer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Non-blocking form of the \refapi{PMIx_Lookup} function.
+Data for the provided NULL-terminated \refarg{keys} array will be returned in the provided callback function.
+As with \refapi{PMIx_Lookup}, the default behavior is to \emph{not} wait for data to be published.
+The \refarg{info} keys can be used to modify the behavior as previously described by \refapi{PMIx_Lookup}.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Unpublish}}
+\declareapi{PMIx_Unpublish}
+
+%%%%
+\summary
+
+Unpublish data posted by this process using the given keys.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Unpublish(char **keys,
+                             const pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Unpublish data posted by this process using the given \refarg{keys}.
+The function will block until the data has been removed by the server.
+A value of \code{NULL} for the \refarg{keys} parameter instructs the server to remove \emph{all} data published by this process.
+
+By default, the range is assumed to be \refconst{PMIX_SESSION}.
+Changes to the range, and any additional directives, can be provided in the \refarg{info} array.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Unpublish_nb}}
+\declareapi{PMIx_Unpublish_nb}
+
+%%%%
+\summary
+
+Nonblocking version of \refapi{PMIx_Unpublish}.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Unpublish_nb(char **keys,
+                                const pmix_info_t info[], size_t ninfo,
+                                pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{keys}{(array of strings)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Non-blocking form of the \refapi{PMIx_Unpublish} function.
+The callback function will be executed once the server confirms removal of the specified data.
+
+
+
+%%%%%%%%%%%
+\section{Process Management}
+\label{chap:api_client:processmgmt}
+
+\ldots
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Spawn}}
+\declareapi{PMIx_Spawn}
+
+%%%%
+\summary
+
+Spawn a new job.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Spawn(const pmix_info_t job_info[], size_t ninfo,
+                         const pmix_app_t apps[], size_t napps,
+                         char nspace[])
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{job_info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{job_info} array (integer)}
+\argin{apps}{Array of \refstruct{pmix_app_t} structures (array of handles)}
+\argin{napps}{Number of elements in the \refarg{apps} array (integer)}
+\argout{nspace}{Namespace of the new job (string)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Spawn a new job.
+The assigned namespace of the spawned applications is returned in the \refarg{nspace} parameter.
+A \code{NULL} value in that location indicates that the caller doesn't wish to have the namespace returned.
+The \refarg{nspace} array must be at least of size one more than \refconst{PMIX_MAX_NSLEN}.
+Behavior of individual resource managers may differ, but it is expected that failure of any application process to start will result in termination/cleanup of \emph{all} processes in the newly spawned job and return of an error code to the caller.
+
+By default, the spawned processes will be PMIx ``connected'' to the parent process upon successful launch (see \refapi{PMIx_Connect} description for details).
+Note that this only means that the parent process (a) will be given a copy of the new job's
+information so it can query job-level info without incurring any communication penalties, and (b) will receive notification of errors from process in the child job.
+
+Job-level directives can be specified in the \refarg{job_info} array.
+This can include:
+\begin{attributedesc}
+%
+\declareattritem{PMIX_NON_PMI} (string)
+Processes in the spawned job will not be calling \refapi{PMIx_Init}.
+%
+\declareattritem{PMIX_TIMEOUT} (string)
+Declare the spawn as having failed if the launched processes do not call \refapi{PMIx_Init} within the specified time.
+%
+\declareattritem{PMIX_NOTIFY_COMPLETION} (string)
+Notify the parent process when the child job terminates, either normally or with error.
+%
+\end{attributedesc}
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Spawn_nb}}
+\declareapi{PMIx_Spawn_nb}
+
+%%%%
+\summary
+
+Nonblocking version of the \refapi{PMIx_Spawn} routine.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Spawn_nb(const pmix_info_t job_info[], size_t ninfo,
+                            const pmix_app_t apps[], size_t napps,
+                            pmix_spawn_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{job_info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{job_info} array (integer)}
+\argin{apps}{Array of \refstruct{pmix_app_t} structures (array of handles)}
+\argin{cbfunc}{Callback function \refapi{pmix_spawn_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Nonblocking version of the \refapi{PMIx_Spawn} routine.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Connect}}
+\declareapi{PMIx_Connect}
+
+%%%%
+\summary
+
+Connect namespaces.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Connect(const pmix_proc_t procs[], size_t nprocs,
+                           const pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{procs}{Array of proc structures (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Record the specified processes as ``connected''.
+This means that the resource manager should treat the failure of any process in the specified group as a reportable event, and take appropriate action.
+Note that different resource managers may respond to failures in different manners.
+
+The callback function is to be called once all participating processes have called connect.
+The server is required to return any job-level info for the connecting processes that might not already have (i.e., if the connect request involves \refarg{procs} from different namespaces, then each \refarg{proc} shall receive the job-level info from those namespaces other than their own.
+
+A process can only engage in \emph{one} connect operation involving the identical set of processes at a time.
+However, a process \emph{can} be simultaneously engaged in multiple connect operations, each involving a different set of processes.
+
+As in the case of the fence operation, the info array can be used to pass user-level directives regarding the algorithm to be used for the collective operation involved in the ``connect'', timeout constraints, and other options available from the host RM.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Connect_nb}}
+\declareapi{PMIx_Connect_nb}
+
+%%%%
+\summary
+
+Nonblocking \refapi{PMIx_Connect_nb} routine.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Connect_nb(const pmix_proc_t procs[], size_t nprocs,
+                              const pmix_info_t info[], size_t ninfo,
+                              pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{procs}{Array of proc structures (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Nonblocking \refapi{PMIx_Connect_nb} routine.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Disconnect}}
+\declareapi{PMIx_Disconnect}
+
+%%%%
+\summary
+
+Disconnect a previously connected set of processes.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Disconnect(const pmix_proc_t procs[], size_t nprocs,
+                              const pmix_info_t info[], size_t ninfo);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{procs}{Array of proc structures (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Disconnect a previously connected set of processes.
+An error will be returned if the specified set of \refarg{procs} was not previously ``connected''.
+As with \refapi{PMIx_Connect}, a process may be involved in multiple simultaneous disconnect operations.
+However, a process is not allowed to reconnect to a set of \refarg{procs} that has not fully completed disconnect (i.e., you have to fully disconnect before you can reconnect to the \emph{same} group of processes.
+The \refarg{info} array is used as in \refapi{PMIx_Connect}.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Disconnect_nb}}
+\declareapi{PMIx_Disconnect_nb}
+
+%%%%
+\summary
+
+Nonblocking \refapi{PMIx_Disconnect} routine.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Disconnect_nb(const pmix_proc_t ranges[], size_t nprocs,
+                                 const pmix_info_t info[], size_t ninfo,
+                                 pmix_op_cbfunc_t cbfunc, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{procs}{Array of proc structures (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Nonblocking \refapi{PMIx_Disconnect} routine.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Resolve_peers}}
+\declareapi{PMIx_Resolve_peers}
+
+%%%%
+\summary
+
+Access an array of processes within the specified namespace on a node.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Resolve_peers(const char *nodename, const char *nspace,
+                                 pmix_proc_t **procs, size_t *nprocs)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{nodename}{Name of the node to query (string)}
+\argin{nspace}{namespace (string)}
+\argout{procs}{Array of process structures (array of handles)}
+\argout{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Given a \refarg{nodename}, return an array of processes within the specified \refarg{nspace}
+on that node.
+If the \refarg{nspace} is \code{NULL}, then all processes on the node will be returned.
+If the specified node does not currently host any processes, then the returned array will be \code{NULL}, and \refarg{nprocs} will be \code{0}.
+The caller is responsible for releasing the \refarg{procs} array when done with it.
+The \refapi{PMIX_PROC_FREE} macro is provided for this purpose.
+
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Resolve_nodes}}
+\declareapi{PMIx_Resolve_nodes}
+
+%%%%
+\summary
+
+Return a list of nodes hosting processes.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Resolve_nodes(const char *nspace, char **nodelist)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{nspace}{Namespace (string)}
+\argout{nodelist}{Comma-delimited list of nodenames (string)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Given a \refarg{nspace}, return the list of nodes hosting processes within that namespace.
+The returned string will contain a comma-delimited list of nodenames.
+The caller is responsible for releasing the string when done with it.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Query_info_nb}}
+\declareapi{PMIx_Query_info_nb}
+\declareapi{pmix_info_cbfunc_t}
+
+%%%%
+\summary
+
+Query information about the system in general.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_info_cbfunc_t)(pmix_status_t status,
+                                   pmix_info_t *info, size_t ninfo,
+                                   void *cbdata,
+                                   pmix_release_cbfunc_t release_fn,
+                                   void *release_cbdata);
+
+pmix_status_t PMIx_Query_info_nb(pmix_query_t queries[], size_t nqueries,
+                                 pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{queries}{Array of query structures (array of handles)}
+\argin{nqueries}{Number of elements in the \refarg{queries} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+\begin{constantdesc}
+\item \refconst{PMIX_SUCCESS} All data has been returned
+\item \refconst{PMIX_ERR_NOT_FOUND} None of the requested data was available
+\item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the data has been returned
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The host \ac{RM} does not support this function
+\end{constantdesc}
+
+%%%%
+\descr
+
+Query information about the system in general.
+This can include a list of active namespaces, network topology, etc.
+Also can be used to query node-specific info such as the list of peers executing on a given node.
+We assume that the host \ac{RM} will exercise appropriate access control on the information.
+
+NOTE: There is no blocking form of this API as the structures passed to query info differ from those for receiving the results.
+
+The \refarg{status} argument to the callback function indicates if requested data was found or not.
+An array of \refstruct{pmix_info_t} will contain the key/value pairs.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Log_nb}}
+\declareapi{PMIx_Log_nb}
+
+%%%%
+\summary
+
+Log data to a data service.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Log_nb(const pmix_info_t data[], size_t ndata,
+                          const pmix_info_t directives[], size_t ndirs,
+                          pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{data}{Array of info structures (array of handles)}
+\argin{ndata}{Number of elements in the \refarg{data} array (integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Log data to a ``central'' data service/store, subject to the services offered by the host resource manager.
+The data to be logged is provided in the \refarg{data} array.
+The (optional) \refarg{directives} can be used to request specific storage options and direct the choice of storage option.
+
+The callback function will be executed when the log operation has been completed.
+The \refarg{data} array must be maintained until the callback is provided.
+
+
+%%%%%%%%%%%
+\section{Job Allocation Management}
+\label{chap:api_client:allocationmgmt}
+
+\ldots
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Allocation_request_nb}}
+\declareapi{PMIx_Allocation_request_nb}
+
+%%%%
+\summary
+
+Request an allocation operation from the host resource manager.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Allocation_request_nb(pmix_alloc_directive_t directive,
+                                         pmix_info_t *info, size_t ninfo,
+                                         pmix_info_cbfunc_t cbfunc, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{directive}{Allocation directive (handle)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Request an allocation operation from the host resource manager.
+Several broad categories are envisioned, including the ability to:
+
+\begin{compactitem}
+%
+\item Request allocation of additional resources, including memory, bandwidth, and compute.
+This should be accomplished in a non-blocking manner so that the application can continue to progress while waiting for resources to become available.
+Note that the new allocation will be disjoint from (i.e., not affiliated with) the allocation of the requestor - thus the termination of one allocation will not impact the other.
+%
+\item Extend the reservation on currently allocated resources, subject to scheduling availability and priorities.
+This includes extending the time limit on current resources, and/or requesting additional resources be allocated to the requesting job.
+Any additional allocated resources will be considered as part of the current allocation, and thus will be released at the same time.
+%
+\item Release currently allocated resources that are no longer required.
+This is intended to support partial release of resources since all resources are normally released upon termination of the job.
+The identified use-cases include resource variations across discrete steps of a workflow, as well as applications that spawn sub-jobs and/or dynamically grow/shrink over time.
+%
+\item ``Lend'' resources back to the scheduler with an expectation of getting them back at some later time in the job.
+This can be a proactive operation (e.g., to save on computing costs when resources are temporarily not required), or in response to scheduler requests in lieue of preemption.
+A corresponding ability to ``reacquire'' resources previously released is included.
+%
+\end{compactitem}
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Job_control_nb}}
+\declareapi{PMIx_Job_control_nb}
+
+%%%%
+\summary
+
+Request a job control action.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Job_control_nb(const pmix_proc_t targets[], size_t ntargets,
+                                  const pmix_info_t directives[], size_t ndirs,
+                                  pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{targets}{Array of proc structures (array of handles)}
+\argin{ntargets}{Number of element in the \refarg{targets} array (integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of element in the \refarg{directives} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Request a job control action.
+The \refarg{targets} array identifies the processes to which the requested job control action is to be applied.
+A \code{NULL} value can be used to indicate all processes in the caller's namespace.
+The use of \refconst{PMIX_RANK_WILDARD} can also be used to indicate that all processes in the given namespace are to be included.
+
+The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
+The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
+If non-\code{NULL}, then the specified \refarg{release_fn} must be called when the callback function completes - this will be used to release any provided \refstruct{pmix_info_t} array.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Process_monitor_nb}}
+\declareapi{PMIx_Process_monitor_nb}
+
+%%%%
+\summary
+
+Request that something be monitored.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Process_monitor_nb(const pmix_info_t *monitor, pmix_status_t error,
+                                      const pmix_info_t directives[], size_t ndirs,
+                                      pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{monitor}{info (handle)}
+\argin{error}{status (integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Request that something be monitored.
+For example, that the server monitor this process for periodic heartbeats as an indication that the process has not become ``wedged''.
+When a monitor detects the specified alarm condition, it will generate an event notification using the provided error code and passing along any available relevant information.
+It is up to the caller to register a corresponding event handler.
+
+The \refarg{monitor} argument is an attribute indicating the type of monitor being requested.
+For example, \refattr{PMIX_MONITOR_FILE} to indicate that the requestor is asking that a file be monitored.
+
+The \refarg{error} argument is the status code to be used when generating an event notification alerting that the monitor has been triggered.
+The range of the notification defaults to \refconst{PMIX_RANGE_NAMESPACE}.
+This can be changed by providing a \refconst{PMIX_RANGE} directive.
+
+The \refarg{directives} argument characterizes the monitoring request (e.g., monitor file size) and frequency of checking to be done
+
+The \refarg{cbfunc} function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Heartbeat}}
+\declareapi{PMIx_Heartbeat}
+
+%%%%
+\summary
+
+Send a heartbeat to the \ac{RM}
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+void PMIx_Heartbeat(void)
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\descr
+
+A simplified version of \refapi{PMIx_Process_monitor_nb} that sends a heartbeat to the \ac{RM}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
