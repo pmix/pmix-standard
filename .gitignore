@@ -6,3 +6,5 @@
 *.pdf
 *.ilg
 *.ind
+*.bbl
+*.blg
