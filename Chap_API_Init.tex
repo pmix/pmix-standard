@@ -1,0 +1,322 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: Initialization & Finalization
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Initialization and Finalization}
+\label{chap:api_init}
+
+The \ac{PMIx} library is required to be initialized and finalized around the usage of most of the APIs.
+The APIs that may be used outside of the initialized and finalized region are noted.
+All other APIs must be used inside this region.
+
+There are three sets of initialization and finalization functions depending upon the role of the process in the PMIx universe.
+Each of these functional sets are described in this chapter.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Query}
+\label{chap:api_init:general}
+
+The APIs defined in this section can be used by any PMIx process, regardless of their role in the PMIx universe.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Initialized}}
+\declareapi{PMIx_Initialized}
+
+%%%%
+\summary
+
+Determines if the PMIx library has been initialized.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+int PMIx_Initialized(void)
+\end{codepar}
+\cspecificend
+
+A value of \code{1} (true) will be returned if the PMIx library has been initialized, and \code{0} (false) otherwise.
+
+\rationalestart
+The return value is an integer for historical reasons as that was the signature of prior PMI libraries.
+\rationaleend
+
+%%%%
+\descr
+
+Check to see if the PMIx library has been initialized using any of the init functions:
+\refapi{PMIx_Init}, \refapi{PMIx_server_init}, or \refapi{PMIx_tool_init}.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Get_version}}
+\declareapi{PMIx_Get_version}
+
+%%%%
+\summary
+
+Get the PMIx version information.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+const char* PMIx_Get_version(void)
+\end{codepar}
+\cspecificend
+
+%%%%
+\descr
+
+Get the \ac{PMIx} version string.
+Note that the provided string is statically defined and must NOT be free'd.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Client}
+\label{chap:api_init:client}
+
+Initialization and finalization routines for \ac{PMIx} clients.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Init}}
+\declareapi{PMIx_Init}
+
+%%%%
+\summary
+
+Initialize the \ac{PMIx} client.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Init(pmix_proc_t *proc,
+          pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{proc}{proc structure (handle)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+
+%%%%
+\descr
+
+Initialize the PMIx client, returning the process identifier assigned to this client's application in the provided \refstruct{pmix_proc_t} struct.
+Passing a value of \code{NULL} for this parameter is allowed if the user wishes solely to initialize the PMIx system and does not require return of the identifier at that time.
+
+When called, the PMIx client shall check for the required connection information of the local PMIx server and establish the connection.
+If the information is not found, or the server connection fails, then an appropriate error constant shall be returned.
+
+If successful, the function shall return \refconst{PMIX_SUCCESS} and fill the \refarg{proc} structure with the server-assigned namespace and rank of the process within the application.
+In addition, all startup information provided by the resource manager shall be made available to the client process via subsequent calls to \refapi{PMIx_Get}.
+
+The PMIx client library shall be reference counted, and so multiple calls to \refapi{PMIx_Init} are allowed by the standard.
+Thus, one way for an application process to obtain its namespace and rank is to simply call \refapi{PMIx_Init} with a non-NULL \refarg{proc} parameter.
+Note that each call to \refapi{PMIx_Init} must be balanced with a call to \refapi{PMIx_Finalize} to maintain the reference count.
+
+Each call to \refapi{PMIx_Init} may contain an array of \refstruct{pmix_info_t} structures passing directives to the PMIx client library.
+This might include information about the location of temporary directories set up for the application, or constraints on communication protocols for connecting to the local PMIx server.
+Multiple calls to \refapi{PMIx_Init} shall not include conflicting directives (e.g., a directive indicating that one particular communication method be used to connect to the server, followed by a subsequent call that includes a directive that a different method be used).
+The \refapi{PMIx_Init} function will return an error when directives that conflict with prior directives are encountered.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Finalize}}
+\declareapi{PMIx_Finalize}
+
+%%%%
+\summary
+
+Finalize the PMIx client library.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Finalize(const pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Decrement the PMIx client library reference count.
+When the reference count reaches zero, the library will finalize the PMIx client, closing the connection with the local PMIx server and releasing all internally allocated memory.
+
+By default, \refapi{PMIx_Finalize} will not include an internal barrier operation.
+Users desiring a barrier as part of the finalize operation can request it by including the \refattr{PMIX_EMBED_BARRIER} attribute in the provided \refstruct{pmix_info_t} array.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tool}
+\label{chap:api_init:tool}
+
+Initialization and finalization routines for \ac{PMIx} tools.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_tool_init}}
+\declareapi{PMIx_tool_init}
+
+%%%%
+\summary
+
+Initialize the \ac{PMIx} library for a tool connection.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_tool_init(pmix_proc_t *proc,
+               pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Initialize the PMIx tool, returning the process identifier assigned to this tool in the provided \refstruct{pmix_proc_t} struct.
+
+When called the PMIx tool library will check for the required connection information of the local PMIx server and will establish the connection.
+If the information is not found, or the server connection fails, then an appropriate error constant will be returned.
+
+If successful, the function will return \refconst{PMIX_SUCCESS} and will fill the provided structure with the server-assigned namespace and rank of the tool.
+
+Note that the PMIx tool library is referenced counted, and so multiple calls to \refapi{PMIx_tool_init} are allowed.
+Thus, one way to obtain the namespace and rank of the process is to simply call \refapi{PMIx_tool_init} with a non-NULL parameter.
+
+The \refarg{info} array is used to pass user requests pertaining to the init and subsequent operations.
+Passing a \code{NULL} value for the array pointer is supported if no directives are desired.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_tool_finalize}}
+\declareapi{PMIx_tool_finalize}
+
+%%%%
+\summary
+
+Finalize the \ac{PMIx} library for a tool connection.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_tool_finalize(void)
+\end{codepar}
+\cspecificend
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Finalize the PMIx tool library, closing the connection to the local server.
+An error code will be returned if, for some reason, the connection cannot be closed.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Server}
+\label{chap:api_init:server}
+
+Initialization and finalization routines for \ac{PMIx} servers.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_init}}
+\declareapi{PMIx_server_init}
+
+%%%%
+\summary
+
+Initialize the \ac{PMIx} server.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_init(pmix_server_module_t *module,
+                 pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{module}{\refstruct{pmix_server_module_t} structure (handle)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Initialize the server support library, and provide a pointer to a \refapi{pmix_server_module_t} structure containing the caller's callback functions.
+The array of \refstruct{pmix_info_t} structs is used to pass additional info that may be required by the server when initializing.
+For example, a user/group ID to set on the rendezvous file for the Unix Domain Socket.
+It also may include the \refconst{PMIX_SERVER_TOOL_SUPPORT} key, thereby indicating that the daemon is willing to accept connection requests from tools.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_finalize}}
+\declareapi{PMIx_server_finalize}
+
+%%%%
+\summary
+
+Finalize the PMIx server library.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_finalize(void)
+\end{codepar}
+\cspecificend
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Finalize the server support library.
+If internal communication mechanism is in-use, the server will shut it down at this time.
+All memory usage is released.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

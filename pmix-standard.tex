@@ -93,13 +93,45 @@
 %
 % Chapters
 %
+    % Introduction to PMIx
+    %  - Overview, Goals, Arch.
     \input{Chap_Introduction.tex}
+
+    % PMIx Terms and Conventions
     \input{Chap_Terms.tex}
-    \input{Chap_Overview.tex}
+
+    % Data Structures, Types, Constants
+    %  - Includes: Reserved attributes, Keys
     \input{Chap_API_Struct.tex}
-    \input{Chap_API_Client.tex}
+
+    % Initialization & Finalization
+    %  - Client, Server, Tool interfaces
+    \input{Chap_API_Init.tex}
+
+    % Key/Value Management
+    %  - put, get, commit, fence, (un)publish, lookup
+    \input{Chap_API_Key_Value_Mgmt.tex}
+    
+    % Process Management
+    %  - spawn, (dis)connect, resolve_peers
+    \input{Chap_API_Proc_Mgmt.tex}
+
+    % Job Allocation Management
+    %  - Allocation request, process monitoring
+    \input{Chap_API_Job_Mgmt.tex}
+
+    % Event Handling
+    %  - (de)register_event, notify_event
+    \input{Chap_API_Event.tex}
+    
+    % Data Packing & Unpacking
+    %  - (un)pack, copy
+    \input{Chap_API_Data_Mgmt.tex}
+    
+    % PMIx Server Specific Interfaces
+    %  - setup_fork, (de)register_nspace, pmix_server_module_t
     \input{Chap_API_Server.tex}
-    \input{Chap_API_Tool.tex}
+
 
 %
 % Appendix
@@ -108,7 +140,12 @@
     \renewcommand{\thechapter}{\Alph{chapter}}%
     \appendix
 
+    % Revisions, Acknowledgements
     \input{History}
+
+%
+% Bibliography
+%
 
 %
 % Index

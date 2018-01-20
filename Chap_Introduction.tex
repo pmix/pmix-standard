@@ -2,7 +2,7 @@
 % Chapter: Introduction
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Introduction}
-\label{chap:introduction}
+\label{chap:intro}
 
 The \ac{PMI} has been used for quite some time as a means of exchanging wireup information needed for inter-process communication.
 Two versions (PMI-1 and PMI-2) have been released as part of the MPICH effort.
@@ -21,7 +21,9 @@ Complete information about the \ac{PMIx} standard and affiliated projects can be
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Charter}
+\label{chap:intro:charter}
 
 The charter of the PMIx community is to:
 \begin{itemize}
@@ -36,28 +38,38 @@ Participation in the \ac{PMIx} community is open to anyone, and not restricted t
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Overview}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{PMIx Standard Overview}
+\label{chap:intro:std_overview}
 
 \ldots
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Who should use the standard?}
+%%%%%%%%%%%
+\subsection{Who should use the standard?}
 
 \ldots
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{What is defined in the standard}
+%%%%%%%%%%%
+\subsection{What is defined in the standard}
 
 \ldots
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{What is \emph{not} defined in the standard}
+%%%%%%%%%%%
+\subsection{What is \emph{not} defined in the standard}
 
 The \ac{PMIx} Standard does not include anything, either stated or implied, regarding implementation.
 It instead focuses exclusively on defining APIs and associated attribute key strings, and describing the expected behavior of those entities.
 How that behavior is realized is entirely at the discretion of the implementer.
 
 As previously noted, system environments and \ac{PMIx} library implementers are free to return ``not supported'' for any request. Thus, users should plan accordingly.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{PMIx Architecture Overview}
+\label{chap:intro:arch_overview}
+
+\ldots
 
 %%%%%%%%%%%
 \subsection{The PMIx Reference Implementation}
@@ -85,13 +97,23 @@ Production support for vendor-specific operating systems is included as provided
 
 \ldots
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Organization of this document}
 
 The remainder of this document is structured as follows:
 
 \begin{itemize}
-\item \ldots
+\item Introduction and Overview in \chapterref{chap:intro}
+\item Terms and Conventions in \chapterref{chap:terms}
+\item Data Structures and Types in \chapterref{chap:struct}
+\item \ac{PMIx} Initialization and Finalization in \chapterref{chap:api_init}
+\item Key/Value Management in \chapterref{chap:api_kv_mgmt}
+\item Process Management in \chapterref{chap:api_proc_mgmt}
+\item Job Management in \chapterref{chap:api_job_mgmt}
+\item Event Notification in \chapterref{chap:api_event}
+\item Data Packing and Unpacking in \chapterref{chap:api_data_mgmt}
+\item \ac{PMIx} Server Specific Interfaces in \chapterref{chap:api_server}
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

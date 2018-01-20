@@ -1,0 +1,204 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: Job Allocation Management
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Job Allocation Management}
+\label{chap:api_job_mgmt}
+
+\ldots
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Allocation Requests}
+\label{chap:api_job_mgmt:alloc}
+
+\ldots
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Allocation_request_nb}}
+\declareapi{PMIx_Allocation_request_nb}
+
+%%%%
+\summary
+
+Request an allocation operation from the host resource manager.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Allocation_request_nb(pmix_alloc_directive_t directive,
+                           pmix_info_t *info, size_t ninfo,
+                           pmix_info_cbfunc_t cbfunc, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{directive}{Allocation directive (handle)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Request an allocation operation from the host resource manager.
+Several broad categories are envisioned, including the ability to:
+
+\begin{compactitem}
+%
+\item Request allocation of additional resources, including memory, bandwidth, and compute.
+This should be accomplished in a non-blocking manner so that the application can continue to progress while waiting for resources to become available.
+Note that the new allocation will be disjoint from (i.e., not affiliated with) the allocation of the requestor - thus the termination of one allocation will not impact the other.
+%
+\item Extend the reservation on currently allocated resources, subject to scheduling availability and priorities.
+This includes extending the time limit on current resources, and/or requesting additional resources be allocated to the requesting job.
+Any additional allocated resources will be considered as part of the current allocation, and thus will be released at the same time.
+%
+\item Release currently allocated resources that are no longer required.
+This is intended to support partial release of resources since all resources are normally released upon termination of the job.
+The identified use-cases include resource variations across discrete steps of a workflow, as well as applications that spawn sub-jobs and/or dynamically grow/shrink over time.
+%
+\item ``Lend'' resources back to the scheduler with an expectation of getting them back at some later time in the job.
+This can be a proactive operation (e.g., to save on computing costs when resources are temporarily not required), or in response to scheduler requests in lieue of preemption.
+A corresponding ability to ``reacquire'' resources previously released is included.
+%
+\end{compactitem}
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Job_control_nb}}
+\declareapi{PMIx_Job_control_nb}
+
+%%%%
+\summary
+
+Request a job control action.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Job_control_nb(const pmix_proc_t targets[], size_t ntargets,
+                    const pmix_info_t directives[], size_t ndirs,
+                    pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{targets}{Array of proc structures (array of handles)}
+\argin{ntargets}{Number of element in the \refarg{targets} array (integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of element in the \refarg{directives} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Request a job control action.
+The \refarg{targets} array identifies the processes to which the requested job control action is to be applied.
+A \code{NULL} value can be used to indicate all processes in the caller's namespace.
+The use of \refconst{PMIX_RANK_WILDARD} can also be used to indicate that all processes in the given namespace are to be included.
+
+The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
+The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
+If non-\code{NULL}, then the specified \refarg{release_fn} must be called when the callback function completes - this will be used to release any provided \refstruct{pmix_info_t} array.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Process and Job Monitoring}
+\label{chap:api_job_mgmt:monitor}
+
+\ldots
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Process_monitor_nb}}
+\declareapi{PMIx_Process_monitor_nb}
+
+%%%%
+\summary
+
+Request that something be monitored.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Process_monitor_nb(const pmix_info_t *monitor, pmix_status_t error,
+                        const pmix_info_t directives[], size_t ndirs,
+                        pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{monitor}{info (handle)}
+\argin{error}{status (integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Request that something be monitored.
+For example, that the server monitor this process for periodic heartbeats as an indication that the process has not become ``wedged''.
+When a monitor detects the specified alarm condition, it will generate an event notification using the provided error code and passing along any available relevant information.
+It is up to the caller to register a corresponding event handler.
+
+The \refarg{monitor} argument is an attribute indicating the type of monitor being requested.
+For example, \refattr{PMIX_MONITOR_FILE} to indicate that the requestor is asking that a file be monitored.
+
+The \refarg{error} argument is the status code to be used when generating an event notification alerting that the monitor has been triggered.
+The range of the notification defaults to \refconst{PMIX_RANGE_NAMESPACE}.
+This can be changed by providing a \refconst{PMIX_RANGE} directive.
+
+The \refarg{directives} argument characterizes the monitoring request (e.g., monitor file size) and frequency of checking to be done
+
+The \refarg{cbfunc} function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Heartbeat}}
+\declareapi{PMIx_Heartbeat}
+
+%%%%
+\summary
+
+Send a heartbeat to the \ac{RM}
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+void PMIx_Heartbeat(void)
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\descr
+
+A simplified version of \refapi{PMIx_Process_monitor_nb} that sends a heartbeat to the \ac{RM}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
