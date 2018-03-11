@@ -45,6 +45,7 @@
 
 \usepackage[T1]{fontenc}        % Allow us to use underscore freely in the document
 \catcode`\_=12                  % Use \sb for subscripts
+\usepackage{verbatim}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -257,6 +258,73 @@
 \newcommand{\descr} {\littleheader{Description}}
 \newcommand{\format} {\littleheader{Format}}
 \newcommand{\summary} {\littleheader{Summary}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Clipboard
+% 
+% \StdCopy{TAG}{BODY}
+% \StdPaste{TAG}
+%
+% Inspired by this thread:
+%   https://tex.stackexchange.com/questions/150790/how-to-make-text-be-copied-to-another-part-of-a-document
+\makeatletter
+\newcommand\StdCopy              [2] {
+  \immediate\write\@auxout{\unexpanded{\global\long\@namedef{clipbrd@#1}{#2}}}
+}
+\newcommand\StdCopyEcho          [2] {
+  \StdCopy{#1}{#2}%
+  #2
+}
+\newcommand\StdPaste             [1] {%
+  \ifcsname clipbrd@#1\endcsname
+    \@nameuse{clipbrd@#1}%
+  \else
+    ??unknown??
+  \fi
+}
+\makeatother
+
+
+% Attribute list
+%   \attributeList          Declare an attribute with a description
+%   \declareAttributeItem   Item in the attribute list
+%
+%   \declareAttribute       Attribute not associated with a list
+%   \pasteAttributeItem     Paste the attribute description here
+%   \refAttributeItem       Reference the original definition of the attribute
+%
+\newenvironment{attributeList}
+{\begin{description}[style=nextline,labelindent=\parindent,leftmargin=*,itemindent=\dimexpr-17pt-\labelsep\relax,itemsep=-1.3ex]}
+{\end{description}}
+
+\newcommand{\declareAttributeItem}[4]{%
+  \item[\code{#1} ~~\code{#2}~~(\code{#3}])%
+    \index{#1!Defintion|textbf} \label{attr:#1}%
+    \StdCopyEcho{#1}{#4}%
+}
+
+\newcommand{\declareAttribute}[4]{%
+  \code{#1} ~~\code{#2}~~(\code{#3})%
+    \index{#1!Defintion|textbf} \label{attr:#1}%
+    \StdCopy{str:#1}{\code{#2}}%
+    \StdCopy{attr:#1}{\code{#3}}%
+    \vspace{-1.3ex}%
+      \expandafter\begin{adjustwidth}{.95cm}{}%
+      \StdCopyEcho{#1}{#4}%
+    \end{adjustwidth}%
+  \vspace{-1.3ex}%
+}
+
+\newcommand{\pasteAttributeItem}[1]{
+  \refAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
+  \vspace{-1.3ex}
+    \expandafter\begin{adjustwidth}{.95cm}{}
+    \StdPaste{#1}
+   \end{adjustwidth}
+}
+\newcommand{\refAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\code{#1}} }
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
