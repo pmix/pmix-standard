@@ -46,414 +46,1526 @@ All ranks on a local node.
 \subsection{Reserved attributes}
 \label{api:struct:attributes}
 
+Define a set of ``standard'' PMIx attributes that can be queried.
+Implementations (and users) are free to extend as desired, so the get functions need to be capable of handling the ``not found'' condition.
+Note that these are attributes of the system and the job as opposed to values the application (or underlying \ac{MPI} library) might choose to expose - i.e., they are values provided by the resource manager as opposed to the application.
+Thus, these keys are \textbf{RESERVED}.
+
+\declareAttribute{PMIX_ATTR_UNDEF}{NULL}{NULL}{
+Constant representing an undefined attribute.
+}
+
+%%%%%%%%%%%
+\subsubsection{Initialization attributes}
+\label{api:struct:attributes:init}
+
 \ldots
 
-\cspecificstart
-\begin{codepar}
-/* define a set of "standard" PMIx attributes that can
- * be queried. Implementations (and users) are free to extend as
- * desired, so the get functions need to be capable
- * of handling the "not found" condition. Note that these
- * are attributes of the system and the job as opposed to
- * values the application (or underlying MPI library)
- * might choose to expose - i.e., they are values provided
- * by the resource manager as opposed to the application. Thus,
- * these keys are RESERVED */
-#define PMIX_ATTR_UNDEF      NULL
+%
+\declareAttribute{PMIX_EVENT_BASE}{"pmix.evbase"}{struct event_base *}{
+Pointer to libevent event_base to use in place of the internal progress thread.
+}
 
-/* initialization attributes */
-#define PMIX_EVENT_BASE                     "pmix.evbase"           // (struct event_base *) pointer to libevent event_base to use in place
-                                                                    //                       of the internal progress thread
-#define PMIX_SERVER_TOOL_SUPPORT            "pmix.srvr.tool"        // (bool) The host RM wants to declare itself as willing to
-                                                                    //        accept tool connection requests
-#define PMIX_SERVER_REMOTE_CONNECTIONS      "pmix.srvr.remote"      // (bool) Allow connections from remote tools (do not use loopback device)
-#define PMIX_SERVER_SYSTEM_SUPPORT          "pmix.srvr.sys"         // (bool) The host RM wants to declare itself as being the local
-                                                                    //        system server for PMIx connection requests
-#define PMIX_SERVER_TMPDIR                  "pmix.srvr.tmpdir"      // (char*) temp directory where PMIx server will place
-                                                                    //        client rendezvous points and contact info
-#define PMIX_SYSTEM_TMPDIR                  "pmix.sys.tmpdir"       // (char*) temp directory for this system, where PMIx
-                                                                    //        server will place tool rendezvous points and contact info
-#define PMIX_REGISTER_NODATA                "pmix.reg.nodata"       // (bool) Registration is for nspace only, do not copy job data
-#define PMIX_SERVER_ENABLE_MONITORING       "pmix.srv.monitor"      // (bool) Enable PMIx internal monitoring by server
-#define PMIX_SERVER_NSPACE                  "pmix.srv.nspace"       // (char*) Name of the nspace to use for this server
-#define PMIX_SERVER_RANK                    "pmix.srv.rank"         // (pmix_rank_t) Rank of this server
+%
+\declareAttribute{PMIX_SERVER_TOOL_SUPPORT}{"pmix.srvr.tool"}{bool}{
+The host RM wants to declare itself as willing to accept tool connection requests.
+}
 
-/* tool-related attributes */
-#define PMIX_TOOL_NSPACE                    "pmix.tool.nspace"      // (char*) Name of the nspace to use for this tool
-#define PMIX_TOOL_RANK                      "pmix.tool.rank"        // (uint32_t) Rank of this tool
-#define PMIX_SERVER_PIDINFO                 "pmix.srvr.pidinfo"     // (pid_t) pid of the target server for a tool
-#define PMIX_CONNECT_TO_SYSTEM              "pmix.cnct.sys"         // (bool) The requestor requires that a connection be made only to
-                                                                    //        a local system-level PMIx server
-#define PMIX_CONNECT_SYSTEM_FIRST           "pmix.cnct.sys.first"   // (bool) Preferentially look for a system-level PMIx server first
-#define PMIX_SERVER_URI                     "pmix.srvr.uri"         // (char*) URI of server to be contacted
-#define PMIX_SERVER_HOSTNAME                "pmix.srvr.host"        // (char*) node where target server is located
-#define PMIX_CONNECT_MAX_RETRIES            "pmix.tool.mretries"    // (uint32_t) maximum number of times to try to connect to server
-#define PMIX_CONNECT_RETRY_DELAY            "pmix.tool.retry"       // (uint32_t) time in seconds between connection attempts
-#define PMIX_TOOL_DO_NOT_CONNECT            "pmix.tool.nocon"       // (bool) the tool wants to use internal PMIx support, but does
-                                                                    //        not want to connect to a PMIx server
+%
+\declareAttribute{PMIX_SERVER_REMOTE_CONNECTIONS}{"pmix.srvr.remote"}{bool}{
+Allow connections from remote tools (do not use loopback device).
+}
 
-/* identification attributes */
-#define PMIX_USERID                         "pmix.euid"             // (uint32_t) effective user id
-#define PMIX_GRPID                          "pmix.egid"             // (uint32_t) effective group id
-#define PMIX_DSTPATH                        "pmix.dstpath"          // (char*) path to dstore files
-#define PMIX_VERSION_INFO                   "pmix.version"          // (char*) PMIx version of contactor
-#define PMIX_PROGRAMMING_MODEL              "pmix.pgm.model"        // (char*) programming model being initialized (e.g., "MPI" or "OpenMP")
-#define PMIX_MODEL_LIBRARY_NAME             "pmix.mdl.name"         // (char*) programming model implementation ID (e.g., "OpenMPI" or "MPICH")
-#define PMIX_MODEL_LIBRARY_VERSION          "pmix.mld.vrs"          // (char*) programming model version string (e.g., "2.1.1")
-#define PMIX_THREADING_MODEL                "pmix.threads"          // (char*) threading model used (e.g., "pthreads")
-#define PMIX_REQUESTOR_IS_TOOL              "pmix.req.tool"         // (bool) requesting process is a tool
-#define PMIX_REQUESTOR_IS_CLIENT            "pmix.req.client"       // (bool) requesting process is a client process
+%
+\declareAttribute{PMIX_SERVER_SYSTEM_SUPPORT}{"pmix.srvr.sys"}{bool}{
+The host RM wants to declare itself as being the local system server for PMIx connection requests.
+}
+
+%
+\declareAttribute{PMIX_SERVER_TMPDIR}{"pmix.srvr.tmpdir"}{char*}{
+temp directory where PMIx server will place client rendezvous points and contact info.
+}
+
+%
+\declareAttribute{PMIX_SYSTEM_TMPDIR}{"pmix.sys.tmpdir"}{char*}{
+temp directory for this system, where PMIx server will place tool rendezvous points and contact info.
+}
+
+%
+\declareAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
+Registration is for nspace only, do not copy job data.
+}
+
+%
+\declareAttribute{PMIX_SERVER_ENABLE_MONITORING}{"pmix.srv.monitor"}{bool}{
+Enable PMIx internal monitoring by server
+}
+
+%
+\declareAttribute{PMIX_SERVER_NSPACE}{"pmix.srv.nspace"}{char*}{
+Name of the nspace to use for this server.
+}
+
+%
+\declareAttribute{PMIX_SERVER_RANK}{"pmix.srv.rank"}{pmix_rank_t}{
+Rank of this server
+}
 
 
-/* attributes for the USOCK rendezvous socket  */
-#define PMIX_USOCK_DISABLE                  "pmix.usock.disable"    // (bool) disable legacy usock support
-#define PMIX_SOCKET_MODE                    "pmix.sockmode"         // (uint32_t) POSIX mode_t (9 bits valid)
-#define PMIX_SINGLE_LISTENER                "pmix.sing.listnr"      // (bool) use only one rendezvous socket, letting priorities and/or
-                                                                    //        MCA param select the active transport
+%%%%%%%%%%%
+\subsubsection{Tool-related attributes}
+\label{api:struct:attributes:tool}
 
-/* attributes for TCP connections */
-#define PMIX_TCP_REPORT_URI                 "pmix.tcp.repuri"       // (char*) output URI - '-' => stdout, '+' => stderr, or filename
-#define PMIX_TCP_URI                        "pmix.tcp.uri"          // (char*) URI of server to connect to, or file:<name of file containing it>
-#define PMIX_TCP_IF_INCLUDE                 "pmix.tcp.ifinclude"    // (char*) comma-delimited list of devices and/or CIDR notation
-#define PMIX_TCP_IF_EXCLUDE                 "pmix.tcp.ifexclude"    // (char*) comma-delimited list of devices and/or CIDR notation
-#define PMIX_TCP_IPV4_PORT                  "pmix.tcp.ipv4"         // (int) IPv4 port to be used
-#define PMIX_TCP_IPV6_PORT                  "pmix.tcp.ipv6"         // (int) IPv6 port to be used
-#define PMIX_TCP_DISABLE_IPV4               "pmix.tcp.disipv4"      // (bool) true to disable IPv4 family
-#define PMIX_TCP_DISABLE_IPV6               "pmix.tcp.disipv6"      // (bool) true to disable IPv6 family
+\ldots
 
-/* attributes for GDS */
-#define PMIX_GDS_MODULE                     "pmix.gds.mod"          // (char*) comma-delimited string of desired modules
+%
+\declareAttribute{PMIX_TOOL_NSPACE}{"pmix.tool.nspace"}{char*}{
+Name of the nspace to use for this tool.
+}
 
-/* general proc-level attributes */
-#define PMIX_CPUSET                         "pmix.cpuset"           // (char*) hwloc bitmap applied to proc upon launch
-#define PMIX_CREDENTIAL                     "pmix.cred"             // (char*) security credential assigned to proc
-#define PMIX_SPAWNED                        "pmix.spawned"          // (bool) true if this proc resulted from a call to PMIx_Spawn
-#define PMIX_ARCH                           "pmix.arch"             // (uint32_t) datatype architecture flag
+%
+\declareAttribute{PMIX_TOOL_RANK}{"pmix.tool.rank"}{uint32_t}{
+Rank of this tool.
+}
 
-/* scratch directory locations for use by applications */
-#define PMIX_TMPDIR                         "pmix.tmpdir"           // (char*) top-level tmp dir assigned to session
-#define PMIX_NSDIR                          "pmix.nsdir"            // (char*) sub-tmpdir assigned to namespace
-#define PMIX_PROCDIR                        "pmix.pdir"             // (char*) sub-nsdir assigned to proc
-#define PMIX_TDIR_RMCLEAN                   "pmix.tdir.rmclean"     // (bool)  Resource Manager will clean session directories
+%
+\declareAttribute{PMIX_SERVER_PIDINFO}{"pmix.srvr.pidinfo"}{pid_t}{
+PID of the target server for a tool.
+}
 
-/* information about relative ranks as assigned by the RM */
-#define PMIX_PROCID                         "pmix.procid"           // (pmix_proc_t) process identifier
-#define PMIX_NSPACE                         "pmix.nspace"           // (char*) nspace of a job
-#define PMIX_JOBID                          "pmix.jobid"            // (char*) jobid assigned by scheduler
-#define PMIX_APPNUM                         "pmix.appnum"           // (uint32_t) app number within the job
-#define PMIX_RANK                           "pmix.rank"             // (pmix_rank_t) process rank within the job
-#define PMIX_GLOBAL_RANK                    "pmix.grank"            // (pmix_rank_t) rank spanning across all jobs in this session
-#define PMIX_APP_RANK                       "pmix.apprank"          // (pmix_rank_t) rank within this app
-#define PMIX_NPROC_OFFSET                   "pmix.offset"           // (pmix_rank_t) starting global rank of this job
-#define PMIX_LOCAL_RANK                     "pmix.lrank"            // (uint16_t) rank on this node within this job
-#define PMIX_NODE_RANK                      "pmix.nrank"            // (uint16_t) rank on this node spanning all jobs
-#define PMIX_LOCALLDR                       "pmix.lldr"             // (pmix_rank_t) lowest rank on this node within this job
-#define PMIX_APPLDR                         "pmix.aldr"             // (pmix_rank_t) lowest rank in this app within this job
-#define PMIX_PROC_PID                       "pmix.ppid"             // (pid_t) pid of specified proc
-#define PMIX_SESSION_ID                     "pmix.session.id"       // (uint32_t) session identifier
+%
+\declareAttribute{PMIX_CONNECT_TO_SYSTEM}{"pmix.cnct.sys"}{bool}{
+The requestor requires that a connection be made only to a local system-level PMIx server.
+}
 
-#define PMIX_NODE_LIST                      "pmix.nlist"            // (char*) comma-delimited list of nodes running procs for the specified nspace
-#define PMIX_ALLOCATED_NODELIST             "pmix.alist"            // (char*) comma-delimited list of all nodes in this allocation regardless of
-                                                                    //         whether or not they currently host procs.
-#define PMIX_HOSTNAME                       "pmix.hname"            // (char*) name of the host the specified proc is on
-#define PMIX_NODEID                         "pmix.nodeid"           // (uint32_t) node identifier where the specified proc is located
-#define PMIX_LOCAL_PEERS                    "pmix.lpeers"           // (char*) comma-delimited string of ranks on this node within the specified nspace
-#define PMIX_LOCAL_PROCS                    "pmix.lprocs"           // (pmix_proc_t array) array of pmix_proc_t of procs on the specified node
-#define PMIX_LOCAL_CPUSETS                  "pmix.lcpus"            // (char*) colon-delimited cpusets of local peers within the specified nspace
-#define PMIX_PROC_URI                       "pmix.puri"             // (char*) URI containing contact info for proc
-#define PMIX_LOCALITY                       "pmix.loc"              // (uint16_t) relative locality of two procs
-#define PMIX_PARENT_ID                      "pmix.parent"           // (pmix_proc_t) process identifier of my parent process
+%
+\declareAttribute{PMIX_CONNECT_SYSTEM_FIRST}{"pmix.cnct.sys.first"}{bool}{
+Preferentially look for a system-level PMIx server first.
+}
 
-/* size info */
-#define PMIX_UNIV_SIZE                      "pmix.univ.size"        // (uint32_t) #procs in this nspace
-#define PMIX_JOB_SIZE                       "pmix.job.size"         // (uint32_t) #procs in this job
-#define PMIX_JOB_NUM_APPS                   "pmix.job.napps"        // (uint32_t) #apps in this job
-#define PMIX_APP_SIZE                       "pmix.app.size"         // (uint32_t) #procs in this application
-#define PMIX_LOCAL_SIZE                     "pmix.local.size"       // (uint32_t) #procs in this job on this node
-#define PMIX_NODE_SIZE                      "pmix.node.size"        // (uint32_t) #procs across all jobs on this node
-#define PMIX_MAX_PROCS                      "pmix.max.size"         // (uint32_t) max #procs for this job
-#define PMIX_NUM_NODES                      "pmix.num.nodes"        // (uint32_t) #nodes in this nspace
+%
+\declareAttribute{PMIX_SERVER_URI}{"pmix.srvr.uri"}{char*}{
+URI of server to be contacted.
+}
 
-/* Memory info */
-#define PMIX_AVAIL_PHYS_MEMORY              "pmix.pmem"             // (uint64_t) total available physical memory on this node
-#define PMIX_DAEMON_MEMORY                  "pmix.dmn.mem"          // (float) Mbytes of memory currently used by daemon
-#define PMIX_CLIENT_AVG_MEMORY              "pmix.cl.mem.avg"       // (float) Average Mbytes of memory used by client processes
+%
+\declareAttribute{PMIX_SERVER_HOSTNAME}{"pmix.srvr.host"}{char*}{
+node where target server is located
+}
 
-/* topology info */
-#define PMIX_NET_TOPO                       "pmix.ntopo"            // (char*) xml-representation of network topology
-#define PMIX_LOCAL_TOPO                     "pmix.ltopo"            // (char*) xml-representation of local node topology
-#define PMIX_NODE_LIST                      "pmix.nlist"            // (char*) comma-delimited list of nodes running procs for this job
-#define PMIX_TOPOLOGY                       "pmix.topo"             // (hwloc_topology_t) pointer to the PMIx client's internal topology object
-#define PMIX_TOPOLOGY_SIGNATURE             "pmix.toposig"          // (char*) topology signature string
-#define PMIX_LOCALITY_STRING                "pmix.locstr"           // (char*) string describing a proc's location
-#define PMIX_HWLOC_SHMEM_ADDR               "pmix.hwlocaddr"        // (size_t) address of HWLOC shared memory segment
-#define PMIX_HWLOC_SHMEM_SIZE               "pmix.hwlocsize"        // (size_t) size of HWLOC shared memory segment
-#define PMIX_HWLOC_SHMEM_FILE               "pmix.hwlocfile"        // (char*) path to HWLOC shared memory file
-#define PMIX_HWLOC_XML_V1                   "pmix.hwlocxml1"        // (char*) XML representation of local topology using HWLOC v1.x format
-#define PMIX_HWLOC_XML_V2                   "pmix.hwlocxml2"        // (char*) XML representation of local topology using HWLOC v2.x format
+%
+\declareAttribute{PMIX_CONNECT_MAX_RETRIES}{"pmix.tool.mretries"}{uint32_t}{
+maximum number of times to try to connect to server
+}
+
+%
+\declareAttribute{PMIX_CONNECT_RETRY_DELAY}{"pmix.tool.retry"}{uint32_t}{
+time in seconds between connection attempts
+}
+
+%
+\declareAttribute{PMIX_TOOL_DO_NOT_CONNECT}{"pmix.tool.nocon"}{bool}{
+The tool wants to use internal PMIx support, but does not want to connect to a PMIx server.
+}
 
 
-/* request-related info */
-#define PMIX_COLLECT_DATA                   "pmix.collect"          // (bool) collect data and return it at the end of the operation
+%%%%%%%%%%%
+\subsubsection{Identification attributes}
+\label{api:struct:attributes:ident}
 
-maximum time for the get to execute before declaring an error.
+\ldots
+
+%
+\declareAttribute{PMIX_USERID}{"pmix.euid"}{uint32_t}{
+Effective user id
+}
+
+%
+\declareAttribute{PMIX_GRPID}{"pmix.egid"}{uint32_t}{
+Effective group id
+}
+
+%
+\declareAttribute{PMIX_DSTPATH}{"pmix.dstpath"}{char*}{
+Path to dstore files
+}
+
+%
+\declareAttribute{PMIX_VERSION_INFO}{"pmix.version"}{char*}{
+PMIx version of contactor
+}
+
+%
+\declareAttribute{PMIX_PROGRAMMING_MODEL}{"pmix.pgm.model"}{char*}{
+Programming model being initialized (e.g., ``MPI'' or ``OpenMP'')
+}
+
+%
+\declareAttribute{PMIX_MODEL_LIBRARY_NAME}{"pmix.mdl.name"}{char*}{
+Programming model implementation ID (e.g., ``OpenMPI'' or ``MPICH'')
+}
+
+%
+\declareAttribute{PMIX_MODEL_LIBRARY_VERSION}{"pmix.mld.vrs"}{char*}{
+Programming model version string (e.g., ``2.1.1'')
+}
+
+%
+\declareAttribute{PMIX_THREADING_MODEL}{"pmix.threads"}{char*}{
+Threading model used (e.g., ``pthreads'')
+}
+
+%
+\declareAttribute{PMIX_REQUESTOR_IS_TOOL}{"pmix.req.tool"}{bool}{
+Requesting process is a tool
+}
+
+%
+\declareAttribute{PMIX_REQUESTOR_IS_CLIENT}{"pmix.req.client"}{bool}{
+Requesting process is a client process
+}
+
+
+%%%%%%%%%%%
+\subsubsection{USOCK rendezvous socket attributes}
+\label{api:struct:attributes:usock}
+
+\ldots
+
+%
+\declareAttribute{PMIX_USOCK_DISABLE}{"pmix.usock.disable"}{bool}{
+Disable legacy usock support
+}
+
+%
+\declareAttribute{PMIX_SOCKET_MODE}{"pmix.sockmode"}{uint32_t}{
+POSIX \var{mode_t} (9 bits valid)
+}
+
+%
+\declareAttribute{PMIX_SINGLE_LISTENER}{"pmix.sing.listnr"}{bool}{
+Use only one rendezvous socket, letting priorities and/or MCA param select the active transport.
+}
+
+
+%%%%%%%%%%%
+\subsubsection{TCP connection attributes}
+\label{api:struct:attributes:tcp}
+
+\ldots
+
+%
+\declareAttribute{PMIX_TCP_REPORT_URI}{"pmix.tcp.repuri"}{char*}{
+output URI. '-' for stdout, '+' for stderr, or filename
+}
+
+%
+\declareAttribute{PMIX_TCP_URI}{"pmix.tcp.uri"}{char*}{
+URI of server to connect to, or \code{file:<name of file containing it>}
+}
+
+%
+\declareAttribute{PMIX_TCP_IF_INCLUDE}{"pmix.tcp.ifinclude"}{char*}{
+Comma-delimited list of devices and/or CIDR notation
+}
+
+%
+\declareAttribute{PMIX_TCP_IF_EXCLUDE}{"pmix.tcp.ifexclude"}{char*}{
+Comma-delimited list of devices and/or CIDR notation
+}
+
+%
+\declareAttribute{PMIX_TCP_IPV4_PORT}{"pmix.tcp.ipv4"}{int}{
+IPv4 port to be used
+}
+
+%
+\declareAttribute{PMIX_TCP_IPV6_PORT}{"pmix.tcp.ipv6"}{int}{
+IPv6 port to be used
+}
+
+%
+\declareAttribute{PMIX_TCP_DISABLE_IPV4}{"pmix.tcp.disipv4"}{bool}{
+true to disable IPv4 family
+}
+
+%
+\declareAttribute{PMIX_TCP_DISABLE_IPV6}{"pmix.tcp.disipv6"}{bool}{
+true to disable IPv6 family
+}
+
+
+%%%%%%%%%%%
+\subsubsection{GDS attributes}
+\label{api:struct:attributes:gds}
+
+\ldots
+
+%
+\declareAttribute{PMIX_GDS_MODULE}{"pmix.gds.mod"}{char*}{
+Comma-delimited string of desired modules
+}
+
+
+%%%%%%%%%%%
+\subsubsection{General proc-level attributes}
+\label{api:struct:attributes:gproc}
+
+\ldots
+
+%
+\declareAttribute{PMIX_CPUSET}{"pmix.cpuset"}{char*}{
+hwloc bitmap applied to proc upon launch
+}
+
+%
+\declareAttribute{PMIX_CREDENTIAL}{"pmix.cred"}{char*}{
+Security credential assigned to proc
+}
+
+%
+\declareAttribute{PMIX_SPAWNED}{"pmix.spawned"}{bool}{
+true if this proc resulted from a call to \refapi{PMIx_Spawn}
+}
+
+%
+\declareAttribute{PMIX_ARCH}{"pmix.arch"}{uint32_t}{
+datatype architecture flag
+}
+
+%%%%%%%%%%%
+\subsubsection{Scratch directory locations for use by applications attributes}
+\label{api:struct:attributes:scratchdir}
+
+\ldots
+
+%
+\declareAttribute{PMIX_TMPDIR}{"pmix.tmpdir"}{char*}{
+Top-level tmp dir assigned to session
+}
+
+%
+\declareAttribute{PMIX_NSDIR}{"pmix.nsdir"}{char*}{
+Sub-tmpdir assigned to namespace
+}
+
+%
+\declareAttribute{PMIX_PROCDIR}{"pmix.pdir"}{char*}{
+Sub-nsdir assigned to proc
+}
+
+%
+\declareAttribute{PMIX_TDIR_RMCLEAN}{"pmix.tdir.rmclean"}{bool}{
+Resource Manager will clean session directories
+}
+
+
+%%%%%%%%%%%
+\subsubsection{Information about relative ranks as assigned by the RM attributes}
+\label{api:struct:attributes:relrankinfo}
+
+\ldots
+
+%
+\declareAttribute{PMIX_PROCID}{"pmix.procid"}{pmix_proc_t}{
+Process identifier
+}
+
+%
+\declareAttribute{PMIX_NSPACE}{"pmix.nspace"}{char*}{
+nspace of a job
+}
+
+%
+\declareAttribute{PMIX_JOBID}{"pmix.jobid"}{char*}{
+jobid assigned by scheduler
+}
+
+%
+\declareAttribute{PMIX_APPNUM}{"pmix.appnum"}{uint32_t}{
+app number within the job
+}
+
+%
+\declareAttribute{PMIX_RANK}{"pmix.rank"}{pmix_rank_t}{
+process rank within the job
+}
+
+%
+\declareAttribute{PMIX_GLOBAL_RANK}{"pmix.grank"}{pmix_rank_t}{
+rank spanning across all jobs in this session
+}
+
+%
+\declareAttribute{PMIX_APP_RANK}{"pmix.apprank"}{pmix_rank_t}{
+rank within this app
+}
+
+%
+\declareAttribute{PMIX_NPROC_OFFSET}{"pmix.offset"}{pmix_rank_t}{
+starting global rank of this job
+}
+
+%
+\declareAttribute{PMIX_LOCAL_RANK}{"pmix.lrank"}{uint16_t}{
+rank on this node within this job
+}
+
+%
+\declareAttribute{PMIX_NODE_RANK}{"pmix.nrank"}{uint16_t}{
+rank on this node spanning all jobs
+}
+
+%
+\declareAttribute{PMIX_LOCALLDR}{"pmix.lldr"}{pmix_rank_t}{
+lowest rank on this node within this job
+}
+
+%
+\declareAttribute{PMIX_APPLDR}{"pmix.aldr"}{pmix_rank_t}{
+lowest rank in this app within this job
+}
+
+%
+\declareAttribute{PMIX_PROC_PID}{"pmix.ppid"}{pid_t}{
+pid of specified proc
+}
+
+%
+\declareAttribute{PMIX_SESSION_ID}{"pmix.session.id"}{uint32_t}{
+ession identifier
+}
+
+%
+\declareAttribute{PMIX_NODE_LIST}{"pmix.nlist"}{char*}{
+Comma-delimited list of nodes running procs for the specified nspace
+}
+
+%
+\declareAttribute{PMIX_ALLOCATED_NODELIST}{"pmix.alist"}{char*}{
+comma-delimited list of all nodes in this allocation regardless of whether or not they currently host procs.
+}
+
+%
+\declareAttribute{PMIX_HOSTNAME}{"pmix.hname"}{char*}{
+Name of the host the specified proc is on
+}
+
+%
+\declareAttribute{PMIX_NODEID}{"pmix.nodeid"}{uint32_t}{
+Node identifier where the specified proc is located
+}
+
+%
+\declareAttribute{PMIX_LOCAL_PEERS}{"pmix.lpeers"}{char*}{
+Comma-delimited string of ranks on this node within the specified nspace
+}
+
+%
+\declareAttribute{PMIX_LOCAL_PROCS}{"pmix.lprocs"}{pmix_proc_t array}{
+array of pmix_proc_t of procs on the specified node
+}
+
+%
+\declareAttribute{PMIX_LOCAL_CPUSETS}{"pmix.lcpus"}{char*}{
+colon-delimited cpusets of local peers within the specified nspace
+}
+
+%
+\declareAttribute{PMIX_PROC_URI}{"pmix.puri"}{char*}{
+URI containing contact info for proc
+}
+
+%
+\declareAttribute{PMIX_LOCALITY}{"pmix.loc"}{uint16_t}{
+relative locality of two procs
+}
+
+%
+\declareAttribute{PMIX_PARENT_ID}{"pmix.parent"}{pmix_proc_t}{
+process identifier of my parent process
+}
+
+%%%%%%%%%%%
+\subsubsection{Size information attributes}
+\label{api:struct:attributes:sizeinfo}
+
+\ldots
+
+%
+\declareAttribute{PMIX_UNIV_SIZE}{"pmix.univ.size"}{uint32_t}{
+Number of procs in this nspace
+}
+
+%
+\declareAttribute{PMIX_JOB_SIZE}{"pmix.job.size"}{uint32_t}{
+Number of procs in this job
+}
+
+%
+\declareAttribute{PMIX_JOB_NUM_APPS}{"pmix.job.napps"}{uint32_t}{
+Number of apps in this job
+}
+
+%
+\declareAttribute{PMIX_APP_SIZE}{"pmix.app.size"}{uint32_t}{
+Number of procs in this application
+}
+
+%
+\declareAttribute{PMIX_LOCAL_SIZE}{"pmix.local.size"}{uint32_t}{
+Number of procs in this job on this node
+}
+
+%
+\declareAttribute{PMIX_NODE_SIZE}{"pmix.node.size"}{uint32_t}{
+Number of procs across all jobs on this node
+}
+
+%
+\declareAttribute{PMIX_MAX_PROCS}{"pmix.max.size"}{uint32_t}{
+Max number of procs for this job
+}
+
+%
+\declareAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
+Number of nodes in this nspace
+}
+
+%%%%%%%%%%%
+\subsubsection{Memory information attributes}
+\label{api:struct:attributes:meminfo}
+
+\ldots
+
+%
+\declareAttribute{PMIX_AVAIL_PHYS_MEMORY}{"pmix.pmem"}{uint64_t}{
+Total available physical memory on this node
+}
+
+%
+\declareAttribute{PMIX_DAEMON_MEMORY}{"pmix.dmn.mem"}{float}{
+Mbytes of memory currently used by daemon
+}
+
+%
+\declareAttribute{PMIX_CLIENT_AVG_MEMORY}{"pmix.cl.mem.avg"}{float}{
+Average Mbytes of memory used by client processes
+}
+
+%%%%%%%%%%%
+\subsubsection{Topology information attributes}
+\label{api:struct:attributes:topoinfo}
+
+\ldots
+
+%
+\declareAttribute{PMIX_NET_TOPO}{"pmix.ntopo"}{char*}{
+xml-representation of network topology
+}
+
+%
+\declareAttribute{PMIX_LOCAL_TOPO}{"pmix.ltopo"}{char*}{
+xml-representation of local node topology
+}
+
+%
+\declareAttribute{PMIX_NODE_LIST}{"pmix.nlist"}{char*}{
+comma-delimited list of nodes running procs for this job
+}
+
+%
+\declareAttribute{PMIX_TOPOLOGY}{"pmix.topo"}{hwloc_topology_t}{
+pointer to the PMIx client's internal topology object
+}
+
+%
+\declareAttribute{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
+topology signature string
+}
+
+%
+\declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
+string describing a proc's location
+}
+
+%
+\declareAttribute{PMIX_HWLOC_SHMEM_ADDR}{"pmix.hwlocaddr"}{size_t}{
+address of HWLOC shared memory segment
+}
+
+%
+\declareAttribute{PMIX_HWLOC_SHMEM_SIZE}{"pmix.hwlocsize"}{size_t}{
+size of HWLOC shared memory segment
+}
+
+%
+\declareAttribute{PMIX_HWLOC_SHMEM_FILE}{"pmix.hwlocfile"}{char*}{
+path to HWLOC shared memory file
+}
+
+%
+\declareAttribute{PMIX_HWLOC_XML_V1}{"pmix.hwlocxml1"}{char*}{
+XML representation of local topology using HWLOC v1.x format
+}
+
+%
+\declareAttribute{PMIX_HWLOC_XML_V2}{"pmix.hwlocxml2"}{char*}{
+XML representation of local topology using HWLOC v2.x format
+}
+
+%%%%%%%%%%%
+\subsubsection{Request-related attributes}
+\label{api:struct:attributes:request}
+
+\ldots
+
+%
+\declareAttribute{PMIX_COLLECT_DATA}{"pmix.collect"}{bool}{
+Collect data and return it at the end of the operation
+}
+
+%
+\declareAttribute{PMIX_TIMEOUT}{"pmix.timeout"}{int}{
+Time in sec before specified operation should time out (0 indicating infinite) in error.
 The timeout parameter can help avoid ``hangs'' due to programming errors that prevent the target proc from ever exposing its data.
-#define PMIX_TIMEOUT                        "pmix.timeout"          // (int) time in sec before specified operation should time out (0 => infinite)
-#define PMIX_IMMEDIATE                      "pmix.immediate"        // (bool) specified operation should immediately return an error from the PMIx
-                                                                    //        server if requested data cannot be found - do not request it from
-                                                                    //        the host RM
-#define PMIX_WAIT                           "pmix.wait"             // (int) caller requests that the server wait until at least the specified
-                                                                    //       #values are found (0 => all and is the default)
-#define PMIX_COLLECTIVE_ALGO                "pmix.calgo"            // (char*) comma-delimited list of algorithms to use for collective
-#define PMIX_COLLECTIVE_ALGO_REQD           "pmix.calreqd"          // (bool) if true, indicates that the requested choice of algo is mandatory
-#define PMIX_NOTIFY_COMPLETION              "pmix.notecomp"         // (bool) notify parent process upon termination of child job
-#define PMIX_RANGE                          "pmix.range"            // (pmix_data_range_t) value for calls to publish/lookup/unpublish or for
-                                                                    //        monitoring event notifications
-#define PMIX_PERSISTENCE                    "pmix.persist"          // (pmix_persistence_t) value for calls to publish
-#define PMIX_DATA_SCOPE                     "pmix.scope"            // (pmix_scope_t) scope of the data to be found in a PMIx_Get call
-#define PMIX_OPTIONAL                       "pmix.optional"         // (bool) look only in the client's local data store for the requested value - do
-                                                                    //        not request data from the server if not found
+}
 
- * (a) PMIX_EMBED_BARRIER - By default, PMIx_Finalize does not include an
- * internal barrier operation. This attribute directs PMIx_Finalize to
- * execute a barrier as part of the finalize operation.
- declareattr{PMIX_EMBED_BARRIER}
-#define PMIX_EMBED_BARRIER                  "pmix.embed.barrier"    // (bool) execute a blocking fence operation before executing the
-                                                                    //        specified operation
-#define PMIX_JOB_TERM_STATUS                "pmix.job.term.status"  // (pmix_status_t) status returned upon job termination
-#define PMIX_PROC_STATE_STATUS              "pmix.proc.state"       // (pmix_proc_state_t) process state
+%
+\declareAttribute{PMIX_IMMEDIATE}{"pmix.immediate"}{bool}{
+Specified operation should immediately return an error from the PMIx server if requested data cannot be found - do not request it from the host RM.
+}
 
-/* attributes used by host server to pass data to the server convenience library - the
- * data will then be parsed and provided to the local clients */
-#define PMIX_REGISTER_NODATA                "pmix.reg.nodata"       // (bool) Registration is for nspace only, do not copy job data
-#define PMIX_PROC_DATA                      "pmix.pdata"            // (pmix_data_array_t) starts with rank, then contains more data
-#define PMIX_NODE_MAP                       "pmix.nmap"             // (char*) regex of nodes containing procs for this job
-#define PMIX_PROC_MAP                       "pmix.pmap"             // (char*) regex describing procs on each node within this job
-#define PMIX_ANL_MAP                        "pmix.anlmap"           // (char*) process mapping in ANL notation (used in PMI-1/PMI-2)
-#define PMIX_APP_MAP_TYPE                   "pmix.apmap.type"       // (char*) type of mapping used to layout the application (e.g., cyclic)
-#define PMIX_APP_MAP_REGEX                  "pmix.apmap.regex"      // (char*) regex describing the result of the mapping
+%
+\declareAttribute{PMIX_WAIT}{"pmix.wait"}{int}{
+Caller requests that the server wait until at least the specified number of values are found (0 indicates all and is the default)
+}
+
+%
+\declareAttribute{PMIX_COLLECTIVE_ALGO}{"pmix.calgo"}{char*}{
+comma-delimited list of algorithms to use for collective
+}
+
+%
+\declareAttribute{PMIX_COLLECTIVE_ALGO_REQD}{"pmix.calreqd"}{bool}{
+if true, indicates that the requested choice of algo is mandatory
+}
+
+%
+\declareAttribute{PMIX_NOTIFY_COMPLETION}{"pmix.notecomp"}{bool}{
+notify parent process upon termination of child job
+}
+
+%
+\declareAttribute{PMIX_RANGE}{"pmix.range"}{pmix_data_range_t}{
+value for calls to publish/lookup/unpublish or for monitoring event notifications
+}
+
+%
+\declareAttribute{PMIX_PERSISTENCE}{"pmix.persist"}{pmix_persistence_t}{
+value for calls to publish
+}
+
+%
+\declareAttribute{PMIX_DATA_SCOPE}{"pmix.scope"}{pmix_scope_t}{
+Scope of the data to be found in a \refapi{PMIx_Get} call
+}
+
+%
+\declareAttribute{PMIX_OPTIONAL}{"pmix.optional"}{bool}{
+look only in the client's local data store for the requested value - do not request data from the server if not found
+}
+
+%
+\declareAttribute{PMIX_EMBED_BARRIER}{"pmix.embed.barrier"}{bool}{
+Execute a blocking fence operation before executing the specified operation.
+By default, \refapi{PMIx_Finalize} does not include an internal barrier operation.
+This attribute directs \refapi{PMIx_Finalize} to execute a barrier as part of the finalize operation.
+}
+
+%
+\declareAttribute{PMIX_JOB_TERM_STATUS}{"pmix.job.term.status"}{pmix_status_t}{
+status returned upon job termination
+}
+
+%
+\declareAttribute{PMIX_PROC_STATE_STATUS}{"pmix.proc.state"}{pmix_proc_state_t}{
+process state
+}
+
+%%%%%%%%%%%
+\subsubsection{Sever to Convenience library attributes}
+\label{api:struct:attributes:server2cl}
+
+Attributes used by host server to pass data to the server convenience library - the data will then be parsed and provided to the local clients.
+
+%
+\declareAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
+Registration is for nspace only, do not copy job data
+}
+
+%
+\declareAttribute{PMIX_PROC_DATA}{"pmix.pdata"}{pmix_data_array_t}{
+starts with rank, then contains more data
+}
+
+%
+\declareAttribute{PMIX_NODE_MAP}{"pmix.nmap"}{char*}{
+regex of nodes containing procs for this job
+}
+
+%
+\declareAttribute{PMIX_PROC_MAP}{"pmix.pmap"}{char*}{
+regex describing procs on each node within this job
+}
+
+%
+\declareAttribute{PMIX_ANL_MAP}{"pmix.anlmap"}{char*}{
+process mapping in ANL notation (used in PMI-1/PMI-2)
+}
+
+%
+\declareAttribute{PMIX_APP_MAP_TYPE}{"pmix.apmap.type"}{char*}{
+type of mapping used to layout the application (e.g., cyclic)
+}
+
+%
+\declareAttribute{PMIX_APP_MAP_REGEX}{"pmix.apmap.regex"}{char*}{
+regex describing the result of the mapping
+}
 
 
-/* attributes used internally to communicate data from the server to the client */
-#define PMIX_PROC_BLOB                      "pmix.pblob"            // (pmix_byte_object_t) packed blob of process data
-#define PMIX_MAP_BLOB                       "pmix.mblob"            // (pmix_byte_object_t) packed blob of process location
+%%%%%%%%%%%
+\subsubsection{Sever to Client attributes}
+\label{api:struct:attributes:server2client}
+
+Attributes used internally to communicate data from the server to the client
+
+%
+\declareAttribute{PMIX_PROC_BLOB}{"pmix.pblob"}{pmix_byte_object_t}{
+packed blob of process data
+}
+
+%
+\declareAttribute{PMIX_MAP_BLOB}{"pmix.mblob"}{pmix_byte_object_t}{
+packed blob of process location
+}
+
+%%%%%%%%%%%
+\subsubsection{Event handler registration and notification attributes}
+\label{api:struct:attributes:event}
+
+\ldots
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_NAME}{"pmix.evname"}{char*}{
+string name identifying this handler
+}
+
+%
+\declareAttribute{PMIX_EVENT_JOB_LEVEL}{"pmix.evjob"}{bool}{
+register for job-specific events only
+}
+
+%
+\declareAttribute{PMIX_EVENT_ENVIRO_LEVEL}{"pmix.evenv"}{bool}{
+register for environment events only
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_FIRST}{"pmix.evfirst"}{bool}{
+invoke this event handler before any other handlers
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_LAST}{"pmix.evlast"}{bool}{
+invoke this event handler after all other handlers have been called
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_FIRST_IN_CATEGORY}{"pmix.evfirstcat"}{bool}{
+invoke this event handler before any other handlers in this category
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_LAST_IN_CATEGORY}{"pmix.evlastcat"}{bool}{
+invoke this event handler after all other handlers in this category have been called
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_BEFORE}{"pmix.evbefore"}{char*}{
+put this event handler immediately before the one specified in the (char*) value
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_AFTER}{"pmix.evafter"}{char*}{
+put this event handler immediately after the one specified in the (char*) value
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_PREPEND}{"pmix.evprepend"}{bool}{
+prepend this handler to the precedence list within its category
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_APPEND}{"pmix.evappend"}{bool}{
+append this handler to the precedence list within its category
+}
+
+%
+\declareAttribute{PMIX_EVENT_CUSTOM_RANGE}{"pmix.evrange"}{pmix_data_array_t*}{
+array of pmix_proc_t defining range of event notification
+}
+
+%
+\declareAttribute{PMIX_EVENT_AFFECTED_PROC}{"pmix.evproc"}{pmix_proc_t}{
+single proc that was affected
+}
+
+%
+\declareAttribute{PMIX_EVENT_AFFECTED_PROCS}{"pmix.evaffected"}{pmix_data_array_t*}{
+array of pmix_proc_t defining affected procs
+}
+
+%
+\declareAttribute{PMIX_EVENT_NON_DEFAULT}{"pmix.evnondef"}{bool}{
+event is not to be delivered to default event handlers
+}
+
+%
+\declareAttribute{PMIX_EVENT_RETURN_OBJECT}{"pmix.evobject"}{void*}{
+object to be returned whenever the registered cbfunc is invoked.
+NOTE: the object will \emph{only} be returned to the process that registered it.
+}
+
+%
+\declareAttribute{PMIX_EVENT_DO_NOT_CACHE}{"pmix.evnocache"}{bool}{
+instruct the PMIx server not to cache the event
+}
+
+%
+\declareAttribute{PMIX_EVENT_SILENT_TERMINATION}{"pmix.evsilentterm"}{bool}{
+do not generate an event when this job normally terminates
+}
+
+%%%%%%%%%%%
+\subsubsection{Fault tolerance attributes}
+\label{api:struct:attributes:faulttolerance}
+
+\ldots
+
+%
+\declareAttribute{PMIX_EVENT_TERMINATE_SESSION}{"pmix.evterm.sess"}{bool}{
+RM intends to terminate session
+}
+
+%
+\declareAttribute{PMIX_EVENT_TERMINATE_JOB}{"pmix.evterm.job"}{bool}{
+RM intends to terminate this job
+}
+
+%
+\declareAttribute{PMIX_EVENT_TERMINATE_NODE}{"pmix.evterm.node"}{bool}{
+RM intends to terminate all procs on this node
+}
+
+%
+\declareAttribute{PMIX_EVENT_TERMINATE_PROC}{"pmix.evterm.proc"}{bool}{
+RM intends to terminate just this process
+}
+
+%
+\declareAttribute{PMIX_EVENT_ACTION_TIMEOUT}{"pmix.evtimeout"}{int}{
+time in sec before RM will execute error response
+}
+
+%
+\declareAttribute{PMIX_EVENT_NO_TERMINATION}{"pmix.evnoterm"}{bool}{
+indicates that the handler has satisfactorily handled the event and believes termination of the application is not required.
+}
+
+%
+\declareAttribute{PMIX_EVENT_WANT_TERMINATION}{"pmix.evterm"}{bool}{
+indicates that the handler has determined that the application should be terminated
+}
+
+%%%%%%%%%%%
+\subsubsection{Spawn attributes}
+\label{api:struct:attributes:spawn}
+
+attributes used to describe "spawn" attributes
+
+%
+\declareAttribute{PMIX_PERSONALITY}{"pmix.pers"}{char*}{
+name of personality to use
+}
+
+%
+\declareAttribute{PMIX_HOST}{"pmix.host"}{char*}{
+comma-delimited list of hosts to use for spawned procs
+}
+
+%
+\declareAttribute{PMIX_HOSTFILE}{"pmix.hostfile"}{char*}{
+hostfile to use for spawned procs
+}
+
+%
+\declareAttribute{PMIX_ADD_HOST}{"pmix.addhost"}{char*}{
+comma-delimited list of hosts to add to allocation
+}
+
+%
+\declareAttribute{PMIX_ADD_HOSTFILE}{"pmix.addhostfile"}{char*}{
+hostfile to add to existing allocation
+}
+
+%
+\declareAttribute{PMIX_PREFIX}{"pmix.prefix"}{char*}{
+prefix to use for starting spawned procs
+}
+
+%
+\declareAttribute{PMIX_WDIR}{"pmix.wdir"}{char*}{
+working directory for spawned procs
+}
+
+%
+\declareAttribute{PMIX_MAPPER}{"pmix.mapper"}{char*}{
+mapper to use for placing spawned procs
+}
+
+%
+\declareAttribute{PMIX_DISPLAY_MAP}{"pmix.dispmap"}{bool}{
+display process map upon spawn
+}
+
+%
+\declareAttribute{PMIX_PPR}{"pmix.ppr"}{char*}{
+Number of procs to spawn on each identified resource
+}
+
+%
+\declareAttribute{PMIX_MAPBY}{"pmix.mapby"}{char*}{
+mapping policy
+}
+
+%
+\declareAttribute{PMIX_RANKBY}{"pmix.rankby"}{char*}{
+ranking policy
+}
+
+%
+\declareAttribute{PMIX_BINDTO}{"pmix.bindto"}{char*}{
+binding policy
+}
+
+%
+\declareAttribute{PMIX_PRELOAD_BIN}{"pmix.preloadbin"}{bool}{
+preload binaries
+}
+
+%
+\declareAttribute{PMIX_PRELOAD_FILES}{"pmix.preloadfiles"}{char*}{
+comma-delimited list of files to pre-position
+}
+
+%
+\declareAttribute{PMIX_NON_PMI}{"pmix.nonpmi"}{bool}{
+spawned procs will not call \refapi{PMIx_Init}
+}
+
+%
+\declareAttribute{PMIX_STDIN_TGT}{"pmix.stdin"}{uint32_t}{
+spawned proc rank that is to receive stdin
+}
+
+%
+\declareAttribute{PMIX_FWD_STDIN}{"pmix.fwd.stdin"}{bool}{
+forward my stdin to the designated proc
+}
+
+%
+\declareAttribute{PMIX_FWD_STDOUT}{"pmix.fwd.stdout"}{bool}{
+forward stdout from spawned procs to me
+}
+
+%
+\declareAttribute{PMIX_FWD_STDERR}{"pmix.fwd.stderr"}{bool}{
+forward stderr from spawned procs to me
+}
+
+%
+\declareAttribute{PMIX_DEBUGGER_DAEMONS}{"pmix.debugger"}{bool}{
+spawned app consists of debugger daemons
+}
+
+%
+\declareAttribute{PMIX_COSPAWN_APP}{"pmix.cospawn"}{bool}{
+designated app is to be spawned as a disconnected job - i.e., not part of the "comm_world" of the job
+}
+
+%
+\declareAttribute{PMIX_SET_SESSION_CWD}{"pmix.ssncwd"}{bool}{
+set the application's current working directory to the session working directory assigned by the RM
+}
+
+%
+\declareAttribute{PMIX_TAG_OUTPUT}{"pmix.tagout"}{bool}{
+tag application output with the ID of the source
+}
+
+%
+\declareAttribute{PMIX_TIMESTAMP_OUTPUT}{"pmix.tsout"}{bool}{
+timestamp output from applications
+}
+
+%
+\declareAttribute{PMIX_MERGE_STDERR_STDOUT}{"pmix.mergeerrout"}{bool}{
+merge stdout and stderr streams from application procs
+}
+
+%
+\declareAttribute{PMIX_OUTPUT_TO_FILE}{"pmix.outfile"}{char*}{
+output application output to given file
+}
+
+%
+\declareAttribute{PMIX_INDEX_ARGV}{"pmix.indxargv"}{bool}{
+mark the argv with the rank of the proc
+}
+
+%
+\declareAttribute{PMIX_CPUS_PER_PROC}{"pmix.cpuperproc"}{uint32_t}{
+Number of cpus to assign to each rank
+}
+
+%
+\declareAttribute{PMIX_NO_PROCS_ON_HEAD}{"pmix.nolocal"}{bool}{
+do not place procs on the head node
+}
+
+%
+\declareAttribute{PMIX_NO_OVERSUBSCRIBE}{"pmix.noover"}{bool}{
+do not oversubscribe the cpus
+}
+
+%
+\declareAttribute{PMIX_REPORT_BINDINGS}{"pmix.repbind"}{bool}{
+report bindings of the individual procs
+}
+
+%
+\declareAttribute{PMIX_CPU_LIST}{"pmix.cpulist"}{char*}{
+list of cpus to use for this job
+}
+
+%
+\declareAttribute{PMIX_JOB_RECOVERABLE}{"pmix.recover"}{bool}{
+application supports recoverable operations
+}
+
+%
+\declareAttribute{PMIX_JOB_CONTINUOUS}{"pmix.continuous"}{bool}{
+application is continuous, all failed procs should be immediately restarted.
+}
+
+%
+\declareAttribute{PMIX_MAX_RESTARTS}{"pmix.maxrestarts"}{uint32_t}{
+max number of times to restart a job
+}
+
+%%%%%%%%%%%
+\subsubsection{Query attributes}
+\label{api:struct:attributes:query}
+
+\ldots
+
+%
+\declareAttribute{PMIX_QUERY_NAMESPACES}{"pmix.qry.ns"}{char*}{
+request a comma-delimited list of active nspaces
+}
+
+%
+\declareAttribute{PMIX_QUERY_JOB_STATUS}{"pmix.qry.jst"}{pmix_status_t}{
+status of a specified currently executing job
+}
+
+%
+\declareAttribute{PMIX_QUERY_QUEUE_LIST}{"pmix.qry.qlst"}{char*}{
+request a comma-delimited list of scheduler queues
+}
+
+%
+\declareAttribute{PMIX_QUERY_QUEUE_STATUS}{"pmix.qry.qst"}{TBD}{
+status of a specified scheduler queue
+}
+
+%
+\declareAttribute{PMIX_QUERY_PROC_TABLE}{"pmix.qry.ptable"}{char*}{
+input nspace of job whose info is being requested returns (pmix_data_array_t) an array of pmix_proc_info_t.
+}
+
+%
+\declareAttribute{PMIX_QUERY_LOCAL_PROC_TABLE}{"pmix.qry.lptable"}{char*}{
+input nspace of job whose info is being requested returns (pmix_data_array_t) an array of pmix_proc_info_t for procs in job on same node
+}
+
+%
+\declareAttribute{PMIX_QUERY_AUTHORIZATIONS}{"pmix.qry.auths"}{bool}{
+return operations tool is authorized to perform
+}
+
+%
+\declareAttribute{PMIX_QUERY_SPAWN_SUPPORT}{"pmix.qry.spawn"}{bool}{
+return a comma-delimited list of supported spawn attributes
+}
+
+%
+\declareAttribute{PMIX_QUERY_DEBUG_SUPPORT}{"pmix.qry.debug"}{bool}{
+return a comma-delimited list of supported debug attributes
+}
+
+%
+\declareAttribute{PMIX_QUERY_MEMORY_USAGE}{"pmix.qry.mem"}{bool}{
+return info on memory usage for the procs indicated in the qualifiers
+}
+
+%
+\declareAttribute{PMIX_QUERY_LOCAL_ONLY}{"pmix.qry.local"}{bool}{
+constrain the query to local information only
+}
+
+%
+\declareAttribute{PMIX_QUERY_REPORT_AVG}{"pmix.qry.avg"}{bool}{
+report average values
+}
+
+%
+\declareAttribute{PMIX_QUERY_REPORT_MINMAX}{"pmix.qry.minmax"}{bool}{
+report minimum and maximum value
+}
+
+%
+\declareAttribute{PMIX_QUERY_ALLOC_STATUS}{"pmix.query.alloc"}{char*}{
+string identifier of the allocation whose status is being requested
+}
+
+%
+\declareAttribute{PMIX_TIME_REMAINING}{"pmix.time.remaining"}{char*}{
+query number of seconds (uint32_t) remaining in allocation for the specified nspace
+}
+
+%%%%%%%%%%%
+\subsubsection{Log attributes}
+\label{api:struct:attributes:log}
+
+\ldots
+
+%
+\declareAttribute{PMIX_LOG_STDERR}{"pmix.log.stderr"}{char*}{
+log string to stderr
+}
+
+%
+\declareAttribute{PMIX_LOG_STDOUT}{"pmix.log.stdout"}{char*}{
+log string to stdout
+}
+
+%
+\declareAttribute{PMIX_LOG_SYSLOG}{"pmix.log.syslog"}{char*}{
+log data to syslog - defaults to ERROR priority unless
+}
+
+%
+\declareAttribute{PMIX_LOG_MSG}{"pmix.log.msg"}{pmix_byte_object_t}{
+message blob to be sent somewhere
+}
+
+%
+\declareAttribute{PMIX_LOG_EMAIL}{"pmix.log.email"}{pmix_data_array_t}{
+log via email based on pmix_info_t containing directives
+}
+
+%
+\declareAttribute{PMIX_LOG_EMAIL_ADDR}{"pmix.log.emaddr"}{char*}{
+comma-delimited list of email addresses that are to recv msg
+}
+
+%
+\declareAttribute{PMIX_LOG_EMAIL_SUBJECT}{"pmix.log.emsub"}{char*}{
+subject line for email
+}
+
+%
+\declareAttribute{PMIX_LOG_EMAIL_MSG}{"pmix.log.emmsg"}{char*}{
+msg to be included in email
+}
+
+%%%%%%%%%%%
+\subsubsection{Debugger attributes}
+\label{api:struct:attributes:debugger}
+
+\ldots
+
+%
+\declareAttribute{PMIX_DEBUG_STOP_ON_EXEC}{"pmix.dbg.exec"}{bool}{
+job is being spawned under debugger - instruct it to pause on start
+}
+
+%
+\declareAttribute{PMIX_DEBUG_STOP_IN_INIT}{"pmix.dbg.init"}{bool}{
+instruct job to stop during PMIx init
+}
+
+%
+\declareAttribute{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
+block at desired point until receiving debugger release notification
+}
+
+%
+\declareAttribute{PMIX_DEBUG_JOB}{"pmix.dbg.job"}{char*}{
+nspace of the job to be debugged - the RM/PMIx server are
+}
+
+%
+\declareAttribute{PMIX_DEBUG_WAITING_FOR_NOTIFY}{"pmix.dbg.waiting"}{bool}{
+job to be debugged is waiting for a release
+}
+
+%%%%%%%%%%%
+\subsubsection{Resource manager attributes}
+\label{api:struct:attributes:rm}
+
+\ldots
+
+%
+\declareAttribute{PMIX_RM_NAME}{"pmix.rm.name"}{char*}{
+string name of the resource manager
+}
+
+%
+\declareAttribute{PMIX_RM_VERSION}{"pmix.rm.version"}{char*}{
+RM version string
+}
 
 
-/* event handler registration and notification info keys */
-#define PMIX_EVENT_HDLR_NAME                "pmix.evname"           // (char*) string name identifying this handler
-#define PMIX_EVENT_JOB_LEVEL                "pmix.evjob"            // (bool) register for job-specific events only
-#define PMIX_EVENT_ENVIRO_LEVEL             "pmix.evenv"            // (bool) register for environment events only
-#define PMIX_EVENT_HDLR_FIRST               "pmix.evfirst"          // (bool) invoke this event handler before any other handlers
-#define PMIX_EVENT_HDLR_LAST                "pmix.evlast"           // (bool) invoke this event handler after all other handlers have been called
-#define PMIX_EVENT_HDLR_FIRST_IN_CATEGORY   "pmix.evfirstcat"       // (bool) invoke this event handler before any other handlers in this category
-#define PMIX_EVENT_HDLR_LAST_IN_CATEGORY    "pmix.evlastcat"        // (bool) invoke this event handler after all other handlers in this category have been called
-#define PMIX_EVENT_HDLR_BEFORE              "pmix.evbefore"         // (char*) put this event handler immediately before the one specified in the (char*) value
-#define PMIX_EVENT_HDLR_AFTER               "pmix.evafter"          // (char*) put this event handler immediately after the one specified in the (char*) value
-#define PMIX_EVENT_HDLR_PREPEND             "pmix.evprepend"        // (bool) prepend this handler to the precedence list within its category
-#define PMIX_EVENT_HDLR_APPEND              "pmix.evappend"         // (bool) append this handler to the precedence list within its category
-#define PMIX_EVENT_CUSTOM_RANGE             "pmix.evrange"          // (pmix_data_array_t*) array of pmix_proc_t defining range of event notification
-#define PMIX_EVENT_AFFECTED_PROC            "pmix.evproc"           // (pmix_proc_t) single proc that was affected
-#define PMIX_EVENT_AFFECTED_PROCS           "pmix.evaffected"       // (pmix_data_array_t*) array of pmix_proc_t defining affected procs
-#define PMIX_EVENT_NON_DEFAULT              "pmix.evnondef"         // (bool) event is not to be delivered to default event handlers
-#define PMIX_EVENT_RETURN_OBJECT            "pmix.evobject"         // (void*) object to be returned whenever the registered cbfunc is invoked
-                                                                    //     NOTE: the object will _only_ be returned to the process that
-                                                                    //           registered it
-#define PMIX_EVENT_DO_NOT_CACHE             "pmix.evnocache"        // (bool) instruct the PMIx server not to cache the event
-#define PMIX_EVENT_SILENT_TERMINATION       "pmix.evsilentterm"     // (bool) do not generate an event when this job normally terminates
+%%%%%%%%%%%
+\subsubsection{Environment variable attributes}
+\label{api:struct:attributes:envar}
+
+\ldots
+
+%
+\declareAttribute{PMIX_SET_ENVAR}{"pmix.set.envar"}{char*}{
+string "key=value" value shall be put into the environment
+}
+
+%
+\declareAttribute{PMIX_UNSET_ENVAR}{"pmix.unset.envar"}{char*}{
+unset envar specified in string
+}
 
 
-/* fault tolerance-related events */
-#define PMIX_EVENT_TERMINATE_SESSION        "pmix.evterm.sess"      // (bool) RM intends to terminate session
-#define PMIX_EVENT_TERMINATE_JOB            "pmix.evterm.job"       // (bool) RM intends to terminate this job
-#define PMIX_EVENT_TERMINATE_NODE           "pmix.evterm.node"      // (bool) RM intends to terminate all procs on this node
-#define PMIX_EVENT_TERMINATE_PROC           "pmix.evterm.proc"      // (bool) RM intends to terminate just this process
-#define PMIX_EVENT_ACTION_TIMEOUT           "pmix.evtimeout"        // (int) time in sec before RM will execute error response
-#define PMIX_EVENT_NO_TERMINATION           "pmix.evnoterm"         // (bool) indicates that the handler has satisfactorily handled
-                                                                    //        the event and believes termination of the application is not required
-#define PMIX_EVENT_WANT_TERMINATION         "pmix.evterm"           // (bool) indicates that the handler has determined that the application should be terminated
+%%%%%%%%%%%
+\subsubsection{Job Allocation attributes}
+\label{api:struct:attributes:joballoc}
 
-/* attributes used to describe "spawn" attributes */
-#define PMIX_PERSONALITY                    "pmix.pers"             // (char*) name of personality to use
-#define PMIX_HOST                           "pmix.host"             // (char*) comma-delimited list of hosts to use for spawned procs
-#define PMIX_HOSTFILE                       "pmix.hostfile"         // (char*) hostfile to use for spawned procs
-#define PMIX_ADD_HOST                       "pmix.addhost"          // (char*) comma-delimited list of hosts to add to allocation
-#define PMIX_ADD_HOSTFILE                   "pmix.addhostfile"      // (char*) hostfile to add to existing allocation
-#define PMIX_PREFIX                         "pmix.prefix"           // (char*) prefix to use for starting spawned procs
-#define PMIX_WDIR                           "pmix.wdir"             // (char*) working directory for spawned procs
-#define PMIX_MAPPER                         "pmix.mapper"           // (char*) mapper to use for placing spawned procs
-#define PMIX_DISPLAY_MAP                    "pmix.dispmap"          // (bool) display process map upon spawn
-#define PMIX_PPR                            "pmix.ppr"              // (char*) #procs to spawn on each identified resource
-#define PMIX_MAPBY                          "pmix.mapby"            // (char*) mapping policy
-#define PMIX_RANKBY                         "pmix.rankby"           // (char*) ranking policy
-#define PMIX_BINDTO                         "pmix.bindto"           // (char*) binding policy
-#define PMIX_PRELOAD_BIN                    "pmix.preloadbin"       // (bool) preload binaries
-#define PMIX_PRELOAD_FILES                  "pmix.preloadfiles"     // (char*) comma-delimited list of files to pre-position
-#define PMIX_NON_PMI                        "pmix.nonpmi"           // (bool) spawned procs will not call PMIx_Init
-#define PMIX_STDIN_TGT                      "pmix.stdin"            // (uint32_t) spawned proc rank that is to receive stdin
-#define PMIX_FWD_STDIN                      "pmix.fwd.stdin"        // (bool) forward my stdin to the designated proc
-#define PMIX_FWD_STDOUT                     "pmix.fwd.stdout"       // (bool) forward stdout from spawned procs to me
-#define PMIX_FWD_STDERR                     "pmix.fwd.stderr"       // (bool) forward stderr from spawned procs to me
-#define PMIX_DEBUGGER_DAEMONS               "pmix.debugger"         // (bool) spawned app consists of debugger daemons
-#define PMIX_COSPAWN_APP                    "pmix.cospawn"          // (bool) designated app is to be spawned as a disconnected
-                                                                    //        job - i.e., not part of the "comm_world" of the job
-#define PMIX_SET_SESSION_CWD                "pmix.ssncwd"           // (bool) set the application's current working directory to
-                                                                    //        the session working directory assigned by the RM
-#define PMIX_TAG_OUTPUT                     "pmix.tagout"           // (bool) tag application output with the ID of the source
-#define PMIX_TIMESTAMP_OUTPUT               "pmix.tsout"            // (bool) timestamp output from applications
-#define PMIX_MERGE_STDERR_STDOUT            "pmix.mergeerrout"      // (bool) merge stdout and stderr streams from application procs
-#define PMIX_OUTPUT_TO_FILE                 "pmix.outfile"          // (char*) output application output to given file
-#define PMIX_INDEX_ARGV                     "pmix.indxargv"         // (bool) mark the argv with the rank of the proc
-#define PMIX_CPUS_PER_PROC                  "pmix.cpuperproc"       // (uint32_t) #cpus to assign to each rank
-#define PMIX_NO_PROCS_ON_HEAD               "pmix.nolocal"          // (bool) do not place procs on the head node
-#define PMIX_NO_OVERSUBSCRIBE               "pmix.noover"           // (bool) do not oversubscribe the cpus
-#define PMIX_REPORT_BINDINGS                "pmix.repbind"          // (bool) report bindings of the individual procs
-#define PMIX_CPU_LIST                       "pmix.cpulist"          // (char*) list of cpus to use for this job
-#define PMIX_JOB_RECOVERABLE                "pmix.recover"          // (bool) application supports recoverable operations
-#define PMIX_JOB_CONTINUOUS                 "pmix.continuous"       // (bool) application is continuous, all failed procs should
-                                                                        //        be immediately restarted
-#define PMIX_MAX_RESTARTS                   "pmix.maxrestarts"      // (uint32_t) max number of times to restart a job
+\ldots
 
-/* query attributes */
-#define PMIX_QUERY_NAMESPACES               "pmix.qry.ns"           // (char*) request a comma-delimited list of active nspaces
-#define PMIX_QUERY_JOB_STATUS               "pmix.qry.jst"          // (pmix_status_t) status of a specified currently executing job
-#define PMIX_QUERY_QUEUE_LIST               "pmix.qry.qlst"         // (char*) request a comma-delimited list of scheduler queues
-#define PMIX_QUERY_QUEUE_STATUS             "pmix.qry.qst"          // (TBD) status of a specified scheduler queue
-#define PMIX_QUERY_PROC_TABLE               "pmix.qry.ptable"       // (char*) input nspace of job whose info is being requested
-                                                                    //         returns (pmix_data_array_t) an array of pmix_proc_info_t
-#define PMIX_QUERY_LOCAL_PROC_TABLE         "pmix.qry.lptable"      // (char*) input nspace of job whose info is being requested
-                                                                    //         returns (pmix_data_array_t) an array of pmix_proc_info_t for
-                                                                    //         procs in job on same node
-#define PMIX_QUERY_AUTHORIZATIONS           "pmix.qry.auths"        // (bool) return operations tool is authorized to perform
-#define PMIX_QUERY_SPAWN_SUPPORT            "pmix.qry.spawn"        // (bool) return a comma-delimited list of supported spawn attributes
-#define PMIX_QUERY_DEBUG_SUPPORT            "pmix.qry.debug"        // (bool) return a comma-delimited list of supported debug attributes
-#define PMIX_QUERY_MEMORY_USAGE             "pmix.qry.mem"          // (bool) return info on memory usage for the procs indicated in the qualifiers
-#define PMIX_QUERY_LOCAL_ONLY               "pmix.qry.local"        // (bool) constrain the query to local information only
-#define PMIX_QUERY_REPORT_AVG               "pmix.qry.avg"          // (bool) report average values
-#define PMIX_QUERY_REPORT_MINMAX            "pmix.qry.minmax"       // (bool) report minimum and maximum value
-#define PMIX_QUERY_ALLOC_STATUS             "pmix.query.alloc"      // (char*) string identifier of the allocation whose status
-                                                                    //         is being requested
-#define PMIX_TIME_REMAINING                 "pmix.time.remaining"   // (char*) query number of seconds (uint32_t) remaining in allocation
-                                                                    //         for the specified nspace
+%
+\declareAttribute{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
+provide a string identifier for this allocation request which can later be used to query status of the request
+}
 
-/* log attributes */
-#define PMIX_LOG_STDERR                     "pmix.log.stderr"       // (char*) log string to stderr
-#define PMIX_LOG_STDOUT                     "pmix.log.stdout"       // (char*) log string to stdout
-#define PMIX_LOG_SYSLOG                     "pmix.log.syslog"       // (char*) log data to syslog - defaults to ERROR priority unless
-#define PMIX_LOG_MSG                        "pmix.log.msg"          // (pmix_byte_object_t) message blob to be sent somewhere
-#define PMIX_LOG_EMAIL                      "pmix.log.email"        // (pmix_data_array_t) log via email based on pmix_info_t containing directives
-#define PMIX_LOG_EMAIL_ADDR                 "pmix.log.emaddr"       // (char*) comma-delimited list of email addresses that are to recv msg
-#define PMIX_LOG_EMAIL_SUBJECT              "pmix.log.emsub"        // (char*) subject line for email
-#define PMIX_LOG_EMAIL_MSG                  "pmix.log.emmsg"        // (char*) msg to be included in email
+%
+\declareAttribute{PMIX_ALLOC_NUM_NODES}{"pmix.alloc.nnodes"}{uint64_t}{
+number of nodes
+}
 
-/* debugger attributes */
-#define PMIX_DEBUG_STOP_ON_EXEC             "pmix.dbg.exec"         // (bool) job is being spawned under debugger - instruct it to pause on start
-#define PMIX_DEBUG_STOP_IN_INIT             "pmix.dbg.init"         // (bool) instruct job to stop during PMIx init
-#define PMIX_DEBUG_WAIT_FOR_NOTIFY          "pmix.dbg.notify"       // (bool) block at desired point until receiving debugger release notification
-#define PMIX_DEBUG_JOB                      "pmix.dbg.job"          // (char*) nspace of the job to be debugged - the RM/PMIx server are
-#define PMIX_DEBUG_WAITING_FOR_NOTIFY       "pmix.dbg.waiting"      // (bool) job to be debugged is waiting for a release
+%
+\declareAttribute{PMIX_ALLOC_NODE_LIST}{"pmix.alloc.nlist"}{char*}{
+regex of specific nodes
+}
 
-/* Resource Manager identification */
-#define PMIX_RM_NAME                        "pmix.rm.name"          // (char*) string name of the resource manager
-#define PMIX_RM_VERSION                     "pmix.rm.version"       // (char*) RM version string
+%
+\declareAttribute{PMIX_ALLOC_NUM_CPUS}{"pmix.alloc.ncpus"}{uint64_t}{
+number of cpus
+}
 
-/* attributes for setting envars */
-#define PMIX_SET_ENVAR                      "pmix.set.envar"        // (char*) string "key=value" value shall be put into the environment
-#define PMIX_UNSET_ENVAR                    "pmix.unset.envar"      // (char*) unset envar specified in string
+%
+\declareAttribute{PMIX_ALLOC_NUM_CPU_LIST}{"pmix.alloc.ncpulist"}{char*}{
+regex of the number of cpus for each node
+}
 
-/* attributes relating to allocations */
-#define PMIX_ALLOC_ID                       "pmix.alloc.id"         // (char*) provide a string identifier for this allocation request
-                                                                    //         which can later be used to query status of the request
-#define PMIX_ALLOC_NUM_NODES                "pmix.alloc.nnodes"     // (uint64_t) number of nodes
-#define PMIX_ALLOC_NODE_LIST                "pmix.alloc.nlist"      // (char*) regex of specific nodes
-#define PMIX_ALLOC_NUM_CPUS                 "pmix.alloc.ncpus"      // (uint64_t) number of cpus
-#define PMIX_ALLOC_NUM_CPU_LIST             "pmix.alloc.ncpulist"   // (char*) regex of #cpus for each node
-#define PMIX_ALLOC_CPU_LIST                 "pmix.alloc.cpulist"    // (char*) regex of specific cpus indicating the cpus involved.
-#define PMIX_ALLOC_MEM_SIZE                 "pmix.alloc.msize"      // (float) number of Mbytes
-#define PMIX_ALLOC_NETWORK                  "pmix.alloc.net"        // (array) array of pmix_info_t describing network resources. If not
-                                                                    //         given as part of an info struct that identifies the
-                                                                    //         impacted nodes, then the description will be applied
-                                                                    //         across all nodes in the requestor's allocation
-#define PMIX_ALLOC_NETWORK_ID               "pmix.alloc.netid"      // (char*) name of network
-#define PMIX_ALLOC_BANDWIDTH                "pmix.alloc.bw"         // (float) Mbits/sec
-#define PMIX_ALLOC_NETWORK_QOS              "pmix.alloc.netqos"     // (char*) quality of service level
-#define PMIX_ALLOC_TIME                     "pmix.alloc.time"       // (uint32_t) time in seconds
+%
+\declareAttribute{PMIX_ALLOC_CPU_LIST}{"pmix.alloc.cpulist"}{char*}{
+regex of specific cpus indicating the cpus involved.
+}
 
-/* job control attributes */
-#define PMIX_JOB_CTRL_ID                    "pmix.jctrl.id"         // (char*) provide a string identifier for this request
-#define PMIX_JOB_CTRL_PAUSE                 "pmix.jctrl.pause"      // (bool) pause the specified processes
-#define PMIX_JOB_CTRL_RESUME                "pmix.jctrl.resume"     // (bool) "un-pause" the specified processes
-#define PMIX_JOB_CTRL_CANCEL                "pmix.jctrl.cancel"     // (char*) cancel the specified request
-                                                                    //         (NULL => cancel all requests from this requestor)
-#define PMIX_JOB_CTRL_KILL                  "pmix.jctrl.kill"       // (bool) forcibly terminate the specified processes and cleanup
-#define PMIX_JOB_CTRL_RESTART               "pmix.jctrl.restart"    // (char*) restart the specified processes using the given checkpoint ID
-#define PMIX_JOB_CTRL_CHECKPOINT            "pmix.jctrl.ckpt"       // (char*) checkpoint the specified processes and assign the given ID to it
-#define PMIX_JOB_CTRL_CHECKPOINT_EVENT      "pmix.jctrl.ckptev"     // (bool) use event notification to trigger process checkpoint
-#define PMIX_JOB_CTRL_CHECKPOINT_SIGNAL     "pmix.jctrl.ckptsig"    // (int) use the given signal to trigger process checkpoint
-#define PMIX_JOB_CTRL_CHECKPOINT_TIMEOUT    "pmix.jctrl.ckptsig"    // (int) time in seconds to wait for checkpoint to complete
-#define PMIX_JOB_CTRL_CHECKPOINT_METHOD     "pmix.jctrl.ckmethod"   // (pmix_data_array_t) array of pmix_info_t declaring each
-                                                                    //      method and value supported by this application
-#define PMIX_JOB_CTRL_SIGNAL                "pmix.jctrl.sig"        // (int) send given signal to specified processes
-#define PMIX_JOB_CTRL_PROVISION             "pmix.jctrl.pvn"        // (char*) regex identifying nodes that are to be provisioned
-#define PMIX_JOB_CTRL_PROVISION_IMAGE       "pmix.jctrl.pvnimg"     // (char*) name of the image that is to be provisioned
-#define PMIX_JOB_CTRL_PREEMPTIBLE           "pmix.jctrl.preempt"    // (bool) job can be pre-empted
-#define PMIX_JOB_CTRL_TERMINATE             "pmix.jctrl.term"       // (bool) politely terminate the specified procs
+%
+\declareAttribute{PMIX_ALLOC_MEM_SIZE}{"pmix.alloc.msize"}{float}{
+number of Mbytes
+}
 
-/* monitoring attributes */
-#define PMIX_MONITOR_ID                     "pmix.monitor.id"       // (char*) provide a string identifier for this request
-#define PMIX_MONITOR_CANCEL                 "pmix.monitor.cancel"   // (char*) identifier to be canceled (NULL = cancel all
-                                                                    //         monitoring for this process)
-#define PMIX_MONITOR_APP_CONTROL            "pmix.monitor.appctrl"  // (bool) the application desires to control the response to
-                                                                    //        a monitoring event
-#define PMIX_MONITOR_HEARTBEAT              "pmix.monitor.mbeat"    // (void) register to have the server monitor the requestor for heartbeats
-#define PMIX_SEND_HEARTBEAT                 "pmix.monitor.beat"     // (void) send heartbeat to local server
-#define PMIX_MONITOR_HEARTBEAT_TIME         "pmix.monitor.btime"    // (uint32_t) time in seconds before declaring heartbeat missed
-#define PMIX_MONITOR_HEARTBEAT_DROPS        "pmix.monitor.bdrop"    // (uint32_t) number of heartbeats that can be missed before
-                                                                    //            generating the event
-#define PMIX_MONITOR_FILE                   "pmix.monitor.fmon"     // (char*) register to monitor file for signs of life
-#define PMIX_MONITOR_FILE_SIZE              "pmix.monitor.fsize"    // (bool) monitor size of given file is growing to determine app is running
-#define PMIX_MONITOR_FILE_ACCESS            "pmix.monitor.faccess"  // (char*) monitor time since last access of given file to determine app is running
-#define PMIX_MONITOR_FILE_MODIFY            "pmix.monitor.fmod"     // (char*) monitor time since last modified of given file to determine app is running
-#define PMIX_MONITOR_FILE_CHECK_TIME        "pmix.monitor.ftime"    // (uint32_t) time in seconds between checking file
-#define PMIX_MONITOR_FILE_DROPS             "pmix.monitor.fdrop"    // (uint32_t) number of file checks that can be missed before
-                                                                    //            generating the event
+%
+\declareAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
+array of pmix_info_t describing network resources.
+If not given as part of an info struct that identifies the impacted nodes, then the description will be applied across all nodes in the requestor's allocation
+}
 
-/****    PROCESS STATE DEFINITIONS    ****/
-typedef uint8_t pmix_proc_state_t;
-#define PMIX_PROC_STATE_UNDEF                    0  /* undefined process state */
-#define PMIX_PROC_STATE_PREPPED                  1  /* process is ready to be launched */
-#define PMIX_PROC_STATE_LAUNCH_UNDERWAY          2  /* launch process underway */
-#define PMIX_PROC_STATE_RESTART                  3  /* the proc is ready for restart */
-#define PMIX_PROC_STATE_TERMINATE                4  /* process is marked for termination */
-#define PMIX_PROC_STATE_RUNNING                  5  /* daemon has locally fork'd process */
-#define PMIX_PROC_STATE_CONNECTED                6  /* proc connected to PMIx server */
+%
+\declareAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
+name of network
+}
 
-/*
-* Define a "boundary" so users can easily and quickly determine
-* if a proc is still running or not - any value less than
-* this one means that the proc has not terminated
-*/
-#define PMIX_PROC_STATE_UNTERMINATED            15
+%
+\declareAttribute{PMIX_ALLOC_BANDWIDTH}{"pmix.alloc.bw"}{float}{
+Mbits/sec
+}
 
-#define PMIX_PROC_STATE_TERMINATED              20  /* process has terminated and is no longer running */
-/* Define a boundary so users can easily and quickly determine
-* if a proc abnormally terminated - leave a little room
-* for future expansion
-*/
-#define PMIX_PROC_STATE_ERROR                   50
-/* Define specific error code values */
-#define PMIX_PROC_STATE_KILLED_BY_CMD           (PMIX_PROC_STATE_ERROR +  1)  /* process was killed by cmd */
-#define PMIX_PROC_STATE_ABORTED                 (PMIX_PROC_STATE_ERROR +  2)  /* process aborted */
-#define PMIX_PROC_STATE_FAILED_TO_START         (PMIX_PROC_STATE_ERROR +  3)  /* process failed to start */
-#define PMIX_PROC_STATE_ABORTED_BY_SIG          (PMIX_PROC_STATE_ERROR +  4)  /* process aborted by signal */
-#define PMIX_PROC_STATE_TERM_WO_SYNC            (PMIX_PROC_STATE_ERROR +  5)  /* process exit'd w/o calling PMIx_Finalize */
-#define PMIX_PROC_STATE_COMM_FAILED             (PMIX_PROC_STATE_ERROR +  6)  /* process communication has failed */
-#define PMIX_PROC_STATE_CALLED_ABORT            (PMIX_PROC_STATE_ERROR +  7)  /* process called "PMIx_Abort" */
-#define PMIX_PROC_STATE_MIGRATING               (PMIX_PROC_STATE_ERROR +  8)  /* process failed and is waiting for resources before restarting */
-#define PMIX_PROC_STATE_CANNOT_RESTART          (PMIX_PROC_STATE_ERROR +  9)  /* process failed and cannot be restarted */
-#define PMIX_PROC_STATE_TERM_NON_ZERO           (PMIX_PROC_STATE_ERROR + 10)  /* process exited with a non-zero status, indicating abnormal */
-#define PMIX_PROC_STATE_FAILED_TO_LAUNCH        (PMIX_PROC_STATE_ERROR + 11)  /* unable to launch process */
-\end{codepar}
-\cspecificend
+%
+\declareAttribute{PMIX_ALLOC_NETWORK_QOS}{"pmix.alloc.netqos"}{char*}{
+quality of service level
+}
+
+%
+\declareAttribute{PMIX_ALLOC_TIME}{"pmix.alloc.time"}{uint32_t}{
+time in seconds
+}
+
+
+%%%%%%%%%%%
+\subsubsection{Job control attributes}
+\label{api:struct:attributes:jobcontrol}
+
+\ldots
+
+%
+\declareAttribute{PMIX_JOB_CTRL_ID}{"pmix.jctrl.id"}{char*}{
+provide a string identifier for this request
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_PAUSE}{"pmix.jctrl.pause"}{bool}{
+pause the specified processes
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_RESUME}{"pmix.jctrl.resume"}{bool}{
+``un-pause'' the specified processes
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_CANCEL}{"pmix.jctrl.cancel"}{char*}{
+cancel the specified request (\code{NULL} implies cancel all requests from this requestor)
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_KILL}{"pmix.jctrl.kill"}{bool}{
+forcibly terminate the specified processes and cleanup
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_RESTART}{"pmix.jctrl.restart"}{char*}{
+restart the specified processes using the given checkpoint ID
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT}{"pmix.jctrl.ckpt"}{char*}{
+checkpoint the specified processes and assign the given ID to it
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_EVENT}{"pmix.jctrl.ckptev"}{bool}{
+use event notification to trigger process checkpoint
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_SIGNAL}{"pmix.jctrl.ckptsig"}{int}{
+use the given signal to trigger process checkpoint
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_TIMEOUT}{"pmix.jctrl.ckptsig"}{int}{
+time in seconds to wait for checkpoint to complete
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_METHOD}{"pmix.jctrl.ckmethod"}{pmix_data_array_t}{
+array of pmix_info_t declaring each method and value supported by this application
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_SIGNAL}{"pmix.jctrl.sig"}{int}{
+send given signal to specified processes
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_PROVISION}{"pmix.jctrl.pvn"}{char*}{
+regex identifying nodes that are to be provisioned
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_PROVISION_IMAGE}{"pmix.jctrl.pvnimg"}{char*}{
+name of the image that is to be provisioned
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_PREEMPTIBLE}{"pmix.jctrl.preempt"}{bool}{
+job can be pre-empted
+}
+
+%
+\declareAttribute{PMIX_JOB_CTRL_TERMINATE}{"pmix.jctrl.term"}{bool}{
+politely terminate the specified procs
+}
+
+%%%%%%%%%%%
+\subsubsection{Monitoring attributes}
+\label{api:struct:attributes:monitor}
+
+\ldots
+
+%
+\declareAttribute{PMIX_MONITOR_ID}{"pmix.monitor.id"}{char*}{
+provide a string identifier for this request
+}
+
+%
+\declareAttribute{PMIX_MONITOR_CANCEL}{"pmix.monitor.cancel"}{char*}{
+identifier to be canceled (NULL means cancel all monitoring for this process)
+}
+
+%
+\declareAttribute{PMIX_MONITOR_APP_CONTROL}{"pmix.monitor.appctrl"}{bool}{
+the application desires to control the response to a monitoring event
+}
+
+%
+\declareAttribute{PMIX_MONITOR_HEARTBEAT}{"pmix.monitor.mbeat"}{void}{
+register to have the server monitor the requestor for heartbeats
+}
+
+%
+\declareAttribute{PMIX_SEND_HEARTBEAT}{"pmix.monitor.beat"}{void}{
+send heartbeat to local server
+}
+
+%
+\declareAttribute{PMIX_MONITOR_HEARTBEAT_TIME}{"pmix.monitor.btime"}{uint32_t}{
+time in seconds before declaring heartbeat missed
+}
+
+%
+\declareAttribute{PMIX_MONITOR_HEARTBEAT_DROPS}{"pmix.monitor.bdrop"}{uint32_t}{
+number of heartbeats that can be missed before generating the event
+}
+
+%
+\declareAttribute{PMIX_MONITOR_FILE}{"pmix.monitor.fmon"}{char*}{
+register to monitor file for signs of life
+}
+
+%
+\declareAttribute{PMIX_MONITOR_FILE_SIZE}{"pmix.monitor.fsize"}{bool}{
+monitor size of given file is growing to determine app is running
+}
+
+%
+\declareAttribute{PMIX_MONITOR_FILE_ACCESS}{"pmix.monitor.faccess"}{char*}{
+monitor time since last access of given file to determine app is running
+}
+
+%
+\declareAttribute{PMIX_MONITOR_FILE_MODIFY}{"pmix.monitor.fmod"}{char*}{
+monitor time since last modified of given file to determine app is running
+}
+
+%
+\declareAttribute{PMIX_MONITOR_FILE_CHECK_TIME}{"pmix.monitor.ftime"}{uint32_t}{
+time in seconds between checking file
+}
+
+%
+\declareAttribute{PMIX_MONITOR_FILE_DROPS}{"pmix.monitor.fdrop"}{uint32_t}{
+number of file checks that can be missed before generating the event
+}
+
+
+%%%%%%%%%%%
+\subsection{Process state Definitions}
+\label{api:struct:processstate}
+\declarestruct{pmix_proc_state_t}
+
+The \refstruct{pmix_proc_state_t} structure is an unsigned integer type (\code{uint8_t}) for process state values.
+
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_PROC_STATE_UNDEF}
+undefined process state
+%
+\declareconstitem{PMIX_PROC_STATE_PREPPED}
+process is ready to be launched
+%
+\declareconstitem{PMIX_PROC_STATE_LAUNCH_UNDERWAY}
+launch process underway
+%
+\declareconstitem{PMIX_PROC_STATE_RESTART}
+the proc is ready for restart
+%
+\declareconstitem{PMIX_PROC_STATE_TERMINATE}
+process is marked for termination
+%
+\declareconstitem{PMIX_PROC_STATE_RUNNING}
+daemon has locally fork'd process
+%
+\declareconstitem{PMIX_PROC_STATE_CONNECTED}
+proc connected to PMIx server
+%
+\declareconstitem{PMIX_PROC_STATE_UNTERMINATED}
+Define a ``boundary'' so users can easily and quickly determine  if a proc is still running or not - any value less than this one means that the proc has not terminated.
+%
+\declareconstitem{PMIX_PROC_STATE_TERMINATED}
+process has terminated and is no longer running
+%
+\declareconstitem{PMIX_PROC_STATE_ERROR}
+Define a boundary so users can easily and quickly determine if a proc abnormally terminated - leave a little room for future expansion.
+%
+\declareconstitem{PMIX_PROC_STATE_KILLED_BY_CMD}
+process was killed by cmd
+%
+\declareconstitem{PMIX_PROC_STATE_ABORTED}
+process aborted
+%
+\declareconstitem{PMIX_PROC_STATE_FAILED_TO_START}
+process failed to start
+%
+\declareconstitem{PMIX_PROC_STATE_ABORTED_BY_SIG}
+process aborted by signal
+%
+\declareconstitem{PMIX_PROC_STATE_TERM_WO_SYNC}
+process exit'd without calling \refapi{PMIx_Finalize}
+%
+\declareconstitem{PMIX_PROC_STATE_COMM_FAILED}
+process communication has failed
+%
+\declareconstitem{PMIX_PROC_STATE_CALLED_ABORT}
+process called \refapi{PMIx_Abort}
+%
+\declareconstitem{PMIX_PROC_STATE_MIGRATING}
+process failed and is waiting for resources before restarting
+%
+\declareconstitem{PMIX_PROC_STATE_CANNOT_RESTART}
+process failed and cannot be restarted
+%
+\declareconstitem{PMIX_PROC_STATE_TERM_NON_ZERO}
+process exited with a non-zero status, indicating abnormal
+%
+\declareconstitem{PMIX_PROC_STATE_FAILED_TO_LAUNCH}
+unable to launch process
+%
+\end{constantdesc}
 
 
 %%%%%%%%%%%
@@ -465,16 +1577,27 @@ The \refstruct{pmix_status_t} structure is an integer type for return status.
 The table below defines the possible values for \refstruct{pmix_status_t}.
 PMIx errors are always negative, with 0 reserved for success.
 
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_ERR_BASE}
+Error base
+%
+\end{constantdesc}
+
+v1.x error values - must be fixed in place for backward compatability.
+Note that some number of these have been deprecated and may not be returned by v2.x and above clients or servers.
+However, they must always be at least defined to ensure older codes will compile.
+
+%\begin{constantdesc}
+%%
+%\declareconstitem{ }
+%
+%%
+%\end{constantdesc}
+
 \cspecificstart
 \begin{codepar}
-// ...
-#define PMIX_ERR_BASE                   0
-
-/* v1.x error values - must be fixed in place for backward
- * compatability. Note that some number of these have been
- * deprecated and may not be returned by v2.x and above
- * clients or servers. However, they must always be
- * at least defined to ensure older codes will compile */
+//..
 #define PMIX_SUCCESS                                 0
 #define PMIX_ERROR                                  -1          // general error
 #define PMIX_ERR_SILENT                             -2          // internal-only
