@@ -28,7 +28,7 @@
 %         Use the convenience macros defined in pmix.sty for the minor headers
 %         such as Comments, Syntax, etc.
 %
-%         To keep items together on the same page, prefer the use of 
+%         To keep items together on the same page, prefer the use of
 %         \begin{samepage}.... Avoid \parbox for text blocks as it interrupts line numbering.
 %         When possible, avoid \filbreak, \pagebreak, \newpage, \clearpage unless that's
 %         what you mean. Use \needspace{} cautiously for troublesome paragraphs.
@@ -62,6 +62,7 @@
 \acrodef{MPI}[MPI]{Message Passing Interface}
 \acrodef{RM}[RM]{resource manager}
 \acrodef{SMS}[SMS]{system management software stack}
+\acrodef{WLM}[WLM]{workload manager}
 %%%%%%%%%%%%%%%%%%%
 
 
@@ -111,7 +112,7 @@
     % Key/Value Management
     %  - put, get, commit, fence, (un)publish, lookup
     \input{Chap_API_Key_Value_Mgmt.tex}
-    
+
     % Process Management
     %  - spawn, (dis)connect, resolve_peers
     \input{Chap_API_Proc_Mgmt.tex}
@@ -123,11 +124,11 @@
     % Event Handling
     %  - (de)register_event, notify_event
     \input{Chap_API_Event.tex}
-    
+
     % Data Packing & Unpacking
     %  - (un)pack, copy
     \input{Chap_API_Data_Mgmt.tex}
-    
+
     % PMIx Server Specific Interfaces
     %  - setup_fork, (de)register_nspace, pmix_server_module_t
     \input{Chap_API_Server.tex}
@@ -159,7 +160,7 @@
 %
 	\nolinenumbers
 	\printindex
-	
+
 \end{document}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

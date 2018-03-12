@@ -5,19 +5,24 @@
 \label{chap:intro}
 
 The \ac{PMI} has been used for quite some time as a means of exchanging wireup information needed for inter-process communication.
-Two versions (PMI-1 and PMI-2) have been released as part of the MPICH effort.
-While PMI-2 demonstrates better scaling properties than its PMI-1 predecessor, attaining rapid launch and wireup of the roughly 1 million processes executing across 100 thousand nodes expected for exascale operations remains challenging.
+Two versions (PMI-1 and PMI-2) have been released as part of the MPICH effort, with PMI-2 demonstrating better scaling properties than its PMI-1 predecessor. However, two significant challenges face the \ac{HPC} community as it continues to move towards machines capable of exaflop and higher performance levels:
 
-\ac{PMIx} represents an attempt to resolve these questions by providing an extended version of the \ac{PMI} definitions specifically designed to support clusters up to and including exascale sizes.
+\begin{itemize}
+\item the physical scale of the machines, and the corresponding number of total processes they support, is expected to reach levels approaching  1 million processes executing across 100 thousand nodes. Prior methods for initiating applications relied on exchanging communication endpoint information between the processes, either directly or in some form of hierarchical collective operation. Regardless of the specific mechanism employed, the exchange across such large applications would consume considerable time, with estimates running in excess of 5-10 minutes; and
+\item whether it be hybrid applications that combine OpenMP threading operations with MPI, or application-steered workflow computations, the HPC community is experiencing an unprecedented wave of new approaches for computing at exascale levels. One common thread across the proposed methods is an increasing need for orchestration between the application and the \ac{SMS} comprising the scheduler (a.k.a. the \ac{WLM}), the \ac{RM}, global file system, fabric, and other subsystrems. The lack of available support for application-to-SMS integration has forced researchers to develop "virtual" environments that hide the SMS behind a customized abstraction layer, but this results in considerable duplication of effort and a lack of portability.
+\end{itemize}
+
+\ac{PMIx} represents an attempt to resolve these questions by providing an extended version of the \ac{PMI} definitions specifically designed to support clusters up to exascale and larger sizes.
 The overall objective of the project is not to branch the existing definitions -- in fact, PMIx fully supports both of the existing PMI-1 and PMI-2 APIs -- but rather to:
 
 \begin{compactalphaenum}
-\item augment and extend those APIs to eliminate some current restrictions that impact scalability,
+\item augment those APIs to eliminate some current restrictions that impact scalability,
+\item extend the breadth of the \ac{PMI} definitions to providing an abstraction layer for \ac{SMS} interactions,
 \item establish a standards-like body for maintaining the definitions, and
-\item provide a reference implementation of the PMIx standard that demonstrates the desired level of scalability.
+\item provide a reference implementation of the PMIx standard that demonstrates the desired level of scalability and features.
 \end{compactalphaenum}
 
-Complete information about the \ac{PMIx} standard and affiliated projects can be found at the \ac{PMIx} web site: \url{www.pmix.org}
+Complete information about the \ac{PMIx} standard and affiliated projects can be found at the \ac{PMIx} web site: \url{https://pmix.org}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -27,14 +32,14 @@ Complete information about the \ac{PMIx} standard and affiliated projects can be
 
 The charter of the PMIx community is to:
 \begin{itemize}
-\item Define a set of agnostic APIs (not affiliated with any specific programming model code base) to support interactions between application processes and the \ac{SMS}.
-\item Develop an open source (non-copy-left licensed) standalone ``convenience'' library to facilitate adoption of the \ac{PMIx} standard.
+\item Define a set of agnostic APIs (not affiliated with any specific programming model or code base) to support interactions between application processes and the \ac{SMS}.
+\item Develop an open source (non-copy-left licensed) standalone ``reference'' library to facilitate adoption of the \ac{PMIx} standard.
 \item Retain transparent backward compatibility with the existing PMI-1 and PMI-2 definitions, any future \ac{PMI} releases, and across all \ac{PMIx} versions.
 \item Support the ``Instant On'' initiative for rapid startup of applications at exascale and beyond.
 \item Work with the \ac{HPC} community to define and implement new APIs that support evolving programming model requirements for application interactions with the \ac{SMS}.
 \end{itemize}
 
-Participation in the \ac{PMIx} community is open to anyone, and not restricted to only code contributors to the reference implementation. 
+Participation in the \ac{PMIx} community is open to anyone, and not restricted to only code contributors to the reference implementation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,18 +55,18 @@ Participation in the \ac{PMIx} community is open to anyone, and not restricted t
 \ldots
 
 %%%%%%%%%%%
-\subsection{What is defined in the standard}
+\subsection{What is defined in the standard?}
 
 \ldots
 
 %%%%%%%%%%%
-\subsection{What is \emph{not} defined in the standard}
+\subsection{What is \emph{not} defined in the standard?}
 
 The \ac{PMIx} Standard does not include anything, either stated or implied, regarding implementation.
 It instead focuses exclusively on defining APIs and associated attribute key strings, and describing the expected behavior of those entities.
 How that behavior is realized is entirely at the discretion of the implementer.
 
-As previously noted, system environments and \ac{PMIx} library implementers are free to return ``not supported'' for any request. Thus, users should plan accordingly.
+As previously noted, system environments and \ac{PMIx} library implementers are free to return ``not supported'' for any request. Thus, users should design their applications accordingly.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
