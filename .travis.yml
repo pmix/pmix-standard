@@ -1,0 +1,26 @@
+sudo: required
+dist: trusty
+os:
+    - linux
+
+notifications:
+  email: false
+
+addons:
+    apt:
+        packages:
+            - texlive-fonts-recommended
+            - texlive-latex-extra
+            - texlive-fonts-extra
+            - dvipng
+            - texlive-latex-recommended
+            - texlive-xetex
+            
+before_install:
+    - sudo tlmgr init-usertree
+
+script:
+    - make
+
+# Notes from here:
+# https://ljvmiranda921.github.io/notebook/2018/02/04/continuous-integration-for-latex/
