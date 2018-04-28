@@ -165,10 +165,11 @@
 % Constant list
 %   \declareconstitem  Declare constant with description
 \newenvironment{constantdesc}
-{\begin{description}[style=nextline,labelindent=\parindent,leftmargin=*,itemindent=\dimexpr-17pt-\labelsep\relax,itemsep=-1.3ex]}
+{\begin{description}[itemsep=-1.3ex,itemindent=\dimexpr-17pt-\labelsep\relax]}
 {\end{description}}
 
-\newcommand{\declareconstitem}[1]{\item[\code{#1}] \index{#1}}
+\newcommand{\declareconstitem}[1]{\item[\code{#1}] \index{#1} \hspace{1em}}
+\newcommand{\declareconstitemDEP}[2]{\item[\code{#1} (Deprecated in PMIx #2)] \index{#1} \hspace{1em}}
 
 % Attribute list
 %   \declareattritem  Declare an attribute with a description
@@ -324,6 +325,7 @@
    \end{adjustwidth}
 }
 \newcommand{\refAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\code{#1}} }
+\newcommand{\refattr}[1]{\refAttributeItem{#1}}
 
 
 
@@ -528,7 +530,6 @@
 \newcommand{\refconst}[1]{\hyperref[chap:struct]{\code{#1} }}
 
 \newcommand{\declareattr}[1]{\index{#1!Defintion|textbf} \label{attr:#1}}
-\newcommand{\refattr}[1]{\index{#1} \hyperref[attr:#1]{\code{#1} }}
 
 \newcommand{\refarg}[1] {{\textrm{\textmd{\itshape{#1}}}}}
 \newcommand{\argref}[1] {\refarg{#1}}
