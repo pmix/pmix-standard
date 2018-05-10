@@ -14,60 +14,62 @@
 \label{chap:api_event:logging}
 
 \par
-The \refapi{PMIx_Log} interface is provided to support posting information by applications and \ac{SMS} elements to persistent storage. This function is \emph{not} intended for output of computational results, streaming of raw \ac{RAS} data, or performant data operations, but rather on reporting status and saving state information such as inserting computation progress reports into the application's SMS job log. A variety of logging options are available to support use-cases such as remote monitoring of application progress (e.g., via email), output of error reports to syslog for post-mortem analysis, and caching of application completion information for use by subsequent applications in a workflow. Depending on the choice of output channel, logged information may be retrieved via the PMIx_Query interface.
+The \refapi{PMIx_Log} interface is provided to support posting information by applications and \ac{SMS} elements to persistent storage. This function is \emph{not} intended for output of computational results, streaming of raw \ac{RAS} data, or performant data operations, but rather on reporting status and saving state information (e.g., inserting computation progress reports into the application's \ac{SMS} job log). A variety of logging options are available to support use-cases such as remote monitoring of application progress (e.g., via email), output of error reports to syslog for post-mortem analysis, and caching of application completion information for use by subsequent applications in a workflow. Depending on the choice of output channel, logged information may be retrievable via the \refapi{PMIx_Query_info_nb} interface.
 
 \par
 The illustration below highlights some of the capabilities provided by the logging support. Note that the illustration is not intended to be comprehensive in its coverage as the number of possible use-cases is too large to capture in a single drawing.
+
+\begin{figure*}[ht!]
+\begin{center}
+  \includegraphics[clip,width=0.6\textwidth]{figs/logging.pdf}
+\end{center}
+  \caption{PMIx-based Logging}
+  \label{fig:logging}
+\end{figure*}
+
 
 
 \par
 Supported uses include:
 
 \begin{itemize}
-\item Writing of messages to syslog, both local (using the \refattr{PMIX_LOG_LOCAL_SYSLOG} attribute) or on the syslog of some central server designated for this purpose. The PMIx client will send the logging request to its local server. If the \refattr{PMIX_LOG_LOCAL_SYSLOG} attribute is included in the request, then the PMIx server will immediately output the message to the local syslog. If not, or if the \refattr{PMIX_LOG_GLOBAL_SYSLOG} attribute is specified, then the PMIx server will "upcall" the request to its host RM daemon. It is the responsibility of the host RM daemon to identify and transfer the provided data to the appropriate location - upon arrival, the RM can use the PMIx_Log function to deliver the data to the local syslog on that node, or can write the data to syslog itself. Attributes for setting the desired syslog priority are provided - the default is set to LOG_INFO indicating reporting of an informational message
+\item Writing of messages to syslog, both local (using the \refattr{PMIX_LOG_LOCAL_SYSLOG} attribute) or on the syslog of some central server designated for this purpose. The \ac{PMIx} client will send the logging request to its local server. If the \refattr{PMIX_LOG_LOCAL_SYSLOG} attribute is included in the request, then the \ac{PMIx} server will immediately output the message to the local syslog. If not, or if the \refattr{PMIX_LOG_GLOBAL_SYSLOG} attribute is specified, then the \ac{PMIx} server will forward the request to its host \ac{SMS} daemon. It is the responsibility of the host daemon to identify and transfer the provided data to the appropriate location --- upon arrival, the receiving daemon can use the \refapi{PMIx_Log} function to deliver the data to the local syslog on that node or can write the data to syslog itself. Attributes for setting the desired syslog priority are provided --- the default is set to to syslog priority LOG_INFO indicating reporting of an informational message
 
-\item Sending notifications via email (or other transports) to a designated user. Application users may wish to be notified of completion of their application, receive periodic progress reports, or be notified of a problem that merits attention. PMIx itself includes support for some of the more popular transports - requests for unsupported transports are referred to the host RM for processing, with an error returned if the requested transport is not available in the host environment
-\item Outputting tagged log messages to stdout or stderr of the application, or a connected tool. Where supported, an alternative output stream (possibly directed to a dedicated log file) may be specified. Messages may be tagged (via the \refattr{PMIX_LOG_TAG_OUTPUT} attribute) as flowing via the PMIx_Log API to differentiate them from the application's normal output. In addition, messages may be timestamped (\refattr{PMIX_LOG_TIMESTAMP_OUTPUT}) or output in XML format (\refattr{PMIX_LOG_XML_OUTPUT})
+\item Sending notifications to a designated user. Application users may wish to be notified of completion of their application, receive periodic progress reports, or be notified of a problem that merits attention. \ac{PRI} includes support for some of the more popular transports --- requests for unsupported transports are referred to the host \ac{SMS} for processing, with an error returned if the requested transport is not available in the host environment
 
-\item Storing status updates in the job record using the \refattr{PMIX_LOG_JOB_RECORD} attribute. Resource managers nearly always maintain a record of the jobs they schedule and execute. This includes information on the time spent waiting for allocation, priority of the request, identity of the requestor, name/path of the executable and/or job script, etc. Historically, users have had to record status information on their application (e.g., computational progress) in files which are subsequently stored in persistent storage. PMIx_Log offers the option (where supported) of injecting such status reports directly into the job record, thus providing a single, time sequential record of the job's execution.
+\item Outputting tagged log messages to stdout or stderr of the application, or a connected tool. Where supported, an alternative output stream (possibly directed to a dedicated log file) may be specified. Messages may be tagged (via the \refattr{PMIX_LOG_TAG_OUTPUT} attribute) as flowing via the \refattr{PMIx_Log} \ac{API} to differentiate them from the application's normal output. In addition, messages may be timestamped (\refattr{PMIX_LOG_TIMESTAMP_OUTPUT}) or output in \ac{XML} format (\refattr{PMIX_LOG_XML_OUTPUT})
+
+\item Storing status updates in the job record using the \refattr{PMIX_LOG_JOB_RECORD} attribute. Resource managers nearly always maintain a record of the jobs they schedule and execute. This includes information on the time spent waiting for allocation, priority of the request, identity of the requestor, name/path of the executable and/or job script, etc. Historically, users have had to record status information on their application (e.g., computational progress) in files which are subsequently stored in persistent storage. \refapi{PMIx_Log} offers the option (where supported) of injecting such status reports directly into the job record, thus providing a single, time sequential record of the job's execution.
 
 Note that system libraries can also use this feature to record job-affecting events (e.g., network failures) that might have impacted the application during its execution, perhaps linking them to more detailed information stored in a \ac{RAS} database.
 
-\item Storing state information in a global key-value datastore. The prior use-cases all involve one-way output of data - i.e., the caller can \emph{log} the data, but cannot later retrieve it. However, there are times when an application, tool, or \ac{SMS} element may wish to store information in a global key-value datastore that can be searched by external agents, or be retrieved by the caller itself at some later time. For example, an SMS element may wish to store state information in a persistent place for retrieval upon recovery from a failure. Use of the PMIx_Publish API might, at first glance, appear to meet this need. However, PMIx_Publish is focused on inter/intra-application data exchange - it therefore does not guarantee persistence across (for example) an \ac{RM} failure.
+\item Storing state information in a global key-value datastore. The prior use-cases all involve one-way output of data --- i.e., the caller can \emph{log} the data, but cannot later retrieve it. However, there are times when an application, tool, or \ac{SMS} element may wish to store information in a global key-value datastore that can be searched by external agents or be retrieved by the caller itself at some later time. For example, an \ac{SMS} element may wish to store state information in a persistent place for retrieval upon recovery from a failure. Use of the \refapi{PMIx_Publish} \ac{API} might, at first glance, appear to meet this need. However, \refapi{PMIx_Publish} is focused on inter/intra-application data exchange - it therefore does not guarantee persistence across (for example) an \ac{RM} failure.
 
-Passing the \refattr{PMIX_LOG_GLOBAL_DATASTORE} attribute in a call to PMIx_Log indicates that the provided data is to be stored in a persistent datastore. Additional attributes can be used to provide direction on the storage strategy - e.g., hot/warm/cold or locality. Note that it is advisable to use the \emph{optional} flag for storage strategy directives as support for such behaviors is not yet commonplace.
+Passing the \refattr{PMIX_LOG_GLOBAL_DATASTORE} attribute in a call to \refapi{PMIx_Log} indicates that the provided data is to be stored in a persistent datastore. Additional attributes can be used to provide direction on the storage strategy - e.g., hot/warm/cold or locality. Note that it is advisable to use the \emph{optional} flag for storage strategy directives as support for such behaviors is not yet commonplace.
 
-Once logged, the data is retrievable using the PMIx_Query API. Note that the time required to retrieve the requested data will vary depending on storage location - this is \emph{not} intended as a performant operation. Attributes to direct the behavior of the query (e.g., indicating if the caller should wait for the data to become available) are provided.
+Once logged, the data is retrievable using the \refapi{PMIx_Query_info_nb} \ac{API}. Note that the time required to retrieve the requested data will vary depending on storage location --- this is \emph{not} intended as a performant operation. Attributes to direct the behavior of the query (e.g., indicating if the caller should wait for the data to become available) are provided.
 \end{itemize}
 
 \par
-Note that data can be "logged" without specifying the output channel. In this case, the PMIx library will default to logging a copy of the data to each available channel, which are subject to control by MCA parameter in addition to the usual build/configuration constraints. The caller can optionally control the logging behavior by providing multiple channel attributes in order of desired priority, subject to the availability of the specified channel. For example, an application could ask that data be emailed to a given user, or logged to a global syslog, or logged to local syslog by specifying first the \refattr{PMIX_LOG_EMAIL} attribute, followed by the \refattr{PMIX_LOG_GLOBAL_SYSLOG} and the \refattr{PMIX_LOG_LOCAL_SYSLOG} attributes, with the \refattr{PMIX_LOG_ONCE} attribute being included to indicate that only one log channel should be used. If \refattr{PMIX_LOG_ONCE} is not indicated, then the data will be logged to all three channels. In this case, the \refattr{PMIX_ERR_PARTIAL_COMPLETION} error is returned if any channel fails to log as requested, but others succeed; \refattr{PMIX_ERR_OPERATION_FAILED} is returned if all fail; and \refattr{PMIX_SUCCESS} is returned if all succeed. This provides flexibility with minimal code complexity when operating in multiple environments that support differing output channels.
+Note that data can be logged without specifying the output channel. In this case, the PMIx library will default to logging a copy of the data to each available channel. The caller can optionally control the logging behavior by providing multiple channel attributes in order of desired priority, subject to the availability of the specified channel. For example, an application could ask that data be emailed to a given user, or logged to a global syslog, or logged to local syslog by specifying first the \refattr{PMIX_LOG_EMAIL} attribute, followed by the \refattr{PMIX_LOG_GLOBAL_SYSLOG} and the \refattr{PMIX_LOG_LOCAL_SYSLOG} attributes, with the \refattr{PMIX_LOG_ONCE} attribute being included to indicate that only one log channel should be used. If \refattr{PMIX_LOG_ONCE} is not indicated, then the data will be logged to all three channels. In this case, the \refattr{PMIX_ERR_PARTIAL_COMPLETION} error is returned if any channel fails to log as requested, but others succeed; \refattr{PMIX_ERR_OPERATION_FAILED} is returned if all fail; and \refattr{PMIX_SUCCESS} is returned if all succeed. This provides flexibility with minimal code complexity when operating in multiple environments that support differing output channels.
 
 \par
-Logging attributes can also utilize the "required" flag in the pmix_info_t structure to indicate that the data \emph{must} be logged via the specified channel. If given, failure to complete the operation on that channel will result in return of the \refattr{PMIX_ERR_OPERATION_FAILED} error. Otherwise, use of a given channel is considered "optional" and errors are reported according to the above rules.
+Logging attributes can also utilize the ``required'' flag in the \refattr{pmix_info_t} structure to indicate that the data \emph{must} be logged via the specified channel. If given, failure to complete the operation on that channel will result in return of the \refattr{PMIX_ERR_OPERATION_FAILED} error. Otherwise, use of a given channel is considered ``optional'' and errors are reported according to the above rules.
 
-Specifying a prioritized list of logging channels on each call to PMIx_Log can impact the performance of the API itself as it requires the PMIx library to scan available channels to create an ordered list, and this might in turn require multiple passes over the available plugins. The PMIx reference library provides an MCA parameter to help reduce this impact. A user can control the default order of channel delivery by setting the "plog_base_order" MCA parameter to a comma-delimited, prioritized list of channel names based on the corresponding attribute by extracting the characters following "PMIX_LOG_", as follows:
+Specifying a prioritized list of logging channels on each call to \refapi{PMIx_Log} can impact the performance of the \ac{API} itself as it requires the \ac{PMIx} library to scan available channels to create an ordered list, and this might in turn require multiple passes over the available plugins. Implementations may provide (at their discretion) environmental or other directives for reducing this overhead.
 
-\begin{itemize}
-\item \refattr{PMIX_LOG_LOCAL_SYSLOG} - "local_syslog"
-\item \refattr{PMIX_LOG_GLOBAL_SYSLOG} - "global_syslog"
-\item \refattr{PMIX_LOG_EMAIL} - "email"
-\end{itemize}
-
-and so on. Marking a given channel in the list as "required" can be done by adding ":req" to the channel name - e.g., plog_base_order = "local_syslog:req,global_syslog,email". Parsing of this MCA parameter is case-insensitive, and the parser will accept amy "required" flag that starts with "req" - e.g., "reqd" and "required". Similarly, the \refattr{PMIX_LOG_ONCE} attribute can be set by default using the "plog_base_log_once" MCA parameter. Note that this is specific to the PMIx reference library and is \emph{not} part of the standard - users are advised to check their local implementation for similar support.
-
-Channels that are not recognized by the PMIx library will automatically be directed to the host RM for processing. This allows for \ac{RM}-proprietary channel support without committing those channel names to the \ac{PMIx} Standard.
+Channels that are not recognized by the \ac{PMIx} library will automatically be directed to the host \ac{SMS} daemon for processing. This allows for \ac{SMS}-proprietary channel support without committing those channel names to the \ac{PMIx} Standard.
 
 \adviceuserstart
-The available channel support on a system can be queried via the \refapi{PMIx_Query} \ac{API} should the application developer wish to tailor their code accordingly - this will always report the channels directly supported by the \ac{PMIx} library. However, channels supported by the host \ac{RM} will be included only if the \ac{RM} itself supports such queries.
+The available channel support on a system can be queried via the \refapi{PMIx_Query_info_nb} \ac{API} should the application developer wish to tailor their code accordingly - this will always report the channels directly supported by the \ac{PMIx} library. However, channels supported by the host \ac{SMS} will be included only if the \ac{SMS} itself supports such queries.
 \adviceuserend
 
 \adviceimplstart
-A complete \ac{PMIx} implementation will respond to \refapi{PMIx_Query} calls requesting logging channels supported by the \ac{RM} with a comma-delimited string of channel keys - e.g., \refattr{PMIX_LOG_LOCAL_SYSLOG},\refattr{PMIX_LOG_EMAIL}.
+A complete \ac{PMIx} implementation will respond to \refapi{PMIx_Query_info_nb} calls requesting logging channels supported by the \ac{SMS} with a comma-delimited string of channel keys - e.g., \refattr{PMIX_LOG_LOCAL_SYSLOG},\refattr{PMIX_LOG_EMAIL}.
 \adviceimplend
 
 \adviceuserstart
-The \refapi{PMIx_Log} API should \emph{never} be used for streaming data as it is not a "performant" transport and can perturb the application since it involves the local \ac{PMIx} server and host RM daemon.
+The \refapi{PMIx_Log} API should \emph{never} be used for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon.
 \adviceuserend
 
 
@@ -93,25 +95,22 @@ PMIx_Log(const pmix_info_t data[], size_t ndata,
 
 \begin{arglist}
 \argin{data}{Array of info structures (array of handles)}
-\argin{ndata}{Number of elements in the \refarg{data} array (integer)}
+\argin{ndata}{Number of elements in the \refarg{data} array (size_t)}
 \argin{directives}{Array of info structures (array of handles)}
-\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
-\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
-\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (size_t)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\begin{constantdesc}
+\item \refconst{PMIX_SUCCESS} The data has been logged as requested
+\item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the data was logged, but not all requested channels were available or supported. Note that \refconst{PMIX_SUCCESS} will be returned if no specific channels were requested and at least one channel was able to perform the specified operation.
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function, or neither the implementation nor the host {SMS} support any of the desired channels.
+\end{constantdesc}
 
 %%%%
 \descr
 
-Log data to a ``central'' data service/store, subject to the services offered by the host resource manager.
-The data to be logged is provided in the \refarg{data} array.
-The (optional) \refarg{directives} can be used to request specific storage options and direct the choice of storage option.
-
-The callback function will be executed when the log operation has been completed.
-The \refarg{data} array must be maintained until the callback is provided.
-
+Log data to a persistent data service/store, subject to the services offered by the host environment.
+The data to be logged is provided in the \refarg{data} array. The (optional) \refarg{directives} can be used to request specific storage options and direct the choice of logging channel.
 
 \subsection{\code{PMIx_Log_nb}}
 \declareapi{PMIx_Log_nb}
@@ -124,6 +123,28 @@ PMIx_Log_nb(const pmix_info_t data[], size_t ndata,
             pmix_op_cbfunc_t cbfunc, void *cbdata)
 \end{codepar}
 \cspecificend
+
+\begin{arglist}
+\argin{data}{Array of info structures (array of handles)}
+\argin{ndata}{Number of elements in the \refarg{data} array (size_t)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (size_t)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+\begin{constantdesc}
+\item \refconst{PMIX_SUCCESS} The logging request is valid and is being processed
+\item \refconst{PMIX_ERR_NOT_FOUND} None of the requested data was available
+\item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the data has been returned
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The host \ac{RM} does not support this function
+\end{constantdesc}
+
+%%%%
+\descr
+
+Non-blocking version of the \refapi{PMIx_Log} routine. The callback function will be executed when the log operation has been completed. The \refarg{data} and \refarg{directives} arrays must be maintained until the callback is provided.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
