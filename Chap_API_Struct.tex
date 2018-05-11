@@ -2521,13 +2521,13 @@ The \refapi{pmix_release_cbfunc_t} is used by the \refapi{pmix_modex_cbfunc_t} a
 
 \cspecificstart
 \begin{codepar}
-typedef void 
+typedef void
 (*pmix_release_cbfunc_t)(void *cbdata)
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\arginout{cbdata}{Callback data passed to original API call (pointer)}
+\arginout{cbdata}{Callback data passed to original API call (memory reference)}
 \end{arglist}
 
 %%%%
@@ -2547,7 +2547,7 @@ The \refapi{pmix_modex_cbfunc_t} is used by the \refapi{pmix_server_fencenb_fn_t
 
 \cspecificstart
 \begin{codepar}
-typedef void 
+typedef void
 (*pmix_modex_cbfunc_t)(pmix_status_t status,
                        const char *data, size_t ndata,
                        void *cbdata,
@@ -2562,7 +2562,7 @@ typedef void
 \argin{ndata}{size of the data (\code{size_t})}
 \argin{cbdata}{Callback data passed to original API call (pointer)}
 \argin{release_fn}{Callback for releasing \argref{release_cbdata} (function pointer)}
-\argin{release_cbdata}{Pointer to be passed to \argref{release_fn} (pointer)}
+\argin{release_cbdata}{Pointer to be passed to \argref{release_fn} (memory reference)}
 \end{arglist}
 
 %%%%
@@ -2593,7 +2593,7 @@ typedef void
 \begin{arglist}
 \argin{status}{Status associated with the operation (handle)}
 \argin{nspace}{Namespace string (string)}
-\argin{cbdata}{Callback data passed to original API call (pointer)}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
 \end{arglist}
 
 
@@ -2618,14 +2618,14 @@ The \refapi{pmix_op_cbfunc_t} is used by operations that simply return a status.
 
 \cspecificstart
 \begin{codepar}
-typedef void 
+typedef void
 (*pmix_op_cbfunc_t)(pmix_status_t status, void *cbdata);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{status}{Status associated with the operation (handle)}
-\argin{cbdata}{Callback data passed to original API call (pointer)}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
 \end{arglist}
 
 
@@ -2641,7 +2641,7 @@ The \refapi{pmix_lookup_cbfunc_t} is used by \refapi{PMIx_Lookup_nb} to return d
 
 \cspecificstart
 \begin{codepar}
-typedef void 
+typedef void
 (*pmix_lookup_cbfunc_t)(pmix_status_t status,
                         pmix_pdata_t data[], size_t ndata,
                         void *cbdata);
@@ -2652,7 +2652,7 @@ typedef void
 \argin{status}{Status associated with the operation (handle)}
 \argin{data}{data returned (\refstruct{pmix_pdata_t})}
 \argin{ndata}{size of the data returned (\code{size_t})}
-\argin{cbdata}{Callback data passed to original API call (pointer)}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
 \end{arglist}
 
 
@@ -2686,7 +2686,7 @@ typedef void (*pmix_value_cbfunc_t)(pmix_status_t status,
 \begin{arglist}
 \argin{status}{Status associated with the operation (handle)}
 \argin{kv}{Key/value pair representing the data (\refstruct{pmix_value_t})}
-\argin{cbdata}{Callback data passed to original API call (pointer)}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
 \end{arglist}
 
 
@@ -2719,10 +2719,10 @@ typedef void (*pmix_info_cbfunc_t)(pmix_status_t status,
 \cspecificend
 
 \begin{arglist}
-\argin{status}{Status associated with the operation (handle)}
+\argin{status}{Status associated with the operation (\refattr{pmix_status_t})}
 \argin{data}{data returned (\refstruct{pmix_pdata_t})}
 \argin{ndata}{size of the data returned (\code{size_t})}
-\argin{cbdata}{Callback data passed to original API call (pointer)}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
 \end{arglist}
 
 
@@ -2732,6 +2732,123 @@ typedef void (*pmix_info_cbfunc_t)(pmix_status_t status,
 The \refarg{status} indicates if requested data was found or not.
 An array of \refstruct{pmix_info_t} will contain the key/value pairs.
 
+
+%%%%%%%%%%%
+\subsection{Event Handler Registration Function}
+\declareapi{pmix_evhdlr_reg_cbfunc_t}
+
+The \refapi{pmix_evhdlr_reg_cbfunc_t} \ldots
+
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_evhdlr_reg_cbfunc_t)(pmix_status_t status,
+                                         size_t evhdlr_ref,
+                                         void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{status}{Status indicates if the request was successful or not (\refattr{pmix_status_t})}
+\argin{evhdlr_ref}{Reference assigned to the event handler by \ac{PMIx} --- this reference
+ * must be used to deregister the err handler (\code{size_t})}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
+\end{arglist}
+
+
+%%%%
+\descr
+
+Define a callback function for calls to \refapi{PMIx_Register_event_handler}
+
+
+%%%%%%%%%%%
+\subsection{Notification Handler Completion Callback Function}
+\declareapi{pmix_event_notification_cbfunc_fn_t}
+
+%%%%
+\summary
+
+The \refapi{pmix_event_notification_cbfunc_fn_t} is called by event handlers to indicate completion of their operations.
+
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_event_notification_cbfunc_fn_t)(pmix_status_t status,
+                                                    pmix_info_t *results, size_t nresults,
+                                                    pmix_op_cbfunc_t cbfunc, void *thiscbdata,
+                                                    void *notification_cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{status}{Status returned by the event handler's operation (\refattr{pmix_status_t})}
+\argin{results}{Results from this event handler's operation on the event (\refstruct{pmix_info_t})}
+\argin{nresults}{Number of elements in the results array (\code{size_t})}
+\argin{cbfunc}{\refapi{pmix_op_cbfunc_t} function to be executed when \ac{PMIx} completes processing the callback (function reference)}
+\argin{thiscbdata}{Callback data that was passed in to the handler (memory reference)}
+\argin{cbdata}{Callback data to be returned when \ac{PMIx} executes cbfunc (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Define a callback by which an event handler can notify the \ac{PMIx} library that it has completed its response to the notification. The handler is \textit{required} to execute this callback so the library can determine if additional handlers need to be called. The handler shall return \refconst{PMIX_ERR_EVENT_COMPLETE} if no further action is required. The return status of each event handler and any returned \refstruct{pmix_info_t} structures will be added to the \textit{results} array of \refstruct{pmix_info_t} passed to any subsequent event handlers to help guide their operation.
+
+If non-NULL, the provided callback function will be called to allow the event handler to release the provided info array and execute any other required cleanup operations.
+
+
+%%%%%%%%%%%
+\subsection{Notification Function}
+\declareapi{pmix_notification_fn_t}
+
+%%%%
+\summary
+
+The \refapi{pmix_notification_fn_t} is called by \ac{PMIx} to deliver notification of an event.
+
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_notification_fn_t)(size_t evhdlr_registration_id,
+                                       pmix_status_t status,
+                                       const pmix_proc_t *source,
+                                       pmix_info_t info[], size_t ninfo,
+                                       pmix_info_t *results, size_t nresults,
+                                       pmix_event_notification_cbfunc_fn_t cbfunc,
+                                       void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{evhdlr_registration_id}{Registration number of the handler being called (\code{size_t})}
+\argin{status}{Status associated with the operation (\refattr{pmix_status_t})}
+\argin{source}{Identifier of the process that generated the event (\refstruct{pmix_proc_t})}. If the source is the \ac{SMS}, then the nspace will be empty and the rank will be PMIX_RANK_UNDEF
+\argin{info}{Information describing the event (\refstruct{pmix_info_t})}. This argument will be NULL if no additional information was provided by the event generator.
+\argin{ninfo}{Number of elements in the info array (\code{size_t})}
+\argin{results}{Aggregated results from prior event handlers servicing this event (\refstruct{pmix_info_t})}. This argument will be NULL if this is the first handler servicing the event, or if no prior handlers provided results.
+\argin{nresults}{Number of elements in the results array (\code{size_t})}
+\argin{cbfunc}{\refapi{pmix_event_notification_cbfunc_fn_t} callback function to be executed upon completion of the handler's operation and prior to handler return (function reference)}.
+\argin{cbdata}{Callback data to be passed to cbfunc (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Note that different \acp{RM} may provide differing levels of support for event notification to application processes. Thus, the \textit{info} array may be NULL or may contain detailed information of the event. It is the responsibility of the application to parse any provided info array for defined key-values if it so desires.
+
+\adviceuserstart
+Possible uses of the pmix_info_t object include:
+
+\begin{itemize}
+\item for the RM to alert the process as to planned actions, such as to abort the session, in response to the reported event
+
+\item provide a timeout for alternative action to occur, such as for the application to request an alternate response to the event
+\end{itemize}
+
+For example, the RM might alert the application to the failure of a node that resulted in termination of several processes, and indicate that the overall session will be aborted unless the application requests an alternative behavior in the next 5 seconds. The application then has time to respond with a checkpoint request, or a request to recover from the failure by obtaining replacement nodes and restarting from some earlier checkpoint.
+
+Support for these options is left to the discretion of the host RM. Info keys are included in the common definions above, but also may be augmented on a per-RM basis.
+
+On the server side, the notification function is used to inform the host server of a detected event in the PMIx subsystem and/or client
+\adviceuserend
 
 
 %%%%%%%%%%%
@@ -2764,6 +2881,7 @@ pmix_argv_append_nosize(char ***argv, const char *arg);
 \descr
 
 \ldots Do we need this in the standard, or is it just a useful feature of the PRL?
+\ldots My initial thought would be to only include the PMIX_ARGV_APPEND macro in the standard - the function name is only how it is implemented. However, that function does appear in pmix_common.h, and so someone technically could call it directly instead of via the macro.
 
 %%%%%%%%%%%
 \subsection{Environment Variable}

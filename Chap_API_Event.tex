@@ -149,48 +149,54 @@ Non-blocking version of the \refapi{PMIx_Log} routine. The callback function wil
 \section{Notification and Management}
 \label{chap:api_event:notify}
 
-\ldots
+\ac{PMIx} event notification  is focused on dealing with \textit{faults}~\cite{event1,event2}, broadly defined as anything negatively impacting the operation of the application. Thus, an application that has \textit{stalled} (i.e., is no longer making progress on its work) is considered as experiencing a \textit{fault}, as is a network link impaired by congestion and the failure of a hardware component. \ac{PMIx} enables fault mitigation by allowing processes to register event handlers by which:
+
+\begin{itemize}
+\item the \ac{SMS} can notify the application of system problems, both detected and anticipated, including the intent to preempt the application. \ac{PMIx} libraries do not generate events themselves --- they only publish events and collect responses that might arise from them. Thus, \ac{PMIx} provides an abstraction layer to help facilitate \ac{SMS} integration to subsystems that provide such warnings (e.g., the monitoring system);
+
+\item application processes can notify their peers and/or the \ac{SMS} of issues they have detected --- e.g., the loss of communication to a peer. Once an event is received, an application can use \ac{PMIx} to interact with the \ac{SMS} to negotiate the desired response to an event, including requesting replacement nodes, restart of specific processes from a given checkpoint, or any other operation supported by the \ac{SMS}; and
+
+\item \ac{SMS} subsystems, such as the fabric manager, can notify the resource manager of traffic congestion or rerouting operations in response to failures. These notifications are subsequently relayed to all registered applications.
+\end{itemize}
+
+Events can be divided into two distinct classes. \textit{Job-specific events} directly relate to a job executing within the session, such as a debugger attachment or process failure within a related job. Events in this category are to be immediately delivered to the \ac{PMIx} server library for relay to the related local processes. In contrast, \textit{environment events} include \ac{ECC} errors, temperature excursions, and other non-job conditions directly affecting a session's resources. Note that although these do impact the session's jobs, they are not directly referencing those jobs --- i.e., the event is generated without specifying a particular target. Thus, events in this category are to be delivered to the \ac{PMIx} server library only upon request.
+
+Both \ac{SMS} elements and applications can register for events of either type. Note that race conditions can cause the registration to come after events of possible interest (e.g., a memory \ac{ECC} event that occurs after start of execution but prior to registration). \ac{SMS} vendors are \textit{requested} to cache events in this category for some time to mitigate this situation, but are not \textit{required} to do so. Thus, applications must be aware that they may not receive environment events that occur prior to registration, depending upon the capabilities of the host \ac{SMS}.
+
+The generator of an event can specify the \textit{target range} for delivery of that event. Thus, the generator can choose to limit notification to processes on the local node, processes within the same job as the generator, processes within the same allocation, other threads within the same process, only the \ac{SMS} (i.e., not to any application processes), all application processes, or to a custom range based on specific process identifiers. Only processes within the given range and that register for the provided event code will be notified. In addition, the generator can use attributes to direct that the event not be delivered to any default event handlers, or to any multi-code handler (as defined below).
+
+Event notifications provide the process identifier of the source of the event, plus the event code and any additional information provided by the generator. When an event notification is received by a process, the registered handlers are scanned for their event code(s), with matching handlers assembled into an \textit{event chain} for servicing. Note that users can also specify a \textit{source range} when registering an event (using the same range designators described above) to further limit when they are to be invoked. When assembled, PMIx event chains are ordered based on both the specificity of the event handler and user directives at time of handler registration. By default, handlers are grouped into three categories based on the number of event codes that can trigger the callback:
+\begin{itemize}
+\item \textit{single-code} handlers are serviced first as they are the most specific. These are handlers that are registered against one specific event code.
+
+\item \textit{multi-code} handlers are serviced once all single-code handlers have completed. The handler will be included in the chain upon receipt of an event matching any of the provided codes.
+
+\item \textit{default} handlers are serviced once all multi-code handlers have completed. These handlers are always included in the chain unless the generator specifically excludes them.
+\end{itemize}
+
+Users can specify the callback order of a handler within its category at the time of registration. Ordering can be specified either by providing the relevant returned event handler registration ID or using event handler names if the user specified an event handler name when registering the corresponding event. Thus, users can specify that a given handler be executed before or after another handler should both handlers appear in an event chain (the ordering is ignored if the other handler isn't included). Note that ordering does not imply immediate relationships. For example, multiple handlers registered to be serviced after event handler \textit{A} will all be executed after \textit{A}, but are not guaranteed to be executed in any particular order amongst themselves.
+
+In addition, one event handler can be declared as the \textit{first} handler to be executed in the chain. This handler will \textit{always} be called prior to any other handler, regardless of category, provided the incoming event matches both the specified range and event code. Only one handler can be so designated --- attempts to designate additional handlers as \textit{first} will return an error. Deregistration of the declared \textit{first} handler will re-open the position for subsequent assignment.
+
+Similarly, one event handler can be declared as the \textit{last} handler to be executed in the chain. Note that this handler will not be called if the chain is terminated by an earlier handler. Only one handler can be designated as \textit{last} --- attempts to designate additional handlers as \textit{last} will return an error. Deregistration of the declared \textit{last} handler will re-open the position for subsequent assignment.
+
+Upon completing its work and prior to returning, each handler \textit{must} call the event handler completion function provided when it was invoked (including a status code plus any information to be passed to later handlers) so that the chain can continue being progressed. \ac{PMIx} automatically aggregates the status and any results of each handler (as provided in the completion callback) to that from all prior handlers so that each step in the chain has full knowledge of what preceded it. An event handler can terminate all further progress along the chain by passing the \refconst{PMIX_EVENT_ACTION_COMPLETE} status to the completion callback function.
 
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Register_event_handler}}
 \declareapi{PMIx_Register_event_handler}
 
+%%%%
+\summary
+
+Register an event handler
+
+%%%%
+\format
+
 \cspecificstart
 \begin{codepar}
-/* Register an event handler to report events. Three types of events
- * can be reported:
- *
- * (a) those that occur within the client library, but are not
- *     reportable via the API itself (e.g., loss of connection to
- *     the server). These events typically occur during behind-the-scenes
- *     non-blocking operations.
- *
- * (b) job-related events such as the failure of another process in
- *     the job or in any connected job, impending failure of hardware
- *     within the job's usage footprint, etc.
- *
- * (c) system notifications that are made available by the local
- *     administrators
- *
- * By default, only events that directly affect the process and/or
- * any process to which it is connected (via the PMIx_Connect call)
- * will be reported. Options to modify that behavior can be provided
- * in the info array
- *
- * Both the client application and the resource manager can register
- * err handlers for specific events. PMIx client/server calls the registered
- * err handler upon receiving event notify notification (via PMIx_Notify_event)
- * from the other end (Resource Manager/Client application).
- *
- * Multiple err handlers can be registered for different events. PMIX returns
- * an integer reference to each register handler in the callback fn. The caller
- * must retain the reference in order to deregister the evhdlr.
- * Modification of the notification behavior can be accomplished by
- * deregistering the current evhdlr, and then registering it
- * using a new set of info values.
- *
- * See pmix_common.h for a description of the notification function */
 void
 PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes,
                             pmix_info_t info[], size_t ninfo,
@@ -200,6 +206,38 @@ PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes,
 \end{codepar}
 \cspecificend
 
+\begin{arglist}
+\argin{codes}{Array of status codes (array of \refattr{pmix_status_t})}
+\argin{ncodes}{Number of elements in the \refarg{codes} array (\code{size_t})}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
+\argin{evhdlr}{Event handler to be called \refapi{pmix_notification_fn_t} (function reference)}
+\argin{cbfunc}{Callback function \refapi{pmix_evhdlr_reg_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the cbfunc callback function (memory reference)}
+\end{arglist}
+
+
+%%%%
+\descr
+
+Register an event handler to report events. By default, only events that directly affect the process and/or any process to which it is connected (via the \refapi{PMIx_Connect} call) will be reported. Options to modify that behavior can be provided in the info array, including:
+
+\begin{itemize}
+
+\item Both the client application and the host \ac{SMS} can register handlers for specific events. \ac{PMIx} client/server calls the registered event handler upon receiving event notify notification (via PMIx_Notify_event) from the other end (Resource Manager/Client application).
+
+\item Multiple event handlers can be registered for different events. PMIX returns an integer reference to each register handler in the callback fn. The caller \textit{must} retain the reference in order to deregister the evhdlr. Modification of the notification behavior can be accomplished by deregistering the current evhdlr, and then registering it using a new set of info values.
+\end{itemize}
+
+Note that the codes being registered do \textit{not} need to be \ac{PMIx} error constants --- any integer value can be registered. This allows for registration of non-PMIx events such as those defined by the \ac{SMS}. Upon completion, the callback will receive a status based on the following table:
+
+\begin{constantdesc}
+\item \refconst{PMIX_SUCCESS} The event handler was successfully registered - the event handler identifier is returned in the callback.
+\item \refconst{PMIX_ERR_BAD_PARAM} One or more of the directives provided in the \textit{info} array was unrecognized.
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification, or the host \ac{SMS} does not support notification of the specified event code.
+\end{constantdesc}
+
+
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Deregister_event_handler}}
@@ -207,16 +245,29 @@ PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes,
 
 \cspecificstart
 \begin{codepar}
-/* Deregister an event handler
- * evhdlr_ref is the reference returned by PMIx from the call to
- * PMIx_Register_event_handler. If non-NULL, the provided cbfunc
- * will be called to confirm removal of the designated handler */
 void
 PMIx_Deregister_event_handler(size_t evhdlr_ref,
                               pmix_op_cbfunc_t cbfunc,
                               void *cbdata);
 \end{codepar}
 \cspecificend
+
+\begin{arglist}
+\argin{evhdlr_ref}{Event handler ID returned by registration (\code{size_t})}
+\argin{cbfunc}{Callback function to be executed upon completion of operation \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the cbfunc callback function (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Deregister an event handler. If non-NULL, the provided cbfunc will be called to confirm removal of the designated handler, including a status code as per the following:
+
+\begin{constantdesc}
+\item \refconst{PMIX_SUCCESS} The event handler was successfully deregistered.
+\item \refconst{PMIX_ERR_BAD_PARAM} The provided \refarg{evhdlr_ref} was unrecognized.
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification.
+\end{constantdesc}
 
 
 %%%%%%%%%%%
@@ -225,36 +276,6 @@ PMIx_Deregister_event_handler(size_t evhdlr_ref,
 
 \cspecificstart
 \begin{codepar}
-/* Report an event to a process for notification via any
- * registered evhdlr. The evhdlr registration can be
- * called by both the server and the client application. On the
- * server side, the evhdlr is used to report events detected
- * by PMIx to the host server for handling. On the client side,
- * the evhdlr is used to notify the process of events
- * reported by the server - e.g., the failure of another process.
- *
- * This function allows the host server to direct the server
- * convenience library to notify all registered local procs of
- * an event. The event can be local, or anywhere in the cluster.
- * The status indicates the event being reported.
- *
- * The client application can also call this function to notify the
- * resource manager of an event it encountered. It can request the host
- * server to notify the indicated processes about the event.
- *
- * The array of procs identifies the processes that will be impacted
- * by the event. This could consist of a single process, or a number
- * of processes.
- *
- * The info array contains any further info the RM can and/or chooses
- * to provide.
- *
- * The callback function will be called upon completion of the
- * notify_event function's actions. Note that any messages will
- * have been queued, but may not have been transmitted by this
- * time. Note that the caller is required to maintain the input
- * data until the callback function has been executed!
-*/
 pmix_status_t
 PMIx_Notify_event(pmix_status_t status,
                   const pmix_proc_t *source,
@@ -264,136 +285,39 @@ PMIx_Notify_event(pmix_status_t status,
 \end{codepar}
 \cspecificend
 
+\begin{arglist}
+\argin{status}{Status code of the event (\refattr{pmix_status_t})}
+\argin{source}{Pointer to a \refapi{pmix_proc_t} identifying the original reporter of the event (handle)}
+\argin{range}{Range across which this notification shall be delivered (\refattr{pmix_data_range_t})}
+\argin{info}{Array of \refapi{pmix_info_t} structures containing any further info provided by the originator of the event (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
+\argin{cbfunc}{Callback function to be executed upon completion of operation \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the cbfunc callback function (memory reference)}
+\end{arglist}
 
-%%%%%%%%%%%
-\subsection{Event Notification Callback Function}
-\declareapi{pmix_event_notification_cbfunc_fn_t}
-
-The \refapi{pmix_event_notification_cbfunc_fn_t} \ldots
-
-\cspecificstart
-\begin{codepar}
-/* define a callback by which an event handler can notify the PMIx library
- * that it has completed its response to the notification. The handler
- * is _required_ to execute this callback so the library can determine
- * if additional handlers need to be called. The handler shall return
- * PMIX_SUCCESS if no further action is required. The return status
- * of each event handler and any returned pmix_info_t structures
- * will be added to the array of pmix_info_t passed to any subsequent
- * event handlers to help guide their operation.
- *
- * If non-NULL, the provided callback function will be called to allow
- * the event handler to release the provided info array.
- */
-typedef void (*pmix_event_notification_cbfunc_fn_t)(pmix_status_t status,
-                                                    pmix_info_t *results, size_t nresults,
-                                                    pmix_op_cbfunc_t cbfunc, void *thiscbdata,
-                                                    void *notification_cbdata);
-\end{codepar}
-\cspecificend
+\begin{constantdesc}
+\item \refconst{PMIX_SUCCESS} The notification request is valid and is being processed. The callback function will be called when the process-local operation is complete and will provide the resulting status of that operation. Note that this does \textit{not} reflect the success or failure of delivering the event to any recipients.
+\item \refconst{PMIX_ERR_BAD_PARAM} The request contains at least one incorrect entry that prevents it from being processed. The callback function will \textit{not} be called.
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification, or in the case of a \ac{PMIx} server calling the API, the range extended beyond the local node and the host \ac{SMS} environment does not support event notification. The callback function will \textit{not} be called.
+\end{constantdesc}
 
 %%%%
 \descr
 
-\ldots
+Report an event for notification via any
+registered event handler. This function can be called by any \ac{PMIx} process, including application procs, \ac{PMIx} servers, and \ac{SMS} elements. The \ac{PMIx} server calls this \ac{API} to report events detected
+by it to the host \ac{SMS} daemon for distribution and handling, and to pass events given to it by its host down to any attached client procs for processing. Examples might include notification of the failure of another process, detection of an impending node failure due to rising temperatures, or an intent to preempt the application. Events may be locally generated or come from anywhere in the system.
 
+Host \ac{SMS} daemons call the API to pass events down to its embedded \ac{PMIx} server both for transmittal to local client procs and for the server's own internal processing.
 
-%%%%%%%%%%%
-\subsection{Notification Callback Function}
-\declareapi{pmix_notification_fn_t}
+Client application procs can call this function to notify the \ac{SMS} and/or other application processes of an event it encountered. Note that procs are not constrained to report status values defined in the official \ac{PMIx} standard --- any integer value can be used. Thus, applications are free to define their own internal events and use the notification system for their own internal purposes.
 
-The \refapi{pmix_notification_fn_t} \ldots
-
-\cspecificstart
-\begin{codepar}
-/* define a callback function for the event handler. Upon receipt of an
- * event notification, PMIx will execute the specified notification
- * callback function, providing:
- *
- * evhdlr_registration_id - the returned registration number of
- *                          the event handler being called
- * status - the event that occurred
- * source - the nspace and rank of the process that generated
- *          the event. If the source is the resource manager,
- *          then the nspace will be empty and the rank will
- *          be PMIX_RANK_UNDEF
- * info - any additional info provided regarding the event.
- * ninfo - the number of info objects in the info array
- * results - any provided results from event handlers called
- *           prior to this one.
- * nresults - number of info objects in the results array
- * cbfunc - the function to be called upon completion of the handler
- * cbdata - pointer to be returned in the completion cbfunc
- *
- * Note that different resource managers may provide differing levels
- * of support for event notification to application processes. Thus, the
- * info array may be NULL or may contain detailed information of the event.
- * It is the responsibility of the application to parse any provided info array
- * for defined key-values if it so desires.
- *
- * Possible uses of the pmix_info_t object include:
- *
- * - for the RM to alert the process as to planned actions, such as
- *   to abort the session, in response to the reported event
- *
- * - provide a timeout for alternative action to occur, such as for
- *   the application to request an alternate response to the event
- *
- * For example, the RM might alert the application to the failure of
- * a node that resulted in termination of several processes, and indicate
- * that the overall session will be aborted unless the application
- * requests an alternative behavior in the next 5 seconds. The application
- * then has time to respond with a checkpoint request, or a request to
- * recover from the failure by obtaining replacement nodes and restarting
- * from some earlier checkpoint.
- *
- * Support for these options is left to the discretion of the host RM. Info
- * keys are included in the common definions above, but also may be augmented
- * on a per-RM basis.
- *
- * On the server side, the notification function is used to inform the host
- * server of a detected event in the PMIx subsystem and/or client
- */
-typedef void (*pmix_notification_fn_t)(size_t evhdlr_registration_id,
-                                       pmix_status_t status,
-                                       const pmix_proc_t *source,
-                                       pmix_info_t info[], size_t ninfo,
-                                       pmix_info_t *results, size_t nresults,
-                                       pmix_event_notification_cbfunc_fn_t cbfunc,
-                                       void *cbdata);
-\end{codepar}
-\cspecificend
-
-%%%%
-\descr
-
-\ldots
-
-
-
-%%%%%%%%%%%
-\subsection{Event Handler Registration Function}
-\declareapi{pmix_evhdlr_reg_cbfunc_t}
-
-The \refapi{pmix_evhdlr_reg_cbfunc_t} \ldots
-
-\cspecificstart
-\begin{codepar}
-/* define a callback function for calls to PMIx_Register_evhdlr. The
- * status indicates if the request was successful or not, evhdlr_ref is
- * an integer reference assigned to the event handler by PMIx, this reference
- * must be used to deregister the err handler. A ptr to the original
- * cbdata is returned. */
-typedef void (*pmix_evhdlr_reg_cbfunc_t)(pmix_status_t status,
-                                         size_t evhdlr_ref,
-                                         void *cbdata)
-\end{codepar}
-\cspecificend
-
-%%%%
-\descr
-
-\ldots
+\adviceuserstart
+The callback function will be called upon completion of the
+notify_event function's actions. At that time, any messages required for executing the operation (e.g., to send the notification to the local \ac{PMIx} server) will
+have been queued, but may not yet have been transmitted. The caller is required to maintain the input
+data until the callback function has been executed --- the sole purpose of the callback function is to indicate when the input data is no longer required.
+\adviceuserend
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
