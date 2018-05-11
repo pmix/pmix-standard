@@ -114,6 +114,14 @@ Log data to a persistent data service/store, subject to the services offered by 
 \subsection{\code{PMIx_Log_nb}}
 \declareapi{PMIx_Log_nb}
 
+%%%%
+\summary
+
+Non-blocking version of the \refapi{PMIx_Log} routine.
+
+%%%%
+\format
+
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -243,6 +251,14 @@ Note that the codes being registered do \textit{not} need to be \ac{PMIx} error 
 \subsection{\code{PMIx_Deregister_event_handler}}
 \declareapi{PMIx_Deregister_event_handler}
 
+%%%%
+\summary
+
+Deregister an event handler.
+
+%%%%
+\format
+
 \cspecificstart
 \begin{codepar}
 void
@@ -273,6 +289,15 @@ Deregister an event handler. If non-NULL, the provided cbfunc will be called to 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Notify_event}}
 \declareapi{PMIx_Notify_event}
+
+%%%%
+\summary
+
+Report an event for notification via any
+registered event handler.
+
+%%%%
+\format
 
 \cspecificstart
 \begin{codepar}
