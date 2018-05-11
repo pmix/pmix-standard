@@ -13,13 +13,18 @@ Two versions (PMI-1 and PMI-2) have been released as part of the MPICH effort, w
 \end{itemize}
 
 \ac{PMIx} represents an attempt to resolve these questions by providing an extended version of the \ac{PMI} definitions specifically designed to support clusters up to exascale and larger sizes.
-The overall objective of the project is not to branch the existing definitions -- in fact, PMIx fully supports both of the existing PMI-1 and PMI-2 APIs -- but rather to:
+The overall objective of the project is not to branch the existing definitions -- in fact, \ac{PMIx} fully supports both of the existing PMI-1 and PMI-2 \acp{API} -- but rather to:
 
 \begin{compactalphaenum}
-\item augment those APIs to eliminate some current restrictions that impact scalability,
-\item extend the breadth of the \ac{PMI} definitions to providing an abstraction layer for \ac{SMS} interactions,
-\item establish a standards-like body for maintaining the definitions, and
-\item provide a reference implementation of the PMIx standard that demonstrates the desired level of scalability and features.
+\item add flexibility to the existing \acp{API} by adding an array of key-value ``attribute'' pairs to each \ac{API} signature that allows implementers to customize the behavior of the \ac{API} as future needs emerge without having to alter or create new variants of it;
+
+\item add new APIs that provide extended capabilities such as asynchronous event notification plus dynamic resource allocation and management;
+
+\item establish a collaboration between \ac{SMS} subsystem providers including resource manager, fabric, file system, and programming library developers to define integration points between the various subsystems as well as agreed upon definitions for associated \acp{API}, attribute names, and data types;
+
+\item form a standards-like body for the definitions; and
+
+\item provide a reference implementation of the \ac{PMIx} standard.
 \end{compactalphaenum}
 
 Complete information about the \ac{PMIx} standard and affiliated projects can be found at the \ac{PMIx} web site: \url{https://pmix.org}
@@ -36,7 +41,7 @@ The charter of the PMIx community is to:
 \item Develop an open source (non-copy-left licensed) standalone ``reference'' library to facilitate adoption of the \ac{PMIx} standard.
 \item Retain transparent backward compatibility with the existing PMI-1 and PMI-2 definitions, any future \ac{PMI} releases, and across all \ac{PMIx} versions.
 \item Support the ``Instant On'' initiative for rapid startup of applications at exascale and beyond.
-\item Work with the \ac{HPC} community to define and implement new APIs that support evolving programming model requirements for application interactions with the \ac{SMS}.
+\item Work with the \ac{HPC} community to define and implement new \acp{API} that support evolving programming model requirements for application interactions with the \ac{SMS}.
 \end{itemize}
 
 Participation in the \ac{PMIx} community is open to anyone, and not restricted to only code contributors to the reference implementation.
@@ -62,12 +67,27 @@ Participation in the \ac{PMIx} community is open to anyone, and not restricted t
 %%%%%%%%%%%
 \subsection{What is \emph{not} defined in the standard?}
 
-The \ac{PMIx} Standard does not include anything, either stated or implied, regarding implementation.
-It instead focuses exclusively on defining APIs and associated attribute key strings, and describing the expected behavior of those entities.
-How that behavior is realized is entirely at the discretion of the implementer.
+No standards body can require an implementer to support something in their standard, and \ac{PMIx} is no different in that regard. While an implementer of the \ac{PMIx} library itself must at least include the standard \ac{PMIx} headers and instantiate each function, they are free to return ``not supported'' for any function they choose not to implement.
 
-As previously noted, system environments and \ac{PMIx} library implementers are free to return ``not supported'' for any request. Thus, users should design their applications accordingly.
+This also applies to the host environments. Resource managers and other system management stack components retain the right to decide on support of a particular function. The \ac{PMIx} community continues to look at ways to assist \ac{SMS} implementers in their decisions by highlighting functions that are critical to basic application execution (e.g., \refapi{PMIx_Get}), while leaving flexibility for tailoring a vendor’s software for their target market segment.
 
+One area where this can become more complicated is regarding the attributes that provide information to the client process and/or control the behavior of a \ac{PMIx} standard \ac{API}. For example, the \refattr{PMIX_TIMEOUT} attribute can be used to specify the time (in seconds) before the requested operation should time out. The intent of this attribute is to allow the client to avoid ``hanging'' in a request that takes longer than the client wishes to wait, or may never return (e.g., a \refapi{PMIx_Fence} that a blocked participant never enters).
+
+If an application (for example) truly relies on the \refattr{PMIX_TIMEOUT} attribute in a call to \refapi{PMIx_Fence}, it should set the required flag in the \refattr{pmix_info_t} for that attribute. This informs the library and its \ac{SMS} host that it must return an immediate error if this attribute is not supported. By not setting the flag, the library and \ac{SMS} host are allowed to treat the attribute as optional, ignoring it if support is not available.
+
+It is therefore critical that users and application implementers:
+
+\begin{compactalphaenum}
+\item consider whether or not a given attribute is required, marking it accordingly; and
+
+\item check the return status on all \ac{PMIx} function calls to ensure support was present and that the request was accepted. Note that for non-blocking \acp{API}, a return of \refconst{PMIX_SUCCESS} only indicates that the request had no obvious errors and is being processed – the eventual callback will return the status of the requested operation itself.
+\end{compactalphaenum}
+
+While a \ac{PMIx} library implementer, or an \ac{SMS} component server, may choose to support a particular \ac{PMIx} \ac{API}, they are not required to support every attribute that might apply to it. This would pose a significant barrier to entry for an implementer as there can be a broad range of applicable attributes to a given \ac{API}, at least some of which may rarely be used. The \ac{PMIx} community is attempting to help differentiate the attributes by indicating those that are generally used (and therefore, of higher importance to support) vs those that a ``complete implementation'' would support.
+
+Note that an environment that does not include support for a particular attribute/\ac{API} pair is not ``incomplete'' or of lower quality than one that does include that support. Vendors must decide where to invest their time based on the needs of their target markets, and it is perfectly reasonable for them to perform cost/benefit decisions when considering what functions and attributes to support.
+
+The flip side of that statement is also true: Users who find that their current vendor does not support a function or attribute they require may raise that concern to their vendor and request that the implementation be expanded. Alternatively, users may wish to utilize the \ac{PRRTE} as a ``shim'' between their application and the host environment as it might provide the desired support until the vendor can respond. Finally, in the extreme, one can exploit the portability of PMIx-based applications to change vendors.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -79,10 +99,9 @@ This section presents a brief overview the \ac{PMIx} Architecture~\cite{2017-Cas
 \ldots
 
 %%%%%%%%%%%
-\subsection{The PMIx Reference Implementation}
+\subsection{The PMIx Reference Implementation}(PRI)
 
-Note that the definition of the \ac{PMIx} Standard is not contingent upon use of the \ac{PMIx} Reference Implementation.
-Any implementation that supports the defined APIs is a \ac{PMIx} Standard compliant implementation, and some environments have chosen to pursue their own custom implementation.
+Note that the definition of the \ac{PMIx} Standard is not contingent upon use of the \ac{PMIx} Reference Implementation --- any implementation that supports the defined \acp{API} is a \ac{PMIx} Standard compliant implementation.
 The \ac{PMIx} Reference Implementation is provided solely for the following purposes:
 \begin{itemize}
 \item Validation of the standard.\\
@@ -91,7 +110,7 @@ This ensures that the proposal has undergone at least some minimal level of scru
 \item Ease of adoption.\\
 The \ac{PMIx} Reference Implementation is designed to be particularly easy for resource managers (and the \ac{SMS} in general) to adopt, thus facilitating a rapid uptake into that community for application portability.
 Both client and server \ac{PMIx} libraries are included, along with examples of client usage and server-side integration.
-A list of supported environments and versions is provided on the \ac{PMIx} web site \url{www.pmix.org}
+A list of supported environments and versions is maintained on the \ac{PMIx} web site \url{https://pmix.org/support/faq/what-apis-are-supported-on-my-rm/}
 \end{itemize}
 
 The \ac{PMIx} Reference Implementation targets support for the Linux operating system.
@@ -100,10 +119,16 @@ In addition, development support is maintained for Mac OSX.
 Production support for vendor-specific operating systems is included as provided by the vendor.
 
 %%%%%%%%%%%
-\subsection{The PMIx Reference Server}
+\subsection{The PMIx Reference RunTime Environment}(PRRTE)
 
 \ldots
 
+The PMIx community has released \ac{PRRTE} --- i.e., a runtime environment
+containing the reference implementation and capable of operating within a host \ac{SMS}. \ac{PRRTE}
+provides an easy way of exploring \ac{PMIx} capabilities and testing PMIx-based
+applications outside of a PMIx-enabled environment. Instructions for downloading,
+installing, and using \ac{PRI} and \ac{PRRTE} are available
+on the community's web site
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Organization of this document}
