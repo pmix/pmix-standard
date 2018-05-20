@@ -276,48 +276,6 @@ PMIx_Data_unpack(const pmix_proc_t *source,
 \end{codepar}
 \cspecificend
 
-%/**
-% *
-% *
-% *
-% * @param *source
-% *
-% * @param *buffer
-% *
-% * @param *dest
-% *
-% * @param type
-% *
-% * @retval *max_num_values
-% *
-% * @note The unpack function will return the actual number of values
-% * unpacked in this location.
-% *
-% * @retval PMIX_SUCCESS The next item in the buffer was successfully
-% * unpacked.
-% *
-% * @retval PMIX_ERROR(s) The unpack function returns an error code
-% * under one of several conditions: (a) the number of values in the
-% * item exceeds the max num provided by the caller; (b) the type of
-% * the next item in the buffer does not match the type specified by
-% * the caller; or (c) the unpack failed due to either an error in the
-% * buffer or an attempt to read past the end of the buffer.
-% *
-% * @code
-% * pmix_data_buffer_t *buffer;
-% * int32_t dest;
-% * char **string_array;
-% * int32_t num_values;
-% *
-% * num_values = 1;
-% * status_code = PMIx_Data_unpack(buffer, (void*)&dest, &num_values, PMIX_INT32);
-% *
-% * num_values = 5;
-% * string_array = malloc(num_values*sizeof(char *));
-% * status_code = PMIx_Data_unpack(buffer, (void*)(string_array), &num_values, PMIX_STRING);
-% *
-% * @endcode
-% */
 
 \begin{arglist}
 \argin{source}{Pointer to a \refapi{pmix_proc_t} structure containing the nspace/rank of the process that packed the provided buffer. A NULL value may be used to indicate that the source is based on the same \ac{PMIx} version as the caller. (handle)}

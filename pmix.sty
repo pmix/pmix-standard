@@ -14,22 +14,22 @@
 %    \restrictions
 %    \summary
 %    \syntax
-%    
+%
 %    \code{}                    % monospace, bold
 %    \plc{}                     % for any kind of placeholder: italic
 %    \begin{codepar}            % for blocks of verbatim code: monospace, bold
 %
 %    \specref{}                 % formats the cross-reference "Section X on page Y"
-%    
+%
 %    \notestart                 % black horizontal rule for Notes
 %    \noteend
-%    
+%
 %    \cspecificstart            % blue horizontal rule for C-specific text
 %    \cspecificend
-%    
+%
 %    \fortranspecificstart      % blue horizontal rule for Fortran-specific text
 %    \fortranspecificend
-%    
+%
 %    \glossaryterm              % for use in formatting glossary entries
 %    \glossarydefstart
 %    \glossarydefend
@@ -80,7 +80,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Page formatting
 
-\usepackage[paperwidth=7.5in, paperheight=9in, 
+\usepackage[paperwidth=7.5in, paperheight=9in,
             top=0.75in, bottom=1.0in, left=1.4in, right=0.6in]{geometry}
 
 \usepackage{changepage}   % allows left/right-page margin readjustments
@@ -259,11 +259,13 @@
 \newcommand{\descr} {\littleheader{Description}}
 \newcommand{\format} {\littleheader{Format}}
 \newcommand{\summary} {\littleheader{Summary}}
+\newcommand{\reqattr} {\littleheader{Required Attributes}}
+\newcommand{\optattr} {\littleheader{Optional Attributes}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Clipboard
-% 
+%
 % \StdCopy{TAG}{BODY}
 % \StdPaste{TAG}
 %
