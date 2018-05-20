@@ -105,6 +105,22 @@ PMIx_Init(pmix_proc_t *proc,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
 
+\reqattr
+The following attributes must be supported by a \ac{PMIx} implementation.
+
+\pasteAttributeItem{PMIX_EVENT_BASE}
+\pasteAttributeItem{PMIX_SYSTEM_TMPDIR}
+\pasteAttributeItem{PMIX_SYSTEM_TMPDIR}
+
+
+\optattr
+The following attributes are optional, but should be supported by a complete PMIx implementation:
+
+\pasteAttributeItem{PMIX_MODEL_LIBRARY_NAME}
+\pasteAttributeItem{PMIX_MODEL_LIBRARY_VERSION}
+\pasteAttributeItem{PMIX_THREADING_MODEL}
+\pasteAttributeItem{PMIX_USOCK_DISABLE}
+
 %%%%
 \descr
 
