@@ -1,26 +1,16 @@
 sudo: required
-dist: trusty
-os:
-    - linux
 
-notifications:
-  email: false
+services:
+ - docker
 
-addons:
-    apt:
-        packages:
-            - texlive-fonts-recommended
-            - texlive-latex-extra
-            - texlive-fonts-extra
-            - dvipng
-            - texlive-latex-recommended
-            - texlive-xetex
-            
 before_install:
-    - sudo tlmgr init-usertree
+ - docker pull jjhursey/pmix-standard
 
 script:
-    - make
+ - docker run --rm -it -v ${TRAVIS_BUILD_DIR}:/home/pmixer/pmix-standard jjhursey/pmix-standard
+   /bin/bash -c "cp -R /home/pmixer/pmix-standard pmix-build && cd pmix-build && make"
 
-# Notes from here:
-# https://ljvmiranda921.github.io/notebook/2018/02/04/continuous-integration-for-latex/
+# Notes:
+#  - The container runs as a standard user 'pmixer'
+#  - Need to copy `pmix-standard` to `pmix-build` because of file permissions issues
+#    related to mounting the volume on certain OSs (i.e., OSX).

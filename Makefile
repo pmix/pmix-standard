@@ -43,12 +43,16 @@ pmix-standard.pdf: $(CHAPTERS) $(SOURCES) pmix.sty pmix-standard.tex figs/pmix-l
 	@echo "If error occurs check pmix-standard.log and pmix-standard.ind"
 	@echo "-------------------------------------------------------------"
 	@echo "====> Building 1/4"
-	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex
+	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex || \
+		pdflatex -interaction=errorstopmode -file-line-error pmix-standard.tex < /dev/null
 	@echo "====> Building 2/4 (bibtex)"
-	bibtex pmix-standard
+	bibtex pmix-standard < /dev/null
 	@echo "====> Building 3/4"
-	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex
+	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex || \
+		pdflatex -interaction=errorstopmode -file-line-error pmix-standard.tex  < /dev/null
 	@echo "====> Building 4/4"
+	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex || \
+		pdflatex -interaction=errorstopmode -file-line-error pmix-standard.tex  < /dev/null
 	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex
 	@echo "====> Success"
 	cp pmix-standard.pdf pmix-standard-${version}.pdf
