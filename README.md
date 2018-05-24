@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/pmix/pmix-standard.svg?branch=master)](https://travis-ci.org/pmix/pmix-standard)
+
 # PMIx Standard
 
 This repository contains the LaTeX source for the PMIx standard document, and discussions regarding the PMIx standard.

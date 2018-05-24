@@ -52,24 +52,33 @@ Participation in the \ac{PMIx} community is open to anyone, and not restricted t
 \section{PMIx Standard Overview}
 \label{chap:intro:std_overview}
 
-\ldots
+The \ac{PMIx} Standard defines and describes the interface developed by the \acf{PRL}.
+Much of this document is specific to the \acf{PRL}'s design and implementation.
+Specifically the standard describes the functionality provided by the \ac{PRL}, and what the \ac{PRL} requires of the clients and \acfp{RM} that use it's interface.
 
 %%%%%%%%%%%
 \subsection{Who should use the standard?}
 
-\ldots
+The \ac{PMIx} Standard informs PMIx clients and \acp{RM} of the syntax and semantics of the \ac{PMIx} APIs.
+
+\ac{PMIx} clients (e.g., tools, \ac{MPE} libraries) can use this standard to understand the set of attributes provided by various APIs of the \ac{RPL} and their intended behavior.
+Additional information about the rationale for the selection of specific interfaces and attributes is also provided.
+
+\ac{PMIx}-enabled \acp{RM} can use this standard to understand the expected behavior required of them when they support various interfaces/attributes.
+Additional, optional features and suggestions on behavior are also included in the discussion to help guide \ac{RM} design and implementation.
 
 %%%%%%%%%%%
 \subsection{What is defined in the standard?}
 
-\ldots
+The \ac{PMIx} Standard defines and describes the interface developed by the \acf{PRL}.
+It defines the set of attributes that the \ac{PRL} supports; the set of attributes that are required of a \ac{RM} to support, for a given interface; and the set of optional attributes that an \ac{RM} may choose to support, for a given interface.
 
 %%%%%%%%%%%
 \subsection{What is \emph{not} defined in the standard?}
 
 No standards body can require an implementer to support something in their standard, and \ac{PMIx} is no different in that regard. While an implementer of the \ac{PMIx} library itself must at least include the standard \ac{PMIx} headers and instantiate each function, they are free to return ``not supported'' for any function they choose not to implement.
 
-This also applies to the host environments. Resource managers and other system management stack components retain the right to decide on support of a particular function. The \ac{PMIx} community continues to look at ways to assist \ac{SMS} implementers in their decisions by highlighting functions that are critical to basic application execution (e.g., \refapi{PMIx_Get}), while leaving flexibility for tailoring a vendor’s software for their target market segment.
+This also applies to the host environments. Resource managers and other system management stack components retain the right to decide on support of a particular function. The \ac{PMIx} community continues to look at ways to assist \ac{SMS} implementers in their decisions by highlighting functions that are critical to basic application execution (e.g., \refapi{PMIx_Get}), while leaving flexibility for tailoring a vendor's software for their target market segment.
 
 One area where this can become more complicated is regarding the attributes that provide information to the client process and/or control the behavior of a \ac{PMIx} standard \ac{API}. For example, the \refattr{PMIX_TIMEOUT} attribute can be used to specify the time (in seconds) before the requested operation should time out. The intent of this attribute is to allow the client to avoid ``hanging'' in a request that takes longer than the client wishes to wait, or may never return (e.g., a \refapi{PMIx_Fence} that a blocked participant never enters).
 
@@ -88,6 +97,25 @@ While a \ac{PMIx} library implementer, or an \ac{SMS} component server, may choo
 Note that an environment that does not include support for a particular attribute/\ac{API} pair is not ``incomplete'' or of lower quality than one that does include that support. Vendors must decide where to invest their time based on the needs of their target markets, and it is perfectly reasonable for them to perform cost/benefit decisions when considering what functions and attributes to support.
 
 The flip side of that statement is also true: Users who find that their current vendor does not support a function or attribute they require may raise that concern to their vendor and request that the implementation be expanded. Alternatively, users may wish to utilize the \ac{PRRTE} as a ``shim'' between their application and the host environment as it might provide the desired support until the vendor can respond. Finally, in the extreme, one can exploit the portability of PMIx-based applications to change vendors.
+
+%%%%%%%%%%%
+\subsection{General Guidance for PMIx Users and Implementors}
+
+The \ac{PMIx} Standard defines the behavior of the \acf{PRL}.
+A complete system harnessing the \ac{PMIx} interface requires an agreement between the \ac{PMIx} client, be it a tool or library, and the \ac{PMIx}-enabled \ac{RM}.
+The \ac{RPL} acts as an intermediary between these two entities providing a standard API for the exchange of requests and responses.
+The degree to which the \ac{PMIx} client and the \ac{PMIx}-enabled \ac{RM} may interact needs to be defined by those developer communities.
+The \ac{PMIx} standard can be used to define the specifics of this interaction.
+
+\ac{PMIx} clients (e.g., tools, \ac{MPE} libraries) may find that they depend only on a small subset of interfaces and attributes to work correctly.
+\ac{PMIx} clients are strongly advised to define a document itemizing the \ac{PMIx} interfaces and associated attributes that are required for correct operation, and are optional but recommended for full functionality.
+The \ac{PMIx} standard cannot define this list for all given \ac{PMIx} clients, but such a list is valuable to \acp{RM} desiring to support these clients.
+
+\ac{PMIx}-enabled \acp{RM} may choose to implement a subset of the \ac{PMIx} standard and/or define attributes beyond those defined herein.
+\ac{PMIx}-enabled \acp{RM} are strongly advised to define a document itemizing the \ac{PMIx} interfaces and associated attributes that support, with any annotations about behavior limitations.
+The \ac{PMIx} standard cannot define this list for all given \ac{PMIx}-enabled \acp{RM}, but such a list is valuable to \ac{PMIx} clients desiring to support a broad range of \ac{PMIx}-enabled \acp{RM}.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
