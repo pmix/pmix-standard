@@ -216,7 +216,7 @@ The expected user ID and group ID of the child process helps the server library 
 
 The host server can also, if it desires, provide an object it wishes to be returned when a server function is called that relates to a specific process.
 For example, the host server may have an object that tracks the specific client.
-Passing the object to the library allows the library to return that object when the client calls ``finalize'', thus allowing the host server to access the object without performing a lookup.
+Passing the object to the library allows the library to provide that object to the host server during subsequent calls related to that client, such as a ``pmix_server_client_connected_fn'' function.  This allows the host server to access the object without performing a lookup based the client's namespace and rank.
 
 
 %%%%%%%%%%%
@@ -506,9 +506,25 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Notify the host server that a client connected to us.
-Note that the client will be in a blocked state until the host server executes the callback function, thus allowing the PMIx server support library to release the client.
+Notify the host server that a client has called PMIx_Init or PMIx_Tool_init.
+\rcomment{I am guessing a bit on whether PMIx_Tool_init causes a call to pmix_server_client_connected_fn_t}
+Note that the client will be in a blocked state until the host server executes the callback function, thus allowing the PMIx server support library to release 
+the client.  
+The server_object parameter will be the value of the server_object parameter passed to   
+\refapi{PMIx_server_register_client} previously by the host server.  If provided, an implementation of \refapi{pmix_server_client_connected_fn_t} 
+is only required to
+call the callback function designated.  A host server can choose to not be notified when clients connect by setting \refapi{client_connected} to \code{NULL}. 
 
+It is possible that only a subset of the clients in a namespace call PMIx_init.   The server's \refapi{pmix_server_client_connected_fn_t} implemenation 
+should not depend on being called once per rank in a namespace or delaying calling the callback function until all ranks have connected.  
+However, if a rank makes any PMIx calls, it must first call \refapi{PMIx_Init} and 
+therefore the server's \refapi{mpix_server_client_connected_fn_t} will be called before any other server functions specific to the rank.
+
+\adviceimplstart
+ The \refapi{PMIx_server_client_connected_fn_t} implementation provided in the \refapi{pmix_server_module_2_0_0_t} is an opportunity for a host server 
+ to update the status of the ranks it manages.  It is also a convenient and well defined time to perform initialization necessary to 
+ support further calls into the server related to that rank. 
+ \adviceimplend
 
 %%%%%%%%%%%
 \subsection{\code{pmix_server_client_finalized_fn_t}}
@@ -544,6 +560,18 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 
 Notify the host server that a client called \refapi{PMIx_Finalize}.
 Note that the client will be in a blocked state until the host server executes the callback function, thus allowing the PMIx server support library to release the client.
+The server_object parameter will be the value of the server_object parameter passed to   
+\refapi{PMIx_server_register_client} previously by the host server.  If provided, an implementation of \refapi{pmix_server_client_finalized_fn_t} 
+is only required to
+call the callback function designated.  A host server can choose to not be notified when clients finalize by setting \refapi{client_finalized} to \code{NULL}. 
+
+Note that the host server is only being informed that the client has called \refapi{PMIx_Finalize}.  The client might not have exited.  If a client 
+exits without calling \reefapi{PMIx_Finalize}, the server support library will not call the \refapi{PMIx_server_client_finalized_fn_t} implementation.
+
+\adviceimplstart
+ The \refapi{PMIx_server_client_finalized_fn_t} implementation provided in the \refapi{pmix_server_module_2_0_0_t} is an opportunity for a host server
+ to update the status of the tasks it manages.  It is also a convenient and well defined time to release resources used to support that client.   
+ \adviceimplend
 
 
 %%%%%%%%%%%
