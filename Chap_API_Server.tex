@@ -566,7 +566,7 @@ is only required to
 call the callback function designated.  A host server can choose to not be notified when clients finalize by setting \refapi{client_finalized} to \code{NULL}. 
 
 Note that the host server is only being informed that the client has called \refapi{PMIx_Finalize}.  The client might not have exited.  If a client 
-exits without calling \reefapi{PMIx_Finalize}, the server support library will not call the \refapi{PMIx_server_client_finalized_fn_t} implementation.
+exits without calling \refapi{PMIx_Finalize}, the server support library will not call the \refapi{PMIx_server_client_finalized_fn_t} implementation.
 
 \adviceimplstart
  The \refapi{PMIx_server_client_finalized_fn_t} implementation provided in the \refapi{pmix_server_module_2_0_0_t} is an opportunity for a host server
