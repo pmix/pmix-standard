@@ -105,21 +105,12 @@ PMIx_Init(pmix_proc_t *proc,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
 
-\reqattr
-The following attributes must be supported by a \ac{PMIx} implementation.
+\priattr
+The following attributes are supported in the \ac{PRI}:
 
 \pasteAttributeItem{PMIX_EVENT_BASE}
-\pasteAttributeItem{PMIX_SYSTEM_TMPDIR}
-\pasteAttributeItem{PMIX_SYSTEM_TMPDIR}
+\pasteAttributeItem{PMIX_GDS_MODULE} This attribute controls only the selection of GDS module for internal use by the process. Module selection for interacting with the server is performed dynamically during the connection process.
 
-
-\optattr
-The following attributes are optional, but should be supported by a complete PMIx implementation:
-
-\pasteAttributeItem{PMIX_MODEL_LIBRARY_NAME}
-\pasteAttributeItem{PMIX_MODEL_LIBRARY_VERSION}
-\pasteAttributeItem{PMIX_THREADING_MODEL}
-\pasteAttributeItem{PMIX_USOCK_DISABLE}
 
 %%%%
 \descr
@@ -137,10 +128,9 @@ The \ac{PMIx} client library shall be reference counted, and so multiple calls t
 Thus, one way for an application process to obtain its namespace and rank is to simply call \refapi{PMIx_Init} with a non-NULL \refarg{proc} parameter.
 Note that each call to \refapi{PMIx_Init} must be balanced with a call to \refapi{PMIx_Finalize} to maintain the reference count.
 
-Each call to \refapi{PMIx_Init} may contain an array of \refstruct{pmix_info_t} structures passing directives to the \ac{PMIx} client library.
-This might include information about the location of temporary directories set up for the application, or constraints on communication protocols for connecting to the local \ac{PMIx} server.
+Each call to \refapi{PMIx_Init} may contain an array of \refstruct{pmix_info_t} structures passing directives to the \ac{PMIx} client library as per the above attributes.
 
-Multiple calls to \refapi{PMIx_Init} shall not include conflicting directives (e.g., a directive indicating that one particular communication method be used to connect to the server, followed by a subsequent call that includes a directive that a different method be used).
+Multiple calls to \refapi{PMIx_Init} shall not include conflicting directives.
 The \refapi{PMIx_Init} function will return an error when directives that conflict with prior directives are encountered.
 
 
@@ -170,15 +160,16 @@ PMIx_Finalize(const pmix_info_t info[], size_t ninfo)
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The following attributes are supported in the \ac{PRI}:
+
+\pasteAttributeItem{PMIX_EMBED_BARRIER}
+
 %%%%
 \descr
 
 Decrement the \ac{PMIx} client library reference count.
 When the reference count reaches zero, the library will finalize the \ac{PMIx} client, closing the connection with the local \ac{PMIx} server and releasing all internally allocated memory.
-
-By default, \refapi{PMIx_Finalize} will not include an internal barrier operation.
-Users desiring a barrier as part of the finalize operation can request it by including the \refattr{PMIX_EMBED_BARRIER} attribute in the provided \refstruct{pmix_info_t} array.
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -215,6 +206,21 @@ PMIx_tool_init(pmix_proc_t *proc,
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\priattr
+The following attributes are supported in the \ac{PRI}:
+
+\pasteAttributeItem{PMIX_GDS_MODULE}
+\pasteAttributeItem{PMIX_TOOL_NSPACE}
+\pasteAttributeItem{PMIX_TOOL_RANK}
+\pasteAttributeItem{PMIX_TOOL_DO_NOT_CONNECT}
+\pasteAttributeItem{PMIX_CONNECT_TO_SYSTEM}
+\pasteAttributeItem{PMIX_CONNECT_SYSTEM_FIRST}
+\pasteAttributeItem{PMIX_SERVER_PIDINFO}
+\pasteAttributeItem{PMIX_SERVER_URI}
+\pasteAttributeItem{PMIX_TCP_URI}
+\pasteAttributeItem{PMIX_CONNECT_RETRY_DELAY}
+\pasteAttributeItem{PMIX_CONNECT_MAX_RETRIES}
 
 %%%%
 \descr
@@ -296,13 +302,30 @@ PMIx_server_init(pmix_server_module_t *module,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The following attributes are supported in the \ac{PRI}:
+
+\pasteAttributeItem{PMIX_SERVER_NSPACE}
+\pasteAttributeItem{PMIX_SERVER_RANK}
+\pasteAttributeItem{PMIX_SERVER_TMPDIR}
+\pasteAttributeItem{PMIX_SYSTEM_TMPDIR}
+\pasteAttributeItem{PMIX_SERVER_TOOL_SUPPORT}
+\pasteAttributeItem{PMIX_TCP_IF_INCLUDE}
+\pasteAttributeItem{PMIX_TCP_IPV4_PORT}
+\pasteAttributeItem{PMIX_TCP_IPV6_PORT}
+\pasteAttributeItem{PMIX_TCP_DISABLE_IPV4}
+\pasteAttributeItem{PMIX_TCP_DISABLE_IPV6}
+\pasteAttributeItem{PMIX_SERVER_REMOTE_CONNECTIONS}
+\pasteAttributeItem{PMIX_TCP_REPORT_URI}
+\pasteAttributeItem{PMIX_USOCK_DISABLE}
+
+
 %%%%
 \descr
 
 Initialize the server support library, and provide a pointer to a \refapi{pmix_server_module_t} structure containing the caller's callback functions.
 The array of \refstruct{pmix_info_t} structs is used to pass additional info that may be required by the server when initializing.
-For example, a user/group ID to set on the rendezvous file for the Unix Domain Socket.
-It also may include the \refconst{PMIX_SERVER_TOOL_SUPPORT} key, thereby indicating that the daemon is willing to accept connection requests from tools.
+For example, it may include the \refconst{PMIX_SERVER_TOOL_SUPPORT} key, thereby indicating that the daemon is willing to accept connection requests from tools.
 
 
 %%%%%%%%%%%
