@@ -4,7 +4,20 @@
 \chapter{Job Allocation Management}
 \label{chap:api_job_mgmt}
 
-\ldots
+Detecting stalled processes and receiving notification of external faults is, of course, only part of the problem. The application
+must then work with the \ac{SMS} to actually do something about the situation. Typical current practice is to simply
+terminate the impacted application, but future systems require less draconian solutions.
+
+The \refapi{PMIx_Job_control_nb} \ac{API} enables the application and \ac{SMS} to coordinate the response to failures and other events.
+This can include requesting termination of the entire job or a subset of processes within a job, but can
+also be used in combination with other \ac{PMIx} capabilities (e.g., allocation support and event notification) for more nuanced responses. For example, an application notified of an incipient over-temperature condition on a node could use the \refapi{PMIx_Allocation_request_nb} interface to request replacement nodes while simultaneously using the \refapi{PMIx_Job_control_nb} interface to direct that a checkpoint event be delivered to all processes in the application. If replacement resources are not available, the application might use the \refapi{PMIx_Job_control_nb} interface to request that the job continue at a lower power setting, perhaps sufficient to avoid the over-temperature failure.
+
+The job control API can also be used by an application to register itself as available for preemption when operating in an environment such as a cloud or where incentives, financial or otherwise, are provided to jobs willing to be preempted. Registration can include attributes indicating how many resources are being offered for preemption (e.g., all or only some portion), whether the application will require time to prepare for preemption, etc. Jobs that
+request a warning will receive an event notifying them of an impending preemption (possibly including information as to the resources that will be taken away, how much time the application will be given prior to being preempted, whether the preemption will be a suspension or full termination, etc.) so they have an opportunity to save
+their work. Once the application is ready, it calls the provided event completion callback function to indicate that
+the SMS is free to suspend or terminate it, and can include directives regarding any desired restart.
+
+Additional uses of the job control API continue to emerge. Recent additions include: (a) register temporary files and directories for cleanup upon termination of an individual process or the entire application to ensure complete cleanup even under abnormal termination conditions; (b) register a more generalized epilogue to be executed; (c) coordination of checkpoint execution; (d) passing of specified signals (kill, pause, resume, etc.) to specific processes or the entire application; and (e) request for provisioning of a specific image on one or more nodes.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,6 +58,30 @@ PMIx_Allocation_request_nb(pmix_alloc_directive_t directive,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The PMIx_Allocation_request_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, the attributes are passed to the host RM for processing.
+
+\reqattr
+\acp{RM} that implement support for the \refapi{PMIx_Allocation_request_nb} are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_ALLOC_ID}
+\pasteAttributeItem{PMIX_ALLOC_NUM_NODES}
+\pasteAttributeItem{PMIX_ALLOC_NUM_CPUS}
+\pasteAttributeItem{PMIX_ALLOC_TIME}
+
+\optattr
+A complete implementation that supports the \refapi{PMIx_Allocation_request_nb} would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_ALLOC_NODE_LIST}
+\pasteAttributeItem{PMIX_ALLOC_NUM_CPU_LIST}
+\pasteAttributeItem{PMIX_ALLOC_CPU_LIST}
+\pasteAttributeItem{PMIX_ALLOC_MEM_SIZE}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_ID}
+\pasteAttributeItem{PMIX_ALLOC_BANDWIDTH}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_QOS}
+
+
 %%%%
 \descr
 
@@ -60,14 +97,6 @@ Note that the new allocation will be disjoint from (i.e., not affiliated with) t
 \item Extend the reservation on currently allocated resources, subject to scheduling availability and priorities.
 This includes extending the time limit on current resources, and/or requesting additional resources be allocated to the requesting job.
 Any additional allocated resources will be considered as part of the current allocation, and thus will be released at the same time.
-%
-\item Release currently allocated resources that are no longer required.
-This is intended to support partial release of resources since all resources are normally released upon termination of the job.
-The identified use-cases include resource variations across discrete steps of a workflow, as well as applications that spawn sub-jobs and/or dynamically grow/shrink over time.
-%
-\item ``Lend'' resources back to the scheduler with an expectation of getting them back at some later time in the job.
-This can be a proactive operation (e.g., to save on computing costs when resources are temporarily not required), or in response to scheduler requests in lieue of preemption.
-A corresponding ability to ``reacquire'' resources previously released is included.
 %
 \end{compactitem}
 
@@ -104,6 +133,34 @@ PMIx_Job_control_nb(const pmix_proc_t targets[], size_t ntargets,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The PMIx_Job_control_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, the attributes are passed to the host RM for processing.
+
+\reqattr
+\acp{RM} that implement support for the \refapi{PMIx_Job_control_nb} are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_JOB_CTRL_ID}
+\pasteAttributeItem{PMIX_JOB_CTRL_PAUSE}
+\pasteAttributeItem{PMIX_JOB_CTRL_RESUME}
+\pasteAttributeItem{PMIX_JOB_CTRL_KILL}
+\pasteAttributeItem{PMIX_JOB_CTRL_SIGNAL}
+\pasteAttributeItem{PMIX_JOB_CTRL_TERMINATE}
+
+\optattr
+A complete implementation that supports the \refapi{PMIx_Job_control_nb} would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_JOB_CTRL_CANCEL}
+\pasteAttributeItem{PMIX_JOB_CTRL_RESTART}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_EVENT}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_SIGNAL}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_TIMEOUT}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_METHOD}
+\pasteAttributeItem{PMIX_JOB_CTRL_PROVISION}
+\pasteAttributeItem{PMIX_JOB_CTRL_PROVISION_IMAGE}
+\pasteAttributeItem{PMIX_JOB_CTRL_PREEMPTIBLE}
+
+
 %%%%
 \descr
 
@@ -122,7 +179,13 @@ If non-\code{NULL}, then the specified \refarg{release_fn} must be called when t
 \section{Process and Job Monitoring}
 \label{chap:api_job_mgmt:monitor}
 
-\ldots
+In addition to external faults, a common problem encountered in \ac{HPC} applications is a failure to make
+progress due to some internal conflict in the computation. These situations can
+result in a significant waste of resources as the \ac{SMS} is unaware of the problem, and thus cannot terminate the
+job. Various watchdog methods have been developed for detecting this situation, including requiring a periodic ``heartbeat''
+from the application and monitoring a specified file for changes in size and/or modification time.
+
+At the request of \ac{SMS} vendors and members, a monitoring support interface has been included in the PMIx v2 standard. The defined \ac{API} allows applications to request monitoring, directing what is to be monitored, the frequency of the associated check, whether or not the application is to be notified (via the event notification subsystem) of stall detection, and other characteristics of the operation. In addition, heartbeat and file monitoring methods have been included in the \ac{PRI} but are active only when requested.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Process_monitor_nb}}
@@ -131,7 +194,7 @@ If non-\code{NULL}, then the specified \refarg{release_fn} must be called when t
 %%%%
 \summary
 
-Request that something be monitored.
+Request that application processes be monitored.
 
 %%%%
 \format
@@ -156,10 +219,27 @@ PMIx_Process_monitor_nb(const pmix_info_t *monitor, pmix_status_t error,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+\ac{PMIx} provides several monitoring methods in the \ac{PRI}. All other requests are passed to the host \ac{SMS}. Internally supported attributes include:
+
+\pasteAttributeItem{PMIX_MONITOR_ID}
+\pasteAttributeItem{PMIX_MONITOR_CANCEL}
+\pasteAttributeItem{PMIX_MONITOR_APP_CONTROL}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
+\pasteAttributeItem{PMIX_MONITOR_FILE}
+\pasteAttributeItem{PMIX_MONITOR_FILE_SIZE}
+\pasteAttributeItem{PMIX_MONITOR_FILE_ACCESS}
+\pasteAttributeItem{PMIX_MONITOR_FILE_MODIFY}
+\pasteAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
+\pasteAttributeItem{PMIX_MONITOR_FILE_DROPS}
+
+
 %%%%
 \descr
 
-Request that something be monitored.
+Request that application processes be monitored via several possible methods.
 For example, that the server monitor this process for periodic heartbeats as an indication that the process has not become ``wedged''.
 When a monitor detects the specified alarm condition, it will generate an event notification using the provided error code and passing along any available relevant information.
 It is up to the caller to register a corresponding event handler.

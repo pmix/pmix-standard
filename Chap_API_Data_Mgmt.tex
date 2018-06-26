@@ -11,7 +11,7 @@
 \section{Support Macros}
 \label{chap:api_init:macros}
 
-\ldots
+\ac{PMIx} provides a set of convenience macros for creating, initiating, and releasing data buffers.
 
 %%%%%%%%%%%
 \subsection{\code{PMIX_DATA_BUFFER_CREATE}}
@@ -190,7 +190,7 @@ Extract the data in a buffer, assigning the pointer to the data (and the number 
 \section{General Routines}
 \label{chap:api_init:general}
 
-\ldots
+The following routines are provided to support internode transfers in heterogeneous environments.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Data_pack}}
@@ -364,15 +364,6 @@ Pretty-print a data value.
 
 \cspecificstart
 \begin{codepar}
-/**
- *
- *
- *
- *
- * @retval PMIX_SUCCESS The value was successfully printed.
- *
- * @retval PMIX_ERROR(s) An appropriate error code.
- */
 pmix_status_t
 PMIx_Data_print(char **output, char *prefix,
                 void *src, pmix_data_type_t type);
