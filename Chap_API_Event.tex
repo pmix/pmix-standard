@@ -172,9 +172,10 @@ The following attributes are supported in the \ac{PRI}:
 \reqattr
 \acp{RM} that implement support for PMIx event notification are required to support the following attributes:
 
-\pasteAttributeItem{PMIX_LOG_STDERR}
-\pasteAttributeItem{PMIX_LOG_STDOUT}
-\pasteAttributeItem{PMIX_LOG_SYSLOG}
+\pasteAttributeItem{PMIX_EVENT_JOB_LEVEL}
+\pasteAttributeItem{PMIX_EVENT_ENVIRO_LEVEL}
+\pasteAttributeItem{PMIX_EVENT_AFFECTED_PROC}
+\pasteAttributeItem{PMIX_EVENT_AFFECTED_PROCS}
 
 \optattr
 A complete implementation that supports \ac{PMIx} event notification would offer notifications for environmental events impacting the job, for \ac{SMS} events relating to the job, and include support for the following attributes:

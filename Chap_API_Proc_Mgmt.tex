@@ -65,9 +65,7 @@ Note that race conditions caused by multiple processes calling \refapi{PMIx_Abor
 
 \ldots
 
-\notestart
-We need to describe our approach here ala the MPI standard's section on spawn. Specifically, we should reiterate that PMIx is a messaging library for communicating between applications and the host environment, and between elements of the host environment. PMIx does not itself spawn processes nor is it intended to replace the RM in that role.
-\noteend
+\rcomment{We need to describe our approach here ala the MPI standard's section on spawn. Specifically, we should reiterate that PMIx is a messaging library for communicating between applications and the host environment, and between elements of the host environment. PMIx does not itself spawn processes nor is it intended to replace the RM in that role.}
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Spawn}}
