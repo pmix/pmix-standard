@@ -4,16 +4,14 @@
 \chapter{Key/Value Management}
 \label{chap:api_kv_mgmt}
 
-% Josh TODO
-
-\ldots
+Management of key-value pairs in \ac{PMIx} is a distributed reponsibility. While the stated objective of the \ac{PMIx} community is to eliminate collective operations, it is recognized that the traditional method of publishing/exchanging data must be supported until that objective can be met. This method relies on processes to discover and publish their local information which is collected by the local PMIx server library.
+Global exchange of the published information is then executed via a collective operation performed by the host \ac{SMS} servers.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Setting and Accessing Key/Value Pairs}
 \label{chap:api_kv_mgmt:access}
 
-\ldots
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Put}}
@@ -29,10 +27,6 @@ Push a key/value pair into the client's namespace.
 
 \cspecificstart
 \begin{codepar}
-/* Push a value into the client's namespace. The client library will cache
- * the information locally until _PMIx_Commit_ is called. The provided scope
- * value is passed to the local PMIx server, which will distribute the data
- * as directed. */
 pmix_status_t
 PMIx_Put(pmix_scope_t scope,
          const char key[], pmix_value_t *val)
@@ -55,13 +49,13 @@ The client library will cache the information locally until \refapi{PMIx_Commit}
 
 The provided \refarg{scope} is passed to the local PMIx server, which will distribute the data to other processes according to the provided scope.
 The \refstruct{pmix_scope_t} values are defined in \specrefstruct{pmix_scope_t}.
-Specific implementations may support different scope values, but all implementations must support at least \code{PMIX\_GLOBAL}.
+Specific implementations may support different scope values, but all implementations must support at least \code{PMIX_GLOBAL}.
 
 The \refstruct{pmix_value_t} structure supports both string and binary values.
-Implementations will support heterogeneous environments by properly converting binary values between host architectures, and will copy the provided \refarg{value} into internal memory.
+PMIx implementations will support heterogeneous environments by properly converting binary values between host architectures, and will copy the provided \refarg{value} into internal memory.
 
 \adviceimplstart
-The \refapi{PMIx_Data_pack}/\refapi{PMIx_Data_unpack} routines are provided to assist in meeting the heterogeneity requirement.
+The PMIx server library will properly pack/unpack data to accommodate heterogeneous environments. The host \ac{SMS} is not involved in this action.
 \adviceimplend
 
 \adviceuserstart
@@ -101,16 +95,24 @@ PMIx_Get(const pmix_proc_t *proc, const char key[],
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The following attributes are supported in the \ac{PRI}:
+
+\pasteAttributeItem{PMIX_OPTIONAL}
+\pasteAttributeItem{PMIX_IMMEDIATE}
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_DATA_SCOPE}
+
+
 %%%%
 \descr
 
 Retrieve information for the specified \refarg{key} as published by the process identified in the given \refstruct{pmix_proc_t}, returning a pointer to the value in the given address.
 
-This is a blocking operation - the caller will block until the specified data has been \refapi{PMIx_Put} by the specified rank in the \refarg{proc} structure.
+This is a blocking operation - the caller will block until either the specified data becomes available from the specified rank in the \refarg{proc} structure or the operation times out should the \refattr{PMIX_TIMEOUT} attribute have been given.
 The caller is responsible for freeing all memory associated with the returned \refarg{value} when no longer required.
 
 The \refarg{info} array is used to pass user requests regarding the get operation.
-This can include the \refattr{PMIX_TIMEOUT} attribute.
 
 
 %%%%%%%%%%%
@@ -145,10 +147,18 @@ PMIx_Get_nb(const pmix_proc_t *proc, const char key[],
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The following attributes are supported in the \ac{PRI}:
+
+\pasteAttributeItem{PMIX_OPTIONAL}
+\pasteAttributeItem{PMIX_IMMEDIATE}
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_DATA_SCOPE}
+
 %%%%
 \descr
 
-The callback function will be executed once the specified data has been \refapi{PMIx_Put} by the identified process and retrieved by the local server.
+The callback function will be executed once the specified data becomes available from the identified process and retrieved by the local server.
 The \argref{info} array is used as described by the \refapi{PMIx_Get} routine.
 
 
@@ -159,14 +169,13 @@ The \argref{info} array is used as described by the \refapi{PMIx_Get} routine.
 %%%%
 \summary
 
-\ldots
+Store some data locally for retrieval by other areas of the proc.
 
 %%%%
 \format
 
 \cspecificstart
 \begin{codepar}
-/* 
 pmix_status_t
 PMIx_Store_internal(const pmix_proc_t *proc,
                     const char *key, pmix_value_t *val);
@@ -185,7 +194,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \descr
 
 Store some data locally for retrieval by other areas of the proc.
-This is data that has only internal scope - it will never be "pushed" externally.
+This is data that has only internal scope - it will never be ``pushed'' externally.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -222,8 +231,7 @@ This is an asynchronous operation.
 The PMIx library will immediately return to the caller while the data is transmitted to the local server in the background.
 
 \adviceuserstart
-The local PMIx server will cache the information locally.
-Meaning that the committed data will not be circulated during \refapi{PMIx_Commit}.
+The local PMIx server will cache the information locally - i.e., the committed data will not be circulated during \refapi{PMIx_Commit}.
 Availability of the data upon completion of \refapi{PMIx_Commit} is therefore implementation-dependent.
 \adviceuserend
 
@@ -257,6 +265,18 @@ PMIx_Fence(const pmix_proc_t procs[], size_t nprocs,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The following attributes are supported in the \ac{PRI}:
+
+\pasteAttributeItem{PMIX_COLLECT_DATA}
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
+\pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
+
 %%%%
 \descr
 
@@ -264,31 +284,6 @@ Passing a \code{NULL} pointer as the \refarg{procs} parameter indicates that the
 Each provided \refstruct{pmix_proc_t} struct can pass \refconst{PMIX_RANK_WILDCARD} to indicate that all processes in the given namespace are participating.
 
 The \refarg{info} array is used to pass user requests regarding the fence operation.
-This can include:
-
-\pasteAttributeItem{PMIX_COLLECT_DATA}
-
-\begin{attributedesc}
-%
-\declareattritem{PMIX_COLLECT_DATA} (string)
-A boolean indicating whether or not the barrier operation is to return the \emph{put} data from all participating processes.
-A value of \emph{false} indicates that the callback is just used as a release and no data is to be returned at that time.
-A value of \emph{true} indicates that all \emph{put} data is to be collected by the barrier.
-Returned data is cached at the server to reduce memory footprint, and can be retrieved as needed by calls to \refapi{PMIx_Get}/\refapi{PMIx_Get_nb}.
-%
-\declareattritem{PMIX_COLLECTIVE_ALGO} (string)
-A comma-delimited string indicating the algorithm to be used for executing the barrier, in priority order.
-%
-\declareattritem{PMIX_COLLECTIVE_ALGO_REQD} (string)
-Instructs the host \ac{RM} that it should return an error if none of the specified algorithms are available.
-Otherwise, the \ac{RM} is to use one of the algorithms if possible, but is otherwise free to use any of its available methods to execute the operation.
-%
-\declareattritem{PMIX_TIMEOUT} (string)
-Maximum time for the fence to execute before declaring an error.
-By default, the \ac{RM} shall terminate the operation and notify participants if one or more of the indicated \refarg{procs} fails during the fence.
-However, the timeout parameter can help avoid ``hangs'' due to programming errors that prevent one or more processes from reaching the ``fence''.
-%
-\end{attributedesc}
 
 Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence} is to \emph{not} collect the data.
 
@@ -325,11 +320,25 @@ PMIx_Fence_nb(const pmix_proc_t procs[], size_t nprocs,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The following attributes are supported in the \ac{PRI}:
+
+\pasteAttributeItem{PMIX_COLLECT_DATA}
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
+\pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
+
 %%%%
 \descr
 
 Nonblocking \refapi{PMIx_Fence} routine.
 Note that the function will return an error if a \code{NULL} callback function is given.
+
+Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence_nb} is to \emph{not} collect the data.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -365,6 +374,16 @@ PMIx_Publish(const pmix_info_t info[], size_t ninfo)
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The PMIx\_Publish function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing. Note that the \ac{PRI} automatically adds the uid of the client process that published the info.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_PERSISTENCE}
+
 %%%%
 \descr
 
@@ -395,7 +414,7 @@ Nonblocking \refapi{PMIx_Publish} routine.
 
 \cspecificstart
 \begin{codepar}
-pmix_status_t 
+pmix_status_t
 PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo,
                 pmix_op_cbfunc_t cbfunc, void *cbdata)
 \end{codepar}
@@ -409,6 +428,16 @@ PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo,
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\priattr
+The PMIx_Publish_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing. Note that the \ac{PRI} automatically adds the uid of the client process that published the info.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_PERSISTENCE}
 
 %%%%
 \descr
@@ -446,6 +475,16 @@ PMIx_Lookup(pmix_pdata_t data[], size_t ndata,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The PMIx_Lookup function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing. Note that the \ac{PRI} automatically adds the uid of the client process requesting the info.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_WAIT}
+
 %%%%
 \descr
 
@@ -466,19 +505,8 @@ The proc field in each \refstruct{pmix_pdata_t} struct will contain the namespac
 \adviceuserstart
 Although this is a blocking function, it will \emph{not} wait by default for the requested data to be published.
 Instead, it will block for the time required by the server to lookup its current data and return any found items.
-Thus, the caller is responsible for ensuring that data is published prior to executing a lookup, or for retrying until the requested data is found.
+Thus, the caller is responsible for ensuring that data is published prior to executing a lookup, using \refattr{PMIX_WAIT} to instruct the server to wait for the data to be published, or for retrying until the requested data is found.
 \adviceuserend
-
-Optionally, the \refarg{info} array can be used to modify this behavior by including:
-%%%%%%%%%%%%%%%%%%5 JJH RETURN HERE
-% *
-% * (a) PMIX_WAIT - wait for the requested data to be published. The
-% *     server is to wait until all data has become available.
-% *
-% * (b) PMIX_TIMEOUT - max time to wait for data to become available.
-% *
-% */
-
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Lookup_nb}}
@@ -510,6 +538,17 @@ PMIx_Lookup_nb(char **keys,
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\priattr
+The PMIx_Lookup_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing. Note that the \ac{PRI} automatically adds the uid of the client process requesting the info.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_WAIT}
+
 
 %%%%
 \descr
@@ -546,6 +585,16 @@ PMIx_Unpublish(char **keys,
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\priattr
+The PMIx_Unpublish function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing. Note that the \ac{PRI} automatically adds the uid of the client process that issued the request.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+
 
 %%%%
 \descr
@@ -588,6 +637,15 @@ PMIx_Unpublish_nb(char **keys,
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\priattr
+The PMIx_Unpublish_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing. Note that the \ac{PRI} automatically adds the uid of the client process that issued the request.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
 
 %%%%
 \descr

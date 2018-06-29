@@ -11,7 +11,7 @@
 \section{Abort}
 \label{chap:api_proc_mgmt:abort}
 
-\ldots
+\ac{PMIx} provides a dedicated API by which an application can request that specified processes be aborted by the system.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Abort}}
@@ -20,7 +20,7 @@
 %%%%
 \summary
 
-Abort the specified process.
+Abort the specified processes
 
 %%%%
 \format
@@ -65,6 +65,8 @@ Note that race conditions caused by multiple processes calling \refapi{PMIx_Abor
 
 \ldots
 
+\rcomment{We need to describe our approach here ala the MPI standard's section on spawn. Specifically, we should reiterate that PMIx is a messaging library for communicating between applications and the host environment, and between elements of the host environment. PMIx does not itself spawn processes nor is it intended to replace the RM in that role.}
+
 %%%%%%%%%%%
 \subsection{\code{PMIx_Spawn}}
 \declareapi{PMIx_Spawn}
@@ -96,6 +98,59 @@ PMIx_Spawn(const pmix_info_t job_info[], size_t ninfo,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The PMIx_Spawn function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing. Note that the \ac{PRI} automatically adds the following attributes to those provided before passing the request to the host daemon:
+
+\pasteAttributeItem{PMIX_SPAWNED}
+\pasteAttributeItem{PMIX_PARENT_ID}
+\pasteAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
+\pasteAttributeItem{PMIX_REQUESTOR_IS_TOOL}
+
+The \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes are passed to the child processes upon connection to a PMIx server.
+
+\reqattr
+\acp{RM} that implement support for \refapi{PMIx_Spawn} are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_WDIR}
+\pasteAttributeItem{PMIX_SET_SESSION_CWD}
+\pasteAttributeItem{PMIX_PREFIX}
+\pasteAttributeItem{PMIX_HOST}
+\pasteAttributeItem{PMIX_HOSTFILE}
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_ADD_HOSTFILE}
+\pasteAttributeItem{PMIX_ADD_HOST}
+\pasteAttributeItem{PMIX_PRELOAD_BIN}
+\pasteAttributeItem{PMIX_PRELOAD_FILES}
+\pasteAttributeItem{PMIX_PERSONALITY}
+\pasteAttributeItem{PMIX_MAPPER}
+\pasteAttributeItem{PMIX_DISPLAY_MAP}
+\pasteAttributeItem{PMIX_PPR}
+\pasteAttributeItem{PMIX_MAPBY}
+\pasteAttributeItem{PMIX_RANKBY}
+\pasteAttributeItem{PMIX_BINDTO}
+\pasteAttributeItem{PMIX_NON_PMI}
+\pasteAttributeItem{PMIX_STDIN_TGT}
+\pasteAttributeItem{PMIX_FWD_STDIN}
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
+\pasteAttributeItem{PMIX_TAG_OUTPUT}
+\pasteAttributeItem{PMIX_TIMESTAMP_OUTPUT}
+\pasteAttributeItem{PMIX_MERGE_STDERR_STDOUT}
+\pasteAttributeItem{PMIX_OUTPUT_TO_FILE}
+\pasteAttributeItem{PMIX_INDEX_ARGV}
+\pasteAttributeItem{PMIX_CPUS_PER_PROC}
+\pasteAttributeItem{PMIX_NO_PROCS_ON_HEAD}
+\pasteAttributeItem{PMIX_NO_OVERSUBSCRIBE}
+\pasteAttributeItem{PMIX_REPORT_BINDINGS}
+\pasteAttributeItem{PMIX_CPU_LIST}
+\pasteAttributeItem{PMIX_JOB_RECOVERABLE}
+\pasteAttributeItem{PMIX_JOB_CONTINUOUS}
+\pasteAttributeItem{PMIX_MAX_RESTARTS}
+
 %%%%
 \descr
 
@@ -108,22 +163,6 @@ Behavior of individual resource managers may differ, but it is expected that fai
 By default, the spawned processes will be PMIx ``connected'' to the parent process upon successful launch (see \refapi{PMIx_Connect} description for details).
 Note that this only means that the parent process (a) will be given a copy of the new job's
 information so it can query job-level info without incurring any communication penalties, and (b) will receive notification of errors from process in the child job.
-
-Job-level directives can be specified in the \refarg{job_info} array.
-This can include:
-\begin{attributedesc}
-%
-\declareattritem{PMIX_NON_PMI} (string)
-Processes in the spawned job will not be calling \refapi{PMIx_Init}.
-%
-\declareattritem{PMIX_TIMEOUT} (string)
-Declare the spawn as having failed if the launched processes do not call \refapi{PMIx_Init} within the specified time.
-%
-\declareattritem{PMIX_NOTIFY_COMPLETION} (string)
-Notify the parent process when the child job terminates, either normally or with error.
-%
-\end{attributedesc}
-
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Spawn_nb}}
@@ -155,6 +194,59 @@ PMIx_Spawn_nb(const pmix_info_t job_info[], size_t ninfo,
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\priattr
+The PMIx_Spawn_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing. Note that the \ac{PRI} automatically adds the following attributes to those provided before passing the request to the host daemon:
+
+\pasteAttributeItem{PMIX_SPAWNED}
+\pasteAttributeItem{PMIX_PARENT_ID}
+\pasteAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
+\pasteAttributeItem{PMIX_REQUESTOR_IS_TOOL}
+
+The \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes are passed to the child processes upon connection to a PMIx server.
+
+\reqattr
+\acp{RM} that implement support for \refapi{PMIx_Spawn} are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_WDIR}
+\pasteAttributeItem{PMIX_SET_SESSION_CWD}
+\pasteAttributeItem{PMIX_PREFIX}
+\pasteAttributeItem{PMIX_HOST}
+\pasteAttributeItem{PMIX_HOSTFILE}
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_ADD_HOSTFILE}
+\pasteAttributeItem{PMIX_ADD_HOST}
+\pasteAttributeItem{PMIX_PRELOAD_BIN}
+\pasteAttributeItem{PMIX_PRELOAD_FILES}
+\pasteAttributeItem{PMIX_PERSONALITY}
+\pasteAttributeItem{PMIX_MAPPER}
+\pasteAttributeItem{PMIX_DISPLAY_MAP}
+\pasteAttributeItem{PMIX_PPR}
+\pasteAttributeItem{PMIX_MAPBY}
+\pasteAttributeItem{PMIX_RANKBY}
+\pasteAttributeItem{PMIX_BINDTO}
+\pasteAttributeItem{PMIX_NON_PMI}
+\pasteAttributeItem{PMIX_STDIN_TGT}
+\pasteAttributeItem{PMIX_FWD_STDIN}
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
+\pasteAttributeItem{PMIX_TAG_OUTPUT}
+\pasteAttributeItem{PMIX_TIMESTAMP_OUTPUT}
+\pasteAttributeItem{PMIX_MERGE_STDERR_STDOUT}
+\pasteAttributeItem{PMIX_OUTPUT_TO_FILE}
+\pasteAttributeItem{PMIX_INDEX_ARGV}
+\pasteAttributeItem{PMIX_CPUS_PER_PROC}
+\pasteAttributeItem{PMIX_NO_PROCS_ON_HEAD}
+\pasteAttributeItem{PMIX_NO_OVERSUBSCRIBE}
+\pasteAttributeItem{PMIX_REPORT_BINDINGS}
+\pasteAttributeItem{PMIX_CPU_LIST}
+\pasteAttributeItem{PMIX_JOB_RECOVERABLE}
+\pasteAttributeItem{PMIX_JOB_CONTINUOUS}
+\pasteAttributeItem{PMIX_MAX_RESTARTS}
 
 %%%%
 \descr
@@ -197,6 +289,14 @@ PMIx_Connect(const pmix_proc_t procs[], size_t nprocs,
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\priattr
+The PMIx_Connect function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
 
 %%%%
 \descr
@@ -246,6 +346,14 @@ PMIx_Connect_nb(const pmix_proc_t procs[], size_t nprocs,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The PMIx_Connect_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
 %%%%
 \descr
 
@@ -280,6 +388,14 @@ PMIx_Disconnect(const pmix_proc_t procs[], size_t nprocs,
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\priattr
+The PMIx_Disonnect function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
 
 %%%%
 \descr
@@ -323,6 +439,14 @@ PMIx_Disconnect_nb(const pmix_proc_t ranges[], size_t nprocs,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\priattr
+The PMIx_Disonnect_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
 %%%%
 \descr
 
@@ -334,7 +458,11 @@ Nonblocking \refapi{PMIx_Disconnect} routine.
 \section{Query}
 \label{chap:api_proc_mgmt:query}
 
-\ldots
+As the level of interaction between applications and the host \ac{SMS} grows, so too does the need for the application to query the \ac{SMS} regarding its capabilities and state information. \ac{PMIx} provides a generalized query interface for this purpose, along with a set of standardized attribute keys to support a range of requests. This includes requests to determine the status of scheduling queues and active allocations, the scope of \ac{API} and attribute support offered by the \ac{SMS}, namespaces of active jobs, location and information about a job's processes, and information regarding available resources.
+
+An example use-case for the PMIx_Query API is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully, e.g., to write a checkpoint before termination, it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
+
+PMIx defines an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the PMIx_Query interface to obtain the number of seconds remaining in the current job allocation. Note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} API to request that the host SMS generate an event a specified amount of time prior to reaching the maximum run time. \ac{PMIx} provides such alternate methods as a means of maximizing the probability of a host system supporting at least one method by which the application can obtain the desired service.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Resolve_peers}}
@@ -343,7 +471,7 @@ Nonblocking \refapi{PMIx_Disconnect} routine.
 %%%%
 \summary
 
-Access an array of processes within the specified namespace on a node.
+Obtain the array of processes within the specified namespace that are executing on a given node.
 
 %%%%
 \format
@@ -368,8 +496,8 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Given a \refarg{nodename}, return an array of processes within the specified \refarg{nspace}
-on that node.
+Given a \refarg{nodename}, return the array of processes within the specified \refarg{nspace}
+that are executing on that node.
 If the \refarg{nspace} is \code{NULL}, then all processes on the node will be returned.
 If the specified node does not currently host any processes, then the returned array will be \code{NULL}, and \refarg{nprocs} will be \code{0}.
 The caller is responsible for releasing the \refarg{procs} array when done with it.
@@ -384,7 +512,7 @@ The \refapi{PMIX_PROC_FREE} macro is provided for this purpose.
 %%%%
 \summary
 
-Return a list of nodes hosting processes.
+Return a list of nodes hosting processes within the given namespace.
 
 %%%%
 \format
@@ -451,6 +579,27 @@ PMIx_Query_info_nb(pmix_query_t queries[], size_t nqueries,
 \item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the data has been returned
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The host \ac{RM} does not support this function
 \end{constantdesc}
+
+\priattr
+The PMIx_Query_info_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_QUERY_NAMESPACES}
+\pasteAttributeItem{PMIX_QUERY_JOB_STATUS}
+\pasteAttributeItem{PMIX_QUERY_QUEUE_LIST}
+\pasteAttributeItem{PMIX_QUERY_QUEUE_STATUS}
+\pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_MEMORY_USAGE}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_ONLY}
+\pasteAttributeItem{PMIX_QUERY_REPORT_AVG}
+\pasteAttributeItem{PMIX_QUERY_REPORT_MINMAX}
+\pasteAttributeItem{PMIX_QUERY_ALLOC_STATUS}
+\pasteAttributeItem{PMIX_TIME_REMAINING}
 
 %%%%
 \descr

@@ -104,7 +104,7 @@ The input is expected to consist of a comma-separated list of ranges.
 %%%%
 \summary
 
-Setup the data about a particular namespace so it can be passed to any child process upon startup.
+Setup the data about a particular namespace.
 
 %%%%
 \format
@@ -131,16 +131,16 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-The PMIx connection procedure provides an opportunity for the host PMIx server to pass job-related info down to a child process.
+The PMIx_server_register_nspace procedure provides an opportunity for the host \ac{RM} daemon to pass job-related info down to a child process.
 This might include the number of processes in the job, relative local ranks of the processes within the job, and other information of use to the process.
-The server is free to determine which, if any, of the supported elements it will provide (See \refsection{chap:struct}{Data Structures and Types} for values).
+The host daemon is free to determine which, if any, of the supported elements it will provide (See \refsection{chap:struct}{Data Structures and Types} for values).
 
 The PMIx server must register \emph{all} namespaces that will participate in collective operations with local processes.
 This means that the server must register a namespace even if it will not host any local procs from within that nspace \emph{if} any local process might at some point perform a collective operation involving one or more processes from that namespace.
 This is necessary so that the collective operation can know when it is locally complete.
 
 The caller must also provide the number of local processes that will be launched within this namespace.
-This is required for the PMIx server library to correctly handle collectives as a collective operation call can occur before all the processes have been started.
+This is required for the PMIx server library to correctly handle collectives as a collective operation call can occur before all the local processes have been started.
 
 
 %%%%%%%%%%%
@@ -249,7 +249,7 @@ void PMIx_server_deregister_client(const pmix_proc_t *proc,
 \descr
 
 The \refapi{PMIx_server_deregister_nspace} API will automatically delete all client information for that namespace.
-This API is therefore intended solely for use in exception cases.
+This API is therefore intended primarily for use in exception cases, but can be called in non-exception cases if desired.
 
 
 %%%%%%%%%%%
@@ -326,7 +326,6 @@ This is used to support the direct modex operation (i.e., where data is cached l
 Upon receiving a request from a remote server, the host server will call this function to pass the request into the PMIx server.
 The PMIx server will return a blob (once it becomes available) via the \refarg{cbfunc} - the host server shall send the blob back to the original requestor.
 
-The callback function used by the PMIx server to return direct modex requests to the host server.
 The PMIx server will free the data blob upon return from the response function.
 
 
@@ -339,7 +338,7 @@ The PMIx server will free the data blob upon return from the response function.
 \summary
 
 Provide a function by which the resource manager can request any application-specific environmental variables prior to launch of an application.
- 
+
 %%%%
 \format
 
@@ -370,13 +369,15 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Provide a function by which the resource manager can request any application-specific environmental variables prior to launch of an application.
-For example, network libraries may opt to provide security credentials for the application.
-This is defined as a non-blocking operation in case network libraries need to perform some action before responding.
-The returned env will be distributed along with the application
+Provide a function by which the scheduler can request any application-specific setup data (e.g., environmental variables, fabric configuration and security credentials) prior to initiating launch of an application.
+This is defined as a non-blocking operation in case contributing plugins need to perform some action before responding.
+The returned data will be distributed along with the application. This is strictly a \ac{PMIx} server operation - the host \ac{RM} is not contacted nor involved in its execution.
 
 In the callback function, the returned \refarg{info} array is owned by the PMIx server library and will be free'd when the provided \refarg{cbfunc} is called.
 
+\adviceimplstart
+Support for harvesting of environmental variables and providing of local configuration information by the \ac{PRI} is solely dependent on the operations of the active PMIx plugins. Support in the PMIx v2.x release series is limited - more complete support is available beginning with the PMIx v3.x series
+\adviceimplend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_setup_local_support}}
@@ -408,18 +409,18 @@ pmix_status_t PMIx_server_setup_local_support(const char nspace[],
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+
 %%%%
 \descr
 
-Provide a function by which the local PMIx server can perform any application-specific operations prior to spawning local clients of a given application.
-For example, a network library might need to setup the local driver for ``instant on'' addressing.
+Provide a function by which the local PMIx server can perform any application-specific operations prior to spawning local clients of a given application. For example, a network library might need to setup the local driver for ``instant on'' addressing. The data provided in the \refarg{info} array is the data provided to ther host \ac{RM} from the scheduler's call to \refapi{PMIx_server_setup_application}.
 
 
 %%%%%%%%%%%
 \section{Server Function Pointers}
 
 The PMIx Server will set the function pointers in the \refapi{pmix_server_module_t} structure that they then pass to \refapi{PMIx_server_init}.
-That module structure and associated function references is defined in this section.
+That module structure and associated function references are defined in this section.
 
 %%%%%%%%%%%
 \subsection{\code{pmix_server_module_t} Module}
@@ -506,24 +507,23 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Notify the host server that a client has called PMIx_Init or PMIx_Tool_init.
-\rcomment{I am guessing a bit on whether PMIx_Tool_init causes a call to pmix_server_client_connected_fn_t}
-Note that the client will be in a blocked state until the host server executes the callback function, thus allowing the PMIx server support library to release 
-the client.  
-The server_object parameter will be the value of the server_object parameter passed to   
-\refapi{PMIx_server_register_client} previously by the host server.  If provided, an implementation of \refapi{pmix_server_client_connected_fn_t} 
+Notify the host server that a client has called PMIx_Init.
+Note that the client will be in a blocked state until the host server executes the callback function, thus allowing the PMIx server support library to release
+the client.
+The server_object parameter will be the value of the server_object parameter passed to
+\refapi{PMIx_server_register_client} previously by the host server.  If provided, an implementation of \refapi{pmix_server_client_connected_fn_t}
 is only required to
-call the callback function designated.  A host server can choose to not be notified when clients connect by setting \refapi{client_connected} to \code{NULL}. 
+call the callback function designated.  A host server can choose to not be notified when clients connect by setting \refapi{client_connected} to \code{NULL}.
 
-It is possible that only a subset of the clients in a namespace call PMIx_init.   The server's \refapi{pmix_server_client_connected_fn_t} implemenation 
-should not depend on being called once per rank in a namespace or delaying calling the callback function until all ranks have connected.  
-However, if a rank makes any PMIx calls, it must first call \refapi{PMIx_Init} and 
+It is possible that only a subset of the clients in a namespace call PMIx_init.   The server's \refapi{pmix_server_client_connected_fn_t} implemenation
+should not depend on being called once per rank in a namespace or delay calling the callback function until all ranks have connected.
+However, if a rank makes any PMIx calls, it must first call \refapi{PMIx_Init} and
 therefore the server's \refapi{mpix_server_client_connected_fn_t} will be called before any other server functions specific to the rank.
 
 \adviceimplstart
- The \refapi{PMIx_server_client_connected_fn_t} implementation provided in the \refapi{pmix_server_module_2_0_0_t} is an opportunity for a host server 
- to update the status of the ranks it manages.  It is also a convenient and well defined time to perform initialization necessary to 
- support further calls into the server related to that rank. 
+ The \refapi{PMIx_server_client_connected_fn_t} implementation provided in the \refapi{pmix_server_module_2_0_0_t} is an opportunity for a host server
+ to update the status of the ranks it manages.  It is also a convenient and well defined time to perform initialization necessary to
+ support further calls into the server related to that rank.
  \adviceimplend
 
 %%%%%%%%%%%
@@ -560,17 +560,17 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 
 Notify the host server that a client called \refapi{PMIx_Finalize}.
 Note that the client will be in a blocked state until the host server executes the callback function, thus allowing the PMIx server support library to release the client.
-The server_object parameter will be the value of the server_object parameter passed to   
-\refapi{PMIx_server_register_client} previously by the host server.  If provided, an implementation of \refapi{pmix_server_client_finalized_fn_t} 
+The server_object parameter will be the value of the server_object parameter passed to
+\refapi{PMIx_server_register_client} previously by the host server.  If provided, an implementation of \refapi{pmix_server_client_finalized_fn_t}
 is only required to
-call the callback function designated.  A host server can choose to not be notified when clients finalize by setting \refapi{client_finalized} to \code{NULL}. 
+call the callback function designated.  A host server can choose to not be notified when clients finalize by setting \refapi{client_finalized} to \code{NULL}.
 
-Note that the host server is only being informed that the client has called \refapi{PMIx_Finalize}.  The client might not have exited.  If a client 
+Note that the host server is only being informed that the client has called \refapi{PMIx_Finalize}.  The client might not have exited.  If a client
 exits without calling \refapi{PMIx_Finalize}, the server support library will not call the \refapi{PMIx_server_client_finalized_fn_t} implementation.
 
 \adviceimplstart
  The \refapi{PMIx_server_client_finalized_fn_t} implementation provided in the \refapi{pmix_server_module_2_0_0_t} is an opportunity for a host server
- to update the status of the tasks it manages.  It is also a convenient and well defined time to release resources used to support that client.   
+ to update the status of the tasks it manages.  It is also a convenient and well defined time to release resources used to support that client.
  \adviceimplend
 
 
@@ -654,6 +654,13 @@ typedef pmix_status_t (*pmix_server_fencenb_fn_t)(
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
+\pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
+
 %%%%
 \descr
 
@@ -701,6 +708,11 @@ typedef pmix_status_t (*pmix_server_dmodex_req_fn_t)(
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
 %%%%
 \descr
 
@@ -742,10 +754,21 @@ typedef pmix_status_t (*pmix_server_publish_fn_t)(
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\reqattr
+\acp{RM} that implement support this entry point are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_PERSISTENCE}
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
 %%%%
 \descr
 
-Publish data per the PMIx API specification.
+Publish data per the \refapi{PMIx_Publish} specification.
 The callback is to be executed upon completion of the operation.
 The default data range is expected to be \refconst{PMIX_SESSION}, and the default persistence \refconst{PMIX_PERSIST_SESSION}.
 These values can be modified by including the respective \refstruct{pmix_info_t} struct in the \refarg{info} array.
@@ -790,6 +813,17 @@ typedef pmix_status_t (*pmix_server_lookup_fn_t)(
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\reqattr
+\acp{RM} that implement support this entry point are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_RANGE}
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_WAIT}
+
 %%%%
 \descr
 
@@ -833,6 +867,12 @@ typedef pmix_status_t (*pmix_server_unpublish_fn_t)(
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+
 %%%%
 \descr
 
@@ -848,7 +888,7 @@ The callback is to be executed upon completion of the delete procedure.
 %%%%
 \summary
 
-Spawn a set of applications/processes as per the PMIx API.
+Spawn a set of applications/processes as per the \refapi{PMIx_Spawn} API.
 
 %%%%
 \format
@@ -875,10 +915,53 @@ typedef pmix_status_t (*pmix_server_spawn_fn_t)(
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\reqattr
+\acp{RM} that implement support for \refapi{PMIx_Spawn} are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_WDIR}
+\pasteAttributeItem{PMIX_SET_SESSION_CWD}
+\pasteAttributeItem{PMIX_PREFIX}
+\pasteAttributeItem{PMIX_HOST}
+\pasteAttributeItem{PMIX_HOSTFILE}
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_ADD_HOSTFILE}
+\pasteAttributeItem{PMIX_ADD_HOST}
+\pasteAttributeItem{PMIX_PRELOAD_BIN}
+\pasteAttributeItem{PMIX_PRELOAD_FILES}
+\pasteAttributeItem{PMIX_PERSONALITY}
+\pasteAttributeItem{PMIX_MAPPER}
+\pasteAttributeItem{PMIX_DISPLAY_MAP}
+\pasteAttributeItem{PMIX_PPR}
+\pasteAttributeItem{PMIX_MAPBY}
+\pasteAttributeItem{PMIX_RANKBY}
+\pasteAttributeItem{PMIX_BINDTO}
+\pasteAttributeItem{PMIX_NON_PMI}
+\pasteAttributeItem{PMIX_STDIN_TGT}
+\pasteAttributeItem{PMIX_FWD_STDIN}
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
+\pasteAttributeItem{PMIX_TAG_OUTPUT}
+\pasteAttributeItem{PMIX_TIMESTAMP_OUTPUT}
+\pasteAttributeItem{PMIX_MERGE_STDERR_STDOUT}
+\pasteAttributeItem{PMIX_OUTPUT_TO_FILE}
+\pasteAttributeItem{PMIX_INDEX_ARGV}
+\pasteAttributeItem{PMIX_CPUS_PER_PROC}
+\pasteAttributeItem{PMIX_NO_PROCS_ON_HEAD}
+\pasteAttributeItem{PMIX_NO_OVERSUBSCRIBE}
+\pasteAttributeItem{PMIX_REPORT_BINDINGS}
+\pasteAttributeItem{PMIX_CPU_LIST}
+\pasteAttributeItem{PMIX_JOB_RECOVERABLE}
+\pasteAttributeItem{PMIX_JOB_CONTINUOUS}
+\pasteAttributeItem{PMIX_MAX_RESTARTS}
+
 %%%%
 \descr
 
-Spawn a set of applications/processes as per the PMIx API.
+Spawn a set of applications/processes as per the \refapi{PMIx_Spawn} API.
 Note that applications are not required to be MPI or any other programming model.
 Thus, the host server cannot make any assumptions as to their required support.
 The callback function is to be executed once all processes have been started.
@@ -918,6 +1001,11 @@ typedef pmix_status_t (*pmix_server_connect_fn_t)(
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
 
 %%%%
 \descr
@@ -965,6 +1053,11 @@ typedef pmix_status_t (*pmix_server_disconnect_fn_t)(
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
 %%%%
 \descr
 
@@ -1009,6 +1102,24 @@ Register to receive notifications for the specified events.
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\reqattr
+\acp{RM} that implement support for PMIx event notification are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_EVENT_JOB_LEVEL}
+\pasteAttributeItem{PMIX_EVENT_ENVIRO_LEVEL}
+\pasteAttributeItem{PMIX_EVENT_AFFECTED_PROC}
+\pasteAttributeItem{PMIX_EVENT_AFFECTED_PROCS}
+
+\optattr
+A complete implementation that supports \ac{PMIx} event notification would offer notifications for environmental events impacting the job, for \ac{SMS} events relating to the job, and include support for the following attributes:
+
+\pasteAttributeItem{PMIX_EVENT_TERMINATE_SESSION}
+\pasteAttributeItem{PMIX_EVENT_TERMINATE_JOB}
+\pasteAttributeItem{PMIX_EVENT_TERMINATE_NODE}
+\pasteAttributeItem{PMIX_EVENT_TERMINATE_PROC}
+\pasteAttributeItem{PMIX_EVENT_ACTION_TIMEOUT}
+\pasteAttributeItem{PMIX_EVENT_SILENT_TERMINATION}
 
 %%%%
 \descr
@@ -1166,7 +1277,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 
 Register a socket the host server can monitor for connection requests, harvest them, and then call our internal callback function for further processing.
 A listener thread is essential to efficiently harvesting connection requests from large numbers of local clients such as occur when running on large SMPs.
-The host server listener is required to call accept on the incoming connection request, and then passing the resulting soct to the provided cbfunc.
+The host server listener is required to call accept on the incoming connection request, and then pass the resulting socket to the provided cbfunc.
 A NULL for this function will cause the internal PMIx server to spawn its own listener thread.
 
 
@@ -1201,6 +1312,24 @@ typedef pmix_status_t (*pmix_server_query_fn_t)(
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\optattr
+A complete implementation would include support for the following query attributes:
+
+\pasteAttributeItem{PMIX_QUERY_NAMESPACES}
+\pasteAttributeItem{PMIX_QUERY_JOB_STATUS}
+\pasteAttributeItem{PMIX_QUERY_QUEUE_LIST}
+\pasteAttributeItem{PMIX_QUERY_QUEUE_STATUS}
+\pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_MEMORY_USAGE}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_ONLY}
+\pasteAttributeItem{PMIX_QUERY_REPORT_AVG}
+\pasteAttributeItem{PMIX_QUERY_REPORT_MINMAX}
+\pasteAttributeItem{PMIX_QUERY_ALLOC_STATUS}
+\pasteAttributeItem{PMIX_TIME_REMAINING}
 
 %%%%
 \descr
@@ -1271,26 +1400,25 @@ typedef void (*pmix_server_tool_connection_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_FWD_STDIN}
+
 
 %%%%
 \descr
 
 Register that a tool has connected to the server, and request that the tool be assigned an nspace/rank for further interactions.
-The optional \refstruct{pmix_info_t} array can be used to pass qualifiers for the connection request:
+The \refstruct{pmix_info_t} array is used to pass qualifiers for the connection request, including the effective uid and gid of the calling tool for authentication purposes.
 
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_USERID} effective userid of the tool
-%
-\declareconstitem{PMIX_GRPID} effective groupid of the tool
-%
-\declareconstitem{PMIX_FWD_STDOUT} forward any stdout to this tool
-%
-\declareconstitem{PMIX_FWD_STDERR} forward any stderr to this tool
-%
-\declareconstitem{PMIX_FWD_STDIN} forward stdin from this tool to any processes spawned on its behalf
-%
-\end{constantdesc}
+\adviceimplstart
+The host \ac{RM} is solely responsible for authenticating and authorizing the connection, and for authorizing all subsequent tool requests.
+\adviceimplend
 
 
 %%%%%%%%%%%
@@ -1325,6 +1453,22 @@ typedef void (*pmix_server_log_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
+
+\reqattr
+\acp{RM} that implement support for the \refapi{PMIx_Log_nb} are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_LOG_STDERR}
+\pasteAttributeItem{PMIX_LOG_STDOUT}
+\pasteAttributeItem{PMIX_LOG_SYSLOG}
+
+\optattr
+A complete implementation that supports the \refapi{PMIx_Log_nb} would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_LOG_MSG}
+\pasteAttributeItem{PMIX_LOG_EMAIL}
+\pasteAttributeItem{PMIX_LOG_EMAIL_ADDR}
+\pasteAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
+\pasteAttributeItem{PMIX_LOG_EMAIL_MSG}
 
 %%%%
 \descr
@@ -1364,6 +1508,26 @@ typedef pmix_status_t (*pmix_server_alloc_fn_t)(
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\reqattr
+\acp{RM} that implement support for the \refapi{PMIx_Allocation_request_nb} are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_ALLOC_ID}
+\pasteAttributeItem{PMIX_ALLOC_NUM_NODES}
+\pasteAttributeItem{PMIX_ALLOC_NUM_CPUS}
+\pasteAttributeItem{PMIX_ALLOC_TIME}
+
+\optattr
+A complete implementation that supports the \refapi{PMIx_Allocation_request_nb} would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_ALLOC_NODE_LIST}
+\pasteAttributeItem{PMIX_ALLOC_NUM_CPU_LIST}
+\pasteAttributeItem{PMIX_ALLOC_CPU_LIST}
+\pasteAttributeItem{PMIX_ALLOC_MEM_SIZE}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_ID}
+\pasteAttributeItem{PMIX_ALLOC_BANDWIDTH}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_QOS}
 
 %%%%
 \descr
@@ -1405,6 +1569,30 @@ typedef pmix_status_t (*pmix_server_job_control_fn_t)(
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
+\reqattr
+\acp{RM} that implement support for the \refapi{PMIx_Job_control_nb} are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_JOB_CTRL_ID}
+\pasteAttributeItem{PMIX_JOB_CTRL_PAUSE}
+\pasteAttributeItem{PMIX_JOB_CTRL_RESUME}
+\pasteAttributeItem{PMIX_JOB_CTRL_KILL}
+\pasteAttributeItem{PMIX_JOB_CTRL_SIGNAL}
+\pasteAttributeItem{PMIX_JOB_CTRL_TERMINATE}
+
+\optattr
+A complete implementation that supports the \refapi{PMIx_Job_control_nb} would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_JOB_CTRL_CANCEL}
+\pasteAttributeItem{PMIX_JOB_CTRL_RESTART}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_EVENT}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_SIGNAL}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_TIMEOUT}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_METHOD}
+\pasteAttributeItem{PMIX_JOB_CTRL_PROVISION}
+\pasteAttributeItem{PMIX_JOB_CTRL_PROVISION_IMAGE}
+\pasteAttributeItem{PMIX_JOB_CTRL_PREEMPTIBLE}
+
 %%%%
 \descr
 
@@ -1444,11 +1632,15 @@ typedef pmix_status_t (*pmix_server_monitor_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. This entry point is only called for monitoring requests that are not directly supported by the \ac{PRI}.
 
 %%%%
 \descr
 
 Request that a client be monitored for activity.
+
+\adviceimplstart
+Given that \ac{PRI}-recognized monitoring requests are handled within the PMIx server itself, it is expected that monitoring requests passed to the host RM daemon will be environment-specific.
+\adviceimplend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
