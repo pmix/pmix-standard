@@ -24,11 +24,11 @@ Additional constants associated with specific data structures are defined in the
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_MAX_NSLEN} (integer)
-Maximum namespace string length
+\declareconstitemvalue{PMIX_MAX_NSLEN}{255}
+Maximum namespace string length as an integer.
 %
-\declareconstitem{PMIX_MAX_KEYLEN} (integer)
-Maximum key string length
+\declareconstitemvalue{PMIX_MAX_KEYLEN}{511}
+Maximum key string length as an integer.
 %
 \end{constantdesc}
 
@@ -38,7 +38,7 @@ Maximum key string length
 \label{api:struct:errors}
 \declarestruct{pmix_status_t}
 
-The \refstruct{pmix_status_t} structure is an integer type for return status.
+The \refstruct{pmix_status_t} structure is a \code{int} type for return status.
 
 The tables shown in this section define the possible values for \refstruct{pmix_status_t}.
 PMIx errors are always negative, with 0 reserved for \refconst{PMIX_SUCCESS}.
@@ -50,6 +50,7 @@ A PMIx implementation must define all of the constants defined in this section, 
 
 The table below represents those constants defined in the PMIx v1 standard.
 Those values in this table that were deprecated in later standards are denoted as such.
+\ac{PMIx} errors are always negative, with \code{0} reserved for success.
 
 \begin{constantdesc}
 %
@@ -215,6 +216,9 @@ The table below represents those additional constants defined in the PMIx v2 sta
 
 \begin{constantdesc}
 %
+\declareconstitemvalue{PMIX_ERR_V2X_BASE}{-100}
+The starting point for v2 error values.
+%
 \declareconstitem{PMIX_ERR_LOST_CONNECTION_TO_SERVER}
 Lost connection to server
 %
@@ -245,6 +249,15 @@ Job monitoring: Heartbeat alert
 \declareconstitem{PMIX_MONITOR_FILE_ALERT}
 Job monitoring: File alert
 %
+\end{constantdesc}
+
+The table below are operational error constants introduced in the v2 standard.
+
+\begin{constantdesc}
+%
+\declareconstitemvalue{PMIX_ERR_OP_BASE}{PMIX_ERR_V2X_BASE-30}
+The starting point for v2 operational error values.
+%
 \declareconstitem{PMIX_ERR_EVENT_REGISTRATION}
 Error in event registration
 %
@@ -260,11 +273,29 @@ Model declared
 \declareconstitem{PMIX_GDS_ACTION_COMPLETE}
 The \ac{GDS} action has completed
 %
+\end{constantdesc}
+
+The table below are system error constants introduced in the v2 standard.
+
+\begin{constantdesc}
+%
+\declareconstitemvalue{PMIX_ERR_SYS_BASE}{PMIX_ERR_OP_BASE-100}
+The starting point for v2 system error values.
+%
 \declareconstitem{PMIX_ERR_NODE_DOWN}
 Node down
 %
 \declareconstitem{PMIX_ERR_NODE_OFFLINE}
 Node is marked as offline
+%
+\end{constantdesc}
+
+The table below are event handler error constants introduced in the v2 standard.
+
+\begin{constantdesc}
+%
+\declareconstitemvalue{PMIX_ERR_EVHDLR_BASE}{PMIX_ERR_SYS_BASE-100}
+The starting point for v2 event handler error values.
 %
 \declareconstitem{PMIX_EVENT_NO_ACTION_TAKEN}
 Event handler: No action taken
@@ -280,6 +311,20 @@ Event handler: Action complete
 %
 \end{constantdesc}
 
+Additional error code boundary constants
+
+\begin{constantdesc}
+%
+\declareconstitemvalue{PMIX_INTERNAL_ERR_BASE}{-1000}
+A starting point for PMIx internal error codes that are never exposed outside the library.
+%
+\declareconstitemvalue{PMIX_EXTERNAL_ERR_BASE}{-2000}
+A starting point for user-level defined error constants.
+Negative values larger than this are guaranteed not to conflict with PMIx values.
+Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} constant and \emph{not} a specific value as the value of the constant may change.
+%
+\end{constantdesc}
+
 
 
 %%%%%%%%%%%
@@ -291,21 +336,21 @@ This section defines various data types used by the PMIx APIs.
 \subsection{Rank structure}
 \declarestruct{pmix_rank_t}
 
-The \refstruct{pmix_rank_t} structure is an unsigned integer type for rank values.
+The \refstruct{pmix_rank_t} structure is a \code{uint32_t} type for rank values.
 
 The following constants can be used to set a variable of the type \refstruct{pmix_rank_t}.
 Valid rank values start at \code{0}.
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_RANK_UNDEF}
+\declareconstitemvalue{PMIX_RANK_UNDEF}{UINT32_MAX}
 Define a value for requests for job-level data where the information itself is not associated with any specific rank, or when a request involves a rank that is not known.
 For example, when someone requests information thru one of the PMIx v1 legacy interfaces where the rank is typically encoded into the key itself, since there is no rank parameter in the PMIx v1 \refapi{PMIx_Get} API in that version.
 %
-\declareconstitem{PMIX_RANK_WILDCARD}
+\declareconstitemvalue{PMIX_RANK_WILDCARD}{UINT32_MAX-1}
 Define a value to indicate that the user wants the data for the given key from every rank that posted that key.
 %
-\declareconstitem{PMIX_RANK_LOCAL_NODE}
+\declareconstitemvalue{PMIX_RANK_LOCAL_NODE}{UINT32_MAX-2}
 Special rank value used to define groups of ranks for use in collectives.
 This constant defines the group of all ranks on a local node.
 %
@@ -334,75 +379,76 @@ typedef struct pmix_proc \{
 \label{api:struct:processstate}
 \declarestruct{pmix_proc_state_t}
 
-The \refstruct{pmix_proc_state_t} structure is an unsigned integer type for process state values.
+The \refstruct{pmix_proc_state_t} structure is a \code{uint8_t} type for process state values.
 
 The following constants can be used to set a variable of the type \refstruct{pmix_proc_state_t}.
 
+
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_PROC_STATE_UNDEF}
+\declareconstitemvalue{PMIX_PROC_STATE_UNDEF}{0}
 Undefined process state
 %
-\declareconstitem{PMIX_PROC_STATE_PREPPED}
+\declareconstitemvalue{PMIX_PROC_STATE_PREPPED}{1}
 Process is ready to be launched
 %
-\declareconstitem{PMIX_PROC_STATE_LAUNCH_UNDERWAY}
+\declareconstitemvalue{PMIX_PROC_STATE_LAUNCH_UNDERWAY}{2}
 Process launch is underway
 %
-\declareconstitem{PMIX_PROC_STATE_RESTART}
+\declareconstitemvalue{PMIX_PROC_STATE_RESTART}{3}
 Process is ready for restart
 %
-\declareconstitem{PMIX_PROC_STATE_TERMINATE}
+\declareconstitemvalue{PMIX_PROC_STATE_TERMINATE}{4}
 Process is marked for termination
 %
-\declareconstitem{PMIX_PROC_STATE_RUNNING}
+\declareconstitemvalue{PMIX_PROC_STATE_RUNNING}{5}
 Process has been locally \code{fork}'ed by the \ac{RM}
 %
-\declareconstitem{PMIX_PROC_STATE_CONNECTED}
+\declareconstitemvalue{PMIX_PROC_STATE_CONNECTED}{6}
 Process has connected to PMIx server
 %
-\declareconstitem{PMIX_PROC_STATE_UNTERMINATED}
-Define a ``boundary'' so users can easily and quickly determine if a process is still running or not.
+\declareconstitemvalue{PMIX_PROC_STATE_UNTERMINATED}{15}
+Define a ``boundary'' between this constant and \refconst{PMIX_PROC_STATE_CONNECTED} so users can easily and quickly determine if a process is still running or not.
 Any value less than this constant means that the process has not terminated.
 %
-\declareconstitem{PMIX_PROC_STATE_TERMINATED}
+\declareconstitemvalue{PMIX_PROC_STATE_TERMINATED}{20}
 Process has terminated and is no longer running
 %
-\declareconstitem{PMIX_PROC_STATE_ERROR}
+\declareconstitemvalue{PMIX_PROC_STATE_ERROR}{50}
 Define a boundary so users can easily and quickly determine if a process abnormally terminated.
 Any value above this constant means that the process has terminated abnormally.
 %
-\declareconstitem{PMIX_PROC_STATE_KILLED_BY_CMD}
+\declareconstitemvalue{PMIX_PROC_STATE_KILLED_BY_CMD}{PMIX_PROC_STATE_ERROR+1}
 Process was killed by a command
 %
-\declareconstitem{PMIX_PROC_STATE_ABORTED}
+\declareconstitemvalue{PMIX_PROC_STATE_ABORTED}{PMIX_PROC_STATE_ERROR+2}
 Process was aborted
 %
-\declareconstitem{PMIX_PROC_STATE_FAILED_TO_START}
+\declareconstitemvalue{PMIX_PROC_STATE_FAILED_TO_START}{PMIX_PROC_STATE_ERROR+3}
 Process failed to start
 %
-\declareconstitem{PMIX_PROC_STATE_ABORTED_BY_SIG}
+\declareconstitemvalue{PMIX_PROC_STATE_ABORTED_BY_SIG}{PMIX_PROC_STATE_ERROR+4}
 Process aborted by a signal
 %
-\declareconstitem{PMIX_PROC_STATE_TERM_WO_SYNC}
+\declareconstitemvalue{PMIX_PROC_STATE_TERM_WO_SYNC}{PMIX_PROC_STATE_ERROR+5}
 Process exited without calling \refapi{PMIx_Finalize}
 %
-\declareconstitem{PMIX_PROC_STATE_COMM_FAILED}
+\declareconstitemvalue{PMIX_PROC_STATE_COMM_FAILED}{PMIX_PROC_STATE_ERROR+6}
 Process communication has failed
 %
-\declareconstitem{PMIX_PROC_STATE_CALLED_ABORT}
+\declareconstitemvalue{PMIX_PROC_STATE_CALLED_ABORT}{PMIX_PROC_STATE_ERROR+7}
 Process called \refapi{PMIx_Abort}
 %
-\declareconstitem{PMIX_PROC_STATE_MIGRATING}
+\declareconstitemvalue{PMIX_PROC_STATE_MIGRATING}{PMIX_PROC_STATE_ERROR+8}
 Process failed and is waiting for resources before restarting
 %
-\declareconstitem{PMIX_PROC_STATE_CANNOT_RESTART}
+\declareconstitemvalue{PMIX_PROC_STATE_CANNOT_RESTART}{PMIX_PROC_STATE_ERROR+9}
 Process failed and cannot be restarted
 %
-\declareconstitem{PMIX_PROC_STATE_TERM_NON_ZERO}
+\declareconstitemvalue{PMIX_PROC_STATE_TERM_NON_ZERO}{PMIX_PROC_STATE_ERROR+10}
 Process exited with a non-zero status
 %
-\declareconstitem{PMIX_PROC_STATE_FAILED_TO_LAUNCH}
+\declareconstitemvalue{PMIX_PROC_STATE_FAILED_TO_LAUNCH}{PMIX_PROC_STATE_ERROR+11}
 Unable to launch process
 %
 \end{constantdesc}
@@ -438,7 +484,7 @@ typedef struct pmix_proc_info \{
 \subsection{Scope of Put Data}
 \declarestruct{pmix_scope_t}
 
-The \refstruct{pmix_scope_t} structure is an unsigned integer type that defines the scope for data passed to \refapi{PMIx_Put}.
+The \refstruct{pmix_scope_t} structure is a \code{uint8_t} type that defines the scope for data passed to \refapi{PMIx_Put}.
 The following constants can be used to set a variable of the type \refstruct{pmix_scope_t}.
 
 Specific implementations may support different scope values, but all implementations must support at least \refconst{PMIX_GLOBAL}.
@@ -472,7 +518,7 @@ The data is not shared with other processes.
 \subsection{Scope of Published Data}
 \declarestruct{pmix_data_range_t}
 
-The \refstruct{pmix_data_range_t} structure is an unsigned integer type that defines a range for ``published'' data.
+The \refstruct{pmix_data_range_t} structure is a \code{uint8_t} type that defines a range for ``published'' data.
 The following constants can be used to set a variable of the type \refstruct{pmix_data_range_t}.
 
 \begin{constantdesc}
@@ -509,7 +555,7 @@ Data is only available to this process.
 \subsection{Data Persistence Structure}
 \declarestruct{pmix_persistence_t}
 
-The \refstruct{pmix_persistence_t} structure is an unsigned integer type that defines the policy for data published by clients.
+The \refstruct{pmix_persistence_t} structure is a \code{uint8_t} type that defines the policy for data published by clients.
 The following constants can be used to set a variable of the type \refstruct{pmix_persistence_t}.
 
 \begin{constantdesc}
@@ -537,7 +583,7 @@ Retain data until the session/allocation terminates.
 \subsection{Info Type Directives}
 \declarestruct{pmix_info_directives_t}
 
-The \refstruct{pmix_info_directives_t} structure is an unsigned integer type that defines the behavior of command directives via \refstruct{pmix_info_t} arrays.
+The \refstruct{pmix_info_directives_t} structure is a \code{uint32_t} type that defines the behavior of command directives via \refstruct{pmix_info_t} arrays.
 By default, the values in the \refstruct{pmix_info_t} array passed to a PMIx are \emph{optional}.
 
 \adviceuserstart
@@ -551,7 +597,7 @@ The following constants can be used to set a variable of the type \refstruct{pmi
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_INFO_REQD}
+\declareconstitemvalue{PMIX_INFO_REQD}{0x0001}
 The behavior defined in the \refstruct{pmix_info_t} array is required, and not optional.
 %
 \end{constantdesc}
@@ -562,7 +608,7 @@ The behavior defined in the \refstruct{pmix_info_t} array is required, and not o
 \subsection{Job Allocation Directives}
 \declarestruct{pmix_alloc_directive_t}
 
-The \refstruct{pmix_alloc_directive_t} structure is an unsigned integer type that defines the behavior of allocation requests.
+The \refstruct{pmix_alloc_directive_t} structure is a \code{uint8_t} type that defines the behavior of allocation requests.
 The following constants can be used to set a variable of the type \refstruct{pmix_alloc_directive_t}.
 
 \begin{constantdesc}
@@ -581,8 +627,8 @@ Attributes in the accompanying \refstruct{pmix_info_t} array may be used to spec
 \declareconstitem{PMIX_ALLOC_REAQUIRE}
 Reacquire resources that were previously ``lent'' back to the scheduler.
 %
-\declareconstitem{PMIX_ALLOC_EXTERNAL}
-A value boundary beyond which implementers are free to define their own directive values.
+\declareconstitemvalue{PMIX_ALLOC_EXTERNAL}{128}
+A value boundary above which implementers are free to define their own directive values.
 %
 \end{constantdesc}
 
@@ -773,7 +819,7 @@ typedef struct pmix_info_array \{
 \subsection{Generalized Data Types Used for Packing/Unpacking}
 \declarestruct{pmix_data_type_t}
 
-The \refstruct{pmix_data_type_t} structure is an unsigned integer type for identifying the data type for packing/unpacking purposes.
+The \refstruct{pmix_data_type_t} structure is a \code{uint16_t} type for identifying the data type for packing/unpacking purposes.
 
 The following constants can be used to set a variable of the type \refstruct{pmix_data_type_t}.
 The C language type is specified for clarity of intent.
@@ -917,6 +963,9 @@ Allocation directive (\refstruct{pmix_alloc_directive_t})
 %
 \declareconstitemDEP{PMIX_INFO_ARRAY}{2}
 Info array
+%
+\declareconstitemvalue{PMIX_DATA_TYPE_MAX}{500}
+A boundary for implementers so they can add their own data types.
 %
 \end{constantdesc}
 
