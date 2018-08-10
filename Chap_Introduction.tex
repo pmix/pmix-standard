@@ -103,7 +103,7 @@ The flip side of that statement is also true: Users who find that their current 
 
 The \ac{PMIx} Standard defines the behavior of the \acf{PRL}.
 A complete system harnessing the \ac{PMIx} interface requires an agreement between the \ac{PMIx} client, be it a tool or library, and the \ac{PMIx}-enabled \ac{RM}.
-The \ac{RPL} acts as an intermediary between these two entities providing a standard API for the exchange of requests and responses.
+The \ac{PRL} acts as an intermediary between these two entities providing a standard API for the exchange of requests and responses.
 The degree to which the \ac{PMIx} client and the \ac{PMIx}-enabled \ac{RM} may interact needs to be defined by those developer communities.
 The \ac{PMIx} standard can be used to define the specifics of this interaction.
 
@@ -122,14 +122,61 @@ The \ac{PMIx} standard cannot define this list for all given \ac{PMIx}-enabled \
 \section{PMIx Architecture Overview}
 \label{chap:intro:arch_overview}
 
-This section presents a brief overview the \ac{PMIx} Architecture~\cite{2017-Castain-EuroMPI}.
+This section presents a brief overview of the \ac{PMIx} Architecture~\cite{2017-Castain-EuroMPI}.
+Note that this is a conceptual model solely used to help guide the standards process --- it does not represent
+a design requirement on any \ac{PMIx} implementation. Instead, the model is used by the
+\ac{PMIx} community as a sounding board for evaluating proposed interfaces to avoid unintentionally imposing
+constraints on implementers. Built into the model are two guiding principles also reflected in the standard. First,
+\ac{PMIx} operates in the mode of a \textit{messenger}, and not a \textit{doer} --- i.e., the role
+of \ac{PMIx} is to provide communication between the various participants, relaying requests and returning
+responses. The intent of the standard is not to suggest that \ac{PMIx} itself actually perform any of
+the defined operations --- this is left to the various \ac{SMS} elements and/or the application. Any exceptions to that intent are left to the discretion of the particular implementation.
 
-\ldots
+\begingroup
+\begin{figure*}[ht!]
+  \begin{center}
+    \includegraphics[clip,width=0.8\textwidth]{figs/PMIxRoles.pdf}
+  \end{center}
+  \caption{PMIx-SMS Interactions}
+  \label{fig:roles}
+\end{figure*}
+\endgroup
+
+
+Thus, as the diagram in Fig.~\ref{fig:roles} shows, the application is built against a \ac{PMIx} client library that contains the client-side \acp{API},
+attribute definitions, and communication support for interacting with the local \ac{PMIx} server. Intra-process cross-library interactions
+are supported at the client level to avoid unnecessary burdens on the server. Orchestration requests are sent to the
+local \ac{PMIx} server, which subsequently passes them to the host \ac{SMS} (here represented by an \ac{RM} daemon) using the \ac{PMIx} server callback functions the host \ac{SMS} registered during PMIx\_server\_init. The host \ac{SMS} can indicate its lack of support for any operation by simply providing a \textit{NULL} for the associated callback function, or can create a function entry that returns \textit{not supported} when called.
+
+The conceptual model places the burden of fulfilling the request on the host \ac{SMS}. This includes performing any
+inter-node communications, or interacting with other \ac{SMS} elements. Thus, a client request for a network traffic report
+does not go directly from the client to the \ac{FM}, but instead is relayed to the \ac{PMIx} server, and then passed to the host \ac{SMS}
+for execution. This architecture reflects the second principle underlying the standard --- namely, that connectivity is to be minimized by channeling all application interactions with the \ac{SMS} through the local \ac{PMIx} server.
+
+Recognizing the burden this places on SMS vendors, the PMIx community has included interfaces by
+which the host can request support from local SMS elements. Once the SMS has transferred the request to
+an appropriate location, a PMIx interface can be used to pass the request into the target SMS subsystem.
+For example, a request for network traffic statistics can utilize the
+PMIx networking abstractions to retrieve the information from the FM. This transfers the burden
+of dealing with the interfaces of individual subsystems from the SMS to the PMIx community, which continues
+to work with those providers to develop the necessary support.
+
+Tools, whether standalone or embedded in job scripts, are an exception to the communication rule and can connect to
+any PMIx server providing they are given adequate rendezvous information. The PMIx conceptual model views the
+collection of PMIx servers as a cloud-like conglomerate --- i.e., orchestration and information requests can be
+given to any server regardless of location. However, tools frequently execute on locations that may not house an
+operating PMIx server --- e.g., a users notebook computer. Thus, tools need the ability to remotely connect to
+the PMIx server ``cloud''.
+
+The scope of the PMIx standard therefore spans the range of these interactions, between client-and-SMS and between SMS
+subsystems. Note again that this does not impose a requirement on any given PMIx implementation to cover the entire
+range --- implementers are free to return \textit{not supported} from any PMIx function.
+
 
 %%%%%%%%%%%
-\subsection{The PMIx Reference Implementation}(PRI)
+\subsection{The PMIx Reference Implementation (PRI)}
 
-Note that the definition of the \ac{PMIx} Standard is not contingent upon use of the \ac{PMIx} Reference Implementation --- any implementation that supports the defined \acp{API} is a \ac{PMIx} Standard compliant implementation.
+The \ac{PMIx} community has committed to providing a complete, reference implementation of each version of the standard. Note that the definition of the \ac{PMIx} Standard is not contingent upon use of the \ac{PMIx} Reference Implementation --- any implementation that supports the defined \acp{API} is a \ac{PMIx} Standard compliant implementation.
 The \ac{PMIx} Reference Implementation is provided solely for the following purposes:
 \begin{itemize}
 \item Validation of the standard.\\
@@ -141,22 +188,25 @@ Both client and server \ac{PMIx} libraries are included, along with examples of 
 A list of supported environments and versions is maintained on the \ac{PMIx} web site \url{https://pmix.org/support/faq/what-apis-are-supported-on-my-rm/}
 \end{itemize}
 
-The \ac{PMIx} Reference Implementation targets support for the Linux operating system.
+The \ac{PRI} does provide some internal implementations that lie outside the scope of the \ac{PMIx} standard. This includes several convenience macros as well as support for consolidating collectives for optimization purposes (e.g., the \ac{PMIx} server aggregates all local \refapi{PMIx_Fence} calls before
+passing them to the \ac{SMS} for global execution). In a few additional cases, the \ac{PMIx} community (in partnership with the \ac{SMS} subsystem providers) have determined that a base level of support for a given operation can best be portably provided by including it in the \ac{PRI}.
+
+Instructions for downloading, and installing the \ac{PRI} are available
+on the community's web site \url{https://pmix.org/code/getting-the-reference-implementation/}.The \ac{PRI} targets support for the Linux operating system.
 A reasonable effort is made to support all major, modern Linux distributions; however, validation is limited to the most recent 2-3 releases of RedHat Enterprise Linux (RHEL), Fedora, CentOS, and SUSE Linux Enterprise Server (SLES).
 In addition, development support is maintained for Mac OSX.
 Production support for vendor-specific operating systems is included as provided by the vendor.
 
+
 %%%%%%%%%%%
-\subsection{The PMIx Reference RunTime Environment}(PRRTE)
+\subsection{The PMIx Reference RunTime Environment (PRRTE)}
 
-\ldots
-
-The PMIx community has released \ac{PRRTE} --- i.e., a runtime environment
+The \ac{PMIx} community has also released \ac{PRRTE} --- i.e., a runtime environment
 containing the reference implementation and capable of operating within a host \ac{SMS}. \ac{PRRTE}
 provides an easy way of exploring \ac{PMIx} capabilities and testing PMIx-based
-applications outside of a PMIx-enabled environment. Instructions for downloading,
-installing, and using \ac{PRI} and \ac{PRRTE} are available
-on the community's web site
+applications outside of a PMIx-enabled environment by providing a ``shim'' between the application and the host environment that includes full support for the \ac{PRI}. The intent of \ac{PRRTE} is not to replace any existing production environment, but rather to enable developers to work on systems that do not yet feature a PMIx-enabled host \ac{SMS} or one that lacks a \ac{PMIx} feature of interest. Instructions for downloading,
+installing, and using \ac{PRRTE} are available
+on the community's web site \url{https://pmix.org/code/getting-the-pmix-reference-server/}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Organization of this document}
