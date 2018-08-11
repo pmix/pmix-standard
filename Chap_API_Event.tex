@@ -4,87 +4,15 @@
 \chapter{Event Notification}
 \label{chap:api_event}
 
-% RALPH
-\ldots
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Logging}
-\label{chap:api_event:logging}
-
-
-\subsection{\code{PMIx_Log_nb}}
-\declareapi{PMIx_Log_nb}
-
-%%%%
-\summary
-
-Log data to a data service.
-
-%%%%
-\format
-
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Log_nb(const pmix_info_t data[], size_t ndata,
-            const pmix_info_t directives[], size_t ndirs,
-            pmix_op_cbfunc_t cbfunc, void *cbdata)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{data}{Array of info structures (array of handles)}
-\argin{ndata}{Number of elements in the \refarg{data} array (\code{size_t})}
-\argin{directives}{Array of info structures (array of handles)}
-\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
-\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
-\argin{cbdata}{Data to be passed to the callback function (memory reference)}
-\end{arglist}
-
-\begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The logging request is valid and is being processed. The resulting status from the operation will be provided in the callback function.
-\item \refconst{PMIX_ERR_BAD_PARAM} The logging request contains at least one incorrect entry that prevents it from being processed. The callback function will \emph{not} be called.
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function. The callback function will \emph{not} be called.
-\end{constantdesc}
-
-\priattr
-The PMIx\_Log\_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, the attributes are passed to the host RM for processing.
-
-\reqattr
-\acp{RM} that implement support for the \refapi{PMIx_Log_nb} are required to support the following attributes:
-
-\pasteAttributeItem{PMIX_LOG_STDERR}
-\pasteAttributeItem{PMIX_LOG_STDOUT}
-\pasteAttributeItem{PMIX_LOG_SYSLOG}
-
-\optattr
-A complete implementation that supports the \refapi{PMIx_Log_nb} would include support for the following attributes:
-
-\pasteAttributeItem{PMIX_LOG_MSG}
-\pasteAttributeItem{PMIX_LOG_EMAIL}
-\pasteAttributeItem{PMIX_LOG_EMAIL_ADDR}
-\pasteAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
-\pasteAttributeItem{PMIX_LOG_EMAIL_MSG}
-
-%%%%
-\descr
-
-Log data subject to the services offered by the host environment. The data to be logged is provided in the \refarg{data} array. The (optional) \refarg{directives} can be used to direct the choice of logging channel.
-The callback function will be executed when the log operation has been completed. The \refarg{data} and \refarg{directives} arrays must be maintained until the callback is provided.
-
-\adviceuserstart
-The \refapi{PMIx_Log_nb} API should \emph{never} be used for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon.
-\adviceuserend
-
+This chapter defines the \ac{PMIx} event notification system.
+These interfaces are designed to support the reporting of events to/from clients and servers, and between library layers within a single process.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Notification and Management}
 \label{chap:api_event:notify}
 
-\ac{PMIx} event notification  is focused on dealing with \textit{faults}~\cite{event1,event2}, broadly defined as anything negatively impacting the operation of the application. Thus, an application that has \textit{stalled} (i.e., is no longer making progress on its work) is considered as experiencing a \textit{fault}, as is a network link impaired by congestion and the failure of a hardware component. \ac{PMIx} enables fault mitigation by allowing processes to register event handlers by which:
+\ac{PMIx} event notification is focused on dealing with \textit{faults}~\cite{event1,event2}, broadly defined as anything negatively impacting the operation of the application. Thus, an application that has \textit{stalled} (i.e., is no longer making progress on its work) is considered as experiencing a \textit{fault}, as is a network link impaired by congestion and the failure of a hardware component. \ac{PMIx} enables fault mitigation by allowing processes to register event handlers by which:
 
 \begin{itemize}
 \item the \ac{SMS} can notify the application of system problems, both detected and anticipated, including the intent to preempt the application. \ac{PMIx} libraries do not generate events themselves --- they only publish events and collect responses that might arise from them. Thus, \ac{PMIx} provides an abstraction layer to help facilitate \ac{SMS} integration to subsystems that provide such warnings (e.g., the monitoring system);
