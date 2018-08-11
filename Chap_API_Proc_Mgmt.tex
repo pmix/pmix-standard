@@ -4,7 +4,7 @@
 \chapter{Process Management}
 \label{chap:api_proc_mgmt}
 
-\ldots
+This chapter defines functionality used by clients to create and destroy/abort processes in the \ac{PMIx} universe.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -63,9 +63,9 @@ Note that race conditions caused by multiple processes calling \refapi{PMIx_Abor
 \section{Process Creation}
 \label{chap:api_proc_mgmt:spawn}
 
-\ldots
-
-\rcomment{We need to describe our approach here ala the MPI standard's section on spawn. Specifically, we should reiterate that PMIx is a messaging library for communicating between applications and the host environment, and between elements of the host environment. PMIx does not itself spawn processes nor is it intended to replace the RM in that role.}
+The \refapi{PMIx_Spawn} commands spawn new jobs in the \ac{PMIx} universe.
+The \ac{PMIx} calls made by the client into the \ac{PRL} no not, itself, spawn processes.
+Instead the request is passed by the \ac{PRL} client-side library to the \ac{PMIx}-enabled \ac{RM} which will then create the processes on the allocated resources.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Spawn}}
@@ -259,7 +259,7 @@ Nonblocking version of the \refapi{PMIx_Spawn} routine.
 \section{Connecting and Disconnecting Processes}
 \label{chap:api_proc_mgmt:connect}
 
-\ldots
+This section defines functions to connect and disconnect separate \ac{PMIx} namespaces so that they may exchange information and otherwise communicate with each other.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Connect}}

@@ -1,0 +1,78 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix: Support functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{PMIx Support Functions}
+\label{app:support}
+
+This chapter describes some additional support APIs that are provided in the \ac{PRL} headers, but are not part of the core \ac{PMIx} standard specification.
+
+
+%%%%%%%%%%%
+\section{Data Structure Support}
+
+This section describes some additional support APIs focused on the data structures defined in \chapterref{chap:struct}.
+
+%%%%%%%%%%%
+\subsection{Argument list manipulation}
+\declareapi{pmix_argv_append_nosize}
+
+%%%%
+\summary
+
+Append an argument to an argument list in the form appropriate for the \refstruct{pmix_app_t}.
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+pmix_argv_append_nosize(char ***argv, const char *arg);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{argv}{Argument list (pointer to array of strings)}
+\argin{arg}{Argument to append to the list (string)}
+\end{arglist}
+
+%%%%
+\descr
+
+This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure in the way that the \ac{PRL} expects it to be constructed.
+This function is not exclusive to the construction of that structure, and may be used to construct \code{argv} array style arguments.
+
+
+%%%%%%%%%%%
+\section{Environment Manipulation Support}
+
+This section describes some additional support APIs focused on environment manipulation.
+
+%%%%%%%%%%%
+\subsection{Environment Variable}
+\declareapi{pmix_setenv}
+
+%%%%
+\summary
+
+Set an environment variable.
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+pmix_setenv(const char *name, const char *value,
+            bool overwrite, char ***env);
+\end{codepar}
+\cspecificend
+
+
+\begin{arglist}
+\argin{name}{Argument name (string)}
+\argin{value}{Argument value (string)}
+\argin{overwrite}{Whether or not to overwrite if already in environment (bool)}
+\arginout{env}{Environment array to update (pointer to array of strings)}
+\end{arglist}
+
+%%%%
+\descr
+
+Similar to \code{setenv} from the C API, this allows the caller to set an environment variable in the specified \code{env} array, which could then be passed to the \refstruct{pmix_app_t} structure.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

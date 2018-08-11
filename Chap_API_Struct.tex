@@ -1626,7 +1626,21 @@ Topology signature string.
 
 %
 \declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
-String describing a process's location.
+String describing a process's bound location.
+The string is of the form:\\
+\code{NM\%s:SK\%s:L3\%s:L2\%s:L1\%s:CR\%s:HT\%s}\\
+Where the \code{\%s} is replaced with an integer index or inclusive range for hwloc.
+\code{NM} identifies the numa node(s).
+\code{SK} identifies the socket(s).
+\code{L3} identifies the L3 cache(s).
+\code{L2} identifies the L2 cache(s).
+\code{L1} identifies the L1 cache(s).
+\code{CR} identifies the cores(s).
+\code{HT} identifies the hardware thread(s).
+If your architecture does not have the specified hardware designation then it can be omitted from the signature.
+\\
+For example: \code{NM0:SK0:L30-4:L20-4:L10-4:CR0-4:HT0-39}.\\
+This means numa node \code{0}, socket \code{0}, L3 caches \code{0,1,2,3,4}, L2 caches \code{0-4}, L1 caches \code{0-4}, cores \code{0,1,2,3,4}, and hardware threads \code{0-39}.
 }
 
 %
@@ -2570,8 +2584,8 @@ The \refapi{pmix_release_cbfunc_t} is used by the \refapi{pmix_modex_cbfunc_t} a
 
 \cspecificstart
 \begin{codepar}
-typedef void
-(*pmix_release_cbfunc_t)(void *cbdata)
+typedef void (*pmix_release_cbfunc_t)
+    (void *cbdata)
 \end{codepar}
 \cspecificend
 
@@ -2596,12 +2610,12 @@ The \refapi{pmix_modex_cbfunc_t} is used by the \refapi{pmix_server_fencenb_fn_t
 
 \cspecificstart
 \begin{codepar}
-typedef void
-(*pmix_modex_cbfunc_t)(pmix_status_t status,
-                       const char *data, size_t ndata,
-                       void *cbdata,
-                       pmix_release_cbfunc_t release_fn,
-                       void *release_cbdata)
+typedef void (*pmix_modex_cbfunc_t)
+    (pmix_status_t status,
+     const char *data, size_t ndata,
+     void *cbdata,
+     pmix_release_cbfunc_t release_fn,
+     void *release_cbdata)
 \end{codepar}
 \cspecificend
 
@@ -2633,9 +2647,9 @@ The \refapi{pmix_spawn_cbfunc_t} is used on the PMIx client side by \refapi{PMIx
 
 \cspecificstart
 \begin{codepar}
-typedef void
-(*pmix_spawn_cbfunc_t)(pmix_status_t status,
-                      char nspace[], void *cbdata);
+typedef void (*pmix_spawn_cbfunc_t)
+    (pmix_status_t status,
+     char nspace[], void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2667,8 +2681,8 @@ The \refapi{pmix_op_cbfunc_t} is used by operations that simply return a status.
 
 \cspecificstart
 \begin{codepar}
-typedef void
-(*pmix_op_cbfunc_t)(pmix_status_t status, void *cbdata);
+typedef void (*pmix_op_cbfunc_t)
+    (pmix_status_t status, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2677,6 +2691,11 @@ typedef void
 \argin{cbdata}{Callback data passed to original API call (memory reference)}
 \end{arglist}
 
+%%%%
+\descr
+
+Used by a wide range of \ac{PMIx} API's including \refapi{PMIx_Fence_nb}, \refapi{pmix_server_client_connected_fn_t}, \refapi{PMIx_server_register_nspace}.
+This callback function is used to return a status to an often nonblocking operation.
 
 
 %%%%%%%%%%%
@@ -2690,10 +2709,10 @@ The \refapi{pmix_lookup_cbfunc_t} is used by \refapi{PMIx_Lookup_nb} to return d
 
 \cspecificstart
 \begin{codepar}
-typedef void
-(*pmix_lookup_cbfunc_t)(pmix_status_t status,
-                        pmix_pdata_t data[], size_t ndata,
-                        void *cbdata);
+typedef void (*pmix_lookup_cbfunc_t)
+    (pmix_status_t status,
+     pmix_pdata_t data[], size_t ndata,
+     void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2727,8 +2746,9 @@ The \refapi{pmix_value_cbfunc_t} is used by \refapi{PMIx_Get_nb} to return data.
 
 \cspecificstart
 \begin{codepar}
-typedef void (*pmix_value_cbfunc_t)(pmix_status_t status,
-                                    pmix_value_t *kv, void *cbdata);
+typedef void (*pmix_value_cbfunc_t)
+    (pmix_status_t status,
+     pmix_value_t *kv, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2759,11 +2779,12 @@ The \refapi{pmix_info_cbfunc_t} is a general information callback used by variou
 
 \cspecificstart
 \begin{codepar}
-typedef void (*pmix_info_cbfunc_t)(pmix_status_t status,
-                                   pmix_info_t *info, size_t ninfo,
-                                   void *cbdata,
-                                   pmix_release_cbfunc_t release_fn,
-                                   void *release_cbdata);
+typedef void (*pmix_info_cbfunc_t)
+    (pmix_status_t status,
+     pmix_info_t *info, size_t ninfo,
+     void *cbdata,
+     pmix_release_cbfunc_t release_fn,
+     void *release_cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2790,9 +2811,10 @@ The \refapi{pmix_evhdlr_reg_cbfunc_t} \ldots
 
 \cspecificstart
 \begin{codepar}
-typedef void (*pmix_evhdlr_reg_cbfunc_t)(pmix_status_t status,
-                                         size_t evhdlr_ref,
-                                         void *cbdata)
+typedef void (*pmix_evhdlr_reg_cbfunc_t)
+    (pmix_status_t status,
+     size_t evhdlr_ref,
+     void *cbdata)
 \end{codepar}
 \cspecificend
 
@@ -2821,10 +2843,11 @@ The \refapi{pmix_event_notification_cbfunc_fn_t} is called by event handlers to 
 
 \cspecificstart
 \begin{codepar}
-typedef void (*pmix_event_notification_cbfunc_fn_t)(pmix_status_t status,
-                                                    pmix_info_t *results, size_t nresults,
-                                                    pmix_op_cbfunc_t cbfunc, void *thiscbdata,
-                                                    void *notification_cbdata);
+typedef void (*pmix_event_notification_cbfunc_fn_t)
+    (pmix_status_t status,
+     pmix_info_t *results, size_t nresults,
+     pmix_op_cbfunc_t cbfunc, void *thiscbdata,
+     void *notification_cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2856,13 +2879,14 @@ The \refapi{pmix_notification_fn_t} is called by \ac{PMIx} to deliver notificati
 
 \cspecificstart
 \begin{codepar}
-typedef void (*pmix_notification_fn_t)(size_t evhdlr_registration_id,
-                                       pmix_status_t status,
-                                       const pmix_proc_t *source,
-                                       pmix_info_t info[], size_t ninfo,
-                                       pmix_info_t *results, size_t nresults,
-                                       pmix_event_notification_cbfunc_fn_t cbfunc,
-                                       void *cbdata);
+typedef void (*pmix_notification_fn_t)
+    (size_t evhdlr_registration_id,
+     pmix_status_t status,
+     const pmix_proc_t *source,
+     pmix_info_t info[], size_t ninfo,
+     pmix_info_t *results, size_t nresults,
+     pmix_event_notification_cbfunc_fn_t cbfunc,
+     void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2898,69 +2922,6 @@ Support for these options is left to the discretion of the host RM. Info keys ar
 
 On the server side, the notification function is used to inform the host server of a detected event in the PMIx subsystem and/or client
 \adviceuserend
-
-
-%%%%%%%%%%%
-\section{Additional Support Functions}
-
-This section describes some additional support APIs.
-
-%%%%%%%%%%%
-\subsection{Argument list manipulation}
-\declareapi{pmix_argv_append_nosize}
-
-%%%%
-\summary
-
-Append an argument to an argument list in the form appropriate for the \refstruct{pmix_app_t}.
-
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-pmix_argv_append_nosize(char ***argv, const char *arg);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{argv}{Argument list (pointer to array of strings)}
-\argin{arg}{Argument to append to the list (string)}
-\end{arglist}
-
-%%%%
-\descr
-
-\ldots Do we need this in the standard, or is it just a useful feature of the PRL?
-\ldots My initial thought would be to only include the PMIX_ARGV_APPEND macro in the standard - the function name is only how it is implemented. However, that function does appear in pmix_common.h, and so someone technically could call it directly instead of via the macro.
-
-%%%%%%%%%%%
-\subsection{Environment Variable}
-\declareapi{pmix_setenv}
-
-%%%%
-\summary
-
-Set an environment variable.
-
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-pmix_setenv(const char *name, const char *value,
-            bool overwrite, char ***env);
-\end{codepar}
-\cspecificend
-
-
-\begin{arglist}
-\argin{name}{Argument name (string)}
-\argin{value}{Argument value (string)}
-\argin{overwrite}{Whether or not to overwrite if already in environment (bool)}
-\arginout{env}{Environment array to update (pointer to array of strings)}
-\end{arglist}
-
-%%%%
-\descr
-
-\ldots Should this go somewhere else?
 
 
 %%%%%%%%%%%

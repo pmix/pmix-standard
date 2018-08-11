@@ -8,6 +8,7 @@ CHAPTERS= \
 	TitlePage.tex \
 	Chap_Introduction.tex \
 	Chap_Terms.tex \
+	Chap_API_Init.tex \
 	Chap_API_Struct.tex \
 	Chap_API_Key_Value_Mgmt.tex \
 	Chap_API_Proc_Mgmt.tex \
@@ -15,6 +16,7 @@ CHAPTERS= \
 	Chap_API_Event.tex \
 	Chap_API_Data_Mgmt.tex \
 	Chap_API_Server.tex \
+	App_Support.tex \
 	History.tex \
 	Acknowledgements.tex
 

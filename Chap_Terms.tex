@@ -58,7 +58,15 @@ The following terms will be taken to mean:
 %%%%%%%%%%%
 \section{Naming Conventions}
 
-\ldots
+In general all \ac{PMIx} standard interfaces, constants, variables, and defines are prefixed with \textbf{\code{PMIX}}.
+User should not use the \textbf{\code{PMIX}} prefix so as to not introduce symbol conflicts with current and later versions of the \ac{PMIx} standard and \ac{PRL}.
+Underscores are used to separate words in a function or variable name.
+Lowercase letters are used except for the \ac{PMIx} prefix (noted below) and the first letter of the word following it.
+For example, \refapi{PMIx_Get_version}.
+
+The \code{PMIX_} prefix is used to denote constants and defines.
+The \code{PMIx_} prefix is used to denote functions.
+The \code{pmix_} prefix is used to denote function pointer definitions.
 
 %%%%%%%%%%%
 \section{Procedure Conventions}
