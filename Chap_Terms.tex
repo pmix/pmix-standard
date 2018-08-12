@@ -4,16 +4,27 @@
 \chapter{PMIx Terms and Conventions}
 \label{chap:terms}
 
-Define ``attributes'' and how they are used, intent is to allow for definition of flexible APIs that can change behavior based on attributes instead of modifying function signature.
-Include description of data types.
+The \ac{PMIx} Standard has adopted the widespread use of key-value \textit{attributes} to add flexibility to the functionality expressed in the existing \acp{API}. Accordingly, the community has chosen to require that the definition of each standard \ac{API} include the passing of an array of attributes. These provide a means of customizing the behavior of the \ac{API} as future needs emerge without having to alter or create new variants of it. In addition, attributes provide a mechanism by which researchers can easily explore new approaches to a given operation without having to modify the \ac{API} itself.
 
-This document borrows freely from other standards (most notably from the \ac{MPI} and OpenMP standards) in its use of notation and conventions in an attempt to reduce confusion.
+The \ac{PMIx} community has further adopted a policy that modification of existing released \acp{API} will only be permitted under extreme circumstances. In its effort to avoid introduction of any such backward incompatibility, the community has avoided the definitions of large numbers of \acp{API} that each focus on a narrow scope of functionality, and instead relied on the definition of fewer generic \acp{API} that include arrays of directives for ``tuning'' the function’s behavior. Thus, modifications to the PMIx standard increasingly consist of the definition of new attributes along with a description of the \acp{API} to which they relate and the expected behavior when used with those \acp{API}.
+
+One area where this can become more complicated is regarding the attributes that provide directives to the client process and/or control the behavior of a \ac{PMIx} standard \ac{API}. For example, the \refattr{PMIX_TIMEOUT} attribute can be used to specify the time (in seconds) before the requested operation should time out. The intent of this attribute is to allow the client to avoid “hanging” in a request that takes longer than the client wishes to wait, or may never return (e.g., a \refapi{PMIx_Fence} that a blocked participant never enters).
+
+If an application truly relies on the \refattr{PMIX_TIMEOUT} attribute in a call to \refapi{PMIx_Fence}, it should set the \textit{required} flag in the \refstruct{pmix_info_t} for that attribute. This informs the library and its \ac{SMS} host that it must return an immediate error if this attribute is not supported. By not setting the flag, the library and \ac{SMS} host are allowed to treat the attribute as optional, silently ignoring it if support is not available.
+
+\adviceuserstart
+It is critical that users and application developers consider whether or not a given attribute is required (marking it accordingly) and always check the return status on all \ac{PMIx} function calls to ensure support was present and that the request was accepted. Note that for non-blocking \acp{API}, a return of \refconst{PMIX_SUCCESS} only indicates that the request had no obvious errors and is being processed. The eventual callback will return the status of the requested operation itself.
+\adviceuserend
+
+While a \ac{PMIx} library implementer, or an \ac{SMS} component server, may choose to support a particular \ac{PMIx} \ac{API}, they are not required to support every attribute that might apply to it. This would pose a significant barrier to entry for an implementer as there can be a broad range of applicable attributes to a given \ac{API}, at least some of which may rarely be used in a specific market area. The \ac{PMIx} community is attempting to help differentiate the attributes by indicating in the standard those that are generally used (and therefore, of higher importance to support) versus those that a ``complete implementation'' would support.
+
+This document borrows freely from other standards (most notably from the \ac{MPI} and OpenMP standards) in its use of notation and conventions in an attempt to reduce confusion. The following sections provide an overview of the conventions used throughout the \ac{PMIx} Standard document.
 
 %%%%%%%%%%%
 \section{Notional Conventions}
 
-Some sections of this document describe programming language specific examples or APIs.
-Text that applies only to programs for which the base language is C is show as follows:
+Some sections of this document describe programming language specific examples or \acp{API}.
+Text that applies only to programs for which the base language is C is shown as follows:
 
 \cspecificstart
 C specific text...
@@ -42,7 +53,7 @@ Some readers may wish to skip these sections, while readers interested in progra
 
 \adviceimplstart
 Throughout this document, material that is primarily commentary to implementers is set off in this section.
-Some readers may wish to skip these sections, while readers interested in \ac{PMIx} implementations may want to read them carefully. 
+Some readers may wish to skip these sections, while readers interested in \ac{PMIx} implementations may want to read them carefully.
 \adviceimplend
 
 %%%%%%%%%%%
@@ -58,29 +69,34 @@ The following terms will be taken to mean:
 %%%%%%%%%%%
 \section{Naming Conventions}
 
-In general all \ac{PMIx} standard interfaces, constants, variables, and defines are prefixed with \textbf{\code{PMIX}}.
-User should not use the \textbf{\code{PMIX}} prefix so as to not introduce symbol conflicts with current and later versions of the \ac{PMIx} standard and \ac{PRL}.
-Underscores are used to separate words in a function or variable name.
-Lowercase letters are used except for the \ac{PMIx} prefix (noted below) and the first letter of the word following it.
-For example, \refapi{PMIx_Get_version}.
+The \ac{PMIx} standard has adopted the following conventions:
 
-The \code{PMIX_} prefix is used to denote constants and defines.
-The \code{PMIx_} prefix is used to denote functions.
-The \code{pmix_} prefix is used to denote function pointer definitions.
+\begin{itemize}
+\item \ac{PMIx} constants and attributes are prefixed with \textbf{\code{PMIX}}.
+\item Structures and type definitions are prefixed with \code{pmix}.
+\item Underscores are used to separate words in a function or variable name.
+\item Lowercase letters are used in \ac{PMIx} client \acp{API} except for the \ac{PMIx} prefix (noted below) and the first letter of the word following it.
+For example, \refapi{PMIx_Get_version}.
+\item \ac{PMIx} server and tool \acp{API} are all lower case letters following the prefix - e.g., \refapi{PMIx_server_register_nspace}.
+\item The \code{PMIx_} prefix is used to denote functions.
+\item The \code{pmix_} prefix is used to denote function pointer and type definitions.
+\end{itemize}
+
+Users should not use the \textbf{\code{PMIX}}, \textbf{\code{PMIx}}, or \textbf{\code{pmix}} prefixes in their applications or libraries so as to avoid symbol conflicts with current and later versions of the \ac{PMIx} standard and implementations such as the \ac{PRL}.
 
 %%%%%%%%%%%
 \section{Procedure Conventions}
 
-While current \ac{PMIx} Reference Implementation is solely based on the C programming language, it is not the intent of the \ac{PMIx} Standard to preclude the use of other languages.
+While the current \ac{PMIx} Reference Implementation is solely based on the C programming language, it is not the intent of the \ac{PMIx} Standard to preclude the use of other languages.
 Accordingly, the procedure specifications in the \ac{PMIx} Standard are written in a language-independent syntax with the arguments marked as IN, OUT, or INOUT.
 The meanings of these are:
 \begin{itemize}
 \item IN:
-The call may use the input value but does not update the argument from the perspective of the caller at any time during the call?s execution, 
+The call may use the input value but does not update the argument from the perspective of the caller at any time during the call?s execution,
 \item OUT:
 The call may update the argument but does not use its input value
 \item INOUT:
-The call may both use and update the argument. 
+The call may both use and update the argument.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -19,8 +19,8 @@ This helps the end user distinguish between what is defined by the PMIx standard
 %%%%%%%%%%%
 \section{Constants}
 
-The constants defined in this section may be used before calling any library initialization routine.
-Additional constants associated with specific data structures are defined in the section describing that data structure.
+\ac{PMIx} defines a few values that are used throughout the standard to set the size of fixed arrays or as a means of identifying values with special meaning. The community makes every attempt to minimize the number of such definitions. The constants defined in this section may be used before calling any library initialization routine.
+Additional constants associated with specific data structures or types are defined in the section describing that data structure or type.
 
 \begin{constantdesc}
 %
@@ -31,7 +31,6 @@ Maximum namespace string length as an integer.
 Maximum key string length as an integer.
 %
 \end{constantdesc}
-
 
 %%%%%%%%%%%
 \subsection{Error Constants}
@@ -311,7 +310,7 @@ Event handler: Action complete
 %
 \end{constantdesc}
 
-Additional error code boundary constants
+Additional error code boundary constants include:
 
 \begin{constantdesc}
 %
@@ -333,7 +332,7 @@ Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} cons
 This section defines various data types used by the PMIx APIs.
 
 %%%%%%%%%%%
-\subsection{Rank structure}
+\subsection{Rank Structure}
 \declarestruct{pmix_rank_t}
 
 The \refstruct{pmix_rank_t} structure is a \code{uint32_t} type for rank values.
@@ -497,18 +496,17 @@ Undefined scope
 %
 \declareconstitem{PMIX_LOCAL}
 The data is intended only for other application processes on the same node.
-Data marked in this way will not be included in data packages sent to remote requestors, only processes on the local node.
+Data marked in this way will not be included in data packages sent to remote requestors --- i.e., it is only available to processes on the local node.
 %
 \declareconstitem{PMIX_REMOTE}
 The data is intended solely for applications processes on remote nodes.
-Data marked in this way will not be shared with other processes on the same node, only processes on remote nodes.
+Data marked in this way will not be shared with other processes on the same node --- i.e., it is only available to  processes on remote nodes.
 %
 \declareconstitem{PMIX_GLOBAL}
 The data is to be shared with all other requesting processes, regardless of location.
 %
 \declareconstitem{PMIX_INTERNAL}
-The data is intended solely for this process.
-The data is not shared with other processes.
+The data is intended solely for this process and is not shared with other processes.
 %
 \end{constantdesc}
 
@@ -555,7 +553,7 @@ Data is only available to this process.
 \subsection{Data Persistence Structure}
 \declarestruct{pmix_persistence_t}
 
-The \refstruct{pmix_persistence_t} structure is a \code{uint8_t} type that defines the policy for data published by clients.
+The \refstruct{pmix_persistence_t} structure is a \code{uint8_t} type that defines the policy for data published by clients via the \refapi{PMIx_Publish} \ac{API}.
 The following constants can be used to set a variable of the type \refstruct{pmix_persistence_t}.
 
 \begin{constantdesc}
@@ -590,7 +588,7 @@ By default, the values in the \refstruct{pmix_info_t} array passed to a PMIx are
 A PMIx implementation or PMIx-enabled \ac{RM} may ignore any \refstruct{pmix_info_t} value passed to a PMIx API if it is not explicitly marked as \refconst{PMIX_INFO_REQD}.
 This is because the values specified default to optional, meaning they can be ignored.
 This may lead to unexpected behavior if the user is relying on the behavior specified by the \refstruct{pmix_info_t} value.
-If the user relies on the behavior defined by the \refstruct{pmix_info_t} then they must pass \refconst{PMIX_INFO_REQD} and then the PMIx implementation or \ac{RM} must return \refconst{PMIX_ERR_NOT_SUPPORTED} as soon as possible to the caller.
+If the user relies on the behavior defined by the \refstruct{pmix_info_t} then they must pass \refconst{PMIX_INFO_REQD} --- the PMIx implementation or \ac{RM} must return \refconst{PMIX_ERR_NOT_SUPPORTED} as soon as possible to the caller if the requested behavior is not supported.
 \adviceuserend
 
 The following constants can be used to set a variable of the type \refstruct{pmix_info_directives_t}.
@@ -974,9 +972,9 @@ A boundary for implementers so they can add their own data types.
 \subsection{Value Structure}
 \declarestruct{pmix_value_t}
 
-The \refstruct{pmix_value_t} structure is used to represent the value passed to \refapi{PMIx_Put}.
+The \refstruct{pmix_value_t} structure is used to represent the value passed to \refapi{PMIx_Put} and retrieved by \refapi{PMIx_Get}, as well as many of the other \ac{PMIx} functions.
 
-A collection of values may be specified under a single key by passing a \refstruct{pmix_value_t} containing an array of type \refstruct{pmix_info_array_t}, with each array element containing its own \refstruct{pmix_info_t} object.
+A collection of values may be specified under a single key by passing a \refstruct{pmix_value_t} containing an array of type \refstruct{pmix_data_array_t}, with each array element containing its own object.
 
 \cspecificstart
 \begin{codepar}
@@ -1084,7 +1082,7 @@ Each attribute is represented by a \var{key} string, and a type for the associat
 This section defines a set of \textbf{reserved} keys which are prefixed with \code{pmix.} to designate them as PMIx standard reserved keys.
 The application or associated libraries (e.g., \ac{MPI}) may choose to define additional attributes
 The attributes defined in this section are of the system and job as opposed to the attributes that the application (or associated libraries) might choose to expose.
-Due to this extensibility the \refapi{PMIx_Get} API may return \refconst{PMIX_ERR_NOT_FOUND} if the provided \var{key} cannot be found.
+Due to this extensibility the \refapi{PMIx_Get} API will return \refconst{PMIX_ERR_NOT_FOUND} if the provided \var{key} cannot be found.
 
 
 \declareAttribute{PMIX_ATTR_UNDEF}{NULL}{NULL}{
