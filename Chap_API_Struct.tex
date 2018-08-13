@@ -1117,12 +1117,12 @@ The host \ac{RM} wants to declare itself as being the local system server for PM
 
 %
 \declareAttribute{PMIX_SERVER_TMPDIR}{"pmix.srvr.tmpdir"}{char*}{
-Temporary directory where PMIx server will place \emph{client} rendezvous points and contact information.
+Top-level temporary directory for all \emph{client} processes connected to this server, and where the PMIx server will place its \emph{tool} rendezvous point and contact information.
 }
 
 %
 \declareAttribute{PMIX_SYSTEM_TMPDIR}{"pmix.sys.tmpdir"}{char*}{
-Temporary directory for this system, where PMIx server will place \emph{tool} rendezvous points and contact information.
+Temporary directory for this system, and where a PMIx server that declares itself to be a system-level server will place a \emph{tool} rendezvous point and contact information.
 }
 
 %
