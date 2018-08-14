@@ -161,8 +161,8 @@ The \refarg{nspace} array must be at least of size one more than \refconst{PMIX_
 Behavior of individual resource managers may differ, but it is expected that failure of any application process to start will result in termination/cleanup of \emph{all} processes in the newly spawned job and return of an error code to the caller.
 
 By default, the spawned processes will be PMIx ``connected'' to the parent process upon successful launch (see \refapi{PMIx_Connect} description for details).
-Note that this only means that the parent process (a) will be given a copy of the new job's
-information so it can query job-level info without incurring any communication penalties, and (b) will receive notification of errors from process in the child job.
+Note that this only means that (a) the parent process will be given a copy of the new job's
+information so it can query job-level info without incurring any communication penalties, (b) newly spawned child processes will receive a copy of the parent processes job-level info, and (c) both the parent process and members of the child job will receive notification of errors from processes in their combined assemblage.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Spawn_nb}}
@@ -297,16 +297,18 @@ The PMIx_Connect function in the \ac{PRI} does not parse or utilize the attribut
 A complete implementation would include support for the following attributes:
 
 \pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
+\pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
 %%%%
 \descr
 
 Record the specified processes as ``connected''.
-This means that the resource manager should treat the failure of any process in the specified group as a reportable event, and take appropriate action.
-Note that different resource managers may respond to failures in different manners.
+This means that the resource manager should treat the failure of any process in the specified collection as a reportable event, and take appropriate action.
+Note that different resource managers may respond to failures in different manners. The RM does not define a new identifier for the connected assemblage, nor does it define a new rank for each process within that group. In addition, the \ac{PMIx} server does not provide any tracking support for the assemblage. Thus, the caller is responsible for maintaining the membership list of the assemblage.
 
-The callback function is to be called once all participating processes have called connect.
-The server is required to return any job-level info for the connecting processes that might not already have (i.e., if the connect request involves \refarg{procs} from different namespaces, then each \refarg{proc} shall receive the job-level info from those namespaces other than their own.
+The function will return once all participating processes have called either \refapi{PMIx_Connect} or its non-blocking version.
+The server is required to return any job-level info for the connecting processes that might not already have it (i.e., if the connect request involves \refarg{procs} from different namespaces, then each \refarg{proc} shall receive the job-level info from those namespaces other than their own). In addition, all members of the collection will receive notification of errors from processes in their combined assemblage. Processes that combine via \refapi{PMIx_Connect} must all depart the assemblage together – i.e., no member can depart the collecvtion while leaving the remaining members in it.
 
 A process can only engage in \emph{one} connect operation involving the identical set of processes at a time.
 However, a process \emph{can} be simultaneously engaged in multiple connect operations, each involving a different set of processes.
@@ -353,11 +355,13 @@ The PMIx_Connect_nb function in the \ac{PRI} does not parse or utilize the attri
 A complete implementation would include support for the following attributes:
 
 \pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
+\pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
 %%%%
 \descr
 
-Nonblocking \refapi{PMIx_Connect_nb} routine.
+Nonblocking version of \refapi{PMIx_Connect}. The callback function is called once all participating processes have called either \refapi{PMIx_Connect_nb} or its blocking version.
 
 
 %%%%%%%%%%%
@@ -403,7 +407,7 @@ A complete implementation would include support for the following attributes:
 Disconnect a previously connected set of processes.
 An error will be returned if the specified set of \refarg{procs} was not previously ``connected''.
 As with \refapi{PMIx_Connect}, a process may be involved in multiple simultaneous disconnect operations.
-However, a process is not allowed to reconnect to a set of \refarg{procs} that has not fully completed disconnect (i.e., you have to fully disconnect before you can reconnect to the \emph{same} group of processes.
+However, a process is not allowed to reconnect to a set of \refarg{procs} that has not fully completed disconnect (i.e., you have to fully disconnect before you can reconnect to the \emph{same} group of processes).
 The \refarg{info} array is used as in \refapi{PMIx_Connect}.
 
 
@@ -460,9 +464,11 @@ Nonblocking \refapi{PMIx_Disconnect} routine.
 
 As the level of interaction between applications and the host \ac{SMS} grows, so too does the need for the application to query the \ac{SMS} regarding its capabilities and state information. \ac{PMIx} provides a generalized query interface for this purpose, along with a set of standardized attribute keys to support a range of requests. This includes requests to determine the status of scheduling queues and active allocations, the scope of \ac{API} and attribute support offered by the \ac{SMS}, namespaces of active jobs, location and information about a job's processes, and information regarding available resources.
 
-An example use-case for the PMIx_Query API is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully, e.g., to write a checkpoint before termination, it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
+An example use-case for the \refapi{PMIx_Query_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully, e.g., to write a checkpoint before termination, it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
 
-PMIx defines an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the PMIx_Query interface to obtain the number of seconds remaining in the current job allocation. Note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} API to request that the host SMS generate an event a specified amount of time prior to reaching the maximum run time. \ac{PMIx} provides such alternate methods as a means of maximizing the probability of a host system supporting at least one method by which the application can obtain the desired service.
+\ac{PMIx} defines an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_nb} interface to obtain the number of seconds remaining in the current job allocation. Note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time. \ac{PMIx} provides such alternate methods as a means of maximizing the probability of a host system supporting at least one method by which the application can obtain the desired service.
+
+The following \acp{API} support query of various session and environment values.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Resolve_peers}}
@@ -502,8 +508,6 @@ If the \refarg{nspace} is \code{NULL}, then all processes on the node will be re
 If the specified node does not currently host any processes, then the returned array will be \code{NULL}, and \refarg{nprocs} will be \code{0}.
 The caller is responsible for releasing the \refarg{procs} array when done with it.
 The \refapi{PMIX_PROC_FREE} macro is provided for this purpose.
-
-
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Resolve_nodes}}
@@ -612,6 +616,12 @@ We assume that the host \ac{RM} will exercise appropriate access control on the 
 NOTE: There is no blocking form of this API as the structures passed to query info differ from those for receiving the results.
 
 The \refarg{status} argument to the callback function indicates if requested data was found or not.
-An array of \refstruct{pmix_info_t} will contain the key/value pairs.
+An array of \refstruct{pmix_info_t} will contain each key that was provided and the corresponding value that was found. Requests for keys that are not found will return the key paired with a value of type \refconst{PMIX_UNDEF}.
+
+\adviceuserstart
+The desire to query a list of attributes supported by the implementation and/or the host environment has been expressed and noted. The \ac{PMIx} community is exploring the possibility and it will likely become available in a future release
+\adviceuserend
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
