@@ -59,8 +59,9 @@ The PMIx server library will properly pack/unpack data to accommodate heterogene
 \adviceimplend
 
 \adviceuserstart
-The value is copied by the PMIx client library.
-Thus, the application is free to release and/or modify the value once the call to \refapi{PMIx_Put} has completed.
+The value is copied by the PMIx client library. Thus, the application is free to release and/or modify the value once the call to \refapi{PMIx_Put} has completed.
+
+Note that keys starting with a string of ``pmix'' are exclusively reserved for the \ac{PMIx} standard and must not be used in calls to \refapi{PMIx_Put}. Thus, applications should never use a defined ``PMIX_'' attribute as the key in a call to \refapi{PMIx_Put}.
 \adviceuserend
 
 
@@ -114,6 +115,11 @@ The caller is responsible for freeing all memory associated with the returned \r
 
 The \refarg{info} array is used to pass user requests regarding the get operation.
 
+\adviceuserstart
+Information provided by the \ac{PMIx} server at time of process start is accessed by providing the nspace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. The list of data referenced in this way is maintained on the \ac{PMIx} web site at \url{https://pmix.org/support/faq/wildcard-rank-access/} but includes items such as the number of processes in the nspace (\refattr{PMIX_JOB_SIZE}), total available slots in the allocation (\refattr{PMIX_UNIV_SIZE}), and the number of nodes in the allocation (\refattr{PMIX_NUM_NODES}).
+
+In general, only data posted by a process via \refapi{PMIx_Put} needs to be retrieved by specifying the rank of the posting process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD}.
+\adviceuserend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Get_nb}}
@@ -202,7 +208,7 @@ This is data that has only internal scope - it will never be ``pushed'' external
 \section{Exchanging Key/Value Pairs}
 \label{chap:api_kv_mgmt:exchange}
 
-The APIs defined in this section push key/value pairs from the client to the local \ac{PMIx} server, and between \ac{PMIx} server to the local clients.
+The APIs defined in this section push key/value pairs from the client to the local \ac{PMIx} server, and circulate the data between \ac{PMIx} servers for subsequent retrieval by the local clients.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Commit}}
@@ -243,7 +249,7 @@ Availability of the data upon completion of \refapi{PMIx_Commit} is therefore im
 %%%%
 \summary
 
-Execute a blocking barrier across the processes identified in the specified array.
+Execute a blocking barrier across the processes identified in the specified array, collecting information posted via \refapi{PMIx_Put} as directed.
 
 %%%%
 \format
@@ -295,7 +301,7 @@ Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence} 
 %%%%
 \summary
 
-Execute a nonblocking \refapi{PMIx_Fence} across the processes identified in the specified array of processes.
+Execute a nonblocking \refapi{PMIx_Fence} across the processes identified in the specified array of processes, collecting information posted via \refapi{PMIx_Put} as directed.
 
 %%%%
 \format
@@ -384,6 +390,7 @@ A complete implementation would include support for the following attributes:
 \pasteAttributeItem{PMIX_RANGE}
 \pasteAttributeItem{PMIX_PERSISTENCE}
 
+
 %%%%
 \descr
 
@@ -396,9 +403,12 @@ Attempts to access the data by processes outside of the provided data range will
 
 The persistence parameter instructs the server as to how long the data is to be retained.
 
-The blocking form will block until the server confirms that the data has been posted and is available.
-The non-blocking form will return immediately, executing the callback when the server confirms availability of the data.
+The blocking form will block until the server confirms that the data has been sent to the \ac{PMIx} server and that entity receives confirmation from its host \ac{SMS} daemon.
+The non-blocking form will return immediately, executing the callback when the \ac{PMIx} server receives confirmation from its host \ac{SMS} daemon.
 
+\adviceimplstart
+Confirmation should not be provided until data has been stored and is ready to be looked up.
+\adviceimplend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Publish_nb}}
