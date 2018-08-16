@@ -4,28 +4,23 @@
 \chapter{Job Allocation Management and Reporting}
 \label{chap:api_job_mgmt}
 
-Detecting stalled processes and receiving notification of external faults is, of course, only part of the problem. The application
-must then work with the \ac{SMS} to actually do something about the situation. Typical current practice is to simply
-terminate the impacted application, but future systems require less draconian solutions.
-
-The \refapi{PMIx_Job_control_nb} \ac{API} enables the application and \ac{SMS} to coordinate the response to failures and other events.
-This can include requesting termination of the entire job or a subset of processes within a job, but can
-also be used in combination with other \ac{PMIx} capabilities (e.g., allocation support and event notification) for more nuanced responses. For example, an application notified of an incipient over-temperature condition on a node could use the \refapi{PMIx_Allocation_request_nb} interface to request replacement nodes while simultaneously using the \refapi{PMIx_Job_control_nb} interface to direct that a checkpoint event be delivered to all processes in the application. If replacement resources are not available, the application might use the \refapi{PMIx_Job_control_nb} interface to request that the job continue at a lower power setting, perhaps sufficient to avoid the over-temperature failure.
-
-The job control API can also be used by an application to register itself as available for preemption when operating in an environment such as a cloud or where incentives, financial or otherwise, are provided to jobs willing to be preempted. Registration can include attributes indicating how many resources are being offered for preemption (e.g., all or only some portion), whether the application will require time to prepare for preemption, etc. Jobs that
-request a warning will receive an event notifying them of an impending preemption (possibly including information as to the resources that will be taken away, how much time the application will be given prior to being preempted, whether the preemption will be a suspension or full termination, etc.) so they have an opportunity to save
-their work. Once the application is ready, it calls the provided event completion callback function to indicate that
-the SMS is free to suspend or terminate it, and can include directives regarding any desired restart.
-
-Additional uses of the job control API continue to emerge. Recent additions include: (a) register temporary files and directories for cleanup upon termination of an individual process or the entire application to ensure complete cleanup even under abnormal termination conditions; (b) register a more generalized epilogue to be executed; (c) coordination of checkpoint execution; (d) passing of specified signals (kill, pause, resume, etc.) to specific processes or the entire application; and (e) request for provisioning of a specific image on one or more nodes.
-
+The job management \acp{API} provide an application with the ability to orchestrate its operation in partnership with the \ac{SMS}.
+Members of this category include the \refapi{PMIx_Allocation_request_nb}, \refapi{PMIx_Job_control_nb}, and \refapi{PMIx_Process_monitor_nb} \acp{API}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Allocation Requests}
 \label{chap:api_job_mgmt:alloc}
 
-This section defines functionality to request allocations from the \ac{RM}, and request modifications to existing allocations. 
+This section defines functionality to request new allocations from the \ac{RM}, and request modifications to existing allocations.
+These are primarily used in the following scenarios:
+\begin{itemize}
+\item \textit{Evolving} applications that dynamically request and return resources as they execute
+\item \textit{Malleable} environments where the scheduler redirects resources away from executing applications for higher priority jobs or load balancing
+\item \textit{Resilient} applications that need to request replacement resources in the face of failures
+\item \textit{Rigid} jobs where the user has requested a static allocation of resources for a fixed period of time, but realizes that they underestimated their required time while executing
+\end{itemize}
+\ac{PMIx} attempts to address this range of use-cases with a single, flexible \ac{API}.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Allocation_request_nb}}
@@ -98,12 +93,23 @@ Note that the new allocation will be disjoint from (i.e., not affiliated with) t
 This includes extending the time limit on current resources, and/or requesting additional resources be allocated to the requesting job.
 Any additional allocated resources will be considered as part of the current allocation, and thus will be released at the same time.
 %
+\item Return no-longer-required resources to the scheduler.
+This includes the ``loan'' of resources back to the scheduler with a promise to return them upon subsequent request.
 \end{compactitem}
 
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Job_control_nb}}
 \declareapi{PMIx_Job_control_nb}
+
+The \refapi{PMIx_Job_control_nb} \ac{API} enables the application and \ac{SMS} to coordinate the response to failures and other events.
+This can include requesting termination of the entire job or a subset of processes within a job, but can
+also be used in combination with other \ac{PMIx} capabilities (e.g., allocation support and event notification) for more nuanced responses. For example, an application notified of an incipient over-temperature condition on a node could use the \refapi{PMIx_Allocation_request_nb} interface to request replacement nodes while simultaneously using the \refapi{PMIx_Job_control_nb} interface to direct that a checkpoint event be delivered to all processes in the application. If replacement resources are not available, the application might use the \refapi{PMIx_Job_control_nb} interface to request that the job continue at a lower power setting, perhaps sufficient to avoid the over-temperature failure.
+
+The job control API can also be used by an application to register itself as available for preemption when operating in an environment such as a cloud or where incentives, financial or otherwise, are provided to jobs willing to be preempted. Registration can include attributes indicating how many resources are being offered for preemption (e.g., all or only some portion), whether the application will require time to prepare for preemption, etc. Jobs that
+request a warning will receive an event notifying them of an impending preemption (possibly including information as to the resources that will be taken away, how much time the application will be given prior to being preempted, whether the preemption will be a suspension or full termination, etc.) so they have an opportunity to save
+their work. Once the application is ready, it calls the provided event completion callback function to indicate that
+the SMS is free to suspend or terminate it, and can include directives regarding any desired restart.
 
 %%%%
 \summary
@@ -286,7 +292,7 @@ A simplified version of \refapi{PMIx_Process_monitor_nb} that sends a heartbeat 
 \section{Logging}
 \label{chap:api_job_mgmt:logging}
 
-This section defines functionality to log messages to the system log, however it is implemented on the system.
+The logging interface supports posting information by applications and SMS elements to persistent storage. This function is \textit{not} intended for output of computational results, but rather for reporting status and saving state information such as inserting computation progress reports into the application's \ac{SMS} job log or error reports to the local syslog.
 
 \subsection{\code{PMIx_Log_nb}}
 \declareapi{PMIx_Log_nb}
@@ -349,7 +355,7 @@ Log data subject to the services offered by the host environment. The data to be
 The callback function will be executed when the log operation has been completed. The \refarg{data} and \refarg{directives} arrays must be maintained until the callback is provided.
 
 \adviceuserstart
-The \refapi{PMIx_Log_nb} API should \emph{never} be used for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon.
+The \refapi{PMIx_Log_nb} API should \emph{never} be used by applications for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon.
 \adviceuserend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
