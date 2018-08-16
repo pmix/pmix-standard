@@ -20,7 +20,7 @@
 %%%%
 \summary
 
-Allocate memory for a \refapi{pmix_data_buffer_t} object and initialize it
+Allocate memory for a \refstruct{pmix_data_buffer_t} object and initialize it
 
 %%%%
 \format
@@ -32,7 +32,7 @@ PMIX_DATA_BUFFER_CREATE(buffer);
 \cspecificend
 
 \begin{arglist}
-\argout{buffer}{Variable to be assigned the pointer to the allocated \refapi{pmix_data_buffer_t} (handle)}
+\argout{buffer}{Variable to be assigned the pointer to the allocated \refstruct{pmix_data_buffer_t} (handle)}
 \end{arglist}
 
 %%%%
@@ -48,7 +48,7 @@ This macro uses \textit{calloc} to allocate memory for the buffer and initialize
 %%%%
 \summary
 
-Free a \refapi{pmix_data_buffer_t} object and the data it contains
+Free a \refstruct{pmix_data_buffer_t} object and the data it contains
 
 %%%%
 \format
@@ -60,7 +60,7 @@ PMIX_DATA_BUFFER_RELEASE(buffer);
 \cspecificend
 
 \begin{arglist}
-\argin{buffer}{Pointer to the \refapi{pmix_data_buffer_t} to be released (handle)}
+\argin{buffer}{Pointer to the \refstruct{pmix_data_buffer_t} to be released (handle)}
 \end{arglist}
 
 %%%%
@@ -76,7 +76,7 @@ Free's the data contained in the buffer, and then free's the buffer itself
 %%%%
 \summary
 
-Initialize a statically declared \refapi{pmix_data_buffer_t} object
+Initialize a statically declared \refstruct{pmix_data_buffer_t} object
 
 %%%%
 \format
@@ -88,7 +88,7 @@ PMIX_DATA_BUFFER_CONSTRUCT(buffer);
 \cspecificend
 
 \begin{arglist}
-\argin{buffer}{Pointer to the allocated \refapi{pmix_data_buffer_t} that is to be initialized (handle)}
+\argin{buffer}{Pointer to the allocated \refstruct{pmix_data_buffer_t} that is to be initialized (handle)}
 \end{arglist}
 
 %%%%
@@ -104,7 +104,7 @@ Initialize a pre-allocated buffer object
 %%%%
 \summary
 
-Release the data contained in a \refapi{pmix_data_buffer_t} object
+Release the data contained in a \refstruct{pmix_data_buffer_t} object
 
 %%%%
 \format
@@ -116,13 +116,13 @@ PMIX_DATA_BUFFER_DESTRUCT(buffer);
 \cspecificend
 
 \begin{arglist}
-\argin{buffer}{Pointer to the \refapi{pmix_data_buffer_t} whose data is to be released (handle)}
+\argin{buffer}{Pointer to the \refstruct{pmix_data_buffer_t} whose data is to be released (handle)}
 \end{arglist}
 
 %%%%
 \descr
 
-Free's the data contained in a \refapi{pmix_data_buffer_t} object
+Free's the data contained in a \refstruct{pmix_data_buffer_t} object
 
 
 %%%%%%%%%%%
@@ -132,7 +132,7 @@ Free's the data contained in a \refapi{pmix_data_buffer_t} object
 %%%%
 \summary
 
-Load a blob into a \refapi{pmix_data_buffer_t} object
+Load a blob into a \refstruct{pmix_data_buffer_t} object
 
 %%%%
 \format
@@ -144,7 +144,7 @@ PMIX_DATA_BUFFER_LOAD(buffer, data, size);
 \cspecificend
 
 \begin{arglist}
-\argin{buffer}{Pointer to a pre-allocated \refapi{pmix_data_buffer_t} (handle)}
+\argin{buffer}{Pointer to a pre-allocated \refstruct{pmix_data_buffer_t} (handle)}
 \argin{data}{Pointer to a blob (\code{char*})}
 \argin{size}{Number of bytes in the blob {\code{size_t}}}
 \end{arglist}
@@ -152,7 +152,7 @@ PMIX_DATA_BUFFER_LOAD(buffer, data, size);
 %%%%
 \descr
 
-Load the given data into the provided \refapi{pmix_data_buffer_t} object, usually done in preparation for unpacking the provided data. Note that the data is \textit{not} copied into the buffer - thus, the blob must not be released until after operations on the buffer have completed.
+Load the given data into the provided \refstruct{pmix_data_buffer_t} object, usually done in preparation for unpacking the provided data. Note that the data is \textit{not} copied into the buffer - thus, the blob must not be released until after operations on the buffer have completed.
 
 
 %%%%%%%%%%%
@@ -162,7 +162,7 @@ Load the given data into the provided \refapi{pmix_data_buffer_t} object, usuall
 %%%%
 \summary
 
-Unload the data from a \refapi{pmix_data_buffer_t} object
+Unload the data from a \refstruct{pmix_data_buffer_t} object
 
 %%%%
 \format
@@ -174,7 +174,7 @@ PMIX_DATA_BUFFER_UNLOAD(buffer, data, size);
 \cspecificend
 
 \begin{arglist}
-\argin{buffer}{Pointer to the \refapi{pmix_data_buffer_t} whose data is to be extracted (handle)}
+\argin{buffer}{Pointer to the \refstruct{pmix_data_buffer_t} whose data is to be extracted (handle)}
 \argout{data}{Variable to be assigned the pointer to the extracted blob (\code{void*})}
 \argout{size}{Variable to be assigned the number of bytes in the blob {\code{size_t}}}
 \end{arglist}
@@ -215,16 +215,20 @@ PMIx_Data_pack(const pmix_proc_t *target,
 \cspecificend
 
 \begin{arglist}
-\argin{target}{Pointer to a \refapi{pmix_proc_t} containing the nspace/rank of the process that will be unpacking the final buffer. A NULL value may be used to indicate that the target is based on the same \ac{PMIx} version as the caller. (handle)}
-\argin{buffer}{Pointer to a \refapi{pmix_data_buffer_t} where the packed data is to be stored (handle)}
+\argin{target}{Pointer to a \refstruct{pmix_proc_t} containing the nspace/rank of the process that will be unpacking the final buffer. A NULL value may be used to indicate that the target is based on the same \ac{PMIx} version as the caller. Note that only the target's nspace is relevant. (handle)}
+\argin{buffer}{Pointer to a \refstruct{pmix_data_buffer_t} where the packed data is to be stored (handle)}
 \argin{src}{Pointer to a location where the data resides. Strings are to be passed as (char **) --- i.e., the caller must pass the address of the pointer to the string as the (void*). This allows the caller to pass multiple strings in a single call. (memory reference)}
 \argin{num_vals}{Number of elements pointed to by the \refarg{src} pointer. A string value is counted as a single value regardless of length. The values must be contiguous in memory. Arrays of pointers (e.g., string arrays) should be contiguous, although the data pointed to need not be contiguous across array entries.(\code{int32_t})}
-\argin{type}{The type of the data to be packed (\refapi{pmix_data_type_t})}
+\argin{type}{The type of the data to be packed (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The data has been packed as requested
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
+\item \refconst{PMIX_ERR_BAD_PARAM} The provided buffer or src is \code{NULL}
+\item \refconst{PMIX_ERR_UNKNOWN_DATA_TYPE} The specified data type is not known to this implementation
+\item \refconst{PMIX_ERR_OUT_OF_RESOURCE} Not enough memory to support the operation
+\item \refconst{PMIX_ERROR} General error
 \end{constantdesc}
 
 %%%%
@@ -260,7 +264,7 @@ target's nspace.
 %%%%
 \summary
 
-Unpack values from a \refapi{pmix_data_buffer_t}
+Unpack values from a \refstruct{pmix_data_buffer_t}
 
 %%%%
 \format
@@ -278,16 +282,20 @@ PMIx_Data_unpack(const pmix_proc_t *source,
 
 
 \begin{arglist}
-\argin{source}{Pointer to a \refapi{pmix_proc_t} structure containing the nspace/rank of the process that packed the provided buffer. A NULL value may be used to indicate that the source is based on the same \ac{PMIx} version as the caller. (handle)}
+\argin{source}{Pointer to a \refstruct{pmix_proc_t} structure containing the nspace/rank of the process that packed the provided buffer. A NULL value may be used to indicate that the source is based on the same \ac{PMIx} version as the caller. Note that only the source's nspace is relevant. (handle)}
 \argin{buffer}{A pointer to the buffer from which the value will be extracted. (handle)}
 \arginout{dest}{A pointer to the memory location into which the data is to be stored. Note that these values will be stored contiguously in memory. For strings, this pointer must be to (char**) to provide a means of supporting multiple string operations. The unpack function will allocate memory for each string in the array - the caller must only provide adequate memory for the array of pointers. (\code{void*})}
 \arginout{max_num_values}{The number of values to be unpacked --- upon completion, the parameter will be set to the actual number of values unpacked. In most cases, this should match the maximum number provided in the parameters --- but in no case will it exceed the value of this parameter.  Note that unpacking fewer values than are actually available will leave the buffer in an unpackable state --- the function will return an error code to warn of this condition.(\code{int32_t})}
-\argin{type}{The type of the data to be unpacked --- must be one of the \ac{PMIx} defined data types (\refapi{pmix_data_type_t})}
+\argin{type}{The type of the data to be unpacked --- must be one of the \ac{PMIx} defined data types (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The data has been unpacked as requested
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
+\item \refconst{PMIX_ERR_BAD_PARAM} The provided buffer or dest is \code{NULL}
+\item \refconst{PMIX_ERR_UNKNOWN_DATA_TYPE} The specified data type is not known to this implementation
+\item \refconst{PMIX_ERR_OUT_OF_RESOURCE} Not enough memory to support the operation
+\item \refconst{PMIX_ERROR} General error
 \end{constantdesc}
 
 %%%%
@@ -335,13 +343,16 @@ PMIx_Data_copy(void **dest, void *src,
 \begin{arglist}
 \argin{dest}{The address of a pointer into which the address of the resulting data is to be stored. (\code{void**})}
 \argin{src}{A pointer to the memory location from which the data is to be copied (handle)}
-\argin{type}{The type of the data to be copied --- must be one of the PMIx defined data types. (\refapi{pmix_data_type_t})}
+\argin{type}{The type of the data to be copied --- must be one of the PMIx defined data types. (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The data has been copied as requested
-\item \refconst{PMIX_ERR_BAD_PARAM} The provided data type is not recognized.
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
+\item \refconst{PMIX_ERR_BAD_PARAM} The provided src or dest is \code{NULL}
+\item \refconst{PMIX_ERR_UNKNOWN_DATA_TYPE} The specified data type is not known to this implementation
+\item \refconst{PMIX_ERR_OUT_OF_RESOURCE} Not enough memory to support the operation
+\item \refconst{PMIX_ERROR} General error
 \end{constantdesc}
 
 %%%%
@@ -374,7 +385,7 @@ PMIx_Data_print(char **output, char *prefix,
 \argin{output}{The address of a pointer into which the address of the resulting output is to be stored. (\code{char**})}
 \argin{prefix}{String to be prepended to the resulting output (\code{char*})}
 \argin{src}{A pointer to the memory location of the data value to be printed (handle)}
-\argin{type}{The type of the data value to be printed --- must be one of the PMIx defined data types. (\refapi{pmix_data_type_t})}
+\argin{type}{The type of the data value to be printed --- must be one of the PMIx defined data types. (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
 \begin{constantdesc}
@@ -410,12 +421,13 @@ PMIx_Data_copy_payload(pmix_data_buffer_t *dest,
 \cspecificend
 
 \begin{arglist}
-\argin{dest}{Pointer to the destination \refapi{pmix_data_buffer_t} (handle)}
-\argin{src}{Pointer to the source \refapi{pmix_data_buffer_t} (handle)}
+\argin{dest}{Pointer to the destination \refstruct{pmix_data_buffer_t} (handle)}
+\argin{src}{Pointer to the source \refstruct{pmix_data_buffer_t} (handle)}
 \end{arglist}
 
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The data has been copied as requested
+\item \refconst{PMIX_ERR_BAD_PARAM} The src and dest \refstruct{pmix_data_buffer_t} types do not match
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
 \end{constantdesc}
 
