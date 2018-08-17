@@ -4,41 +4,213 @@
 \chapter{PMIx Support Functions}
 \label{app:support}
 
-This chapter describes some additional support APIs that are provided in the \ac{PRL} headers, but are not part of the core \ac{PMIx} standard specification.
+This chapter describes some additional support APIs that are provided in the \ac{PRL} headers, but are not part of the core \ac{PMIx} standard specification as the macros reference internal \ac{PRI} functions exposed in the \ac{PRI}'s external headers.
 
 
 %%%%%%%%%%%
 \section{Data Structure Support}
 
-This section describes some additional support APIs focused on the data structures defined in \chapterref{chap:struct}.
+This section describes some additional support macros focused on the data structures defined in \chapterref{chap:struct}.
 
 %%%%%%%%%%%
-\subsection{Argument list manipulation}
-\declareapi{pmix_argv_append_nosize}
+\subsection{Load a value structure}
+\declaremacro{PMIX_VALUE_LOAD}
 
 %%%%
 \summary
 
-Append an argument to an argument list in the form appropriate for the \refstruct{pmix_app_t}.
+Load a data value into a \refstruct{pmix_value_t} structure.
 
 \cspecificstart
 \begin{codepar}
-pmix_status_t
-pmix_argv_append_nosize(char ***argv, const char *arg);
+PMIX_VALUE_LOAD(v, d, t);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\arginout{argv}{Argument list (pointer to array of strings)}
-\argin{arg}{Argument to append to the list (string)}
+\argin{v}{The \refstruct{pmix_value_t} into which the data is to be loaded (pointer to \refstruct{pmix_value_t})}
+\argin{d}{Pointer to the data value to be loaded (handle)}
+\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
 %%%%
 \descr
 
-This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure in the way that the \ac{PRL} expects it to be constructed.
-This function is not exclusive to the construction of that structure, and may be used to construct \code{argv} array style arguments.
+This macro simplifies the loading of data into a \refstruct{pmix_value_t} by correctly assigning values to the structure's fields.
 
+\adviceuserstart
+The data will be copied into the \refstruct{pmix_value_t} - thus, any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsection{Transfer data between value structures}
+\declaremacro{PMIX_VALUE_XFER}
+
+%%%%
+\summary
+
+Transfer the data value between two \refstruct{pmix_value_t} structures.
+
+\cspecificstart
+\begin{codepar}
+PMIX_VALUE_XFER(r, d, s);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{r}{Status code indicating success or failure of the transfer (\refstruct{pmix_status_t})}
+\argin{d}{Pointer to the \refstruct{pmix_value_t} destination (handle)}
+\argin{s}{Pointer to the \refstruct{pmix_value_t} source (handle)}
+\end{arglist}
+
+%%%%
+\descr
+
+This macro simplifies the transfer of data between two \refstruct{pmix_value_t} structures, ensuring that all fields are properly copied.
+
+\adviceuserstart
+The data will be copied into the destination \refstruct{pmix_value_t} - thus, any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsection{Load an info structure}
+\declaremacro{PMIX_INFO_LOAD}
+
+%%%%
+\summary
+
+Load key and data value into a \refstruct{pmix_info_t} structure.
+
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_LOAD(v, k, d, t);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{v}{Pointer to the \refstruct{pmix_info_t} into which the key and data are to be loaded (pointer to \refstruct{pmix_info_t})}
+\argin{k}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
+\argin{d}{Pointer to the data value to be loaded (handle)}
+\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+This macro simplifies the loading of key and data into a \refstruct{pmix_info_t} by correctly assigning values to the structure's fields.
+
+\adviceuserstart
+Both key and data will be copied into the \refstruct{pmix_info_t} - thus, the key and any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsection{Transfer an info structure}
+\declaremacro{PMIX_INFO_XFER}
+
+%%%%
+\summary
+
+Transfer key and data value between two \refstruct{pmix_info_t} structures.
+
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_XFER(d, s);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{d}{Pointer to the destination \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\argin{s}{Pointer to the source \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This macro simplifies the transfer of key and data between two\refstruct{pmix_info_t} structures.
+
+\adviceuserstart
+Both key and data will be copied into the destination \refstruct{pmix_info_t} - thus, the source \refstruct{pmix_info_t} may free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsection{Load a lookup data structure}
+\declaremacro{PMIX_PDATA_LOAD}
+
+%%%%
+\summary
+
+Load key, process identifier, and data value into a \refstruct{pmix_pdata_t} structure.
+
+\cspecificstart
+\begin{codepar}
+PMIX_PDATA_LOAD(m, p, k, d, t);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the \refstruct{pmix_pdata_t} structure into which the key and data are to be loaded (pointer to \refstruct{pmix_pdata_t})}
+\argin{p}{Pointer to the \refstruct{pmix_proc_t} structure containing the identifier of the process being referenced (pointer to \refstruct{pmix_proc_t})}
+\argin{k}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
+\argin{d}{Pointer to the data value to be loaded (handle)}
+\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+This macro simplifies the loading of key, process identifier, and data into a \refstruct{pmix_proc_t} by correctly assigning values to the structure's fields.
+
+\adviceuserstart
+Key, process identifier, and data will all be copied into the \refstruct{pmix_pdata_t} - thus, the source information can be modified or free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsection{Transfer a lookup data structure}
+\declaremacro{PMIX_PDATA_XFER}
+
+%%%%
+\summary
+
+Transfer key, process identifier, and data value between two \refstruct{pmix_pdata_t} structures.
+
+\cspecificstart
+\begin{codepar}
+PMIX_PDATA_XFER(d, s);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{d}{Pointer to the destination \refstruct{pmix_pdata_t} (pointer to \refstruct{pmix_pdata_t})}
+\argin{s}{Pointer to the source \refstruct{pmix_pdata_t} (pointer to \refstruct{pmix_pdata_t})}
+\end{arglist}
+
+This macro simplifies the transfer of key and data between two\refstruct{pmix_pdata_t} structures.
+
+\adviceuserstart
+Key, process identifier, and data will all be copied into the destination \refstruct{pmix_pdata_t} - thus, the source \refstruct{pmix_pdata_t} may free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+
+%%%%%%%%%%%
+\subsection{Argument array extension}
+\declaremacro{PMIX_ARGV_APPEND}
+
+%%%%
+\summary
+
+Append a string to a NULL-terminated, argv-style array of strings.
+
+\cspecificstart
+\begin{codepar}
+PMIX_ARGV_APPEND(r, a, b);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{r}{Status code indicating success or failure of the operation (\refstruct{pmix_status_t})}
+\arginout{a}{Argument list (pointer to NULL-terminated array of strings)}
+\argin{b}{Argument to append to the list (string)}
+\end{arglist}
+
+%%%%
+\descr
+
+This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required in the way that the \ac{PRI} expects it to be constructed.
+
+\adviceuserstart
+The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the macro has completed.
+\adviceuserend
 
 %%%%%%%%%%%
 \section{Environment Manipulation Support}
@@ -46,33 +218,36 @@ This function is not exclusive to the construction of that structure, and may be
 This section describes some additional support APIs focused on environment manipulation.
 
 %%%%%%%%%%%
-\subsection{Environment Variable}
-\declareapi{pmix_setenv}
+\subsection{Set an environment variable}
+\declaremacro{PMIX_SETENV}
 
 %%%%
 \summary
 
-Set an environment variable.
+Set an environment variable in a NULL-terminated, env-style array
 
 \cspecificstart
 \begin{codepar}
-pmix_status_t
-pmix_setenv(const char *name, const char *value,
-            bool overwrite, char ***env);
+PMIX_SETENV(r, name, value, env);
 \end{codepar}
 \cspecificend
 
 
 \begin{arglist}
+\argout{r}{Status code indicating success or failure of the operation (\refstruct{pmix_status_t})}
 \argin{name}{Argument name (string)}
 \argin{value}{Argument value (string)}
-\argin{overwrite}{Whether or not to overwrite if already in environment (bool)}
 \arginout{env}{Environment array to update (pointer to array of strings)}
 \end{arglist}
 
 %%%%
 \descr
 
-Similar to \code{setenv} from the C API, this allows the caller to set an environment variable in the specified \code{env} array, which could then be passed to the \refstruct{pmix_app_t} structure.
+Similar to \code{setenv} from the C API, this allows the caller to set an environment variable in the specified \code{env} array, which could then be passed to the \refstruct{pmix_app_t} structure or any other destination.
+
+\adviceuserstart
+The provided name and value are copied into the destination environment array - thus, the source strings can be free'd without affecting the array once the macro has completed.
+\adviceuserend
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
