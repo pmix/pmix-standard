@@ -523,6 +523,9 @@
 %     \declareapi       Mark the declaration of an API function
 %     \refapi           Reference the API declaration
 %
+%     \declaremacro     Mark the declaration of a user-level macro
+%     \refmacro         Reference the macro declaration
+%
 
 \newcommand{\chapterref}[1]{Chapter~\ref{#1} on page~\pageref{#1}}
 \newcommand{\specref}[1]{Section~\ref{#1} on page~\pageref{#1}}
@@ -545,6 +548,9 @@
 \newcommand{\refarg}[1] {{\textrm{\textmd{\itshape{#1}}}}}
 \newcommand{\argref}[1] {\refarg{#1}}
 \newcommand{\rcomment}[1]{(REVIEW COMMENT: \textbf{#1})}
+
+\newcommand{\declaremacro}[1]{\index{#1!Defintion|textbf} \label{macro:#1}}
+\newcommand{\refmacro}[1]{\index{#1} \hyperref[macro:#1]{\code{#1} }}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set default fonts:
