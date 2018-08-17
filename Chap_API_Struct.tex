@@ -30,6 +30,17 @@ Maximum namespace string length as an integer.
 \declareconstitemvalue{PMIX_MAX_KEYLEN}{511}
 Maximum key string length as an integer.
 %
+\declareconstitemvalue{PMIX_RANK_UNDEF}{UINT32_MAX}
+Undefined rank - indicates that the rank has not been assigned
+%
+\declareconstitemvalue{PMIX_RANK_WILDCARD}{UINT32_MAX-1}
+Wildcard rank - used to reference job-wide values or operations
+%
+\declareconstitemvalue{PMIX_RANK_LOCAL_NODE}{UINT32_MAX-2}
+All ranks on a node - for use in collectives
+%
+\declareconstitemvalue{PMIX_ATTR_UNDEF}{NULL}
+Undefined attribute - indicates that the key has not been assigned
 \end{constantdesc}
 
 %%%%%%%%%%%
