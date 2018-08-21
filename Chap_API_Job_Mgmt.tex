@@ -177,7 +177,6 @@ The use of \refconst{PMIX_RANK_WILDARD} can also be used to indicate that all pr
 
 The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
 The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
-If non-\code{NULL}, then the specified \refarg{release_fn} must be called when the callback function completes - this will be used to release any provided \refstruct{pmix_info_t} array.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
