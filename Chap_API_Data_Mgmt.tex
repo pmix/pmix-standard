@@ -247,14 +247,14 @@ cases. Sending a number larger than can be handled by the recipient
 will return an error code (generated upon unpacking) ---
 the error cannot be detected during packing.
 
-The nspace of the intended recipient of the packed buffer (i.e., the
+The namespace of the intended recipient of the packed buffer (i.e., the
 process that will be unpacking it) is used solely to resolve any data type
 differences between \ac{PMIx} versions. The recipient must, therefore, be
 known to the user prior to calling the pack function so that the
 \ac{PMIx} library is aware of the version the recipient is using. Note that
-all procs in a given nspace are \textit{required} to use the same \ac{PMIx}
+all processes in a given namespace are \textit{required} to use the same \ac{PMIx}
 version --- thus, the caller must only know at least one process from the
-target's nspace.
+target's namespace.
 
 
 %%%%%%%%%%%
@@ -311,13 +311,13 @@ Warning: The caller is responsible for providing adequate memory storage for the
 
 Note that any data that was not hard type cast (i.e., not type cast to a specific size) when packed may lose precision when unpacked by a non-homogeneous recipient. \ac{PMIx} will do its best to deal with heterogeneity issues between the packer and unpacker in such cases. Sending a number larger than can be handled by the recipient will return an error code generated upon unpacking --- these errors cannot be detected during packing.
 
-The nspace of the process that packed the buffer is used solely to resolve any data type
+The namespace of the process that packed the buffer is used solely to resolve any data type
 differences between \ac{PMIx} versions. The packer must, therefore, be
 known to the user prior to calling the pack function so that the
 \ac{PMIx} library is aware of the version the packer is using. Note that
-all procs in a given nspace are \textit{required} to use the same \ac{PMIx}
+all processes in a given namespace are \textit{required} to use the same \ac{PMIx}
 version --- thus, the caller must only know at least one process from the
-packer's nspace.
+packer's namespace.
 
 
 %%%%%%%%%%%

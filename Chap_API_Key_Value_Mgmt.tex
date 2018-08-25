@@ -4,7 +4,7 @@
 \chapter{Key/Value Management}
 \label{chap:api_kv_mgmt}
 
-Management of key-value pairs in \ac{PMIx} is a distributed reponsibility. While the stated objective of the \ac{PMIx} community is to eliminate collective operations, it is recognized that the traditional method of publishing/exchanging data must be supported until that objective can be met. This method relies on processes to discover and publish their local information which is collected by the local PMIx server library.
+Management of key-value pairs in \ac{PMIx} is a distributed responsibility. While the stated objective of the \ac{PMIx} community is to eliminate collective operations, it is recognized that the traditional method of publishing/exchanging data must be supported until that objective can be met. This method relies on processes to discover and publish their local information which is collected by the local PMIx server library.
 Global exchange of the published information is then executed via a collective operation performed by the host \ac{SMS} servers.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,7 +45,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \descr
 
 Push a value into the client's namespace.
-The client library will cache the information locally until \refapi{PMIx_Commit} is called.
+The client's \ac{PMIx} library will cache the information locally until \refapi{PMIx_Commit} is called.
 
 The provided \refarg{scope} is passed to the local PMIx server, which will distribute the data to other processes according to the provided scope.
 The \refstruct{pmix_scope_t} values are defined in \specrefstruct{pmix_scope_t}.
@@ -234,7 +234,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \descr
 
 This is an asynchronous operation.
-The PMIx library will immediately return to the caller while the data is transmitted to the local server in the background.
+The \ac{PRI} will immediately return to the caller while the data is transmitted to the local server in the background.
 
 \adviceuserstart
 The local PMIx server will cache the information locally - i.e., the committed data will not be circulated during \refapi{PMIx_Commit}.

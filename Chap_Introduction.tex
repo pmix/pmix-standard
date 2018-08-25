@@ -38,7 +38,7 @@ Complete information about the \ac{PMIx} standard and affiliated projects can be
 The charter of the PMIx community is to:
 \begin{itemize}
 \item Define a set of agnostic APIs (not affiliated with any specific programming model or code base) to support interactions between application processes and the \ac{SMS}.
-\item Develop an open source (non-copy-left licensed) standalone ``reference'' library to facilitate adoption of the \ac{PMIx} standard.
+\item Develop an open source (non-copy-left licensed) standalone ``reference'' library implementation to facilitate adoption of the \ac{PMIx} standard.
 \item Retain transparent backward compatibility with the existing PMI-1 and PMI-2 definitions, any future \ac{PMI} releases, and across all \ac{PMIx} versions.
 \item Support the ``Instant On'' initiative for rapid startup of applications at exascale and beyond.
 \item Work with the \ac{HPC} community to define and implement new \acp{API} that support evolving programming model requirements for application interactions with the \ac{SMS}.
@@ -52,9 +52,9 @@ Participation in the \ac{PMIx} community is open to anyone, and not restricted t
 \section{PMIx Standard Overview}
 \label{chap:intro:std_overview}
 
-The \ac{PMIx} Standard defines and describes the interface developed by the \acf{PRL}.
-Much of this document is specific to the \acf{PRL}'s design and implementation.
-Specifically the standard describes the functionality provided by the \ac{PRL}, and what the \ac{PRL} requires of the clients and \acfp{RM} that use it's interface.
+The \ac{PMIx} Standard defines and describes the interface developed by the \acf{PRI}.
+Much of this document is specific to the \acf{PRI}'s design and implementation.
+Specifically the standard describes the functionality provided by the \ac{PRI}, and what the \ac{PRI} requires of the clients and \acfp{RM} that use it's interface.
 
 %%%%%%%%%%%
 \subsection{Who should use the standard?}
@@ -70,8 +70,8 @@ Additional, optional features and suggestions on behavior are also included in t
 %%%%%%%%%%%
 \subsection{What is defined in the standard?}
 
-The \ac{PMIx} Standard defines and describes the interface developed by the \acf{PRL}.
-It defines the set of attributes that the \ac{PRL} supports; the set of attributes that are required of a \ac{RM} to support, for a given interface; and the set of optional attributes that an \ac{RM} may choose to support, for a given interface.
+The \ac{PMIx} Standard defines and describes the interface developed by the \acf{PRI}.
+It defines the set of attributes that the \ac{PRI} supports; the set of attributes that are required of a \ac{RM} to support, for a given interface; and the set of optional attributes that an \ac{RM} may choose to support, for a given interface.
 
 %%%%%%%%%%%
 \subsection{What is \emph{not} defined in the standard?}
@@ -101,9 +101,9 @@ The flip side of that statement is also true: Users who find that their current 
 %%%%%%%%%%%
 \subsection{General Guidance for PMIx Users and Implementors}
 
-The \ac{PMIx} Standard defines the behavior of the \acf{PRL}.
+The \ac{PMIx} Standard defines the behavior of the \acf{PRI}.
 A complete system harnessing the \ac{PMIx} interface requires an agreement between the \ac{PMIx} client, be it a tool or library, and the \ac{PMIx}-enabled \ac{RM}.
-The \ac{PRL} acts as an intermediary between these two entities providing a standard API for the exchange of requests and responses.
+The \ac{PRI} acts as an intermediary between these two entities providing a standard API for the exchange of requests and responses.
 The degree to which the \ac{PMIx} client and the \ac{PMIx}-enabled \ac{RM} may interact needs to be defined by those developer communities.
 The \ac{PMIx} standard can be used to define the specifics of this interaction.
 
@@ -174,16 +174,16 @@ range --- implementers are free to return \textit{not supported} from any PMIx f
 
 
 %%%%%%%%%%%
-\subsection{The PMIx Reference Implementation (PRI)}
+\subsection{The \acf{PRI}}
 
-The \ac{PMIx} community has committed to providing a complete, reference implementation of each version of the standard. Note that the definition of the \ac{PMIx} Standard is not contingent upon use of the \ac{PMIx} Reference Implementation --- any implementation that supports the defined \acp{API} is a \ac{PMIx} Standard compliant implementation.
-The \ac{PMIx} Reference Implementation is provided solely for the following purposes:
+The \ac{PMIx} community has committed to providing a complete, reference implementation of each version of the standard. Note that the definition of the \ac{PMIx} Standard is not contingent upon use of the \acf{PRI} --- any implementation that supports the defined \acp{API} is a \ac{PMIx} Standard compliant implementation.
+The \ac{PRI} is provided solely for the following purposes:
 \begin{itemize}
 \item Validation of the standard.\\
-No proposed change and/or extension to the \ac{PMIx} standard is accepted without an accompanying prototype implementation in the \ac{PMIx} Reference Implementation.
+No proposed change and/or extension to the \ac{PMIx} standard is accepted without an accompanying prototype implementation in the \ac{PRI}.
 This ensures that the proposal has undergone at least some minimal level of scrutiny and testing before being considered.
 \item Ease of adoption.\\
-The \ac{PMIx} Reference Implementation is designed to be particularly easy for resource managers (and the \ac{SMS} in general) to adopt, thus facilitating a rapid uptake into that community for application portability.
+The \ac{PRI} is designed to be particularly easy for resource managers (and the \ac{SMS} in general) to adopt, thus facilitating a rapid uptake into that community for application portability.
 Both client and server \ac{PMIx} libraries are included, along with examples of client usage and server-side integration.
 A list of supported environments and versions is maintained on the \ac{PMIx} web site \url{https://pmix.org/support/faq/what-apis-are-supported-on-my-rm/}
 \end{itemize}

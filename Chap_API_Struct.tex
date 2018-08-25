@@ -19,7 +19,9 @@ This helps the end user distinguish between what is defined by the PMIx standard
 %%%%%%%%%%%
 \section{Constants}
 
-\ac{PMIx} defines a few values that are used throughout the standard to set the size of fixed arrays or as a means of identifying values with special meaning. The community makes every attempt to minimize the number of such definitions. The constants defined in this section may be used before calling any library initialization routine.
+\ac{PMIx} defines a few values that are used throughout the standard to set the size of fixed arrays or as a means of identifying values with special meaning.
+The community makes every attempt to minimize the number of such definitions.
+The constants defined in this section may be used before calling any \ac{PMIx} library initialization routine.
 Additional constants associated with specific data structures or types are defined in the section describing that data structure or type.
 
 \begin{constantdesc}
@@ -315,7 +317,7 @@ Additional error code boundary constants include:
 \begin{constantdesc}
 %
 \declareconstitemvalue{PMIX_INTERNAL_ERR_BASE}{-1000}
-A starting point for PMIx internal error codes that are never exposed outside the library.
+A starting point for PMIx internal error codes that are never exposed outside the \ac{PRI}.
 %
 \declareconstitemvalue{PMIX_EXTERNAL_ERR_BASE}{-2000}
 A starting point for user-level defined error constants.
@@ -1207,7 +1209,7 @@ The tool wants to use internal PMIx support, but does not want to connect to a P
 \subsection{Identification attributes}
 \label{api:struct:attributes:ident}
 
-These attributes are defined to identify a process and it's associated PMIx library.
+These attributes are defined to identify a process and it's associated PMIx-enabled library.
 
 %
 \declareAttribute{PMIX_USERID}{"pmix.euid"}{uint32_t}{
@@ -1751,7 +1753,7 @@ Process state
 \subsection{Sever-to-PMIx library attributes}
 \label{api:struct:attributes:server2cl}
 
-Attributes used by host PMIx server to pass data to the PMIx server PMIx library.
+Attributes used by the host PMIx server to pass data to the PMIx server's PMIx library.
 The data will then be parsed and provided to the local PMIx clients.
 
 %
@@ -2665,7 +2667,7 @@ The callback will be executed upon launch of the specified applications in \refa
 
 The \refarg{status} of the callback will indicate whether or not the spawn succeeded.
 The \refarg{nspace} of the spawned processes will be returned, along with any provided callback data.
-Note that the returned \refarg{nspace} value will be released by the library upon return from the callback function, so the receiver must copy it if it needs to be retained.
+Note that the returned \refarg{nspace} value will be released by the \ac{PRI} upon return from the callback function, so the receiver must copy it if it needs to be retained.
 
 
 %%%%%%%%%%%

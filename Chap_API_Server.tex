@@ -43,7 +43,7 @@ The caller is responsible for free'ing the resulting string.
 If values have leading zero's, then that is preserved, as are prefix and suffix strings. For example, an input string of "odin009.org,odin010.org,odin011.org,odin012.org,odin[102-107].org" will return a regular expression of "pmix:odin[009-012,102-107].org"
 
 \adviceuserstart
-The returned regular expression will have a ``pmix:'' at the beginning of the string. This informs the \ac{PMIx} parser that the string was produced using the \ac{PMIx} library's regular expression generator, and thus that same plugin should be used for parsing the string
+The returned regular expression will have a ``pmix:'' at the beginning of the string. This informs the \ac{PMIx} parser that the string was produced using the \ac{PRI}'s regular expression generator, and thus that same plugin should be used for parsing the string
 \adviceuserend
 
 
@@ -91,7 +91,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 The input is expected to consist of a semicolon-separated list of ranges representing the ranks of processes on each node of the job. Thus, an input of "1-4;2-5;8,10,11,12;6,7,9" would generate a regex of "pmix:2x(3);8,10-12;6-7,9"
 
 \adviceuserstart
-The returned regular expression will have a ``pmix:'' at the beginning of the string. This informs the \ac{PMIx} parser that the string was produced using the \ac{PMIx} library's regular expression generator, and thus that same plugin should be used for parsing the string
+The returned regular expression will have a ``pmix:'' at the beginning of the string. This informs the \ac{PMIx} parser that the string was produced using the \ac{PRI}'s regular expression generator, and thus that same plugin should be used for parsing the string
 \adviceuserend
 
 %%%%%%%%%%%
@@ -417,7 +417,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Provide a function by which the local \ac{PMIx} server can perform any application-specific operations prior to spawning local clients of a given application. For example, a network library might need to setup the local driver for ``instant on'' addressing. The data provided in the \refarg{info} array is the data provided to ther host \ac{RM} from the a call to \refapi{PMIx_server_setup_application}.
+Provide a function by which the local \ac{PMIx} server can perform any application-specific operations prior to spawning local clients of a given application. For example, a network library might need to setup the local driver for ``instant on'' addressing. The data provided in the \refarg{info} array is the data provided to there host \ac{RM} from the a call to \refapi{PMIx_server_setup_application}.
 
 
 %%%%%%%%%%%
@@ -1076,7 +1076,7 @@ The callback function is to be called once all participating processes have call
 Note that a process can only engage in \textbf{one} connect operation involving the identical set of processes at a time.
 However, a process \emph{can} be simultaneously engaged in multiple connect operations, each involving a different set of processes.
 
-Note also that this is a collective operation within the client library, and thus the client will be blocked until all processes participate. The \ac{PMIx} server will
+Note also that this is a collective operation within the client's PMIx library, and thus the client will be blocked until all processes participate. The \ac{PMIx} server will
 call this function once all local participants have called \refapi{PMIx_Connect} or its non-blocking form with the same array of participants.
 The \refarg{info} array can be used to pass user directives, including a timeout.
 The directives are optional \emph{unless} the \emph{mandatory} flag has been set - in such cases, the host RM is required to return an error if the directive cannot be met.
@@ -1130,7 +1130,7 @@ An error should be returned if the specified set of processes was not previously
 As above, a process may be involved in multiple simultaneous disconnect operations.
 However, a process is not allowed to reconnect to a set of ranges that has not fully completed disconnect (i.e., you have to fully disconnect before you can reconnect to the same group of processes).
 
-Note also that this is a collective operation within the client library, and thus the client will be blocked until all processes participate. The \ac{PMIx} server will
+Note also that this is a collective operation within the client's \ac{PMIx} library, and thus the client will be blocked until all processes participate. The \ac{PMIx} server will
 call this function once all local participants have called \refapi{PMIx_Disonnect} or its non-blocking form with the same array of participants.
 The \refarg{info} array can be used to pass user directives, including a timeout.
 The directives are optional \emph{unless} the \emph{mandatory} flag has been set - in such cases, the host RM is required to return an error if the directive cannot be met.
