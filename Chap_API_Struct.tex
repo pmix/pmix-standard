@@ -791,7 +791,7 @@ typedef struct pmix_data_array \{
 \declarestruct{pmix_info_t}
 \declarestruct{pmix_info_array}
 
-The \refstruct{pmix_info_t} structure is defines a key/value pair with associated directive.
+The \refstruct{pmix_info_t} structure defines a key/value pair with associated directive.
 
 \cspecificstart
 \begin{codepar}
@@ -803,7 +803,12 @@ typedef struct pmix_info_t \{
 \end{codepar}
 \cspecificend
 
-The \refstruct{pmix_info_array} structure is defines an array of \refstruct{pmix_info_t} structures.
+The \refstruct{pmix_info_array} structure defines an array of \refstruct{pmix_info_t} structures.
+
+\notestart
+\noteheader
+The \refstruct{pmix_info_array} structure has been deprecated and will be removed in future versions of the \ac{PMIx} Standard.
+\noteend
 
 \cspecificstart
 \begin{codepar}
@@ -916,7 +921,7 @@ Byte object (\refstruct{pmix_byte_object_t})
 \declareconstitem{PMIX_KVAL}
 Key/value pair
 %
-\declareconstitem{PMIX_MODEX}
+\declareconstitemDEP{PMIX_MODEX}{2.0}
 Modex
 %
 \declareconstitem{PMIX_PERSIST}
