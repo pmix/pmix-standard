@@ -961,7 +961,7 @@ Compressed string (with zlib)
 \declareconstitem{PMIX_ALLOC_DIRECTIVE}
 Allocation directive (\refstruct{pmix_alloc_directive_t})
 %
-\declareconstitemDEP{PMIX_INFO_ARRAY}{2}
+\declareconstitemDEP{PMIX_INFO_ARRAY}{2.0}
 Info array
 %
 \declareconstitemvalue{PMIX_DATA_TYPE_MAX}{500}
@@ -1063,7 +1063,7 @@ pmix_value_xfer(pmix_value_t *kv, pmix_value_t *src);
 
 \begin{arglist}
 \argout{kv}{key/value type \refstruct{pmix_value_t} destination (handle)}
-\argin{src}{valu etype \refstruct{pmix_value_t} source (handle)}
+\argin{src}{value type \refstruct{pmix_value_t} source (handle)}
 \end{arglist}
 
 %%%%
@@ -1388,7 +1388,7 @@ Full path to the temporary directory assigned to the namespace, under \refattr{P
 
 %
 \declareAttribute{PMIX_PROCDIR}{"pmix.pdir"}{char*}{
-Sub-nsdir assigned to proc
+Full path to the subdirectory under \refattr{PMIX_NSDIR} assigned to the process.
 }
 
 %
@@ -2807,7 +2807,7 @@ An array of \refstruct{pmix_info_t} will contain the key/value pairs.
 \subsection{Event Handler Registration Function}
 \declareapi{pmix_evhdlr_reg_cbfunc_t}
 
-The \refapi{pmix_evhdlr_reg_cbfunc_t} \ldots
+The \refapi{pmix_evhdlr_reg_cbfunc_t} callback function.
 
 \cspecificstart
 \begin{codepar}
@@ -2918,7 +2918,7 @@ Possible uses of the pmix_info_t object include:
 
 For example, the RM might alert the application to the failure of a node that resulted in termination of several processes, and indicate that the overall session will be aborted unless the application requests an alternative behavior in the next 5 seconds. The application then has time to respond with a checkpoint request, or a request to recover from the failure by obtaining replacement nodes and restarting from some earlier checkpoint.
 
-Support for these options is left to the discretion of the host RM. Info keys are included in the common definions above, but also may be augmented on a per-RM basis.
+Support for these options is left to the discretion of the host RM. Info keys are included in the common definitions above, but also may be augmented on a per-RM basis.
 
 On the server side, the notification function is used to inform the host server of a detected event in the PMIx subsystem and/or client
 \adviceuserend

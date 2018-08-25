@@ -40,24 +40,11 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 Given a comma-separated list of \refarg{input} values, generate a regular expression that can be passed down to the \ac{PMIx} client for parsing.
 The caller is responsible for free'ing the resulting string.
 
-If values have leading zero's, then that is preserved, as are prefix and suffix strings. For example, an input string of "odin009.org,odin010.org,odin011.org,odin012.org,odin[102-107].org" will return a regular expression of "pmix:odin[009-012,102-107].org"
+If values have leading zero's, then that is preserved, as are prefix and suffix strings. For example, an input string of ``\code{odin009.org,odin010.org,odin011.org,odin012.org,odin[102-107].org}'' will return a regular expression of ``\code{pmix:odin[009-012,102-107].org}''
 
 \adviceuserstart
-The returned regular expression will have a ``pmix:'' at the beginning of the string. This informs the \ac{PMIx} parser that the string was produced using the \ac{PRI}'s regular expression generator, and thus that same plugin should be used for parsing the string
+The returned regular expression will have a ``\code{pmix:}'' at the beginning of the string. This informs the \ac{PMIx} parser that the string was produced using the \ac{PRI}'s regular expression generator, and thus that same plugin should be used for parsing the string
 \adviceuserend
-
-
-% JJH Format this
-% * If values have leading zero's, then that is preserved. You
-% * have to add back any prefix/suffix for node names
-% * odin[009-015,017-023,076-086]
-% *
-% *     "pmix:odin[009-015,017-023,076-086]"
-% *
-% * Note that the "pmix" at the beginning of each regex indicates
-% * that the PMIx native parser is to be used by the client for
-% * parsing the provided regex. Other parsers may be supported - see
-% * the pmix_client.h header for a list.
 
 
 %%%%%%%%%%%
@@ -139,7 +126,7 @@ This might include the number of processes in the job, relative local ranks of t
 The host daemon is free to determine which, if any, of the supported elements it will provide (See \refsection{chap:struct}{Data Structures and Types} for values).
 
 The \ac{PMIx} server must register \emph{all} namespaces that will participate in collective operations with local processes.
-This means that the server must register a namespace even if it will not host any local procs from within that nspace \emph{if} any local process might at some point perform a collective operation involving one or more processes from that namespace.
+This means that the server must register a namespace even if it will not host any local processes from within that nspace \emph{if} any local process might at some point perform a collective operation involving one or more processes from that namespace.
 This is necessary so that the collective operation can know when it is locally complete.
 
 The caller must also provide the number of local processes that will be launched within this namespace.
@@ -427,7 +414,7 @@ Provide a function by which the local \ac{PMIx} server can perform any applicati
 
 Any functions not supported by the \ac{RM} can be indicated by a \code{NULL} for the function pointer. Client calls to such functions will return a \refconst{PMIX_ERR_NOT_SUPPORTED} status.
 
-The host \ac{RM} will provide the function pointers in a \refapi{pmix_server_module_t} structuretpassed to \refapi{PMIx_server_init}.
+The host \ac{RM} will provide the function pointers in a \refapi{pmix_server_module_t} structure passed to \refapi{PMIx_server_init}.
 That module structure and associated function references are defined in this section.
 
 \adviceimplstart
@@ -537,7 +524,7 @@ The server_object parameter will be the value of the server_object parameter pas
 is only required to
 call the callback function designated.  A host server can choose to not be notified when clients connect by setting \refapi{client_connected} to \code{NULL}.
 
-It is possible that only a subset of the clients in a namespace call \refapi{PMIx_init}.   The server's \refapi{pmix_server_client_connected_fn_t} implemenation
+It is possible that only a subset of the clients in a namespace call \refapi{PMIx_init}.   The server's \refapi{pmix_server_client_connected_fn_t} implementation
 should not depend on being called once per rank in a namespace or delay calling the callback function until all ranks have connected.
 However, if a rank makes any \ac{PMIx} calls, it must first call \refapi{PMIx_Init} and
 therefore the server's \refapi{mpix_server_client_connected_fn_t} will be called before any other server functions specific to the rank.
@@ -1437,7 +1424,7 @@ typedef void (*pmix_tool_connection_cbfunc_t)(
 
 \begin{arglist}
 \argin{status}{\refstruct{pmix_status_t} value (handle)}
-\argin{proc}{\refstruct{pmix_proc_t} structure containing the identifer assigned to the tool (handle)}
+\argin{proc}{\refstruct{pmix_proc_t} structure containing the identifier assigned to the tool (handle)}
 \argin{cbdata}{Data to be passed (memory reference)}
 \end{arglist}
 

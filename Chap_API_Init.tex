@@ -9,15 +9,13 @@ The \acp{API} that may be used outside of the initialized and finalized region a
 All other \acp{API} must be used inside this region.
 
 There are three sets of initialization and finalization functions depending upon the role of the process in the \ac{PMIx} universe.
-Each of these functional sets are described in this chapter. Note that a process can only call \textit{one} of the
-init/finalize functional pairs - e.g., a process that calls the client init function cannot also call the tool or server
-init functions, and must call the corresponding client finalize.
+Each of these functional sets are described in this chapter.
+Note that a process can only call \textit{one} of the init/finalize functional pairs - e.g., a process that calls the client initialization function cannot also call the tool or server initialization functions, and must call the corresponding client finalize.
 
 \adviceuserstart
-Processes that initialize as a server or tool automatically are given access to all client \acp{API}. Server initialization
-includes setting up the infrastructure to support local clients - thus, it necessarily includes overhead and an increased
-memory footprint. Tool initialization automatically searches for a server to which it can connect --- if declared as a
-\textit{launcher}, the \ac{PMIx} library sets up the required ``hooks'' for other tools (e.g., debuggers) to attach to it.
+Processes that initialize as a server or tool automatically are given access to all client \acp{API}.
+Server initialization includes setting up the infrastructure to support local clients - thus, it necessarily includes overhead and an increased memory footprint.
+Tool initialization automatically searches for a server to which it can connect --- if declared as a \textit{launcher}, the \ac{PMIx} library sets up the required ``hooks'' for other tools (e.g., debuggers) to attach to it.
 \adviceuserend
 
 
