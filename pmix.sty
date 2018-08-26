@@ -2,43 +2,63 @@
 %
 % This specification file, and latex structure was derived from/inspired by the OpenMP specification. So some similarity between the two latex files is expected.
 %
-% Quick list of the environments, commands and macros supported. Search below for more details.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Quick list of the environments, commands and macros supported.
+% Search below for more details.
 %
-%    \binding                   % makes header of the same name
-%    \comments
-%    \constraints
-%    \crossreferences
-%    \descr
-%    \effect
-%    \format
-%    \restrictions
-%    \summary
-%    \syntax
+% Formatting Text:
+%   -----------------------
+%   \notestart            - "Note:" Callout section
+%   \noteheader           - \noteheader is optional "Note:" prefix for text
+%     ...
+%   \noteend
+%   -----------------------
+%   \rationalestart       - "Rationale" Callout section
+%     ...
+%   \rationaleend
+%   -----------------------
+%   \adviceuserstart      - "Advice to users" Callout section
+%     ...
+%   \adviceuserend
+%   -----------------------
+%   \adviceimplstart      - "Advice to implementers" Callout section
+%     ...
+%   \adviceimplend
+%   -----------------------
 %
-%    \code{}                    % monospace, bold
-%    \plc{}                     % for any kind of placeholder: italic
-%    \begin{codepar}            % for blocks of verbatim code: monospace, bold
+% Formatting Code:
+%   \code{}               - Code text
+%   \var{}                - Variable
+%   -----------------------
+%   \begin{codepar}       - Section of generic code
+%     ...                 - use language specific macro if language specific code
+%   \end[codepar}
+%   -----------------------
+%   \cspecificstart       - C specific code block
+%     ...
+%   \cspecificend
+%   -----------------------
 %
-%    \specref{}                 % formats the cross-reference "Section X on page Y"
+% Attributes:
+%   \refAttributeItem{}   - Cross reference
+%   \refattr{}            - Same as above
+%   \pasteAttributeItem{} - Paste full description
 %
-%    \notestart                 % black horizontal rule for Notes
-%    \noteend
+% Structures:
+%   \refstruct{}          - Reference a structure
+%   \structref{}          - Same as above
+%   \specrefstruct{}      - Reference a structure by section number and page
 %
-%    \cspecificstart            % blue horizontal rule for C-specific text
-%    \cspecificend
+% APIs:
+%   \refapi{}             - Reference an API function
+%   \refconst{}           - Constant reference
+%   \refarg{} / \argref{} - Reference an argument to an API function
 %
-%    \fortranspecificstart      % blue horizontal rule for Fortran-specific text
-%    \fortranspecificend
+% Cross referencing:
+%   \chapterref{}         - Reference a Chapter by number and page
+%   \specref{}            - Reference a Section by number and page
 %
-%    \glossaryterm              % for use in formatting glossary entries
-%    \glossarydefstart
-%    \glossarydefend
-%
-%    \compactitem               % single-spaced itemized lists for the Examples doc
-%    \cexample                  % C/C++ code example for the Examples doc
-%    \fexample                  % Fortran code example for the Examples doc
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{comment}            % allow use of \begin{comment}
 \usepackage{ifpdf,ifthen}       % allow conditional tests in LaTeX definitions
 \usepackage{makecell}           % Allows common formatting in cells with \thread & \makecell
@@ -172,14 +192,6 @@
 \newcommand{\declareconstitemvalue}[2]{\item[\code{#1}] \index{#1} \hspace{0.25em} \code{#2}  \hspace{1em}}
 \newcommand{\declareconstitemDEP}[2]{\item[\code{#1} (Deprecated in PMIx #2)] \index{#1} \hspace{1em}}
 
-% Attribute list
-%   \declareattritem  Declare an attribute with a description
-\newenvironment{attributedesc}
-{\begin{description}[style=nextline,labelindent=\parindent,leftmargin=*,itemindent=\dimexpr-17pt-\labelsep\relax,itemsep=-1.3ex]}
-{\end{description}}
-
-\newcommand{\declareattritem}[1]{\item[\code{#1}] \index{#1}}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Tables
@@ -291,24 +303,11 @@
 \makeatother
 
 
-% Attribute list
-%   \attributeList          Declare an attribute with a description
-%   \declareAttributeItem   Item in the attribute list
-%
-%   \declareAttribute       Attribute not associated with a list
+% Attributes
+%   \declareAttribute       Declare an attribute with a description
 %   \pasteAttributeItem     Paste the attribute description here
 %   \refAttributeItem       Reference the original definition of the attribute
 %
-\newenvironment{attributeList}
-{\begin{description}[style=nextline,labelindent=\parindent,leftmargin=*,itemindent=\dimexpr-17pt-\labelsep\relax,itemsep=-1.3ex]}
-{\end{description}}
-
-\newcommand{\declareAttributeItem}[4]{%
-  \item[\code{#1} ~~\code{#2}~~(\code{#3}])%
-    \index{#1!Defintion|textbf} \label{attr:#1}%
-    \StdCopyEcho{#1}{#4}%
-}
-
 \newcommand{\declareAttribute}[4]{%
   \code{#1} ~~\code{#2}~~(\code{#3})%
     \index{#1!Defintion|textbf} \label{attr:#1}%
@@ -364,11 +363,7 @@
 
 % This sets the default \code{} font to tt (monospace) and bold:
 \newcommand{\code}[1]{{\texttt{\textbf{#1}}}}
-\newcommand{\nspace}[1]{{\textrm{\textmd{ }}}}
-
-% This defines the \plc{} placeholder font to be tt normal slanted:
 \newcommand{\var}[1] {{\textrm{\textmd{\itshape{#1}}}}}
-\newcommand{\plc}[1] {\var{#1}}
 
 
 % Environment for a paragraph of literal code, single-spaced, no outline, no indenting:
@@ -535,7 +530,7 @@
 \newcommand{\declarestruct}[1]{\index{#1!Defintion|textbf} \label{struct:#1}}
 \newcommand{\refstruct}[1]{\index{#1} \hyperref[struct:#1]{\code{#1} }}
 \newcommand{\structref}[1] {\refstruct{#1}}
-\newcommand{\specrefstruct}[1]{Section~\ref{struct:#1} on page~\pageref{#1}}
+\newcommand{\specrefstruct}[1]{Section~\ref{struct:#1} on page~\pageref{struct:#1}}
 
 \newcommand{\declareapi}[1]{\index{#1!Defintion|textbf} \label{api:#1}}
 \newcommand{\refapi}[1]{\index{#1} \hyperref[api:#1]{\code{#1} }}
@@ -547,10 +542,12 @@
 
 \newcommand{\refarg}[1] {{\textrm{\textmd{\itshape{#1}}}}}
 \newcommand{\argref}[1] {\refarg{#1}}
-\newcommand{\rcomment}[1]{(REVIEW COMMENT: \textbf{#1})}
 
 \newcommand{\declaremacro}[1]{\index{#1!Defintion|textbf} \label{macro:#1}}
 \newcommand{\refmacro}[1]{\index{#1} \hyperref[macro:#1]{\code{#1} }}
+
+% Place in text for in-text questions during review
+\newcommand{\rcomment}[1]{(REVIEW COMMENT: \textbf{#1})}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set default fonts:

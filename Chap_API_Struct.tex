@@ -19,7 +19,9 @@ This helps the end user distinguish between what is defined by the PMIx standard
 %%%%%%%%%%%
 \section{Constants}
 
-\ac{PMIx} defines a few values that are used throughout the standard to set the size of fixed arrays or as a means of identifying values with special meaning. The community makes every attempt to minimize the number of such definitions. The constants defined in this section may be used before calling any library initialization routine.
+\ac{PMIx} defines a few values that are used throughout the standard to set the size of fixed arrays or as a means of identifying values with special meaning.
+The community makes every attempt to minimize the number of such definitions.
+The constants defined in this section may be used before calling any \ac{PMIx} library initialization routine.
 Additional constants associated with specific data structures or types are defined in the section describing that data structure or type.
 
 \begin{constantdesc}
@@ -315,7 +317,7 @@ Additional error code boundary constants include:
 \begin{constantdesc}
 %
 \declareconstitemvalue{PMIX_INTERNAL_ERR_BASE}{-1000}
-A starting point for PMIx internal error codes that are never exposed outside the library.
+A starting point for PMIx internal error codes that are never exposed outside the \ac{PRI}.
 %
 \declareconstitemvalue{PMIX_EXTERNAL_ERR_BASE}{-2000}
 A starting point for user-level defined error constants.
@@ -789,7 +791,7 @@ typedef struct pmix_data_array \{
 \declarestruct{pmix_info_t}
 \declarestruct{pmix_info_array}
 
-The \refstruct{pmix_info_t} structure is defines a key/value pair with associated directive.
+The \refstruct{pmix_info_t} structure defines a key/value pair with associated directive.
 
 \cspecificstart
 \begin{codepar}
@@ -801,7 +803,12 @@ typedef struct pmix_info_t \{
 \end{codepar}
 \cspecificend
 
-The \refstruct{pmix_info_array} structure is defines an array of \refstruct{pmix_info_t} structures.
+The \refstruct{pmix_info_array} structure defines an array of \refstruct{pmix_info_t} structures.
+
+\notestart
+\noteheader
+The \refstruct{pmix_info_array} structure has been deprecated and will be removed in future versions of the \ac{PMIx} Standard.
+\noteend
 
 \cspecificstart
 \begin{codepar}
@@ -914,7 +921,7 @@ Byte object (\refstruct{pmix_byte_object_t})
 \declareconstitem{PMIX_KVAL}
 Key/value pair
 %
-\declareconstitem{PMIX_MODEX}
+\declareconstitemDEP{PMIX_MODEX}{2.0}
 Modex
 %
 \declareconstitem{PMIX_PERSIST}
@@ -959,7 +966,7 @@ Compressed string (with zlib)
 \declareconstitem{PMIX_ALLOC_DIRECTIVE}
 Allocation directive (\refstruct{pmix_alloc_directive_t})
 %
-\declareconstitemDEP{PMIX_INFO_ARRAY}{2}
+\declareconstitemDEP{PMIX_INFO_ARRAY}{2.0}
 Info array
 %
 \declareconstitemvalue{PMIX_DATA_TYPE_MAX}{500}
@@ -1061,7 +1068,7 @@ pmix_value_xfer(pmix_value_t *kv, pmix_value_t *src);
 
 \begin{arglist}
 \argout{kv}{key/value type \refstruct{pmix_value_t} destination (handle)}
-\argin{src}{valu etype \refstruct{pmix_value_t} source (handle)}
+\argin{src}{value type \refstruct{pmix_value_t} source (handle)}
 \end{arglist}
 
 %%%%
@@ -1207,7 +1214,7 @@ The tool wants to use internal PMIx support, but does not want to connect to a P
 \subsection{Identification attributes}
 \label{api:struct:attributes:ident}
 
-These attributes are defined to identify a process and it's associated PMIx library.
+These attributes are defined to identify a process and it's associated PMIx-enabled library.
 
 %
 \declareAttribute{PMIX_USERID}{"pmix.euid"}{uint32_t}{
@@ -1386,7 +1393,7 @@ Full path to the temporary directory assigned to the namespace, under \refattr{P
 
 %
 \declareAttribute{PMIX_PROCDIR}{"pmix.pdir"}{char*}{
-Sub-nsdir assigned to proc
+Full path to the subdirectory under \refattr{PMIX_NSDIR} assigned to the process.
 }
 
 %
@@ -1751,7 +1758,7 @@ Process state
 \subsection{Sever-to-PMIx library attributes}
 \label{api:struct:attributes:server2cl}
 
-Attributes used by host PMIx server to pass data to the PMIx server PMIx library.
+Attributes used by the host PMIx server to pass data to the PMIx server's PMIx library.
 The data will then be parsed and provided to the local PMIx clients.
 
 %
@@ -2289,7 +2296,7 @@ Block at desired point until receiving debugger release notification.
 
 %
 \declareAttribute{PMIX_DEBUG_JOB}{"pmix.dbg.job"}{char*}{
-Namespace of the job to be debugged - the RM/PMIx server are?
+Namespace of the job to be debugged.
 }
 
 %
@@ -2665,7 +2672,7 @@ The callback will be executed upon launch of the specified applications in \refa
 
 The \refarg{status} of the callback will indicate whether or not the spawn succeeded.
 The \refarg{nspace} of the spawned processes will be returned, along with any provided callback data.
-Note that the returned \refarg{nspace} value will be released by the library upon return from the callback function, so the receiver must copy it if it needs to be retained.
+Note that the returned \refarg{nspace} value will be released by the \ac{PRI} upon return from the callback function, so the receiver must copy it if it needs to be retained.
 
 
 %%%%%%%%%%%
@@ -2805,7 +2812,7 @@ An array of \refstruct{pmix_info_t} will contain the key/value pairs.
 \subsection{Event Handler Registration Function}
 \declareapi{pmix_evhdlr_reg_cbfunc_t}
 
-The \refapi{pmix_evhdlr_reg_cbfunc_t} \ldots
+The \refapi{pmix_evhdlr_reg_cbfunc_t} callback function.
 
 \cspecificstart
 \begin{codepar}
@@ -2916,7 +2923,7 @@ Possible uses of the pmix_info_t object include:
 
 For example, the RM might alert the application to the failure of a node that resulted in termination of several processes, and indicate that the overall session will be aborted unless the application requests an alternative behavior in the next 5 seconds. The application then has time to respond with a checkpoint request, or a request to recover from the failure by obtaining replacement nodes and restarting from some earlier checkpoint.
 
-Support for these options is left to the discretion of the host RM. Info keys are included in the common definions above, but also may be augmented on a per-RM basis.
+Support for these options is left to the discretion of the host RM. Info keys are included in the common definitions above, but also may be augmented on a per-RM basis.
 
 On the server side, the notification function is used to inform the host server of a detected event in the PMIx subsystem and/or client
 \adviceuserend

@@ -229,12 +229,12 @@ The following attributes are supported in the \ac{PRI}:
 \descr
 
 Report an event for notification via any
-registered event handler. This function can be called by any \ac{PMIx} process, including application procs, \ac{PMIx} servers, and \ac{SMS} elements. The \ac{PMIx} server calls this \ac{API} to report events detected
-by it to the host \ac{SMS} daemon for distribution and handling, and to pass events given to it by its host down to any attached client procs for processing. Examples might include notification of the failure of another process, detection of an impending node failure due to rising temperatures, or an intent to preempt the application. Events may be locally generated or come from anywhere in the system.
+registered event handler. This function can be called by any \ac{PMIx} process, including application processes, \ac{PMIx} servers, and \ac{SMS} elements. The \ac{PMIx} server calls this \ac{API} to report events detected
+by it to the host \ac{SMS} daemon for distribution and handling, and to pass events given to it by its host down to any attached client processes for processing. Examples might include notification of the failure of another process, detection of an impending node failure due to rising temperatures, or an intent to preempt the application. Events may be locally generated or come from anywhere in the system.
 
-Host \ac{SMS} daemons call the API to pass events down to its embedded \ac{PMIx} server both for transmittal to local client procs and for the server's own internal processing.
+Host \ac{SMS} daemons call the API to pass events down to its embedded \ac{PMIx} server both for transmittal to local client processes and for the server's own internal processing.
 
-Client application procs can call this function to notify the \ac{SMS} and/or other application processes of an event it encountered. Note that procs are not constrained to report status values defined in the official \ac{PMIx} standard --- any integer value can be used. Thus, applications are free to define their own internal events and use the notification system for their own internal purposes.
+Client application processes can call this function to notify the \ac{SMS} and/or other application processes of an event it encountered. Note that processes are not constrained to report status values defined in the official \ac{PMIx} standard --- any integer value can be used. Thus, applications are free to define their own internal events and use the notification system for their own internal purposes.
 
 \adviceuserstart
 The callback function will be called upon completion of the
