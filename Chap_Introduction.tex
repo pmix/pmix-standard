@@ -65,7 +65,7 @@ The \ac{PMIx} Standard informs PMIx clients and \acp{RM} of the syntax and seman
 Additional information about the rationale for the selection of specific interfaces and attributes is also provided.
 
 \ac{PMIx}-enabled \acp{RM} can use this standard to understand the expected behavior required of them when they support various interfaces/attributes.
-Additional, optional features and suggestions on behavior are also included in the discussion to help guide \ac{RM} design and implementation.
+In addition, optional features and suggestions on behavior are also included in the discussion to help guide \ac{RM} design and implementation.
 
 %%%%%%%%%%%
 \subsection{What is defined in the standard?}
@@ -96,14 +96,14 @@ While a \ac{PMIx} library implementer, or an \ac{SMS} component server, may choo
 
 Note that an environment that does not include support for a particular attribute/\ac{API} pair is not ``incomplete'' or of lower quality than one that does include that support. Vendors must decide where to invest their time based on the needs of their target markets, and it is perfectly reasonable for them to perform cost/benefit decisions when considering what functions and attributes to support.
 
-The flip side of that statement is also true: Users who find that their current vendor does not support a function or attribute they require may raise that concern to their vendor and request that the implementation be expanded. Alternatively, users may wish to utilize the \ac{PRRTE} as a ``shim'' between their application and the host environment as it might provide the desired support until the vendor can respond. Finally, in the extreme, one can exploit the portability of PMIx-based applications to change vendors.
+The flip side of that statement is also true: Users who find that their current vendor does not support a function or attribute they require may raise that concern with their vendor and request that the implementation be expanded. Alternatively, users may wish to utilize the \ac{PRRTE} as a ``shim'' between their application and the host environment as it might provide the desired support until the vendor can respond. Finally, in the extreme, one can exploit the portability of PMIx-based applications to change vendors.
 
 %%%%%%%%%%%
 \subsection{General Guidance for PMIx Users and Implementors}
 
 The \ac{PMIx} Standard defines the behavior of the \acf{PRI}.
 A complete system harnessing the \ac{PMIx} interface requires an agreement between the \ac{PMIx} client, be it a tool or library, and the \ac{PMIx}-enabled \ac{RM}.
-The \ac{PRI} acts as an intermediary between these two entities providing a standard API for the exchange of requests and responses.
+The \ac{PRI} acts as an intermediary between these two entities by providing a standard API for the exchange of requests and responses.
 The degree to which the \ac{PMIx} client and the \ac{PMIx}-enabled \ac{RM} may interact needs to be defined by those developer communities.
 The \ac{PMIx} standard can be used to define the specifics of this interaction.
 
@@ -112,7 +112,7 @@ The \ac{PMIx} standard can be used to define the specifics of this interaction.
 The \ac{PMIx} standard cannot define this list for all given \ac{PMIx} clients, but such a list is valuable to \acp{RM} desiring to support these clients.
 
 \ac{PMIx}-enabled \acp{RM} may choose to implement a subset of the \ac{PMIx} standard and/or define attributes beyond those defined herein.
-\ac{PMIx}-enabled \acp{RM} are strongly advised to define a document itemizing the \ac{PMIx} interfaces and associated attributes that support, with any annotations about behavior limitations.
+\ac{PMIx}-enabled \acp{RM} are strongly advised to define a document itemizing the \ac{PMIx} interfaces and associated attributes they support, with any annotations about behavior limitations.
 The \ac{PMIx} standard cannot define this list for all given \ac{PMIx}-enabled \acp{RM}, but such a list is valuable to \ac{PMIx} clients desiring to support a broad range of \ac{PMIx}-enabled \acp{RM}.
 
 
@@ -125,7 +125,7 @@ The \ac{PMIx} standard cannot define this list for all given \ac{PMIx}-enabled \
 This section presents a brief overview of the \ac{PMIx} Architecture~\cite{2017-Castain-EuroMPI}.
 Note that this is a conceptual model solely used to help guide the standards process --- it does not represent
 a design requirement on any \ac{PMIx} implementation. Instead, the model is used by the
-\ac{PMIx} community as a sounding board for evaluating proposed interfaces to avoid unintentionally imposing
+\ac{PMIx} community as a sounding board for evaluating proposed interfaces and avoid unintentionally imposing
 constraints on implementers. Built into the model are two guiding principles also reflected in the standard. First,
 \ac{PMIx} operates in the mode of a \textit{messenger}, and not a \textit{doer} --- i.e., the role
 of \ac{PMIx} is to provide communication between the various participants, relaying requests and returning
@@ -155,10 +155,11 @@ for execution. This architecture reflects the second principle underlying the st
 
 Recognizing the burden this places on SMS vendors, the PMIx community has included interfaces by
 which the host can request support from local SMS elements. Once the SMS has transferred the request to
-an appropriate location, a PMIx interface can be used to pass the request into the target SMS subsystem.
+an appropriate location, a PMIx server interface can be used to pass the request between SMS subsystems.
 For example, a request for network traffic statistics can utilize the
-PMIx networking abstractions to retrieve the information from the FM. This transfers the burden
-of dealing with the interfaces of individual subsystems from the SMS to the PMIx community, which continues
+PMIx networking abstractions to retrieve the information from the FM. This reduces the portability and 
+interoperability issues between the individual subsystems by transferring the burden of defining the 
+interoperable interfaces from the SMS subsystems to the PMIx community, which continues
 to work with those providers to develop the necessary support.
 
 Tools, whether standalone or embedded in job scripts, are an exception to the communication rule and can connect to
