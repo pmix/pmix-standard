@@ -25,6 +25,7 @@ Allocate memory for a \refstruct{pmix_data_buffer_t} object and initialize it
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 PMIX_DATA_BUFFER_CREATE(buffer);
@@ -53,6 +54,7 @@ Free a \refstruct{pmix_data_buffer_t} object and the data it contains
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 PMIX_DATA_BUFFER_RELEASE(buffer);
@@ -81,6 +83,7 @@ Initialize a statically declared \refstruct{pmix_data_buffer_t} object
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 PMIX_DATA_BUFFER_CONSTRUCT(buffer);
@@ -109,6 +112,7 @@ Release the data contained in a \refstruct{pmix_data_buffer_t} object
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 PMIX_DATA_BUFFER_DESTRUCT(buffer);
@@ -137,6 +141,7 @@ Load a blob into a \refstruct{pmix_data_buffer_t} object
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 PMIX_DATA_BUFFER_LOAD(buffer, data, size);
@@ -167,6 +172,7 @@ Unload the data from a \refstruct{pmix_data_buffer_t} object
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 PMIX_DATA_BUFFER_UNLOAD(buffer, data, size);
@@ -204,6 +210,7 @@ Pack one or more values of a specified type into a buffer, usually for transmiss
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -269,6 +276,7 @@ Unpack values from a \refstruct{pmix_data_buffer_t}
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -332,6 +340,7 @@ Copy a data value from one location to another.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -373,6 +382,7 @@ Pretty-print a data value.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -412,6 +422,7 @@ Copy a payload from one buffer to another
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t

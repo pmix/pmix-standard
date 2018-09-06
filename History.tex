@@ -13,7 +13,7 @@ The following \acp{API} were introduced in v2 of the PMIx Standard:
 \item Client APIs
 \begin{itemize}
 \item \refapi{PMIx_Query_info_nb}, \refapi{PMIx_Log_nb}
-\item \refapi{PMIx_Allocation_request_nb}, \refapi{PMIx_Job_control_nb}, \refapi{PMIx_Process_monitor_nb}
+\item \refapi{PMIx_Allocation_request_nb}, \refapi{PMIx_Job_control_nb}, \refapi{PMIx_Process_monitor_nb}, \refapi{PMIx_Heartbeat}
 \end{itemize}
 \item Server APIs
 \begin{itemize}
@@ -36,7 +36,7 @@ The following \acp{API} were introduced in v2 of the PMIx Standard:
 \end{itemize}
 \end{itemize}
 
-The \refapi{PMIx_Init} \ac{API} was modified in v2 of the standard from its \textit{ad hoc} v1 signature to include passing of a \refstruct{pmix_info_t} array for flexibility and ``future-proofing'' of the \ac{API}. In addition, the PMIx\_Notify\_error, PMIx\_Register\_errhandler, and PMIx\_Deregister\_errhandler \acp{API} were replaced.
+The \refapi{PMIx_Init} \ac{API} was modified in v2 of the standard from its \textit{ad hoc} v1 signature to include passing of a \refstruct{pmix_info_t} array for flexibility and ``future-proofing'' of the \ac{API}. In addition, the \code{PMIx_Notify_error}, \code{PMIx_Register_errhandler}, and \code{PMIx_Deregister_errhandler} \acp{API} were replaced.
 
 %%%%%%%%%% Version 1.0
 \section{Version 1.0: June 12, 2015}

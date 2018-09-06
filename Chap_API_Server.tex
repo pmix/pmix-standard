@@ -21,9 +21,11 @@ Generate a regular expression representation of the input string.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_generate_regex(const char *input, char **regex)
+pmix_status_t
+PMIx_generate_regex(const char *input, char **regex)
 \end{codepar}
 \cspecificend
 
@@ -59,6 +61,7 @@ Generate a regular expression representation of the input string.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t PMIx_generate_ppn(const char *input, char **ppn)
@@ -93,9 +96,11 @@ Setup the data about a particular namespace.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_server_register_nspace(const char nspace[],
+pmix_status_t
+PMIx_server_register_nspace(const char nspace[],
                         int nlocalprocs,
                         pmix_info_t info[], size_t ninfo,
                         pmix_op_cbfunc_t cbfunc, void *cbdata)
@@ -145,6 +150,7 @@ Deregister a namespace.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 void PMIx_server_deregister_nspace(const char nspace[],
@@ -178,9 +184,11 @@ Register a client process with the PMIx server library.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_server_register_client(const pmix_proc_t *proc,
+pmix_status_t
+PMIx_server_register_client(const pmix_proc_t *proc,
                         uid_t uid, gid_t gid,
                         void *server_object,
                         pmix_op_cbfunc_t cbfunc, void *cbdata)
@@ -221,9 +229,11 @@ Deregister a client and purge all data relating to it.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
-void PMIx_server_deregister_client(const pmix_proc_t *proc,
+void
+PMIx_server_deregister_client(const pmix_proc_t *proc,
                         pmix_op_cbfunc_t cbfunc, void *cbdata)
 \end{codepar}
 \cspecificend
@@ -254,9 +264,11 @@ Setup the environment of a child process to be forked by the host.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_server_setup_fork(const pmix_proc_t *proc,
+pmix_status_t
+PMIx_server_setup_fork(const pmix_proc_t *proc,
                         char ***env)
 \end{codepar}
 \cspecificend
@@ -289,6 +301,7 @@ Define a function by which the host server can request modex data from the local
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_dmodex_response_fn_t)(pmix_status_t status,
@@ -333,6 +346,7 @@ Provide a function by which the resource manager can request application-specifi
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_setup_application_cbfunc_t)(pmix_status_t status,
@@ -340,7 +354,8 @@ typedef void (*pmix_setup_application_cbfunc_t)(pmix_status_t status,
                         void *provided_cbdata,
                         pmix_op_cbfunc_t cbfunc, void *cbdata)
 
-pmix_status_t PMIx_server_setup_application(const char nspace[],
+pmix_status_t
+PMIx_server_setup_application(const char nspace[],
                         pmix_info_t info[], size_t ninfo,
                         pmix_setup_application_cbfunc_t cbfunc,
                         void *cbdata)
@@ -382,11 +397,13 @@ Provide a function by which the local \ac{PMIx} server can perform any applicati
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_server_setup_local_support(const char nspace[],
-                                              pmix_info_t info[], size_t ninfo,
-                                              pmix_op_cbfunc_t cbfunc, void *cbdata);
+pmix_status_t
+PMIx_server_setup_local_support(const char nspace[],
+                                pmix_info_t info[], size_t ninfo,
+                                pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -494,6 +511,7 @@ Notify the host server that a client connected to this server.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_client_connected_fn_t)(
@@ -547,6 +565,7 @@ Notify the host server that a client called \refapi{PMIx_Finalize}.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_client_finalized_fn_t)(
@@ -597,6 +616,7 @@ Notify PMIx Server that a local client called \refapi{PMIx_Abort}.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_abort_fn_t)(
@@ -646,6 +666,7 @@ At least one client called either \refapi{PMIx_Fence} or \refapi{PMIx_Fence_nb}.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_fencenb_fn_t)(
@@ -712,6 +733,7 @@ Used by the PMIx server to request its local host contact the PMIx server on the
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_dmodex_req_fn_t)(
@@ -765,6 +787,7 @@ Publish data per the PMIx API specification.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_publish_fn_t)(
@@ -825,6 +848,7 @@ Lookup published data.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_lookup_fn_t)(
@@ -884,6 +908,7 @@ Delete data from the data store.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_unpublish_fn_t)(
@@ -934,6 +959,7 @@ Spawn a set of applications/processes as per the \refapi{PMIx_Spawn} API.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_spawn_fn_t)(
@@ -1026,6 +1052,7 @@ Record the specified processes as ``connected''.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_connect_fn_t)(
@@ -1081,6 +1108,7 @@ Disconnect a previously connected set of processes.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_disconnect_fn_t)(
@@ -1135,6 +1163,7 @@ Register to receive notifications for the specified events.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
  typedef pmix_status_t (*pmix_server_register_events_fn_t)(
@@ -1201,6 +1230,7 @@ Deregister to receive notifications for the specified events.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
  typedef pmix_status_t (*pmix_server_deregister_events_fn_t)(
@@ -1239,6 +1269,7 @@ Notify the specified processes of an event.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_notify_event_fn_t)(pmix_status_t code,
@@ -1287,6 +1318,7 @@ Callback function for incoming connection requests from local clients.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_connection_cbfunc_t)(
@@ -1319,6 +1351,7 @@ Register a socket the host server can monitor for connection requests.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_listener_fn_t)(
@@ -1357,6 +1390,7 @@ Query information from the resource manager.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_query_fn_t)(
@@ -1414,6 +1448,7 @@ Callback function for incoming tool connections.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_tool_connection_cbfunc_t)(
@@ -1448,6 +1483,7 @@ Register that a tool has connected to the server.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_server_tool_connection_fn_t)(
@@ -1497,6 +1533,7 @@ Log data on behalf of a client.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_server_log_fn_t)(
@@ -1552,6 +1589,7 @@ Request allocation modifications on behalf of a client.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_alloc_fn_t)(
@@ -1627,6 +1665,7 @@ Execute a job control action on behalf of a client.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_job_control_fn_t)(
@@ -1696,6 +1735,7 @@ Request that a client be monitored for activity.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 /* Request that a client be monitored for activity */

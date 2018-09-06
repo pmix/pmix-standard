@@ -25,6 +25,7 @@ Abort the specified processes
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -79,6 +80,7 @@ Spawn a new job.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -176,6 +178,7 @@ Nonblocking version of the \refapi{PMIx_Spawn} routine.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -273,6 +276,7 @@ Connect namespaces.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -328,6 +332,7 @@ Nonblocking \refapi{PMIx_Connect_nb} routine.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -376,6 +381,7 @@ Disconnect a previously connected set of processes.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -423,6 +429,7 @@ Nonblocking \refapi{PMIx_Disconnect} routine.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -482,6 +489,7 @@ Obtain the array of processes within the specified namespace that are executing 
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -521,6 +529,7 @@ Return a list of nodes hosting processes within the given namespace.
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -556,17 +565,18 @@ Query information about the system in general.
 %%%%
 \format
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
+pmix_status_t
+PMIx_Query_info_nb(pmix_query_t queries[], size_t nqueries,
+                   pmix_info_cbfunc_t cbfunc, void *cbdata)
+
 typedef void (*pmix_info_cbfunc_t)(pmix_status_t status,
                                    pmix_info_t *info, size_t ninfo,
                                    void *cbdata,
                                    pmix_release_cbfunc_t release_fn,
-                                   void *release_cbdata);
-
-pmix_status_t
-PMIx_Query_info_nb(pmix_query_t queries[], size_t nqueries,
-                   pmix_info_cbfunc_t cbfunc, void *cbdata)
+                                   void *release_cbdata)
 \end{codepar}
 \cspecificend
 
