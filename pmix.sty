@@ -105,7 +105,7 @@
 
 \usepackage{changepage}   % allows left/right-page margin readjustments
 
-\setlength{\oddsidemargin}{0.45in}
+\setlength{\oddsidemargin}{0.185in}
 \setlength{\evensidemargin}{0.185in}
 \raggedbottom
 
@@ -141,6 +141,26 @@
 \newenvironment{compactitem}
 {\begin{itemize}[itemsep=-1.2ex]}
 {\end{itemize}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Floating version
+%\usepackage[showboxes]{textpos}
+\usepackage{textpos}
+
+\setlength{\TPHorizModule}{1pt}%
+\setlength{\TPVertModule}{\TPHorizModule}%
+\TPMargin{1pt}%
+
+\newcommand{\versionMarker}[1]{%
+ % y is 8 = \parskip
+ \begin{textblock}{50}(-55,8)%
+   \textit{PMIx v#1}%
+   \raggedright
+ \end{textblock}%
+}
+% Alternative is to make a box inline, but that gets tricky when positioning close
+% to codepar's
+% \makebox[-7pt][r]{\textit{PMIx #4}\raggedright}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Enumerated list with lowercase alphabet lettering
@@ -272,6 +292,7 @@
 \newcommand{\descr} {\littleheader{Description}}
 \newcommand{\format} {\littleheader{Format}}
 \newcommand{\summary} {\littleheader{Summary}}
+\newcommand{\history} {\littleheader{History}}
 \newcommand{\priattr} {\littleheader{PRI Attributes}}
 \newcommand{\reqattr} {\littleheader{\ac{RM} Required Attributes}}
 \newcommand{\optattr} {\littleheader{\ac{RM} Optional Attributes}}
