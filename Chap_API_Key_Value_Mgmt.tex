@@ -402,7 +402,7 @@ A complete implementation would include support for the following attributes:
 %%%%
 \descr
 
-Publish the data in the \refarg{info} array for lookup.
+Publish the data in the \refarg{info} array for subsequent lookup.
 By default, the data will be published into the \refconst{PMIX_SESSION} range and with \refconst{PMIX_PERSIST_APP} persistence.
 Changes to those values, and any additional directives, can be included in the \refstruct{pmix_info_t} array.
 
@@ -411,8 +411,7 @@ Attempts to access the data by processes outside of the provided data range will
 
 The persistence parameter instructs the server as to how long the data is to be retained.
 
-The blocking form will block until the server confirms that the data has been sent to the \ac{PMIx} server and that entity receives confirmation from its host \ac{SMS} daemon.
-The non-blocking form will return immediately, executing the callback when the \ac{PMIx} server receives confirmation from its host \ac{SMS} daemon.
+The blocking form will block until the server confirms that the data has been sent to the \ac{PMIx} server and that entity receives confirmation from its host \ac{SMS} daemon. Data is copied into the backing key-value data store, and therefore the \refarg{info} array can be released upon return from the blocking function call.
 
 \adviceimplstart
 Confirmation should not be provided until data has been stored and is ready to be looked up.
@@ -461,8 +460,9 @@ A complete implementation would include support for the following attributes:
 %%%%
 \descr
 
-Nonblocking \refapi{PMIx_Publish} routine.
-Note that the function will return an error if a \code{NULL} callback function is given.
+Nonblocking \refapi{PMIx_Publish} routine. The non-blocking form will return immediately, executing the callback when the \ac{PMIx} server receives confirmation from its host \ac{SMS} daemon.
+
+Note that the function will return an error if a \code{NULL} callback function is given, and that the \refarg{info} array must be maintained until the callback is provided.
 
 
 %%%%%%%%%%%
@@ -577,7 +577,8 @@ A complete implementation would include support for the following attributes:
 Non-blocking form of the \refapi{PMIx_Lookup} function.
 Data for the provided NULL-terminated \refarg{keys} array will be returned in the provided callback function.
 As with \refapi{PMIx_Lookup}, the default behavior is to \emph{not} wait for data to be published.
-The \refarg{info} keys can be used to modify the behavior as previously described by \refapi{PMIx_Lookup}.
+The \refarg{info} array can be used to modify the behavior as previously described by \refapi{PMIx_Lookup}. Both the \refarg{info} and \refarg{keys} arrays must be maintained until the callback is provided.
+
 
 
 %%%%%%%%%%%
@@ -674,7 +675,7 @@ A complete implementation would include support for the following attributes:
 \descr
 
 Non-blocking form of the \refapi{PMIx_Unpublish} function.
-The callback function will be executed once the server confirms removal of the specified data.
+The callback function will be executed once the server confirms removal of the specified data. The \refarg{info} array must be maintained until the callback is provided.
 
 
 
