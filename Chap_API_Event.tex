@@ -138,6 +138,9 @@ Note that the codes being registered do \textit{not} need to be \ac{PMIx} error 
 \end{constantdesc}
 
 
+\adviceuserstart
+As previously stated, upon completing its work and prior to returning, each handler \textit{must} call the event handler completion function provided when it was invoked (including a status code plus any information to be passed to later handlers) so that the chain can continue being progressed. An event handler can terminate all further progress along the chain by passing the \refconst{PMIX_EVENT_ACTION_COMPLETE} status to the completion callback function. Note that the parameters passed to the event handler (e.g., the \refarg{info} and \refarg{results} arrays) will cease to be valid once the completion function has been called - thus, any information in the incoming parameters that will be referenced following the call to the completion function must be copied.
+\adviceuserend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Deregister_event_handler}}
