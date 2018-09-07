@@ -131,11 +131,15 @@ This might include the number of processes in the job, relative local ranks of t
 The host daemon is free to determine which, if any, of the supported elements it will provide (See \refsection{chap:struct}{Data Structures and Types} for values).
 
 The \ac{PMIx} server must register \emph{all} namespaces that will participate in collective operations with local processes.
-This means that the server must register a namespace even if it will not host any local processes from within that nspace \emph{if} any local process might at some point perform a collective operation involving one or more processes from that namespace.
-This is necessary so that the collective operation can know when it is locally complete.
+This means that the server must register a namespace even if it will not host any local processes from within that nspace \emph{if} any local process of another nspace might at some point perform an operation involving one or more processes from the new namespace.
+This is necessary so that the collective operation can identify the participants and know when it is locally complete.
 
 The caller must also provide the number of local processes that will be launched within this namespace.
 This is required for the \ac{PMIx} server library to correctly handle collectives as a collective operation call can occur before all the local processes have been started.
+
+\adviceuserstart
+The number of local processes for any given nspace is generally fixed at the time of application launch. Calls to \refapi{PMIx_Spawn} result in processes launched in their own nspace, not that of their parent. However, it is possible for processes to \textit{migrate} to another node via a call to \refapi{PMIx_Job_control_nb}, thus resulting in a change to the number of local processes on both the initial node and the node to which the process moved. It is therefore \textit{critical} that applications not migrate processes without first ensuring that \ac{PMIx}-based collective operations are not in progress, and that no such operations be initiated until process migration has completed.
+\adviceuserend
 
 
 %%%%%%%%%%%
