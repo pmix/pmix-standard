@@ -340,7 +340,6 @@ The \ac{PMIx} server will free the data blob upon return from the response funct
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_setup_application}}
 \declareapi{PMIx_server_setup_application}
-\declareapi{pmix_setup_application_cbfunc_t}
 
 %%%%
 \summary
@@ -353,12 +352,6 @@ Provide a function by which the resource manager can request application-specifi
 \versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
-typedef void (*pmix_setup_application_cbfunc_t)(
-                        pmix_status_t status,
-                        pmix_info_t info[], size_t ninfo,
-                        void *provided_cbdata,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata)
-
 pmix_status_t
 PMIx_server_setup_application(const char nspace[],
                         pmix_info_t info[], size_t ninfo,
@@ -372,7 +365,7 @@ PMIx_server_setup_application(const char nspace[],
 \argin{info}{Array of info structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \argin{cbfunc}{Callback function \refapi{pmix_setup_application_cbfunc_t} (function reference)}
-\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
@@ -380,9 +373,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Provide a function by which the \ac{RM} can request any application-specific setup data (e.g., environmental variables, fabric configuration and security credentials) prior to initiating launch of an application.
-This is defined as a non-blocking operation in case contributing plugins need to perform some action before responding.
-The returned data will be distributed along with the application. This is strictly a \ac{PMIx} server operation - the host \ac{RM} is not contacted nor involved in its execution.
+Provide a function by which the \ac{RM} can request application-specific setup data (e.g., environmental variables, fabric configuration and security credentials) from supporting \ac{PMIx} server library subsystems prior to initiating launch of an application. This is defined as a non-blocking operation in case contributing subsystems need to perform some potentially time consuming action (e.g., query a remote service) before responding. The returned data must be distributed by the \ac{RM} and subsequently delivered to the local \ac{PMIx} server on each node where application processes will execute prior to initiating execution of those processes.
 
 In the callback function, the returned \refarg{info} array is owned by the \ac{PMIx} server library and will be free'd when the provided \refarg{cbfunc} is called.
 
