@@ -2969,6 +2969,41 @@ Define a function to be called by the \ac{PMIx} server library for return of app
 
 
 %%%%%%%%%%%
+\subsection{Server Direct Modex Response Callback Function}
+\declareapi{pmix_dmodex_response_fn_t}
+
+The \refapi{PMIx_server_dmodex_request} callback function.
+
+%%%%
+\summary
+
+Provide a function by which the local \ac{PMIx} server library can return connection and other data posted by local application processes to the host resource manager.
+
+%%%%
+\format
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_dmodex_response_fn_t)(pmix_status_t status,
+                        char *data, size_t sz,
+                        void *cbdata);
+\end{codepar}
+\cspecificend
+
+
+\begin{arglist}
+\argin{status}{Returned status of the request (\refstruct{pmix_status_t})}
+\argin{data}{Pointer to a data "blob" containing the requested information (handle)}
+\argin{sz}{Number of bytes in the \refarg{data} blob (integer)}
+\argin{cbdata}{Data passed into the initial call to \refapi{PMIx_server_dmodex_request} (memory reference)}
+\end{arglist}
+
+
+\descr
+Define a function to be called by the PMIx server library for return of information posted by a local application process (via \refapi{PMIx_Put} with subsequent \refapi{PMIx_Commit}) in response to a request from the host RM. The returned \refarg{data} blob is owned by the PMIx server library and will be free’d upon return from the function.
+
+%%%%%%%%%%%
 \subsection{Constant String Functions}
 
 Provide a string representation for several types of values.
