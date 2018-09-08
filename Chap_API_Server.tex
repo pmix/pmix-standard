@@ -295,7 +295,6 @@ This function will set appropriate environmental variables for this purpose, and
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_dmodex_request}}
 \declareapi{PMIx_server_dmodex_request}
-\declareapi{pmix_dmodex_response_fn_t}
 
 %%%%
 \summary
@@ -308,10 +307,6 @@ Define a function by which the host server can request modex data from the local
 \versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
-typedef void (*pmix_dmodex_response_fn_t)(pmix_status_t status,
-                        char *data, size_t sz,
-                        void *cbdata);
-
 pmix_status_t PMIx_server_dmodex_request(const pmix_proc_t *proc,
                         pmix_dmodex_response_fn_t cbfunc,
                         void *cbdata)
@@ -330,11 +325,11 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \descr
 
 Define a function by which the host server can request modex data from the local \ac{PMIx} server.
-This is used to support the direct modex operation (i.e., where data is cached locally on each \ac{PMIx} server for its own local clients, and is obtained on-demand for remote requests).
+This is used to support the direct modex operation where data is cached locally on each \ac{PMIx} server for its own local clients, and is obtained on-demand for remote requests.
 Upon receiving a request from a remote server, the host server will call this function to pass the request into the \ac{PMIx} server.
-The \ac{PMIx} server will return a blob (once it becomes available) via the \refarg{cbfunc} - the host server shall send the blob back to the original requestor.
+The \ac{PMIx} server library will return a blob (once it becomes available) via the \refarg{cbfunc} - the host \ac{RM} shall send the blob back to the original requestor.
 
-The \ac{PMIx} server will free the data blob upon return from the response function.
+The \ac{PMIx} server library will free the data blob upon return from the response function.
 
 
 %%%%%%%%%%%
