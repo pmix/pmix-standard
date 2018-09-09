@@ -17,7 +17,6 @@ CHAPTERS= \
 	Chap_API_Data_Mgmt.tex \
 	Chap_API_Server.tex \
 	App_Support.tex \
-	History.tex \
 	Acknowledgements.tex
 
 SOURCES=
