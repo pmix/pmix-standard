@@ -228,3 +228,78 @@ The remainder of this document is structured as follows:
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% History: Version 1.0
+\section{Version 1.0: June 12, 2015}
+
+\par
+The \ac{PMIx} version 1.0 \textit{ad hoc} standard was defined in the \acf{PRI} header files as part of the \ac{PRI} v1.0.0 release prior to the creation of the formal \ac{PMIx} 2.0 standard.
+Below are a summary listing of the interfaces defined in the 1.0 headers.
+
+\begin{itemize}
+\item Client APIs
+\begin{itemize}
+\item PMIx\_Init, \refapi{PMIx_Initialized}, \refapi{PMIx_Abort}, \refapi{PMIx_Finalize}
+\item \refapi{PMIx_Put}, \refapi{PMIx_Commit},
+\item \refapi{PMIx_Fence}, \refapi{PMIx_Fence_nb}
+\item \refapi{PMIx_Get}, \refapi{PMIx_Get_nb}
+\item \refapi{PMIx_Publish}, \refapi{PMIx_Publish_nb}
+\item \refapi{PMIx_Lookup}, \refapi{PMIx_Lookup}
+\item \refapi{PMIx_Unpublish}, \refapi{PMIx_Unpublish_nb}
+\item \refapi{PMIx_Spawn}, \refapi{PMIx_Spawn_nb}
+\item \refapi{PMIx_Connect}, \refapi{PMIx_Connect_nb}
+\item \refapi{PMIx_Disconnect}, \refapi{PMIx_Disconnect_nb}
+\item \refapi{PMIx_Resolve_nodes}, \refapi{PMIx_Resolve_peers}
+\end{itemize}
+\item Server APIs
+\begin{itemize}
+\item \refapi{PMIx_server_init}, \refapi{PMIx_server_finalize}
+\item \refapi{PMIx_generate_regex}, \refapi{PMIx_generate_ppn}
+\item \refapi{PMIx_server_register_nspace}, \refapi{PMIx_server_deregister_nspace}
+\item \refapi{PMIx_server_register_client}, \refapi{PMIx_server_deregister_client}
+\item \refapi{PMIx_server_setup_fork}, \refapi{PMIx_server_dmodex_request}
+\end{itemize}
+\item Common APIs
+\begin{itemize}
+\item \refapi{PMIx_Get_version}, \refapi{PMIx_Store_internal}, \refapi{PMIx_Error_string}
+\item \refapi{PMIx_Register_errhandler}, \refapi{PMIx_Deregister_errhandler}, \refapi{PMIx_Notify_error}
+\end{itemize}
+\end{itemize}
+
+The \code{PMIx_Init} \ac{API} was subsequently modified in the \ac{PRI} release v1.1.0.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% History: Version 2.0
+\section{Version 2.0: Sept. 2018}
+
+The following \acp{API} were introduced in v2.0 of the PMIx Standard:
+
+\begin{itemize}
+\item Client APIs
+\begin{itemize}
+\item \refapi{PMIx_Query_info_nb}, \refapi{PMIx_Log_nb}
+\item \refapi{PMIx_Allocation_request_nb}, \refapi{PMIx_Job_control_nb}, \refapi{PMIx_Process_monitor_nb}, \refapi{PMIx_Heartbeat}
+\end{itemize}
+\item Server APIs
+\begin{itemize}
+\item \refapi{PMIx_server_setup_application}, \refapi{PMIx_server_setup_local_support}
+\end{itemize}
+\item Tool APIs
+\begin{itemize}
+\item \refapi{PMIx_tool_init}, \refapi{PMIx_tool_finalize}
+\end{itemize}
+\item Common APIs
+\begin{itemize}
+\item \refapi{PMIx_Register_event_handler}, \refapi{PMIx_Deregister_event_handler}
+\item \refapi{PMIx_Notify_event}
+\item \refapi{PMIx_Proc_state_string}, \refapi{PMIx_Scope_string}
+\item \refapi{PMIx_Persistence_string}, \refapi{PMIx_Data_range_string}
+\item \refapi{PMIx_Info_directives_string}, \refapi{PMIx_Data_type_string}
+\item \refapi{PMIx_Alloc_directive_string}
+\item \refapi{PMIx_Data_pack}, \refapi{PMIx_Data_unpack}, \refapi{PMIx_Data_copy}
+\item \refapi{PMIx_Data_print}, \refapi{PMIx_Data_copy_payload}
+\end{itemize}
+\end{itemize}
+
+The \refapi{PMIx_Init} \ac{API} was modified in v2.0 of the standard from its \textit{ad hoc} v1.0 signature to include passing of a \refstruct{pmix_info_t} array for flexibility and ``future-proofing'' of the \ac{API}.
+In addition, the \code{PMIx_Notify_error}, \code{PMIx_Register_errhandler}, and \code{PMIx_Deregister_errhandler} \acp{API} were replaced.
+
