@@ -404,17 +404,24 @@ A complete implementation would include support for the following attributes:
 
 Publish the data in the \refarg{info} array for subsequent lookup.
 By default, the data will be published into the \refconst{PMIX_SESSION} range and with \refconst{PMIX_PERSIST_APP} persistence.
-Changes to those values, and any additional directives, can be included in the \refstruct{pmix_info_t} array.
-
-Note that the keys must be unique within the specified data range or else an error will be returned (first published wins).
-Attempts to access the data by processes outside of the provided data range will be rejected.
-
-The persistence parameter instructs the server as to how long the data is to be retained.
+Changes to those values, and any additional directives, can be included in the \refstruct{pmix_info_t} array. Attempts to access the data by processes outside of the provided data range will be rejected. The persistence parameter instructs the server as to how long the data is to be retained.
 
 The blocking form will block until the server confirms that the data has been sent to the \ac{PMIx} server and that entity receives confirmation from its host \ac{SMS} daemon. Data is copied into the backing key-value data store, and therefore the \refarg{info} array can be released upon return from the blocking function call.
 
+\adviceuserstart
+Duplicate keys within the specified data range may lead to unexpected behavior depending
+on host RM implementation of the backing key-value store.
+\adviceuserend
+
 \adviceimplstart
 Confirmation should not be provided until data has been stored and is ready to be looked up.
+Implementations should, to the best of their ability, detect duplicate keys and protect the
+user from unexpected behavior - preferably returning an error. This version of the
+standard does not define a specific error code to be returned, so the implementation must
+make it clear to the user what to expect in this scenario. One suggestion is to define an RM
+specific error code beyond the \refconst{PMIX_EXTERNAL_ERR_BASE} boundary. Future versions of the standard
+will clarify that a specific \ac{PMIx} error be returned when conflicting values are published for a given
+key, and will provide attributes to allow modified behaviors such as overwrite.
 \adviceimplend
 
 %%%%%%%%%%%
