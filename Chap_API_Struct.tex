@@ -26,13 +26,26 @@ Additional constants associated with specific data structures or types are defin
 
 \begin{constantdesc}
 %
-\declareconstitemvalue{PMIX_MAX_NSLEN}{255}
+\declareconstitem{PMIX_MAX_NSLEN}
 Maximum namespace string length as an integer.
+
+\adviceimplstart
+\refconst{PMIX_MAX_NSLEN} should have a minimum value of 64 characters. Namespace arrays in \ac{PMIx} defined structures must reserve
+a space of size \refconst{PMIX_MAX_NSLEN}+1 to allow room for the \code{NULL} terminator
+\adviceimplend
+
 %
-\declareconstitemvalue{PMIX_MAX_KEYLEN}{511}
+\declareconstitem{PMIX_MAX_KEYLEN}
 Maximum key string length as an integer.
+
+\adviceimplstart
+\refconst{PMIX_MAX_KEYLEN} should have a minimum value of 64 characters. Key arrays in \ac{PMIx} defined structures must reserve
+a space of size \refconst{PMIX_MAX_KEYLEN}+1 to allow room for the \code{NULL} terminator
+\adviceimplend
+
 %
 \end{constantdesc}
+
 
 %%%%%%%%%%%
 \subsection{Error Constants}
@@ -327,6 +340,12 @@ Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} cons
 \section{Data Types}
 
 This section defines various data types used by the PMIx APIs.
+
+%%%%%%%%%%%
+\subsection{Key Structure}
+\declarestruct{pmix_key_t}
+
+The \refstruct{pmix_key_t} structure is a statically defined character array of length \refconst{PMIX_MAX_KEYLEN}+1, thus supporting keys of maximum length \refconst{PMIX_MAX_KEYLEN} to preserve space for a mandatory \code{NULL} terminator. Characters in the key must be the standard alphanumeric values supported by common utilities such as strcmp.
 
 %%%%%%%%%%%
 \subsection{Rank Structure}
