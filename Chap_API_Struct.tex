@@ -39,18 +39,22 @@ Maximum key string length as an integer.
 \label{api:struct:errors}
 \declarestruct{pmix_status_t}
 
-The \refstruct{pmix_status_t} structure is a \code{int} type for return status.
+The \refstruct{pmix_status_t} structure is an \code{int} type for return status.
 
 The tables shown in this section define the possible values for \refstruct{pmix_status_t}.
-PMIx errors are always negative, with 0 reserved for \refconst{PMIX_SUCCESS}.
+PMIx errors are required to always be negative, with 0 reserved for \refconst{PMIX_SUCCESS}.
 
 A PMIx implementation must define all of the constants defined in this section, even if they will never return the specific value to the caller.
+
+\adviceuserstart
+Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the actual value of any \ac{PMIx} error constant is left to the \ac{PMIx} library implementor. Thus, users are advised to always refer to constant by name, and not a specific implementation's value, for portability and compatibility across library versions.
+\adviceuserend
 
 %%%%%%%%%%%
 \subsubsection{PMIx v1 Error Constants}
 
-The table below represents those constants defined in the PMIx v1 standard.
-Those values in this table that were deprecated in later standards are denoted as such.
+The following list contains those constants defined in the PMIx v1 standard.
+Those values in the list that were deprecated in later standards are denoted as such.
 \ac{PMIx} errors are always negative, with \code{0} reserved for success.
 
 \begin{constantdesc}
@@ -89,7 +93,7 @@ Process is being aborted
 Failed to connect to the server
 %
 \declareconstitem{PMIX_EXISTS}
-(undefined)
+Requested operation would overwrite an existing value
 %
 \declareconstitem{PMIX_ERR_INVALID_CRED}
 Invalid security credentials
@@ -213,12 +217,9 @@ Unpacking past the end of the buffer provided
 %%%%%%%%%%%
 \subsubsection{PMIx v2 Error Constants}
 
-The table below represents those additional constants defined in the PMIx v2 standard.
+The following list contains constants added in the PMIx v2 standard.
 
 \begin{constantdesc}
-%
-\declareconstitemvalue{PMIX_ERR_V2X_BASE}{-100}
-The starting point for v2 error values.
 %
 \declareconstitem{PMIX_ERR_LOST_CONNECTION_TO_SERVER}
 Lost connection to server
@@ -250,14 +251,14 @@ Job monitoring: Heartbeat alert
 \declareconstitem{PMIX_MONITOR_FILE_ALERT}
 Job monitoring: File alert
 %
+\declareconstitem{PMIX_PROC_TERMINATED}
+Process terminated - can be either normal or abnormal termination
+%
 \end{constantdesc}
 
-The table below are operational error constants introduced in the v2 standard.
+The following list contains operational error constants introduced in the v2 standard.
 
 \begin{constantdesc}
-%
-\declareconstitemvalue{PMIX_ERR_OP_BASE}{PMIX_ERR_V2X_BASE-30}
-The starting point for v2 operational error values.
 %
 \declareconstitem{PMIX_ERR_EVENT_REGISTRATION}
 Error in event registration
@@ -276,12 +277,9 @@ The \ac{GDS} action has completed
 %
 \end{constantdesc}
 
-The table below are system error constants introduced in the v2 standard.
+The following list contains system error constants introduced in the v2 standard.
 
 \begin{constantdesc}
-%
-\declareconstitemvalue{PMIX_ERR_SYS_BASE}{PMIX_ERR_OP_BASE-100}
-The starting point for v2 system error values.
 %
 \declareconstitem{PMIX_ERR_NODE_DOWN}
 Node down
@@ -291,12 +289,9 @@ Node is marked as offline
 %
 \end{constantdesc}
 
-The table below are event handler error constants introduced in the v2 standard.
+The following list contains event handler error constants introduced in the v2 standard.
 
 \begin{constantdesc}
-%
-\declareconstitemvalue{PMIX_ERR_EVHDLR_BASE}{PMIX_ERR_SYS_BASE-100}
-The starting point for v2 event handler error values.
 %
 \declareconstitem{PMIX_EVENT_NO_ACTION_TAKEN}
 Event handler: No action taken
@@ -312,16 +307,15 @@ Event handler: Action complete
 %
 \end{constantdesc}
 
-Additional error code boundary constants include:
+%%%%%%%%%%%
+\subsubsection{User-Defined Error Constants}
+
+PMIx establishes an error code boundary for constants defined in the PMIx standard. Negative values larger than this (and any positive values greater than zero) are guaranteed not to conflict with PMIx values.
 
 \begin{constantdesc}
 %
-\declareconstitemvalue{PMIX_INTERNAL_ERR_BASE}{-1000}
-A starting point for PMIx internal error codes that are never exposed outside the \ac{PRI}.
-%
-\declareconstitemvalue{PMIX_EXTERNAL_ERR_BASE}{-2000}
+\declareconstitemvalue{PMIX_EXTERNAL_ERR_BASE}
 A starting point for user-level defined error constants.
-Negative values larger than this are guaranteed not to conflict with PMIx values.
 Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} constant and \emph{not} a specific value as the value of the constant may change.
 %
 \end{constantdesc}
