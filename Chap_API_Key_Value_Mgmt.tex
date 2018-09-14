@@ -406,7 +406,7 @@ Publish the data in the \refarg{info} array for subsequent lookup.
 By default, the data will be published into the \refconst{PMIX_SESSION} range and with \refconst{PMIX_PERSIST_APP} persistence.
 Changes to those values, and any additional directives, can be included in the \refstruct{pmix_info_t} array. Attempts to access the data by processes outside of the provided data range will be rejected. The persistence parameter instructs the server as to how long the data is to be retained.
 
-The blocking form will block until the server confirms that the data has been sent to the \ac{PMIx} server and that entity receives confirmation from its host \ac{SMS} daemon. Data is copied into the backing key-value data store, and therefore the \refarg{info} array can be released upon return from the blocking function call.
+The blocking form will block until the server confirms that the data has been sent to the \ac{PMIx} server and that it has obtained confirmation from its host \ac{SMS} daemon that the data is ready to be looked up. Data is copied into the backing key-value data store, and therefore the \refarg{info} array can be released upon return from the blocking function call.
 
 \adviceuserstart
 Duplicate keys within the specified data range may lead to unexpected behavior depending
@@ -414,7 +414,6 @@ on host RM implementation of the backing key-value store.
 \adviceuserend
 
 \adviceimplstart
-Confirmation should not be provided until data has been stored and is ready to be looked up.
 Implementations should, to the best of their ability, detect duplicate keys and protect the
 user from unexpected behavior - preferably returning an error. This version of the
 standard does not define a specific error code to be returned, so the implementation must
@@ -523,7 +522,7 @@ Note that the search is also constrained to only data published by the current u
 There currently is no option to override this behavior - such an option may become available later via an appropriate \refstruct{pmix_info_t} directive.
 
 The \argref{data} parameter consists of an array of \refstruct{pmix_pdata_t} struct with the keys specifying the requested information.
-Data will be returned for each key in the associated \refarg{info} struct.
+Data will be returned for each key in the associated \refarg{value} struct.
 Any key that cannot be found will return with a data type of \refconst{PMIX_UNDEF}.
 The function will return \refconst{PMIX_SUCCESS} if \emph{any} values can be found, so the caller must check each data element to ensure it was returned.
 
@@ -630,7 +629,7 @@ A complete implementation would include support for the following attributes:
 \descr
 
 Unpublish data posted by this process using the given \refarg{keys}.
-The function will block until the data has been removed by the server.
+The function will block until the data has been removed by the server (i.e., it is safe to publish that key again).
 A value of \code{NULL} for the \refarg{keys} parameter instructs the server to remove \emph{all} data published by this process.
 
 By default, the range is assumed to be \refconst{PMIX_SESSION}.
