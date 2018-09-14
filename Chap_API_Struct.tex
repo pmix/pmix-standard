@@ -2641,8 +2641,8 @@ typedef void (*pmix_modex_cbfunc_t)
 \argin{status}{Status associated with the operation (handle)}
 \argin{data}{Data to be passed (pointer)}
 \argin{ndata}{size of the data (\code{size_t})}
-\argin{cbdata}{Callback data passed to original API call (pointer)}
-\argin{release_fn}{Callback for releasing \argref{release_cbdata} (function pointer)}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
+\argin{release_fn}{Callback for releasing \argref{data} (function pointer)}
 \argin{release_cbdata}{Pointer to be passed to \argref{release_fn} (memory reference)}
 \end{arglist}
 
@@ -2736,8 +2736,8 @@ typedef void (*pmix_lookup_cbfunc_t)
 
 \begin{arglist}
 \argin{status}{Status associated with the operation (handle)}
-\argin{data}{data returned (\refstruct{pmix_pdata_t})}
-\argin{ndata}{size of the data returned (\code{size_t})}
+\argin{data}{Array of data returned (\refstruct{pmix_pdata_t})}
+\argin{ndata}{Number of elements in the \argref{data} array (\code{size_t})}
 \argin{cbdata}{Callback data passed to original API call (memory reference)}
 \end{arglist}
 
@@ -2787,7 +2787,7 @@ The pointer will be \code{NULL} if the requested data was not found.
 
 
 %%%%%%%%%%%
-\subsection{Info Function}
+\subsection{Info Callback Function}
 \declareapi{pmix_info_cbfunc_t}
 
 %%%%
@@ -2799,7 +2799,7 @@ The \refapi{pmix_info_cbfunc_t} is a general information callback used by variou
 \begin{codepar}
 typedef void (*pmix_info_cbfunc_t)
     (pmix_status_t status,
-     pmix_info_t *info, size_t ninfo,
+     pmix_info_t info[], size_t ninfo,
      void *cbdata,
      pmix_release_cbfunc_t release_fn,
      void *release_cbdata);
@@ -2808,9 +2808,11 @@ typedef void (*pmix_info_cbfunc_t)
 
 \begin{arglist}
 \argin{status}{Status associated with the operation (\refattr{pmix_status_t})}
-\argin{data}{data returned (\refstruct{pmix_pdata_t})}
-\argin{ndata}{size of the data returned (\code{size_t})}
+\argin{info}{Array of \refstruct{pmix_info_t} returned by the operation (pointer)}
+\argin{ninfo}{Number of elements in the \argref{info} array (\code{size_t})}
 \argin{cbdata}{Callback data passed to original API call (memory reference)}
+\argin{release_fn}{Function to be called when done with the \argref{info} data (function pointer)}
+\argin{release_cbdata}{Callback data to be passed to \argref{release_fn} (memory reference)}
 \end{arglist}
 
 

@@ -22,7 +22,7 @@ While a \ac{PMIx} library implementer, or an \ac{SMS} component server, may choo
 This document borrows freely from other standards (most notably from the \ac{MPI} and OpenMP standards) in its use of notation and conventions in an attempt to reduce confusion. The following sections provide an overview of the conventions used throughout the \ac{PMIx} Standard document.
 
 %%%%%%%%%%%
-\section{Notional Conventions}
+\section{Notational Conventions}
 
 Some sections of this document describe programming language specific examples or \acp{API}.
 Text that applies only to programs for which the base language is C is shown as follows:
@@ -114,3 +114,7 @@ The call may both use and update the argument.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Standard vs Reference Implementation}
+
+The \textit{PMIx Standard} is implementation independent. The \textit{PMIx Reference Implementation} (PRI) is one implementation of the Standard and the \ac{PMIx} community strives to ensure that it fully implements the Standard. Given its role as the community's testbed and its widespread use, this document cites the attributes supported by the \ac{PRI} for each \ac{API} where relevant. This is not meant to imply nor confer any special role to the \ac{PRI} with respect to the Standard itself.
+

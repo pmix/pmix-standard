@@ -429,24 +429,82 @@
         \filldraw (0, 0) -- (\sbsz, \sbht) -- (0 + 2\sbsz, 0) -- (0, 0);
     \end{tikzpicture}}}
 
-% \advicelinewitharrows is a helper command that makes a red horizontal line, up or down arrows, and some text:
+% \adviceuserline is a helper command that makes a red horizontal line, up or down arrows, and some text:
 % arg 1 = 1 or -1 for up or down arrows
 % arg 2 = solid or dashed or loosely dashed, etc.
 % arg 3 = text
 % arg 4 = text width
-\newcommand{\advicelinewitharrows}[4]{%
+\newcommand{\adviceuserline}[4]{%
     \needspace{0.1\baselineskip}%
     \vbox to 1\baselineskip {\begin{tikzpicture}%
         \setlength{\sbtw}{#4}%
         \setlength{\sblen}{\linewidth}%
         \setlength{\sbht}{#1\sbsz}\setlength{\sbht}{1.4\sbht}%
         \setlength{\sbhadj}{#1\sblw}\setlength{\sbhadj}{0.25\sbhadj}%
-        \filldraw[color=red!40] (\sblen, 0) -- (\sblen - \sbsz, \sbht) -- (\sblen - 2\sbsz, 0) -- (\sblen, 0);
-        \draw[line width=\sblw, color=red!40, #2] (2\sbsz - \sblw, \sbhadj) -- (0.5\sblen - 0.5\sbtw, \sbhadj);
-        \draw[line width=\sblw, color=red!40, #2] (0.5\sblen + 0.5\sbtw, \sbhadj) -- (\sblen - 2\sbsz + \sblw, \sbhadj);
-        \filldraw[color=red!40] (0, 0) -- (\sbsz, \sbht) -- (0 + 2\sbsz, 0) -- (0, 0);
-        \node[color=red!90] at (0.5\sblen, 0) {\large  \textsf{\textup{#3}}};
+        \filldraw[color=red!80!black] (\sblen, 0) -- (\sblen - \sbsz, \sbht) -- (\sblen - 2\sbsz, 0) -- (\sblen, 0);
+        \draw[line width=\sblw, color=red!80!black, #2] (2\sbsz - \sblw, \sbhadj) -- (0.5\sblen - 0.5\sbtw, \sbhadj);
+        \draw[line width=\sblw, color=red!80!black, #2] (0.5\sblen + 0.5\sbtw, \sbhadj) -- (\sblen - 2\sbsz + \sblw, \sbhadj);
+        \filldraw[color=red!80!black] (0, 0) -- (\sbsz, \sbht) -- (0 + 2\sbsz, 0) -- (0, 0);
+        \node[color=red!80!black] at (0.5\sblen, 0) {\large  \textsf{\textup{#3}}};
     \end{tikzpicture}}}
+
+% \adviceimpline is a helper command that makes a green horizontal line, up or down arrows, and some text:
+% arg 1 = 1 or -1 for up or down arrows
+% arg 2 = solid or dashed or loosely dashed, etc.
+% arg 3 = text
+% arg 4 = text width
+\newcommand{\adviceimpline}[4]{%
+    \needspace{0.1\baselineskip}%
+    \vbox to 1\baselineskip {\begin{tikzpicture}%
+        \setlength{\sbtw}{#4}%
+        \setlength{\sblen}{\linewidth}%
+        \setlength{\sbht}{#1\sbsz}\setlength{\sbht}{1.4\sbht}%
+        \setlength{\sbhadj}{#1\sblw}\setlength{\sbhadj}{0.25\sbhadj}%
+        \filldraw[color=green!60!black] (\sblen, 0) -- (\sblen - \sbsz, \sbht) -- (\sblen - 2\sbsz, 0) -- (\sblen, 0);
+        \draw[line width=\sblw, color=green!60!black, #2] (2\sbsz - \sblw, \sbhadj) -- (0.5\sblen - 0.5\sbtw, \sbhadj);
+        \draw[line width=\sblw, color=green!60!black, #2] (0.5\sblen + 0.5\sbtw, \sbhadj) -- (\sblen - 2\sbsz + \sblw, \sbhadj);
+        \filldraw[color=green!60!black] (0, 0) -- (\sbsz, \sbht) -- (0 + 2\sbsz, 0) -- (0, 0);
+        \node[color=green!60!black] at (0.5\sblen, 0) {\large  \textsf{\textup{#3}}};
+    \end{tikzpicture}}}
+
+% \advicermline is a helper command that makes an orange horizontal line, up or down arrows, and some text:
+% arg 1 = 1 or -1 for up or down arrows
+% arg 2 = solid or dashed or loosely dashed, etc.
+% arg 3 = text
+% arg 4 = text width
+\newcommand{\advicermline}[4]{%
+    \needspace{0.1\baselineskip}%
+    \vbox to 1\baselineskip {\begin{tikzpicture}%
+        \setlength{\sbtw}{#4}%
+        \setlength{\sblen}{\linewidth}%
+        \setlength{\sbht}{#1\sbsz}\setlength{\sbht}{1.4\sbht}%
+        \setlength{\sbhadj}{#1\sblw}\setlength{\sbhadj}{0.25\sbhadj}%
+        \filldraw[color=orange!60!black] (\sblen, 0) -- (\sblen - \sbsz, \sbht) -- (\sblen - 2\sbsz, 0) -- (\sblen, 0);
+        \draw[line width=\sblw, color=orange!60!black, #2] (2\sbsz - \sblw, \sbhadj) -- (0.5\sblen - 0.5\sbtw, \sbhadj);
+        \draw[line width=\sblw, color=orange!60!black, #2] (0.5\sblen + 0.5\sbtw, \sbhadj) -- (\sblen - 2\sbsz + \sblw, \sbhadj);
+        \filldraw[color=orange!60!black] (0, 0) -- (\sbsz, \sbht) -- (0 + 2\sbsz, 0) -- (0, 0);
+        \node[color=orange!60!black] at (0.5\sblen, 0) {\large  \textsf{\textup{#3}}};
+    \end{tikzpicture}}}
+
+% \ratline is a helper command that makes a purple horizontal line, up or down arrows, and some text:
+% arg 1 = 1 or -1 for up or down arrows
+% arg 2 = solid or dashed or loosely dashed, etc.
+% arg 3 = text
+% arg 4 = text width
+\newcommand{\ratline}[4]{%
+    \needspace{0.1\baselineskip}%
+    \vbox to 1\baselineskip {\begin{tikzpicture}%
+        \setlength{\sbtw}{#4}%
+        \setlength{\sblen}{\linewidth}%
+        \setlength{\sbht}{#1\sbsz}\setlength{\sbht}{1.4\sbht}%
+        \setlength{\sbhadj}{#1\sblw}\setlength{\sbhadj}{0.25\sbhadj}%
+        \filldraw[color=purple!40] (\sblen, 0) -- (\sblen - \sbsz, \sbht) -- (\sblen - 2\sbsz, 0) -- (\sblen, 0);
+        \draw[line width=\sblw, color=purple!40, #2] (2\sbsz - \sblw, \sbhadj) -- (0.5\sblen - 0.5\sbtw, \sbhadj);
+        \draw[line width=\sblw, color=purple!40, #2] (0.5\sblen + 0.5\sbtw, \sbhadj) -- (\sblen - 2\sbsz + \sblw, \sbhadj);
+        \filldraw[color=purple!40] (0, 0) -- (\sbsz, \sbht) -- (0 + 2\sbsz, 0) -- (0, 0);
+        \node[color=purple!90] at (0.5\sblen, 0) {\large  \textsf{\textup{#3}}};
+    \end{tikzpicture}}}
+
 
 % \linewitharrows is a helper command that makes a blue horizontal line, up or down arrows, and some text:
 % arg 1 = 1 or -1 for up or down arrows
@@ -485,20 +543,20 @@
 \newcommand{\noteheader}{{\textrm{\textsf{\textbf\textup\normalsize{{{{Note: }}}}}}}}
 
 % Rationale
-\newcommand{\rationalestart}{\VSPb\advicelinewitharrows{-1}{solid}{Rationale}{7em}\VSPa}
-\newcommand{\rationaleend}{\VSPb\advicelinewitharrows{1}{solid}{}{0em}\VSPa}
+\newcommand{\rationalestart}{\VSPb\ratline{-1}{dashed}{Rationale}{7em}\VSPa}
+\newcommand{\rationaleend}{\VSPb\ratline{1}{dashed}{}{0em}\VSPa}
 
 % Advice to users
-\newcommand{\adviceuserstart}{\VSPb\advicelinewitharrows{-1}{solid}{Advice to users}{10em}\VSPa}
-\newcommand{\adviceuserend}{\VSPb\advicelinewitharrows{1}{solid}{}{0em}\VSPa}
+\newcommand{\adviceuserstart}{\VSPb\adviceuserline{-1}{solid}{Advice to users}{10em}\VSPa}
+\newcommand{\adviceuserend}{\VSPb\adviceuserline{1}{solid}{}{0em}\VSPa}
 
 % Advice to implementers
-\newcommand{\adviceimplstart}{\VSPb\advicelinewitharrows{-1}{solid}{Advice to PMIx library implementers}{20em}\VSPa}
-\newcommand{\adviceimplend}{\VSPb\advicelinewitharrows{1}{solid}{}{0em}\VSPa}
+\newcommand{\adviceimplstart}{\VSPb\adviceimpline{-1}{solid}{Advice to PMIx library implementers}{20em}\VSPa}
+\newcommand{\adviceimplend}{\VSPb\adviceimpline{1}{solid}{}{0em}\VSPa}
 
 % Advice to hosts
-\newcommand{\advicermstart}{\VSPb\advicelinewitharrows{-1}{solid}{Advice to PMIx server hosts}{16em}\VSPa}
-\newcommand{\advicermend}{\VSPb\advicelinewitharrows{1}{solid}{}{0em}\VSPa}
+\newcommand{\advicermstart}{\VSPb\advicermline{-1}{solid}{Advice to PMIx server hosts}{16em}\VSPa}
+\newcommand{\advicermend}{\VSPb\advicermline{1}{solid}{}{0em}\VSPa}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
