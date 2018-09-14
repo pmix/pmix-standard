@@ -6,7 +6,7 @@
 
 This chapter defines PMIx standard data structures, types, and constants.
 These apply to all consumers of the PMIx interface.
-Where necessary for clarification the description of, for example, an attribute may be copied from this chapter into a section where it is used.
+Where necessary for clarification, the description of, for example, an attribute may be copied from this chapter into a section where it is used.
 
 A PMIx implementation may define additional attributes beyond those specified in this document.
 
@@ -316,6 +316,7 @@ PMIx establishes an error code boundary for constants defined in the PMIx standa
 %
 \declareconstitemvalue{PMIX_EXTERNAL_ERR_BASE}
 A starting point for user-level defined error constants.
+Negative values lower than this are guaranteed not to conflict with PMIx values.
 Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} constant and \emph{not} a specific value as the value of the constant may change.
 %
 \end{constantdesc}
