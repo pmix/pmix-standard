@@ -11,8 +11,8 @@ Where necessary for clarification, the description of, for example, an attribute
 A PMIx implementation may define additional attributes beyond those specified in this document.
 
 \adviceimplstart
-If a PMIx implementation chooses to define additional attributes they should avoid using the \code{PMIX} prefix.
-This helps the end user distinguish between what is defined by the PMIx standard and what is specific to that PMIx implementation.
+If a PMIx implementation chooses to define additional attributes they should avoid using the \code{PMIX} prefix in their name or starting the attribute string with a \textit{pmix} prefix.
+This helps the end user distinguish between what is defined by the PMIx standard and what is specific to that PMIx implementation, and avoids potential conflicts with attributes defined by the standard.
 \adviceimplend
 
 
@@ -61,7 +61,7 @@ PMIx errors are required to always be negative, with 0 reserved for \refconst{PM
 A PMIx implementation must define all of the constants defined in this section, even if they will never return the specific value to the caller.
 
 \adviceuserstart
-Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the actual value of any \ac{PMIx} error constant is left to the \ac{PMIx} library implementor. Thus, users are advised to always refer to constant by name, and not a specific implementation's value, for portability and compatibility across library versions.
+Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the actual value of any \ac{PMIx} error constant is left to the \ac{PMIx} library implementer. Thus, users are advised to always refer to constant by name, and not a specific implementation's value, for portability between implementations and compatibility across library versions.
 \adviceuserend
 
 %%%%%%%%%%%
@@ -572,7 +572,7 @@ The data is intended solely for this process and is not shared with other proces
 \subsection{Scope of Published Data}
 \declarestruct{pmix_data_range_t}
 
-The \refstruct{pmix_data_range_t} structure is a \code{uint8_t} type that defines a range for ``published'' data.
+The \refstruct{pmix_data_range_t} structure is a \code{uint8_t} type that defines a range for data ``published'' via functions other than \refapi{PMIx_Put} - e.g., the \refapi{PMIx_Publish} \ac{API}.
 The following constants can be used to set a variable of the type \refstruct{pmix_data_range_t}.
 
 \begin{constantdesc}
@@ -641,11 +641,15 @@ The \refstruct{pmix_info_directives_t} structure is a \code{uint32_t} type that 
 By default, the values in the \refstruct{pmix_info_t} array passed to a PMIx are \emph{optional}.
 
 \adviceuserstart
-A PMIx implementation or PMIx-enabled \ac{RM} may ignore any \refstruct{pmix_info_t} value passed to a PMIx API if it is not explicitly marked as \refconst{PMIX_INFO_REQD}.
+A PMIx implementation or PMIx-enabled \ac{RM} may ignore any \refstruct{pmix_info_t} value passed to a \ac{PMIx} \ac{API} if it is not explicitly marked as \refconst{PMIX_INFO_REQD}.
 This is because the values specified default to optional, meaning they can be ignored.
 This may lead to unexpected behavior if the user is relying on the behavior specified by the \refstruct{pmix_info_t} value.
-If the user relies on the behavior defined by the \refstruct{pmix_info_t} then they must pass \refconst{PMIX_INFO_REQD} --- the PMIx implementation or \ac{RM} must return \refconst{PMIX_ERR_NOT_SUPPORTED} as soon as possible to the caller if the requested behavior is not supported.
+If the user relies on the behavior defined by the \refstruct{pmix_info_t} then they must set the \refconst{PMIX_INFO_REQD} flag using the \refmacro{PMIX_INFO_REQUIRED} macro.
 \adviceuserend
+
+\adviceimplstart
+The top 16-bits of the \refstruct{pmix_info_directives_t} are reserved for internal use by \ac{PMIx} library implementers - the \ac{PMIx} standard will \textit{not} specify their intent, leaving them for customized use by implementers. Implementers are advised to use the provided \refmacro{PMIX_INFO_IS_REQUIRED} macro for testing this flag, and must return \refconst{PMIX_ERR_NOT_SUPPORTED} as soon as possible to the caller if the required behavior is not supported.
+\adviceimplend
 
 The following constants can be used to set a variable of the type \refstruct{pmix_info_directives_t}.
 
@@ -653,13 +657,13 @@ The following constants can be used to set a variable of the type \refstruct{pmi
 %
 \declareconstitem{PMIX_INFO_REQD}
 The behavior defined in the \refstruct{pmix_info_t} array is required, and not optional. This is a bit-mask value.
-
-\adviceuserstart
-Users are advised to use the provided \refmacro{PMIX_INFO_REQUIRED} macro for testing this flag
-\adviceuserend
-
 %
 \end{constantdesc}
+
+\advicermstart
+Host environments are advised to use the provided \refmacro{PMIX_INFO_IS_REQUIRED} macro for testing this flag and must return \refconst{PMIX_ERR_NOT_SUPPORTED} as soon as possible to the caller if the required behavior is not supported.
+\advicermend
+
 
 
 
@@ -829,9 +833,9 @@ typedef struct pmix_data_buffer \{
 
 %%%%%%%%%%%
 \subsection{Data Array Structure}
-\declarestruct{pmix_data_array}
+\declarestruct{pmix_data_array_t}
 
-The \refstruct{pmix_data_array} structure defines an array data structure.
+The \refstruct{pmix_data_array_t} structure defines an array data structure.
 
 \cspecificstart
 \begin{codepar}
@@ -1085,56 +1089,6 @@ typedef struct pmix_value \{
 \} pmix_value_t;
 \end{codepar}
 \cspecificend
-
-
-%%%%%%%%%%%
-\subsubsection{Value Structure Helper Functions}
-\declareapi{pmix_value_load}
-
-The functions defined in this section are convenience operations to help in loading data into, and copying data between \refstruct{pmix_value_t} structures.
-
-%%%%
-\format
-
-\cspecificstart
-\begin{codepar}
-void
-pmix_value_load(pmix_value_t *v,
-                const void *data, pmix_data_type_t type);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{v}{value type \refstruct{pmix_value_t} (handle)}
-\argin{data}{pointer to data (pointer)}
-\argin{type}{Type of the specified \refarg{data} defined by \refstruct{pmix_data_type_t} (handle)}
-\end{arglist}
-
-%%%%
-\descr
-
-Load \refarg{data} into the value type \refarg{v}.
-
-%%%%
-\format
-
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-pmix_value_xfer(pmix_value_t *kv, pmix_value_t *src);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argout{kv}{key/value type \refstruct{pmix_value_t} destination (handle)}
-\argin{src}{value type \refstruct{pmix_value_t} source (handle)}
-\end{arglist}
-
-%%%%
-\descr
-
-Copy the values stored in \refarg{src} into \refarg{kv}.
-
 
 
 %%%%%%%%%%%
@@ -2687,8 +2641,8 @@ typedef void (*pmix_modex_cbfunc_t)
 \argin{status}{Status associated with the operation (handle)}
 \argin{data}{Data to be passed (pointer)}
 \argin{ndata}{size of the data (\code{size_t})}
-\argin{cbdata}{Callback data passed to original API call (pointer)}
-\argin{release_fn}{Callback for releasing \argref{release_cbdata} (function pointer)}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
+\argin{release_fn}{Callback for releasing \argref{data} (function pointer)}
 \argin{release_cbdata}{Pointer to be passed to \argref{release_fn} (memory reference)}
 \end{arglist}
 
@@ -2713,13 +2667,13 @@ The \refapi{pmix_spawn_cbfunc_t} is used on the PMIx client side by \refapi{PMIx
 \begin{codepar}
 typedef void (*pmix_spawn_cbfunc_t)
     (pmix_status_t status,
-     char nspace[], void *cbdata);
+     pmix_nspace_t nspace, void *cbdata);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{status}{Status associated with the operation (handle)}
-\argin{nspace}{Namespace string (string)}
+\argin{nspace}{Namespace string (\refstruct{pmix_nspace_t})}
 \argin{cbdata}{Callback data passed to original API call (memory reference)}
 \end{arglist}
 
@@ -2731,7 +2685,7 @@ The callback will be executed upon launch of the specified applications in \refa
 
 The \refarg{status} of the callback will indicate whether or not the spawn succeeded.
 The \refarg{nspace} of the spawned processes will be returned, along with any provided callback data.
-Note that the returned \refarg{nspace} value will be released by the \ac{PRI} upon return from the callback function, so the receiver must copy it if it needs to be retained.
+Note that the returned \refarg{nspace} value will not be protected by the \ac{PRI} upon return from the callback function, so the receiver must copy it if it needs to be retained.
 
 
 %%%%%%%%%%%
@@ -2782,8 +2736,8 @@ typedef void (*pmix_lookup_cbfunc_t)
 
 \begin{arglist}
 \argin{status}{Status associated with the operation (handle)}
-\argin{data}{data returned (\refstruct{pmix_pdata_t})}
-\argin{ndata}{size of the data returned (\code{size_t})}
+\argin{data}{Array of data returned (\refstruct{pmix_pdata_t})}
+\argin{ndata}{Number of elements in the \argref{data} array (\code{size_t})}
 \argin{cbdata}{Callback data passed to original API call (memory reference)}
 \end{arglist}
 
@@ -2833,7 +2787,7 @@ The pointer will be \code{NULL} if the requested data was not found.
 
 
 %%%%%%%%%%%
-\subsection{Info Function}
+\subsection{Info Callback Function}
 \declareapi{pmix_info_cbfunc_t}
 
 %%%%
@@ -2845,7 +2799,7 @@ The \refapi{pmix_info_cbfunc_t} is a general information callback used by variou
 \begin{codepar}
 typedef void (*pmix_info_cbfunc_t)
     (pmix_status_t status,
-     pmix_info_t *info, size_t ninfo,
+     pmix_info_t info[], size_t ninfo,
      void *cbdata,
      pmix_release_cbfunc_t release_fn,
      void *release_cbdata);
@@ -2854,9 +2808,11 @@ typedef void (*pmix_info_cbfunc_t)
 
 \begin{arglist}
 \argin{status}{Status associated with the operation (\refattr{pmix_status_t})}
-\argin{data}{data returned (\refstruct{pmix_pdata_t})}
-\argin{ndata}{size of the data returned (\code{size_t})}
+\argin{info}{Array of \refstruct{pmix_info_t} returned by the operation (pointer)}
+\argin{ninfo}{Number of elements in the \argref{info} array (\code{size_t})}
 \argin{cbdata}{Callback data passed to original API call (memory reference)}
+\argin{release_fn}{Function to be called when done with the \argref{info} data (function pointer)}
+\argin{release_cbdata}{Callback data to be passed to \argref{release_fn} (memory reference)}
 \end{arglist}
 
 
@@ -2948,7 +2904,7 @@ typedef void (*pmix_notification_fn_t)
      pmix_status_t status,
      const pmix_proc_t *source,
      pmix_info_t info[], size_t ninfo,
-     pmix_info_t *results, size_t nresults,
+     pmix_info_t results[], size_t nresults,
      pmix_event_notification_cbfunc_fn_t cbfunc,
      void *cbdata);
 \end{codepar}
@@ -2960,7 +2916,7 @@ typedef void (*pmix_notification_fn_t)
 \argin{source}{Identifier of the process that generated the event (\refstruct{pmix_proc_t})}. If the source is the \ac{SMS}, then the nspace will be empty and the rank will be PMIX_RANK_UNDEF
 \argin{info}{Information describing the event (\refstruct{pmix_info_t})}. This argument will be NULL if no additional information was provided by the event generator.
 \argin{ninfo}{Number of elements in the info array (\code{size_t})}
-\argin{results}{Aggregated results from prior event handlers servicing this event (\refstruct{pmix_info_t})}. This argument will be NULL if this is the first handler servicing the event, or if no prior handlers provided results.
+\argin{results}{Aggregated results from prior event handlers servicing this event (\refstruct{pmix_info_t})}. This argument will be \code{NULL} if this is the first handler servicing the event, or if no prior handlers provided results.
 \argin{nresults}{Number of elements in the results array (\code{size_t})}
 \argin{cbfunc}{\refapi{pmix_event_notification_cbfunc_fn_t} callback function to be executed upon completion of the handler's operation and prior to handler return (function reference)}.
 \argin{cbdata}{Callback data to be passed to cbfunc (memory reference)}
@@ -2969,24 +2925,25 @@ typedef void (*pmix_notification_fn_t)
 %%%%
 \descr
 
-Note that different \acp{RM} may provide differing levels of support for event notification to application processes. Thus, the \textit{info} array may be NULL or may contain detailed information of the event. It is the responsibility of the application to parse any provided info array for defined key-values if it so desires.
+Note that different \acp{RM} may provide differing levels of support for event notification to application processes. Thus, the \refarg{info} array may be \code{NULL} or may contain detailed information of the event. It is the responsibility of the application to parse any provided info array for defined key-values if it so desires.
 
 \adviceuserstart
-Possible uses of the pmix_info_t object include:
+Possible uses of the \refarg{info} array include:
 
 \begin{itemize}
-\item for the RM to alert the process as to planned actions, such as to abort the session, in response to the reported event
+\item for the host \ac{RM} to alert the process as to planned actions, such as aborting the session, in response to the reported event
 
 \item provide a timeout for alternative action to occur, such as for the application to request an alternate response to the event
 \end{itemize}
 
-For example, the RM might alert the application to the failure of a node that resulted in termination of several processes, and indicate that the overall session will be aborted unless the application requests an alternative behavior in the next 5 seconds. The application then has time to respond with a checkpoint request, or a request to recover from the failure by obtaining replacement nodes and restarting from some earlier checkpoint.
+For example, the \ac{RM} might alert the application to the failure of a node that resulted in termination of several processes, and indicate that the overall session will be aborted unless the application requests an alternative behavior in the next 5 seconds. The application then has time to respond with a checkpoint request, or a request to recover from the failure by obtaining replacement nodes and restarting from some earlier checkpoint.
 
-Support for these options is left to the discretion of the host RM. Info keys are included in the common definitions above, but also may be augmented on a per-RM basis.
-
-On the server side, the notification function is used to inform the host server of a detected event in the PMIx subsystem and/or client
+Support for these options is left to the discretion of the host \ac{RM}. Info keys are included in the common definitions above but may be augmented by environment vendors.
 \adviceuserend
 
+\advicermstart
+On the server side, the notification function is used to inform the \ac{PMIx} server library's host of a detected event in the \ac{PMIx} server library. Events generated by \ac{PMIx} clients are communicated to the \ac{PMIx} server library, but will be relayed to the host via the \refapi{pmix_server_notify_event_fn_t} function pointer, if provided.
+\advicermend
 
 %%%%%%%%%%%
 \subsection{Server Setup Application Callback Function}

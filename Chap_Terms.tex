@@ -22,7 +22,7 @@ While a \ac{PMIx} library implementer, or an \ac{SMS} component server, may choo
 This document borrows freely from other standards (most notably from the \ac{MPI} and OpenMP standards) in its use of notation and conventions in an attempt to reduce confusion. The following sections provide an overview of the conventions used throughout the \ac{PMIx} Standard document.
 
 %%%%%%%%%%%
-\section{Notional Conventions}
+\section{Notational Conventions}
 
 Some sections of this document describe programming language specific examples or \acp{API}.
 Text that applies only to programs for which the base language is C is shown as follows:
@@ -35,7 +35,7 @@ int foo = 42;
 \cspecificend
 
 Some text is for information only, and is not part of the normative specification.
-These take three forms, described in their examples below:
+These take several forms, described in their examples below:
 
 \notestart
 \noteheader
@@ -53,9 +53,14 @@ Some readers may wish to skip these sections, while readers interested in progra
 \adviceuserend
 
 \adviceimplstart
-Throughout this document, material that is primarily commentary to implementers is set off in this section.
+Throughout this document, material that is primarily commentary to \ac{PMIx} library implementers is set off in this section.
 Some readers may wish to skip these sections, while readers interested in \ac{PMIx} implementations may want to read them carefully.
 \adviceimplend
+
+\advicermstart
+Throughout this document, material that is primarily commentary aimed at host environments (e.g., \acp{RM} and \acp{RTE}) providing support for the \ac{PMIx} server library is set off in this section.
+Some readers may wish to skip these sections, while readers interested in integrating \ac{PMIx} servers into their environment may want to read them carefully.
+\advicermend
 
 %%%%%%%%%%%
 \section{Semantics}
@@ -65,6 +70,14 @@ The following terms will be taken to mean:
 \begin{itemize}
 \item \emph{shall} and \emph{will} indicate that the specified behavior is \emph{required} of all conforming implementations
 \item \emph{should} and \emph{may} indicate behaviors that a quality implementation would include, but are not required of all conforming implementations
+\end{itemize}
+
+In addition, the document refers the following entities and process stages when describing use-cases or operations involving \ac{PMIx}:
+
+\begin{itemize}
+\item \emph{session} refers to an allocated set of resources assigned to a particular user by the system \ac{WLM}.
+\item \emph{job} refers to an application executed by the user within a session
+\item \emph{resource manager} is used in a generic sense to represent the system that will host the \ac{PMIx} server library. This could be a vendor's \ac{RM}, a programming library's \ac{RTE}, or some other agent.
 \end{itemize}
 
 %%%%%%%%%%%
@@ -101,3 +114,7 @@ The call may both use and update the argument.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Standard vs Reference Implementation}
+
+The \textit{PMIx Standard} is implementation independent. The \textit{PMIx Reference Implementation} (PRI) is one implementation of the Standard and the \ac{PMIx} community strives to ensure that it fully implements the Standard. Given its role as the community's testbed and its widespread use, this document cites the attributes supported by the \ac{PRI} for each \ac{API} where relevant. This is not meant to imply nor confer any special role to the \ac{PRI} with respect to the Standard itself.
+

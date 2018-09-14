@@ -126,14 +126,14 @@ This macro simplifies the transfer of key and data between two\refstruct{pmix_in
 Both key and data will be copied into the destination \refstruct{pmix_info_t} - thus, the source \refstruct{pmix_info_t} may free'd without affecting the copied data once the macro has completed.
 \adviceuserend
 
-%%%%%%%%%%%
-\subsection{Test an info structure for required}
+%%%%
+\subsection{Mark an info structure as required}
 \declaremacro{PMIX_INFO_REQUIRED}
 
 %%%%
 \summary
 
-Test the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure, returning \code{true} if the flag is set.
+Set the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure.
 
 \cspecificstart
 \begin{codepar}
@@ -142,11 +142,31 @@ PMIX_INFO_REQUIRED(info);
 \cspecificend
 
 \begin{arglist}
-\argin{d}{Pointer to the destination \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
-\argin{s}{Pointer to the source \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-This macro simplifies the transfer of key and data between two\refstruct{pmix_info_t} structures.
+This macro simplifies the setting of the \refstruct{PMIX_INFO_REQD} flag in \refstruct{pmix_info_t} structures.
+
+%%%%%%%%%%%
+\subsection{Test an info structure for required}
+\declaremacro{PMIX_INFO_IS_REQUIRED}
+
+%%%%
+\summary
+
+Test the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure, returning \code{true} if the flag is set.
+
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_IS_REQUIRED(info);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This macro simplifies the testing of the required flag in \refstruct{pmix_info_t} structures.
 
 %%%%%%%%%%%
 \subsection{Load a lookup data structure}
