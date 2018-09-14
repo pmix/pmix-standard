@@ -39,14 +39,13 @@ a space of size \refconst{PMIX_MAX_NSLEN}+1 to allow room for the \code{NULL} te
 %
 \declareconstitem{PMIX_MAX_KEYLEN}
 Maximum key string length as an integer.
+%
+\end{constantdesc}
 
 \adviceimplstart
 \refconst{PMIX_MAX_KEYLEN} should have a minimum value of 63 characters. Key arrays in \ac{PMIx} defined structures must reserve
 a space of size \refconst{PMIX_MAX_KEYLEN}+1 to allow room for the \code{NULL} terminator
 \adviceimplend
-
-%
-\end{constantdesc}
 
 
 %%%%%%%%%%%
@@ -347,7 +346,7 @@ This section defines various data types used by the PMIx APIs.
 \subsection{Key Structure}
 \declarestruct{pmix_key_t}
 
-The \refstruct{pmix_key_t} structure is a statically defined character array of length \refconst{PMIX_MAX_KEYLEN}+1, thus supporting keys of maximum length \refconst{PMIX_MAX_KEYLEN} to preserve space for a mandatory \code{NULL} terminator.
+The \refstruct{pmix_key_t} structure is a statically defined character array of length \refconst{PMIX_MAX_KEYLEN}+1, thus supporting keys of maximum length \refconst{PMIX_MAX_KEYLEN} while preserving space for a mandatory \code{NULL} terminator.
 
 \cspecificstart
 \begin{codepar}
@@ -355,7 +354,30 @@ typedef char pmix_key_t[PMIX_MAX_KEYLEN+1];
 \end{codepar}
 \cspecificend
 
-Characters in the key must be the standard alphanumeric values supported by common utilities such as strcmp.
+Characters in the key must be standard alphanumeric values supported by common utilities such as \textit{strcmp}.
+
+\adviceuserstart
+Passing a \refstruct{pmix_key_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_key_t)} and instead rely on the \refstruct{PMIX_MAX_KEYLEN} constant.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsection{Namespace Structure}
+\declarestruct{pmix_nspace_t}
+
+The \refstruct{pmix_nspace_t} structure is a statically defined character array of length \refconst{PMIX_MAX_NSLEN}+1, thus supporting namespaces of maximum length \refconst{PMIX_MAX_NSLEN} while preserving space for a mandatory \code{NULL} terminator.
+
+\cspecificstart
+\begin{codepar}
+typedef char pmix_nspace_t[PMIX_MAX_NSLEN+1];
+\end{codepar}
+\cspecificend
+
+Characters in the namespace must be standard alphanumeric values supported by common utilities such as \textit{strcmp}.
+
+\adviceuserstart
+Passing a \refstruct{pmix_nspace_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_nspace_t)} and instead rely on the \refstruct{PMIX_MAX_NSLEN} constant.
+\adviceuserend
+
 
 %%%%%%%%%%%
 \subsection{Rank Structure}
@@ -370,7 +392,7 @@ typedef uint32_t pmix_rank_t;
 \cspecificend
 
 The following constants can be used to set a variable of the type \refstruct{pmix_rank_t}.
-Valid rank values start at \code{0}.
+Valid rank values start at zero.
 
 \begin{constantdesc}
 %
@@ -397,7 +419,7 @@ It contains a reference to the namespace and the \refstruct{pmix_rank_t} within 
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_proc \{
-    char nspace[PMIX_MAX_NSLEN+1];
+    pmix_nspace_t nspace;
     pmix_rank_t rank;
 \} pmix_proc_t;
 \end{codepar}
@@ -681,7 +703,7 @@ The \refstruct{pmix_pdata_t} structure is used by \refapi{PMIx_Lookup} to descri
 \begin{codepar}
 typedef struct pmix_pdata \{
     pmix_proc_t proc;
-    char key[PMIX_MAX_KEYLEN+1];
+    pmix_key_t key;
     pmix_value_t value;
 \} pmix_pdata_t;
 \end{codepar}
@@ -747,7 +769,7 @@ This structure has been deprecated and will be removed in future versions of the
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_modex_data \{
-    char nspace[PMIX_MAX_NSLEN+1];
+    pmix_nspace_t nspace;
     int rank;
     uint8_t *blob;
     size_t size;
@@ -833,7 +855,7 @@ The \refstruct{pmix_info_t} structure defines a key/value pair with associated d
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_info_t \{
-    char key[PMIX_MAX_KEYLEN+1];
+    pmix_key_t key;
     pmix_info_directives_t flags;
     pmix_value_t value;
 \} pmix_info_t;
