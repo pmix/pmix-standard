@@ -28,18 +28,20 @@ Additional constants associated with specific data structures or types are defin
 %
 \declareconstitem{PMIX_MAX_NSLEN}
 Maximum namespace string length as an integer.
+\end{constantdesc}
 
 \adviceimplstart
-\refconst{PMIX_MAX_NSLEN} should have a minimum value of 64 characters. Namespace arrays in \ac{PMIx} defined structures must reserve
+\refconst{PMIX_MAX_NSLEN} should have a minimum value of 63 characters. Namespace arrays in \ac{PMIx} defined structures must reserve
 a space of size \refconst{PMIX_MAX_NSLEN}+1 to allow room for the \code{NULL} terminator
 \adviceimplend
 
+\begin{constantdesc}
 %
 \declareconstitem{PMIX_MAX_KEYLEN}
 Maximum key string length as an integer.
 
 \adviceimplstart
-\refconst{PMIX_MAX_KEYLEN} should have a minimum value of 64 characters. Key arrays in \ac{PMIx} defined structures must reserve
+\refconst{PMIX_MAX_KEYLEN} should have a minimum value of 63 characters. Key arrays in \ac{PMIx} defined structures must reserve
 a space of size \refconst{PMIX_MAX_KEYLEN}+1 to allow room for the \code{NULL} terminator
 \adviceimplend
 
@@ -345,7 +347,15 @@ This section defines various data types used by the PMIx APIs.
 \subsection{Key Structure}
 \declarestruct{pmix_key_t}
 
-The \refstruct{pmix_key_t} structure is a statically defined character array of length \refconst{PMIX_MAX_KEYLEN}+1, thus supporting keys of maximum length \refconst{PMIX_MAX_KEYLEN} to preserve space for a mandatory \code{NULL} terminator. Characters in the key must be the standard alphanumeric values supported by common utilities such as strcmp.
+The \refstruct{pmix_key_t} structure is a statically defined character array of length \refconst{PMIX_MAX_KEYLEN}+1, thus supporting keys of maximum length \refconst{PMIX_MAX_KEYLEN} to preserve space for a mandatory \code{NULL} terminator.
+
+\cspecificstart
+\begin{codepar}
+typedef char pmix_key_t[PMIX_MAX_KEYLEN+1];
+\end{codepar}
+\cspecificend
+
+Characters in the key must be the standard alphanumeric values supported by common utilities such as strcmp.
 
 %%%%%%%%%%%
 \subsection{Rank Structure}
@@ -353,19 +363,24 @@ The \refstruct{pmix_key_t} structure is a statically defined character array of 
 
 The \refstruct{pmix_rank_t} structure is a \code{uint32_t} type for rank values.
 
+\cspecificstart
+\begin{codepar}
+typedef uint32_t pmix_rank_t;
+\end{codepar}
+\cspecificend
+
 The following constants can be used to set a variable of the type \refstruct{pmix_rank_t}.
 Valid rank values start at \code{0}.
 
 \begin{constantdesc}
 %
-\declareconstitemvalue{PMIX_RANK_UNDEF}{UINT32_MAX}
-Define a value for requests for job-level data where the information itself is not associated with any specific rank, or when a request involves a rank that is not known.
-For example, when someone requests information thru one of the PMIx v1 legacy interfaces where the rank is typically encoded into the key itself, since there is no rank parameter in the PMIx v1 \refapi{PMIx_Get} API in that version.
+\declareconstitem{PMIX_RANK_UNDEF}
+A value to request job-level data where the information itself is not associated with any specific rank, or when passing a \refstruct{pmix_proc_t} identifier to an operation that only references the namespace field of that structure.
 %
-\declareconstitemvalue{PMIX_RANK_WILDCARD}{UINT32_MAX-1}
-Define a value to indicate that the user wants the data for the given key from every rank that posted that key.
+\declareconstitem{PMIX_RANK_WILDCARD}
+A value to indicate that the user wants the data for the given key from every rank that posted that key.
 %
-\declareconstitemvalue{PMIX_RANK_LOCAL_NODE}{UINT32_MAX-2}
+\declareconstitem{PMIX_RANK_LOCAL_NODE}
 Special rank value used to define groups of ranks for use in collectives.
 This constant defines the group of all ranks on a local node.
 %
@@ -398,72 +413,75 @@ The \refstruct{pmix_proc_state_t} structure is a \code{uint8_t} type for process
 
 The following constants can be used to set a variable of the type \refstruct{pmix_proc_state_t}.
 
+\adviceuserstart
+The fine-grained nature of the following constants may exceed the ability of an \ac{RM} to provide updated process state values during the process lifetime. This is particularly true of states in the launch process, and for short-lived processes.
+\adviceuserend
 
 \begin{constantdesc}
 %
-\declareconstitemvalue{PMIX_PROC_STATE_UNDEF}{0}
+\declareconstitem{PMIX_PROC_STATE_UNDEF}
 Undefined process state
 %
-\declareconstitemvalue{PMIX_PROC_STATE_PREPPED}{1}
+\declareconstitem{PMIX_PROC_STATE_PREPPED}
 Process is ready to be launched
 %
-\declareconstitemvalue{PMIX_PROC_STATE_LAUNCH_UNDERWAY}{2}
+\declareconstitem{PMIX_PROC_STATE_LAUNCH_UNDERWAY}
 Process launch is underway
 %
-\declareconstitemvalue{PMIX_PROC_STATE_RESTART}{3}
+\declareconstitem{PMIX_PROC_STATE_RESTART}
 Process is ready for restart
 %
-\declareconstitemvalue{PMIX_PROC_STATE_TERMINATE}{4}
+\declareconstitem{PMIX_PROC_STATE_TERMINATE}
 Process is marked for termination
 %
-\declareconstitemvalue{PMIX_PROC_STATE_RUNNING}{5}
+\declareconstitem{PMIX_PROC_STATE_RUNNING}
 Process has been locally \code{fork}'ed by the \ac{RM}
 %
-\declareconstitemvalue{PMIX_PROC_STATE_CONNECTED}{6}
+\declareconstitem{PMIX_PROC_STATE_CONNECTED}
 Process has connected to PMIx server
 %
-\declareconstitemvalue{PMIX_PROC_STATE_UNTERMINATED}{15}
+\declareconstitem{PMIX_PROC_STATE_UNTERMINATED}
 Define a ``boundary'' between this constant and \refconst{PMIX_PROC_STATE_CONNECTED} so users can easily and quickly determine if a process is still running or not.
 Any value less than this constant means that the process has not terminated.
 %
-\declareconstitemvalue{PMIX_PROC_STATE_TERMINATED}{20}
+\declareconstitem{PMIX_PROC_STATE_TERMINATED}
 Process has terminated and is no longer running
 %
-\declareconstitemvalue{PMIX_PROC_STATE_ERROR}{50}
+\declareconstitem{PMIX_PROC_STATE_ERROR}
 Define a boundary so users can easily and quickly determine if a process abnormally terminated.
 Any value above this constant means that the process has terminated abnormally.
 %
-\declareconstitemvalue{PMIX_PROC_STATE_KILLED_BY_CMD}{PMIX_PROC_STATE_ERROR+1}
+\declareconstitem{PMIX_PROC_STATE_KILLED_BY_CMD}
 Process was killed by a command
 %
-\declareconstitemvalue{PMIX_PROC_STATE_ABORTED}{PMIX_PROC_STATE_ERROR+2}
-Process was aborted
+\declareconstitem{PMIX_PROC_STATE_ABORTED}
+Process was aborted by a call to \refapi{PMIx_Abort}
 %
-\declareconstitemvalue{PMIX_PROC_STATE_FAILED_TO_START}{PMIX_PROC_STATE_ERROR+3}
+\declareconstitem{PMIX_PROC_STATE_FAILED_TO_START}
 Process failed to start
 %
-\declareconstitemvalue{PMIX_PROC_STATE_ABORTED_BY_SIG}{PMIX_PROC_STATE_ERROR+4}
+\declareconstitem{PMIX_PROC_STATE_ABORTED_BY_SIG}
 Process aborted by a signal
 %
-\declareconstitemvalue{PMIX_PROC_STATE_TERM_WO_SYNC}{PMIX_PROC_STATE_ERROR+5}
+\declareconstitem{PMIX_PROC_STATE_TERM_WO_SYNC}
 Process exited without calling \refapi{PMIx_Finalize}
 %
-\declareconstitemvalue{PMIX_PROC_STATE_COMM_FAILED}{PMIX_PROC_STATE_ERROR+6}
+\declareconstitem{PMIX_PROC_STATE_COMM_FAILED}
 Process communication has failed
 %
-\declareconstitemvalue{PMIX_PROC_STATE_CALLED_ABORT}{PMIX_PROC_STATE_ERROR+7}
+\declareconstitem{PMIX_PROC_STATE_CALLED_ABORT}
 Process called \refapi{PMIx_Abort}
 %
-\declareconstitemvalue{PMIX_PROC_STATE_MIGRATING}{PMIX_PROC_STATE_ERROR+8}
+\declareconstitem{PMIX_PROC_STATE_MIGRATING}
 Process failed and is waiting for resources before restarting
 %
-\declareconstitemvalue{PMIX_PROC_STATE_CANNOT_RESTART}{PMIX_PROC_STATE_ERROR+9}
+\declareconstitem{PMIX_PROC_STATE_CANNOT_RESTART}
 Process failed and cannot be restarted
 %
-\declareconstitemvalue{PMIX_PROC_STATE_TERM_NON_ZERO}{PMIX_PROC_STATE_ERROR+10}
+\declareconstitem{PMIX_PROC_STATE_TERM_NON_ZERO}
 Process exited with a non-zero status
 %
-\declareconstitemvalue{PMIX_PROC_STATE_FAILED_TO_LAUNCH}{PMIX_PROC_STATE_ERROR+11}
+\declareconstitem{PMIX_PROC_STATE_FAILED_TO_LAUNCH}
 Unable to launch process
 %
 \end{constantdesc}
@@ -611,8 +629,13 @@ The following constants can be used to set a variable of the type \refstruct{pmi
 
 \begin{constantdesc}
 %
-\declareconstitemvalue{PMIX_INFO_REQD}{0x0001}
-The behavior defined in the \refstruct{pmix_info_t} array is required, and not optional.
+\declareconstitem{PMIX_INFO_REQD}
+The behavior defined in the \refstruct{pmix_info_t} array is required, and not optional. This is a bit-mask value.
+
+\adviceuserstart
+Users are advised to use the provided \refmacro{PMIX_INFO_REQUIRED} macro for testing this flag
+\adviceuserend
+
 %
 \end{constantdesc}
 
@@ -641,7 +664,7 @@ Attributes in the accompanying \refstruct{pmix_info_t} array may be used to spec
 \declareconstitem{PMIX_ALLOC_REAQUIRE}
 Reacquire resources that were previously ``lent'' back to the scheduler.
 %
-\declareconstitemvalue{PMIX_ALLOC_EXTERNAL}{128}
+\declareconstitem{PMIX_ALLOC_EXTERNAL}
 A value boundary above which implementers are free to define their own directive values.
 %
 \end{constantdesc}
@@ -983,8 +1006,8 @@ Allocation directive (\refstruct{pmix_alloc_directive_t})
 \declareconstitemDEP{PMIX_INFO_ARRAY}{2.0}
 Info array
 %
-\declareconstitemvalue{PMIX_DATA_TYPE_MAX}{500}
-A boundary for implementers so they can add their own data types.
+\declareconstitem{PMIX_DATA_TYPE_MAX}
+A boundary for implementers above which they can add their own data types.
 %
 \end{constantdesc}
 
