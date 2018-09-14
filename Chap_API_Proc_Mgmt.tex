@@ -160,11 +160,14 @@ Spawn a new job.
 The assigned namespace of the spawned applications is returned in the \refarg{nspace} parameter.
 A \code{NULL} value in that location indicates that the caller doesn't wish to have the namespace returned.
 The \refarg{nspace} array must be at least of size one more than \refconst{PMIX_MAX_NSLEN}.
-Behavior of individual resource managers may differ, but it is expected that failure of any application process to start will result in termination/cleanup of \emph{all} processes in the newly spawned job and return of an error code to the caller.
 
 By default, the spawned processes will be PMIx ``connected'' to the parent process upon successful launch (see \refapi{PMIx_Connect} description for details).
 Note that this only means that (a) the parent process will be given a copy of the new job's
 information so it can query job-level info without incurring any communication penalties, (b) newly spawned child processes will receive a copy of the parent processes job-level info, and (c) both the parent process and members of the child job will receive notification of errors from processes in their combined assemblage.
+
+\adviceuserstart
+Behavior of individual resource managers may differ, but it is expected that failure of any application process to start will result in termination/cleanup of \emph{all} processes in the newly spawned job and return of an error code to the caller.
+\adviceuserend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Spawn_nb}}
