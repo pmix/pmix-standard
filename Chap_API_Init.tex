@@ -113,12 +113,22 @@ PMIx_Init(pmix_proc_t *proc,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
 
-\priattr
-The following attributes are supported in the \ac{PRI}:
+\optattrstart
+The following attributes are optional for implementers of \ac{PMIx} libraries:
 
-\pasteAttributeItem{PMIX_EVENT_BASE}
-\pasteAttributeItemBegin{PMIX_GDS_MODULE} This attribute controls only the selection of GDS module for internal use by the process. Module selection for interacting with the server is performed dynamically during the connection process.
+\pasteAttributeItemBegin{PMIX_USOCK_DISABLE} If the library supports Unix socket connections, this attribute may be supported for disabling it.
 \pasteAttributeItemEnd{}
+\pasteAttributeItemBegin{PMIX_SOCKET_MODE} If the library supports socket connections, this attribute may be supported for setting the socket mode.
+\pasteAttributeItemEnd{}
+\pasteAttributeItemBegin{PMIX_SINGLE_LISTENER} If the library supports multiple methods for clients to connect to servers, this attribute may be supported for disabling all but one of them.
+\pasteAttributeItemEnd{}
+\pasteAttributeItemBegin{PMIX_TCP_REPORT_URI} If the library supports TCP socket connections, this attribute may be supported for reporting the URI.
+\pasteAttributeItemEnd{}
+
+\pastePRIAttributeItem{PMIX_EVENT_BASE}
+\pastePRIAttributeItemBegin{PMIX_GDS_MODULE} This attribute is specific to the \ac{PRI} and controls only the selection of \ac{GDS} module for internal use by the process. Module selection for interacting with the server is performed dynamically during the connection process.
+\pastePRIAttributeItemEnd{}
+\optattrend
 
 %%%%
 \descr

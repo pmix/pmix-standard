@@ -301,7 +301,6 @@
 \newcommand{\reqattr} {\littleheader{\ac{RM} Required Attributes}}
 \newcommand{\optattr} {\littleheader{\ac{RM} Optional Attributes}}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Clipboard
 %
@@ -362,7 +361,23 @@
 \newcommand{\refAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\code{#1}} }
 \newcommand{\refattr}[1]{\refAttributeItem{#1}}
 
+\newcommand{\refPRIAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\color{red}\code{#1}} }
 
+\newcommand{\pastePRIAttributeItemBegin}[1]{
+  \refPRIAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
+  \vspace{-1.3ex}
+   \expandafter
+   \begin{adjustwidth}{.95cm}{}
+    \StdPaste{#1}
+}
+\newcommand{\pastePRIAttributeItemEnd}{
+   \end{adjustwidth}
+}
+
+\newcommand{\pastePRIAttributeItem}[1]{
+    \pastePRIAttributeItemBegin{#1}
+    \pastePRIAttributeItemEnd{}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Code and placeholder semantic tagging.
@@ -505,7 +520,6 @@
         \node[color=purple!90] at (0.5\sblen, 0) {\large  \textsf{\textup{#3}}};
     \end{tikzpicture}}}
 
-
 % \linewitharrows is a helper command that makes a blue horizontal line, up or down arrows, and some text:
 % arg 1 = 1 or -1 for up or down arrows
 % arg 2 = solid or dashed or loosely dashed, etc.
@@ -557,6 +571,14 @@
 % Advice to hosts
 \newcommand{\advicermstart}{\VSPb\advicermline{-1}{solid}{Advice to PMIx server hosts}{16em}\VSPa}
 \newcommand{\advicermend}{\VSPb\advicermline{1}{solid}{}{0em}\VSPa}
+
+% Required attributes
+\newcommand{\reqattrstart}{\VSPb\adviceusersline{-1}{dashed}{Required Attributes}{16em}\VSPa}
+\newcommand{\reqattrend}{\VSPb\advicermline{1}{solid}{}{0em}\VSPa}
+
+% Optional attributes
+\newcommand{\optattrstart}{\VSPb\adviceimpline{-1}{dashed}{Optional Attributes}{16em}\VSPa}
+\newcommand{\optattrend}{\VSPb\adviceimpline{1}{dashed}{}{0em}\VSPa}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
