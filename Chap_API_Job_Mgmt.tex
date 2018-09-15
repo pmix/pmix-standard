@@ -9,6 +9,175 @@ Members of this category include the \refapi{PMIx_Allocation_request_nb}, \refap
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Query}
+\label{chap:api_proc_mgmt:query}
+
+As the level of interaction between applications and the host \ac{SMS} grows, so too does the need for the application to query the \ac{SMS} regarding its capabilities and state information. \ac{PMIx} provides a generalized query interface for this purpose, along with a set of standardized attribute keys to support a range of requests. This includes requests to determine the status of scheduling queues and active allocations, the scope of \ac{API} and attribute support offered by the \ac{SMS}, namespaces of active jobs, location and information about a job's processes, and information regarding available resources.
+
+An example use-case for the \refapi{PMIx_Query_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully, e.g., to write a checkpoint before termination, it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
+
+\ac{PMIx} defines an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_nb} interface to obtain the number of seconds remaining in the current job allocation. Note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time. \ac{PMIx} provides such alternate methods as a means of maximizing the probability of a host system supporting at least one method by which the application can obtain the desired service.
+
+The following \acp{API} support query of various session and environment values.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Resolve_peers}}
+\declareapi{PMIx_Resolve_peers}
+
+%%%%
+\summary
+
+Obtain the array of processes within the specified namespace that are executing on a given node.
+
+%%%%
+\format
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Resolve_peers(const char *nodename, const char *nspace,
+                   pmix_proc_t **procs, size_t *nprocs)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{nodename}{Name of the node to query (string)}
+\argin{nspace}{namespace (string)}
+\argout{procs}{Array of process structures (array of handles)}
+\argout{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Given a \refarg{nodename}, return the array of processes within the specified \refarg{nspace}
+that are executing on that node.
+If the \refarg{nspace} is \code{NULL}, then all processes on the node will be returned.
+If the specified node does not currently host any processes, then the returned array will be \code{NULL}, and \refarg{nprocs} will be \code{0}.
+The caller is responsible for releasing the \refarg{procs} array when done with it.
+The \refapi{PMIX_PROC_FREE} macro is provided for this purpose.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Resolve_nodes}}
+\declareapi{PMIx_Resolve_nodes}
+
+%%%%
+\summary
+
+Return a list of nodes hosting processes within the given namespace.
+
+%%%%
+\format
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Resolve_nodes(const char *nspace, char **nodelist)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{nspace}{Namespace (string)}
+\argout{nodelist}{Comma-delimited list of nodenames (string)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Given a \refarg{nspace}, return the list of nodes hosting processes within that namespace.
+The returned string will contain a comma-delimited list of nodenames.
+The caller is responsible for releasing the string when done with it.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Query_info_nb}}
+\declareapi{PMIx_Query_info_nb}
+\declareapi{pmix_info_cbfunc_t}
+
+%%%%
+\summary
+
+Query information about the system in general.
+
+%%%%
+\format
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Query_info_nb(pmix_query_t queries[], size_t nqueries,
+                   pmix_info_cbfunc_t cbfunc, void *cbdata)
+
+typedef void (*pmix_info_cbfunc_t)(pmix_status_t status,
+                                   pmix_info_t *info, size_t ninfo,
+                                   void *cbdata,
+                                   pmix_release_cbfunc_t release_fn,
+                                   void *release_cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{queries}{Array of query structures (array of handles)}
+\argin{nqueries}{Number of elements in the \refarg{queries} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+\begin{constantdesc}
+\item \refconst{PMIX_SUCCESS} All data has been returned
+\item \refconst{PMIX_ERR_NOT_FOUND} None of the requested data was available
+\item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the data has been returned
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The host \ac{RM} does not support this function
+\end{constantdesc}
+
+\priattr
+The PMIx_Query_info_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+
+\optattr
+A complete implementation would include support for the following attributes:
+
+\pasteAttributeItem{PMIX_QUERY_NAMESPACES}
+\pasteAttributeItem{PMIX_QUERY_JOB_STATUS}
+\pasteAttributeItem{PMIX_QUERY_QUEUE_LIST}
+\pasteAttributeItem{PMIX_QUERY_QUEUE_STATUS}
+\pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_MEMORY_USAGE}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_ONLY}
+\pasteAttributeItem{PMIX_QUERY_REPORT_AVG}
+\pasteAttributeItem{PMIX_QUERY_REPORT_MINMAX}
+\pasteAttributeItem{PMIX_QUERY_ALLOC_STATUS}
+\pasteAttributeItem{PMIX_TIME_REMAINING}
+
+%%%%
+\descr
+
+Query information about the system in general.
+This can include a list of active namespaces, network topology, etc.
+Also can be used to query node-specific info such as the list of peers executing on a given node.
+We assume that the host \ac{RM} will exercise appropriate access control on the information.
+
+NOTE: There is no blocking form of this API as the structures passed to query info differ from those for receiving the results.
+
+The \refarg{status} argument to the callback function indicates if requested data was found or not.
+An array of \refstruct{pmix_info_t} will contain each key that was provided and the corresponding value that was found. Requests for keys that are not found will return the key paired with a value of type \refconst{PMIX_UNDEF}.
+
+\adviceuserstart
+The desire to query a list of attributes supported by the implementation and/or the host environment has been expressed and noted. The \ac{PMIx} community is exploring the possibility and it will likely become available in a future release
+\adviceuserend
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Allocation Requests}
 \label{chap:api_job_mgmt:alloc}
 
