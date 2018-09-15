@@ -107,7 +107,7 @@ Both key and data will be copied into the \refstruct{pmix_info_t} - thus, the ke
 %%%%
 \summary
 
-Transfer key and data value between two \refstruct{pmix_info_t} structures.
+Copy all data (including key, value, and directives) between two \refstruct{pmix_info_t} structures.
 
 \cspecificstart
 \begin{codepar}
@@ -120,10 +120,10 @@ PMIX_INFO_XFER(d, s);
 \argin{s}{Pointer to the source \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-This macro simplifies the transfer of key and data between two\refstruct{pmix_info_t} structures.
+This macro simplifies the transfer of data between two\refstruct{pmix_info_t} structures.
 
 \adviceuserstart
-Both key and data will be copied into the destination \refstruct{pmix_info_t} - thus, the source \refstruct{pmix_info_t} may free'd without affecting the copied data once the macro has completed.
+All data (including key, value, and directives) will be copied into the destination \refstruct{pmix_info_t} - thus, the source \refstruct{pmix_info_t} may be free'd without affecting the copied data once the macro has completed.
 \adviceuserend
 
 %%%%
