@@ -366,24 +366,48 @@ PMIx_server_init(pmix_server_module_t *module,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\priattr
-The following attributes are supported in the \ac{PRI}:
+\reqattrstart
+The following attributes are required to be supported by all \ac{PMIx} libraries:
 
-\pasteAttributeItem{PMIX_SERVER_NSPACE}
-\pasteAttributeItem{PMIX_SERVER_RANK}
-\pasteAttributeItem{PMIX_SERVER_TMPDIR}
-\pasteAttributeItem{PMIX_SYSTEM_TMPDIR}
-\pasteAttributeItem{PMIX_SERVER_TOOL_SUPPORT}
-\pasteAttributeItem{PMIX_SERVER_SYSTEM_SUPPORT}
-\pasteAttributeItem{PMIX_TCP_IF_INCLUDE}
-\pasteAttributeItem{PMIX_TCP_IPV4_PORT}
-\pasteAttributeItem{PMIX_TCP_IPV6_PORT}
-\pasteAttributeItem{PMIX_TCP_DISABLE_IPV4}
-\pasteAttributeItem{PMIX_TCP_DISABLE_IPV6}
-\pasteAttributeItem{PMIX_SERVER_REMOTE_CONNECTIONS}
-\pasteAttributeItem{PMIX_TCP_REPORT_URI}
-\pasteAttributeItem{PMIX_USOCK_DISABLE}
+\pastePRRTEAttributeItem{PMIX_SERVER_NSPACE}
+\pastePRRTEAttributeItem{PMIX_SERVER_RANK}
+\pastePRRTEAttributeItem{PMIX_SERVER_TMPDIR}
+\pastePRRTEAttributeItem{PMIX_SYSTEM_TMPDIR}
+\pastePRRTEAttributeItem{PMIX_SERVER_TOOL_SUPPORT}
+\pastePRRTEAttributeItem{PMIX_SERVER_SYSTEM_SUPPORT}
 
+\reqattrend
+
+
+\optattrstart
+The following attributes are optional for implementers of \ac{PMIx} libraries:
+
+\pastePRRTEAttributeItemBegin{PMIX_USOCK_DISABLE} If the library supports Unix socket connections, this attribute may be supported for disabling it.
+\pastePRRTEAttributeItemEnd{}
+\pasteAttributeItemBegin{PMIX_SOCKET_MODE} If the library supports socket connections, this attribute may be supported for setting the socket mode.
+\pasteAttributeItemEnd{}
+\pastePRRTEAttributeItemBegin{PMIX_TCP_REPORT_URI} If the library supports TCP socket connections, this attribute may be supported for reporting the URI.
+\pastePRRTEAttributeItemEnd{}
+\pastePRRTEAttributeItemBegin{PMIX_TCP_IF_INCLUDE} If the library supports TCP socket connections, this attribute may be supported for specifying the interfaces to be used.
+\pastePRRTEAttributeItemEnd{}
+\pastePRRTEAttributeItemBegin{PMIX_TCP_IF_EXCLUDE} If the library supports TCP socket connections, this attribute may be supported for specifying the interfaces that are \textit{not} to be used.
+\pastePRRTEAttributeItemEnd{}
+\pastePRRTEAttributeItemBegin{PMIX_TCP_IPV4_PORT} If the library supports IPV4 connections, this attribute may be supported for specifying the port to be used.
+\pastePRRTEAttributeItemEnd{}
+\pastePRRTEAttributeItemBegin{PMIX_TCP_IPV6_PORT} If the library supports IPV6 connections, this attribute may be supported for specifying the port to be used.
+\pastePRRTEAttributeItemEnd{}
+\pastePRRTEAttributeItemBegin{PMIX_TCP_DISABLE_IPV4} If the library supports IPV4 connections, this attribute may be supported for disabling it.
+\pastePRRTEAttributeItemEnd{}
+\pastePRRTEAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
+\pastePRRTEAttributeItemEnd{}
+\pastePRRTEAttributeItemBegin{PMIX_SERVER_REMOTE_CONNECTIONS} If the library supports connections from remote tools, this attribute may be supported for enabling or disabling it.
+\pastePRRTEAttributeItemEnd{}
+
+\pastePRRTEAttributeItem{PMIX_EVENT_BASE}
+\pastePRRTEAttributeItemBegin{PMIX_GDS_MODULE} This attribute is specific to the \ac{PRI} and controls only the selection of \ac{GDS} module for internal use by the process. Module selection for interacting with the server is performed dynamically during the connection process.
+\pastePRRTEAttributeItemEnd{}
+
+\optattrend
 
 %%%%
 \descr
@@ -392,9 +416,9 @@ Initialize the \ac{PMIx} server support library, and provide a pointer to a \ref
 The array of \refstruct{pmix_info_t} structs is used to pass additional info that may be required by the server when initializing.
 For example, it may include the \refconst{PMIX_SERVER_TOOL_SUPPORT} key, thereby indicating that the daemon is willing to accept connection requests from tools.
 
-\adviceuserstart
+\advicermstart
 Providing a value of \code{NULL} for the \refarg{module} argument is not permitted - the host must support at least one server callback function.
-\adviceuserend
+\advicermend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_finalize}}
