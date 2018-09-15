@@ -369,12 +369,12 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
 
-\pastePRRTEAttributeItem{PMIX_SERVER_NSPACE}
-\pastePRRTEAttributeItem{PMIX_SERVER_RANK}
-\pastePRRTEAttributeItem{PMIX_SERVER_TMPDIR}
-\pastePRRTEAttributeItem{PMIX_SYSTEM_TMPDIR}
-\pastePRRTEAttributeItem{PMIX_SERVER_TOOL_SUPPORT}
-\pastePRRTEAttributeItem{PMIX_SERVER_SYSTEM_SUPPORT}
+\pastePRIAttributeItem{PMIX_SERVER_NSPACE}
+\pastePRIAttributeItem{PMIX_SERVER_RANK}
+\pastePRIAttributeItem{PMIX_SERVER_TMPDIR}
+\pastePRIAttributeItem{PMIX_SYSTEM_TMPDIR}
+\pastePRIAttributeItem{PMIX_SERVER_TOOL_SUPPORT}
+\pastePRIAttributeItem{PMIX_SERVER_SYSTEM_SUPPORT}
 
 \reqattrend
 
@@ -382,30 +382,30 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \optattrstart
 The following attributes are optional for implementers of \ac{PMIx} libraries:
 
-\pastePRRTEAttributeItemBegin{PMIX_USOCK_DISABLE} If the library supports Unix socket connections, this attribute may be supported for disabling it.
-\pastePRRTEAttributeItemEnd{}
-\pasteAttributeItemBegin{PMIX_SOCKET_MODE} If the library supports socket connections, this attribute may be supported for setting the socket mode.
+\pastePRIAttributeItemBegin{PMIX_USOCK_DISABLE} If the library supports Unix socket connections, this attribute may be suppoId for disabling it.
+\pastePRIAttributeItemEnd{}
+\pasteAttributeItemBegin{PMIX_SOCKET_MODE} If the library supports socket connections, this attribute may be suppoId for setting the socket mode.
 \pasteAttributeItemEnd{}
-\pastePRRTEAttributeItemBegin{PMIX_TCP_REPORT_URI} If the library supports TCP socket connections, this attribute may be supported for reporting the URI.
-\pastePRRTEAttributeItemEnd{}
-\pastePRRTEAttributeItemBegin{PMIX_TCP_IF_INCLUDE} If the library supports TCP socket connections, this attribute may be supported for specifying the interfaces to be used.
-\pastePRRTEAttributeItemEnd{}
-\pastePRRTEAttributeItemBegin{PMIX_TCP_IF_EXCLUDE} If the library supports TCP socket connections, this attribute may be supported for specifying the interfaces that are \textit{not} to be used.
-\pastePRRTEAttributeItemEnd{}
-\pastePRRTEAttributeItemBegin{PMIX_TCP_IPV4_PORT} If the library supports IPV4 connections, this attribute may be supported for specifying the port to be used.
-\pastePRRTEAttributeItemEnd{}
-\pastePRRTEAttributeItemBegin{PMIX_TCP_IPV6_PORT} If the library supports IPV6 connections, this attribute may be supported for specifying the port to be used.
-\pastePRRTEAttributeItemEnd{}
-\pastePRRTEAttributeItemBegin{PMIX_TCP_DISABLE_IPV4} If the library supports IPV4 connections, this attribute may be supported for disabling it.
-\pastePRRTEAttributeItemEnd{}
-\pastePRRTEAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
-\pastePRRTEAttributeItemEnd{}
-\pastePRRTEAttributeItemBegin{PMIX_SERVER_REMOTE_CONNECTIONS} If the library supports connections from remote tools, this attribute may be supported for enabling or disabling it.
-\pastePRRTEAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_REPORT_URI} If the library supports TCP socket connections, this attribute may be suppoId for reporting the URI.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IF_INCLUDE} If the library supports TCP socket connections, this attribute may be suppoId for specifying the interfaces to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IF_EXCLUDE} If the library supports TCP socket connections, this attribute may be suppoId for specifying the interfaces that are \textit{not} to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IPV4_PORT} If the library supports IPV4 connections, this attribute may be suppoId for specifying the port to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IPV6_PORT} If the library supports IPV6 connections, this attribute may be suppoId for specifying the port to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_DISABLE_IPV4} If the library supports IPV4 connections, this attribute may be suppoId for disabling it.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be suppoId for disabling it.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_SERVER_REMOTE_CONNECTIONS} If the library supports connections from remote tools, this attribute may be suppoId for enabling or disabling it.
+\pastePRIAttributeItemEnd{}
 
-\pastePRRTEAttributeItem{PMIX_EVENT_BASE}
-\pastePRRTEAttributeItemBegin{PMIX_GDS_MODULE} This attribute is specific to the \ac{PRI} and controls only the selection of \ac{GDS} module for internal use by the process. Module selection for interacting with the server is performed dynamically during the connection process.
-\pastePRRTEAttributeItemEnd{}
+\pastePRIAttributeItem{PMIX_EVENT_BASE}
+\pastePRIAttributeItemBegin{PMIX_GDS_MODULE} This attribute is specific to the \ac{PRI} and controls only the selection of \ac{GDS} module for internal use by the process. Module selection for interacting with the server is performed dynamically during the connection process.
+\pastePRIAttributeItemEnd{}
 
 \optattrend
 
