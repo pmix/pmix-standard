@@ -316,7 +316,7 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments that include \ac{PMIx} servers:
+The following attributes are optional for host environments that suppport this operation:
 
 \pastePRRTEAttributeItem{PMIX_TIMEOUT}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
@@ -380,7 +380,7 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments that include \ac{PMIx} servers:
+The following attributes are optional for host environments that suppport this operation:
 
 \pastePRRTEAttributeItem{PMIX_TIMEOUT}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
@@ -407,6 +407,14 @@ Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence_n
 \label{chap:api_kv_mgmt:publish}
 
 The APIs defined in this section publish data from one client that can be later exchanged and looked up by another client.
+
+\adviceimplstart
+\ac{PMIx} libraries that support any of the functions in this section are required to support \textit{all} of them.
+\adviceimplend
+
+\advicermstart
+Host environments that support any of the functions in this section are required to support \textit{all} of them.
+\advicermend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Publish}}
@@ -441,7 +449,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments that include \ac{PMIx} servers:
+The following attributes are optional for host environments that support this operation:
 
 \pastePRRTEAttributeItem{PMIX_TIMEOUT}
 \pastePRRTEAttributeItem{PMIX_RANGE}
@@ -513,7 +521,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments that include \ac{PMIx} servers:
+The following attributes are optional for host environments that support this operation:
 
 \pastePRRTEAttributeItem{PMIX_TIMEOUT}
 \pastePRRTEAttributeItem{PMIX_RANGE}
@@ -569,7 +577,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments that include \ac{PMIx} servers:
+The following attributes are optional for host environments that support this operation:
 
 \pastePRRTEAttributeItem{PMIX_TIMEOUT}
 \pastePRRTEAttributeItem{PMIX_RANGE}
@@ -642,7 +650,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments that include \ac{PMIx} servers:
+The following attributes are optional for host environments that support this operation:
 
 \pastePRRTEAttributeItem{PMIX_TIMEOUT}
 \pastePRRTEAttributeItem{PMIX_RANGE}
@@ -699,7 +707,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments that include \ac{PMIx} servers:
+The following attributes are optional for host environments that support this operation:
 
 \pastePRRTEAttributeItem{PMIX_TIMEOUT}
 \pastePRRTEAttributeItem{PMIX_RANGE}
@@ -760,7 +768,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments that include \ac{PMIx} servers:
+The following attributes are optional for host environments that support this operation:
 
 \pastePRRTEAttributeItem{PMIX_TIMEOUT}
 \pastePRRTEAttributeItem{PMIX_RANGE}

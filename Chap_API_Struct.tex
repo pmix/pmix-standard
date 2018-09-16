@@ -268,6 +268,9 @@ Job monitoring: File alert
 \declareconstitem{PMIX_PROC_TERMINATED}
 Process terminated - can be either normal or abnormal termination
 %
+\declareconstitem{PMIX_ERR_INVALID_TERMINATION}
+Process terminated without calling \refapi{PMIx_Finalize}, or was a member of an assemblage formed via \refapi{PMIx_Connect} and terminated or called \refapi{PMIx_Finalize} without first calling \refapi{PMIx_Disconnect} (or its non-blocking form) from that assemblage.
+%
 \end{constantdesc}
 
 The following list contains operational error constants introduced in the v2 standard.
@@ -289,6 +292,9 @@ Model declared
 \declareconstitem{PMIX_GDS_ACTION_COMPLETE}
 The \ac{GDS} action has completed
 %
+\declareconstitem{PMIX_ERR_INVALID_OPERATION}
+The requested operation is supported by the implementation and host environment, but fails to meet a requirement (e.g., requesting to \textit{disconnect} from processes without first \textit{connecting} to them).
+
 \end{constantdesc}
 
 The following list contains system error constants introduced in the v2 standard.

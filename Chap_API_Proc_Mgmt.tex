@@ -64,9 +64,7 @@ Note that race conditions caused by multiple processes calling \refapi{PMIx_Abor
 \section{Process Creation}
 \label{chap:api_proc_mgmt:spawn}
 
-The \refapi{PMIx_Spawn} commands spawn new jobs in the \ac{PMIx} universe.
-The \ac{PMIx} calls made by the client into the \ac{PRI} no not, itself, spawn processes.
-Instead the request is passed by the \ac{PRI} client-side library to the \ac{PMIx}-enabled \ac{RM} which will then create the processes on the allocated resources.
+The \refapi{PMIx_Spawn} commands spawn new processes and/or applications in the \ac{PMIx} universe. This may include requests to extend the existing resource allocation or obtain a new one, depending upon provided and supported attributes.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Spawn}}
@@ -100,58 +98,59 @@ PMIx_Spawn(const pmix_info_t job_info[], size_t ninfo,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\priattr
-The PMIx_Spawn function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing. Note that the \ac{PRI} automatically adds the following attributes to those provided before passing the request to the host daemon:
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the following attributes to those provided before passing the request to the host:
 
-\pasteAttributeItem{PMIX_SPAWNED}
-\pasteAttributeItem{PMIX_PARENT_ID}
-\pasteAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
-\pasteAttributeItem{PMIX_REQUESTOR_IS_TOOL}
+\pastePRIAttributeItem{PMIX_SPAWNED}
+\pastePRIAttributeItem{PMIX_PARENT_ID}
+\pastePRIAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
+\pastePRIAttributeItem{PMIX_REQUESTOR_IS_TOOL}
 
-The \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes are passed to the child processes upon connection to a PMIx server.
+Host environments that implement support for \refapi{PMIx_Spawn} are required to pass the \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes to all \ac{PMIx} servers launching new child processes so those values can be returned to clients upon connection to the \ac{PMIx} server. In addition, they are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
 
-\reqattr
-\acp{RM} that implement support for \refapi{PMIx_Spawn} are required to support the following attributes:
+\pastePRRTEAttributeItem{PMIX_WDIR}
+\pastePRRTEAttributeItem{PMIX_SET_SESSION_CWD}
+\pastePRRTEAttributeItem{PMIX_PREFIX}
+\pastePRRTEAttributeItem{PMIX_HOST}
+\pastePRRTEAttributeItem{PMIX_HOSTFILE}
 
-\pasteAttributeItem{PMIX_WDIR}
-\pasteAttributeItem{PMIX_SET_SESSION_CWD}
-\pasteAttributeItem{PMIX_PREFIX}
-\pasteAttributeItem{PMIX_HOST}
-\pasteAttributeItem{PMIX_HOSTFILE}
+\reqattrend
 
-\optattr
-A complete implementation would include support for the following attributes:
+\optattrstart
+The following attributes are optional for host environments that support this operation:
 
-\pasteAttributeItem{PMIX_ADD_HOSTFILE}
-\pasteAttributeItem{PMIX_ADD_HOST}
-\pasteAttributeItem{PMIX_PRELOAD_BIN}
-\pasteAttributeItem{PMIX_PRELOAD_FILES}
-\pasteAttributeItem{PMIX_PERSONALITY}
-\pasteAttributeItem{PMIX_MAPPER}
-\pasteAttributeItem{PMIX_DISPLAY_MAP}
-\pasteAttributeItem{PMIX_PPR}
-\pasteAttributeItem{PMIX_MAPBY}
-\pasteAttributeItem{PMIX_RANKBY}
-\pasteAttributeItem{PMIX_BINDTO}
-\pasteAttributeItem{PMIX_NON_PMI}
-\pasteAttributeItem{PMIX_STDIN_TGT}
-\pasteAttributeItem{PMIX_FWD_STDIN}
-\pasteAttributeItem{PMIX_FWD_STDOUT}
-\pasteAttributeItem{PMIX_FWD_STDERR}
-\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
-\pasteAttributeItem{PMIX_TAG_OUTPUT}
-\pasteAttributeItem{PMIX_TIMESTAMP_OUTPUT}
-\pasteAttributeItem{PMIX_MERGE_STDERR_STDOUT}
-\pasteAttributeItem{PMIX_OUTPUT_TO_FILE}
-\pasteAttributeItem{PMIX_INDEX_ARGV}
-\pasteAttributeItem{PMIX_CPUS_PER_PROC}
-\pasteAttributeItem{PMIX_NO_PROCS_ON_HEAD}
-\pasteAttributeItem{PMIX_NO_OVERSUBSCRIBE}
-\pasteAttributeItem{PMIX_REPORT_BINDINGS}
-\pasteAttributeItem{PMIX_CPU_LIST}
-\pasteAttributeItem{PMIX_JOB_RECOVERABLE}
-\pasteAttributeItem{PMIX_JOB_CONTINUOUS}
-\pasteAttributeItem{PMIX_MAX_RESTARTS}
+\pastePRRTEAttributeItem{PMIX_ADD_HOSTFILE}
+\pastePRRTEAttributeItem{PMIX_ADD_HOST}
+\pastePRRTEAttributeItem{PMIX_PRELOAD_BIN}
+\pastePRRTEAttributeItem{PMIX_PRELOAD_FILES}
+\pastePRRTEAttributeItem{PMIX_PERSONALITY}
+\pastePRRTEAttributeItem{PMIX_MAPPER}
+\pastePRRTEAttributeItem{PMIX_DISPLAY_MAP}
+\pastePRRTEAttributeItem{PMIX_PPR}
+\pastePRRTEAttributeItem{PMIX_MAPBY}
+\pastePRRTEAttributeItem{PMIX_RANKBY}
+\pastePRRTEAttributeItem{PMIX_BINDTO}
+\pastePRRTEAttributeItem{PMIX_NON_PMI}
+\pastePRRTEAttributeItem{PMIX_STDIN_TGT}
+\pastePRRTEAttributeItem{PMIX_FWD_STDIN}
+\pastePRRTEAttributeItem{PMIX_FWD_STDOUT}
+\pastePRRTEAttributeItem{PMIX_FWD_STDERR}
+\pastePRRTEAttributeItem{PMIX_DEBUGGER_DAEMONS}
+\pastePRRTEAttributeItem{PMIX_TAG_OUTPUT}
+\pastePRRTEAttributeItem{PMIX_TIMESTAMP_OUTPUT}
+\pastePRRTEAttributeItem{PMIX_MERGE_STDERR_STDOUT}
+\pastePRRTEAttributeItem{PMIX_OUTPUT_TO_FILE}
+\pastePRRTEAttributeItem{PMIX_INDEX_ARGV}
+\pastePRRTEAttributeItem{PMIX_CPUS_PER_PROC}
+\pastePRRTEAttributeItem{PMIX_NO_PROCS_ON_HEAD}
+\pastePRRTEAttributeItem{PMIX_NO_OVERSUBSCRIBE}
+\pastePRRTEAttributeItem{PMIX_REPORT_BINDINGS}
+\pastePRRTEAttributeItem{PMIX_CPU_LIST}
+\pastePRRTEAttributeItem{PMIX_JOB_RECOVERABLE}
+\pastePRRTEAttributeItem{PMIX_JOB_CONTINUOUS}
+\pastePRRTEAttributeItem{PMIX_MAX_RESTARTS}
+
+\optattrend
 
 %%%%
 \descr
@@ -201,63 +200,69 @@ PMIx_Spawn_nb(const pmix_info_t job_info[], size_t ninfo,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\priattr
-The PMIx_Spawn_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing. Note that the \ac{PRI} automatically adds the following attributes to those provided before passing the request to the host daemon:
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the following attributes to those provided before passing the request to the host:
 
-\pasteAttributeItem{PMIX_SPAWNED}
-\pasteAttributeItem{PMIX_PARENT_ID}
-\pasteAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
-\pasteAttributeItem{PMIX_REQUESTOR_IS_TOOL}
+\pastePRIAttributeItem{PMIX_SPAWNED}
+\pastePRIAttributeItem{PMIX_PARENT_ID}
+\pastePRIAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
+\pastePRIAttributeItem{PMIX_REQUESTOR_IS_TOOL}
 
-The \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes are passed to the child processes upon connection to a PMIx server.
+Host environments that implement support for \refapi{PMIx_Spawn} are required to pass the \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes to all \ac{PMIx} servers launching new child processes so those values can be returned to clients upon connection to the \ac{PMIx} server. In addition, they are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
 
-\reqattr
-\acp{RM} that implement support for \refapi{PMIx_Spawn} are required to support the following attributes:
+\pastePRRTEAttributeItem{PMIX_WDIR}
+\pastePRRTEAttributeItem{PMIX_SET_SESSION_CWD}
+\pastePRRTEAttributeItem{PMIX_PREFIX}
+\pastePRRTEAttributeItem{PMIX_HOST}
+\pastePRRTEAttributeItem{PMIX_HOSTFILE}
 
-\pasteAttributeItem{PMIX_WDIR}
-\pasteAttributeItem{PMIX_SET_SESSION_CWD}
-\pasteAttributeItem{PMIX_PREFIX}
-\pasteAttributeItem{PMIX_HOST}
-\pasteAttributeItem{PMIX_HOSTFILE}
+\reqattrend
 
-\optattr
-A complete implementation would include support for the following attributes:
+\optattrstart
+The following attributes are optional for host environments that support this operation:
 
-\pasteAttributeItem{PMIX_ADD_HOSTFILE}
-\pasteAttributeItem{PMIX_ADD_HOST}
-\pasteAttributeItem{PMIX_PRELOAD_BIN}
-\pasteAttributeItem{PMIX_PRELOAD_FILES}
-\pasteAttributeItem{PMIX_PERSONALITY}
-\pasteAttributeItem{PMIX_MAPPER}
-\pasteAttributeItem{PMIX_DISPLAY_MAP}
-\pasteAttributeItem{PMIX_PPR}
-\pasteAttributeItem{PMIX_MAPBY}
-\pasteAttributeItem{PMIX_RANKBY}
-\pasteAttributeItem{PMIX_BINDTO}
-\pasteAttributeItem{PMIX_NON_PMI}
-\pasteAttributeItem{PMIX_STDIN_TGT}
-\pasteAttributeItem{PMIX_FWD_STDIN}
-\pasteAttributeItem{PMIX_FWD_STDOUT}
-\pasteAttributeItem{PMIX_FWD_STDERR}
-\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
-\pasteAttributeItem{PMIX_TAG_OUTPUT}
-\pasteAttributeItem{PMIX_TIMESTAMP_OUTPUT}
-\pasteAttributeItem{PMIX_MERGE_STDERR_STDOUT}
-\pasteAttributeItem{PMIX_OUTPUT_TO_FILE}
-\pasteAttributeItem{PMIX_INDEX_ARGV}
-\pasteAttributeItem{PMIX_CPUS_PER_PROC}
-\pasteAttributeItem{PMIX_NO_PROCS_ON_HEAD}
-\pasteAttributeItem{PMIX_NO_OVERSUBSCRIBE}
-\pasteAttributeItem{PMIX_REPORT_BINDINGS}
-\pasteAttributeItem{PMIX_CPU_LIST}
-\pasteAttributeItem{PMIX_JOB_RECOVERABLE}
-\pasteAttributeItem{PMIX_JOB_CONTINUOUS}
-\pasteAttributeItem{PMIX_MAX_RESTARTS}
+\pastePRRTEAttributeItem{PMIX_ADD_HOSTFILE}
+\pastePRRTEAttributeItem{PMIX_ADD_HOST}
+\pastePRRTEAttributeItem{PMIX_PRELOAD_BIN}
+\pastePRRTEAttributeItem{PMIX_PRELOAD_FILES}
+\pastePRRTEAttributeItem{PMIX_PERSONALITY}
+\pastePRRTEAttributeItem{PMIX_MAPPER}
+\pastePRRTEAttributeItem{PMIX_DISPLAY_MAP}
+\pastePRRTEAttributeItem{PMIX_PPR}
+\pastePRRTEAttributeItem{PMIX_MAPBY}
+\pastePRRTEAttributeItem{PMIX_RANKBY}
+\pastePRRTEAttributeItem{PMIX_BINDTO}
+\pastePRRTEAttributeItem{PMIX_NON_PMI}
+\pastePRRTEAttributeItem{PMIX_STDIN_TGT}
+\pastePRRTEAttributeItem{PMIX_FWD_STDIN}
+\pastePRRTEAttributeItem{PMIX_FWD_STDOUT}
+\pastePRRTEAttributeItem{PMIX_FWD_STDERR}
+\pastePRRTEAttributeItem{PMIX_DEBUGGER_DAEMONS}
+\pastePRRTEAttributeItem{PMIX_TAG_OUTPUT}
+\pastePRRTEAttributeItem{PMIX_TIMESTAMP_OUTPUT}
+\pastePRRTEAttributeItem{PMIX_MERGE_STDERR_STDOUT}
+\pastePRRTEAttributeItem{PMIX_OUTPUT_TO_FILE}
+\pastePRRTEAttributeItem{PMIX_INDEX_ARGV}
+\pastePRRTEAttributeItem{PMIX_CPUS_PER_PROC}
+\pastePRRTEAttributeItem{PMIX_NO_PROCS_ON_HEAD}
+\pastePRRTEAttributeItem{PMIX_NO_OVERSUBSCRIBE}
+\pastePRRTEAttributeItem{PMIX_REPORT_BINDINGS}
+\pastePRRTEAttributeItem{PMIX_CPU_LIST}
+\pastePRRTEAttributeItem{PMIX_JOB_RECOVERABLE}
+\pastePRRTEAttributeItem{PMIX_JOB_CONTINUOUS}
+\pastePRRTEAttributeItem{PMIX_MAX_RESTARTS}
+
+\optattrend
 
 %%%%
 \descr
 
-Nonblocking version of the \refapi{PMIx_Spawn} routine.
+Nonblocking version of the \refapi{PMIx_Spawn} routine. The provided callback function will be executed upon successful start of \textit{all} specified application processes.
+
+\adviceuserstart
+Behavior of individual resource managers may differ, but it is expected that failure of any application process to start will result in termination/cleanup of \emph{all} processes in the newly spawned job and return of an error code to the caller.
+\adviceuserend
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -265,7 +270,24 @@ Nonblocking version of the \refapi{PMIx_Spawn} routine.
 \section{Connecting and Disconnecting Processes}
 \label{chap:api_proc_mgmt:connect}
 
-This section defines functions to connect and disconnect separate \ac{PMIx} namespaces so that they may exchange information and otherwise communicate with each other.
+This section defines functions to connect and disconnect processes in two or more separate \ac{PMIx} namespaces. The \ac{PMIx} definition of \textit{connected} solely implies the following:
+
+\begin{itemize}
+    \item job-level information for each namespace is to be made available to all processes in the connected assemblage
+    \item any data posted by a process in the connected assemblage via calls to \refapi{PMIx_Put} and committed via \refapi{PMIx_Commit} is to be made accessible to all processes in the assemblage
+    \item the host environment should treat the failure of any process in the assemblage as a reportable event, taking action on the assemblage as if it were a single application. For example, if the environment defaults (in the absence of any application directives) to terminating an application upon failure of any process in that application, then the environment should terminate all processes in the connected assemblage upon failure of any member.
+\end{itemize}
+
+\advicermstart
+The host environment is not required to assign a new namespace to the connected assemblage, nor to assign new ranks for its members. However, it is required to generate a \refconst{PMIX_ERR_INVALID_TERMINATION} event should any process in the assemblage terminate or call \refapi{PMIx_Finalize} without first \textit{disconnecting} from the assemblage.
+\advicermend
+
+\adviceuserstart
+Attempting to \textit{connect} processes solely within the same namespace is essentially a \textit{no-op} operation. While not explicitly prohibited, users are advised that a \ac{PMIx} implementation or host environment may return an error in such cases.
+
+The \ac{PMIx} implementation is not required to provide any tracking support for the assemblage. Thus, the application is responsible for maintaining the membership list of the assemblage.
+
+\adviceuserend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Connect}}
@@ -297,30 +319,39 @@ PMIx_Connect(const pmix_proc_t procs[], size_t nprocs,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\priattr
-The PMIx_Connect function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
 
-\optattr
-A complete implementation would include support for the following attributes:
+\reqattrend
 
-\pasteAttributeItem{PMIX_TIMEOUT}
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pastePRRTEAttributeItem{PMIX_TIMEOUT}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
 
 %%%%
 \descr
 
-Record the specified processes as ``connected''.
-This means that the resource manager should treat the failure of any process in the specified collection as a reportable event, and take appropriate action.
-Note that different resource managers may respond to failures in different manners. The RM does not define a new identifier for the connected assemblage, nor does it define a new rank for each process within that group. In addition, the \ac{PMIx} server does not provide any tracking support for the assemblage. Thus, the caller is responsible for maintaining the membership list of the assemblage.
+Record the processes specified by the \refarg{procs} array as \textit{connected} as per the \ac{PMIx} definition. The function will return once all processes identified in \refarg{procs} have called either \refapi{PMIx_Connect} or its non-blocking version, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes.
 
-The function will return once all participating processes have called either \refapi{PMIx_Connect} or its non-blocking version.
-The server is required to return any job-level info for the connecting processes that might not already have it (i.e., if the connect request involves \refarg{procs} from different namespaces, then each \refarg{proc} shall receive the job-level info from those namespaces other than their own). In addition, all members of the collection will receive notification of errors from processes in their combined assemblage. Processes that combine via \refapi{PMIx_Connect} must call \refapi{PMIx_Disconnect} prior to finalizing and/or terminating.
+\adviceuserstart
+All processes engaged in a given \refapi{PMIx_Connect} operation must provide the identical \refarg{procs} array as ordering of entries in the array and the method by which those processes are identified (e.g., use of \refconst{PMIX_RANK_WILDCARD} versus listing the individual processes) \textit{may} impact the host environment's algorithm for uniquely identifying an operation.
+\adviceuserend
 
-A process can only engage in \emph{one} connect operation involving the identical set of processes at a time.
-However, a process \emph{can} be simultaneously engaged in multiple connect operations, each involving a different set of processes.
+Processes that combine via \refapi{PMIx_Connect} must call \refapi{PMIx_Disconnect} prior to finalizing and/or terminating - any process in the assemblage failing to meet this requirement will cause a \refconst{PMIX_ERR_INVALID_TERMINATION} event to be generated.
 
-As in the case of the fence operation, the info array can be used to pass user-level directives regarding the algorithm to be used for the collective operation involved in the ``connect'', timeout constraints, and other options available from the host \ac{RM}.
+A process can only engage in \emph{one} connect operation involving the identical \refarg{procs} array at a time.
+However, a process \emph{can} be simultaneously engaged in multiple connect operations, each involving a different \refarg{procs} array.
+
+As in the case of the \refapi{PMIx_Fence} operation, the \refarg{info} array can be used to pass user-level directives regarding the algorithm to be used for any collective operation involved in the operation, timeout constraints, and other options available from the host \ac{RM}.
 
 
 %%%%%%%%%%%
@@ -356,20 +387,28 @@ PMIx_Connect_nb(const pmix_proc_t procs[], size_t nprocs,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\priattr
-The PMIx_Connect_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
 
-\optattr
-A complete implementation would include support for the following attributes:
+\reqattrend
 
-\pasteAttributeItem{PMIX_TIMEOUT}
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pastePRRTEAttributeItem{PMIX_TIMEOUT}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
 
 %%%%
 \descr
 
-Nonblocking version of \refapi{PMIx_Connect}. The callback function is called once all participating processes have called either \refapi{PMIx_Connect_nb} or its blocking version.
+Nonblocking version of \refapi{PMIx_Connect}. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Connect} or its non-blocking version, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes.
 
 
 %%%%%%%%%%%
@@ -402,22 +441,37 @@ PMIx_Disconnect(const pmix_proc_t procs[], size_t nprocs,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\priattr
-The PMIx_Disonnect function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
 
-\optattr
-A complete implementation would include support for the following attributes:
+\reqattrend
 
-\pasteAttributeItem{PMIX_TIMEOUT}
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
 
 %%%%
 \descr
 
 Disconnect a previously connected set of processes.
-An error will be returned if the specified set of \refarg{procs} was not previously ``connected''.
-As with \refapi{PMIx_Connect}, a process may be involved in multiple simultaneous disconnect operations.
-However, a process is not allowed to reconnect to a set of \refarg{procs} that has not fully completed disconnect (i.e., you have to fully disconnect before you can reconnect to the \emph{same} group of processes).
-The \refarg{info} array is used as in \refapi{PMIx_Connect}.
+A \refconst{PMIX_ERR_INVALID_OPERATION} error will be returned if the specified set of \refarg{procs} was not previously \textit{connected} via a call to \refapi{PMIx_Connect} or its non-blocking form. The function will return once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect} or its non-blocking version, \textit{and} the host environment has completed any required supporting operations.
+
+\adviceuserstart
+All processes engaged in a given \refapi{PMIx_Disconnect} operation must provide the identical \refarg{procs} array as ordering of entries in the array and the method by which those processes are identified (e.g., use of \refconst{PMIX_RANK_WILDCARD} versus listing the individual processes) \textit{may} impact the host environment's algorithm for uniquely identifying an operation.
+\adviceuserend
+
+A process can only engage in \emph{one} disconnect operation involving the identical \refarg{procs} array at a time.
+However, a process \emph{can} be simultaneously engaged in multiple disconnect operations, each involving a different \refarg{procs} array.
+
+As in the case of the \refapi{PMIx_Fence} operation, the \refarg{info} array can be used to pass user-level directives regarding the algorithm to be used for any collective operation involved in the operation, timeout constraints, and other options available from the host \ac{RM}.
 
 
 %%%%%%%%%%%
@@ -436,7 +490,7 @@ Nonblocking \refapi{PMIx_Disconnect} routine.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_Disconnect_nb(const pmix_proc_t ranges[], size_t nprocs,
+PMIx_Disconnect_nb(const pmix_proc_t procs[], size_t nprocs,
                    const pmix_info_t info[], size_t ninfo,
                    pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
@@ -453,18 +507,26 @@ PMIx_Disconnect_nb(const pmix_proc_t ranges[], size_t nprocs,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\priattr
-The PMIx_Disonnect_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
 
-\optattr
-A complete implementation would include support for the following attributes:
+\reqattrend
 
-\pasteAttributeItem{PMIX_TIMEOUT}
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
 
 %%%%
 \descr
 
-Nonblocking \refapi{PMIx_Disconnect} routine.
+Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect_nb} or its blocking version, \textit{and} the host environment has completed any required supporting operations.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
