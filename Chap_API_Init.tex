@@ -84,6 +84,11 @@ Note that the provided string is statically defined and must \textit{not} be fre
 
 Initialization and finalization routines for \ac{PMIx} clients.
 
+\adviceuserstart
+The \ac{PMIx} \textit{ad hoc} v1.0 Standard defined the \refapi{PMIx_Init} function, but modified the function signature in the v1.2 version. The \textit{ad hoc} v1.0 version is not included in this document to avoid confusion.
+\adviceuserend
+
+
 %%%%%%%%%%%
 \subsection{\code{PMIx_Init}}
 \declareapi{PMIx_Init}
@@ -96,7 +101,7 @@ Initialize the \ac{PMIx} client library
 %%%%
 \format
 
-\versionMarker{2.0}
+\versionMarker{1.2}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
