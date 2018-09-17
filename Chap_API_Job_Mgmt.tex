@@ -36,7 +36,8 @@ Obtain the array of processes within the specified namespace that are executing 
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_Resolve_peers(const char *nodename, const char *nspace,
+PMIx_Resolve_peers(const char *nodename,
+                   const pmix_nspace_t nspace,
                    pmix_proc_t **procs, size_t *nprocs)
 \end{codepar}
 \cspecificend

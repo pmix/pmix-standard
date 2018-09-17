@@ -254,13 +254,13 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Section header format - we use four levels: \chapter \section \subsection \subsubsection.
+% Section header format - we use five levels: \chapter \section \subsection \subsubsection
 
 \usepackage{titlesec}     % format headers with \titleformat{}
 
 % Format and spacing for chapter, section, subsection, and subsubsection headers:
 
-\setcounter{secnumdepth}{4}          % show numbers down to subsubsection level
+\setcounter{secnumdepth}{5}          % show numbers down to subsubsection level
 
 \titleformat{\chapter}[display]%
 {\normalfont\sffamily\upshape\Huge\bfseries\nolinenumbers\fontsize{20}{20}\selectfont}%
@@ -333,7 +333,31 @@
 %   \refAttributeItem       Reference the original definition of the attribute
 %
 \newcommand{\declareAttribute}[4]{%
-  \code{#1} ~~\code{#2}~~(\code{#3})%
+    \code{#1} ~~\code{#2}~~(\code{#3})%
+    \index{#1!Defintion|textbf} \label{attr:#1}%
+    \StdCopy{str:#1}{\code{#2}}%
+    \StdCopy{attr:#1}{\code{#3}}%
+    \vspace{-1.3ex}%
+      \expandafter\begin{adjustwidth}{.95cm}{}%
+      \StdCopyEcho{#1}{#4}%
+    \end{adjustwidth}%
+  \vspace{-1.3ex}%
+}
+
+\newcommand{\declareNewAttribute}[4]{%
+   {\color{magenta}\code{#1}} ~~\code{#2}~~(\code{#3})%
+    \index{#1!Defintion|textbf} \label{attr:#1}%
+    \StdCopy{str:#1}{\code{#2}}%
+    \StdCopy{attr:#1}{\code{#3}}%
+    \vspace{-1.3ex}%
+      \expandafter\begin{adjustwidth}{.95cm}{}%
+      \StdCopyEcho{#1}{#4}%
+    \end{adjustwidth}%
+  \vspace{-1.3ex}%
+}
+
+\newcommand{\declareDepAttribute}[4]{%
+   {\color{green!80!black}\code{#1}} ~~\code{#2}~~(\code{#3})%
     \index{#1!Defintion|textbf} \label{attr:#1}%
     \StdCopy{str:#1}{\code{#2}}%
     \StdCopy{attr:#1}{\code{#3}}%

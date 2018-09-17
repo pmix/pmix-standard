@@ -11,6 +11,8 @@ Where necessary for clarification, the description of, for example, an attribute
 A PMIx implementation may define additional attributes beyond those specified in this document.
 
 \adviceimplstart
+Structures, types, and macros in the \ac{PMIx} Standard are defined in terms of the C-programming language. Implementers wishing to support other languages should provide the equivalent definitions in a language-appropriate manner.
+
 If a PMIx implementation chooses to define additional attributes they should avoid using the \code{PMIX} prefix in their name or starting the attribute string with a \textit{pmix} prefix.
 This helps the end user distinguish between what is defined by the PMIx standard and what is specific to that PMIx implementation, and avoids potential conflicts with attributes defined by the standard.
 \adviceimplend
@@ -354,6 +356,7 @@ This section defines various data types used by the PMIx APIs.
 
 The \refstruct{pmix_key_t} structure is a statically defined character array of length \refconst{PMIX_MAX_KEYLEN}+1, thus supporting keys of maximum length \refconst{PMIX_MAX_KEYLEN} while preserving space for a mandatory \code{NULL} terminator.
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef char pmix_key_t[PMIX_MAX_KEYLEN+1];
@@ -363,6 +366,8 @@ typedef char pmix_key_t[PMIX_MAX_KEYLEN+1];
 Characters in the key must be standard alphanumeric values supported by common utilities such as \textit{strcmp}.
 
 \adviceuserstart
+References to keys in \ac{PMIx} v1 rwere defined simply as an array of characters of size \code{PMIX_MAX_KEYLEN+1}. The \refstruct{pmix_key_t} type definition was introduced in version 2 of the standard. The two definitions are code-compatible and thus do not represent a break in backward compatibility.
+
 Passing a \refstruct{pmix_key_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_key_t)} and instead rely on the \refstruct{PMIX_MAX_KEYLEN} constant.
 \adviceuserend
 
@@ -372,6 +377,7 @@ Passing a \refstruct{pmix_key_t} value to the standard \textit{sizeof} utility c
 
 The \refstruct{pmix_nspace_t} structure is a statically defined character array of length \refconst{PMIX_MAX_NSLEN}+1, thus supporting namespaces of maximum length \refconst{PMIX_MAX_NSLEN} while preserving space for a mandatory \code{NULL} terminator.
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef char pmix_nspace_t[PMIX_MAX_NSLEN+1];
@@ -381,6 +387,8 @@ typedef char pmix_nspace_t[PMIX_MAX_NSLEN+1];
 Characters in the namespace must be standard alphanumeric values supported by common utilities such as \textit{strcmp}.
 
 \adviceuserstart
+References to namespace values in \ac{PMIx} v1 rwere defined simply as an array of characters of size \code{PMIX_MAX_NSLEN+1}. The \refstruct{pmix_nspace_t} type definition was introduced in version 2 of the standard. The two definitions are code-compatible and thus do not represent a break in backward compatibility.
+
 Passing a \refstruct{pmix_nspace_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_nspace_t)} and instead rely on the \refstruct{PMIX_MAX_NSLEN} constant.
 \adviceuserend
 
@@ -391,14 +399,14 @@ Passing a \refstruct{pmix_nspace_t} value to the standard \textit{sizeof} utilit
 
 The \refstruct{pmix_rank_t} structure is a \code{uint32_t} type for rank values.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef uint32_t pmix_rank_t;
 \end{codepar}
 \cspecificend
 
-The following constants can be used to set a variable of the type \refstruct{pmix_rank_t}.
-Valid rank values start at zero.
+The following constants can be used to set a variable of the type \refstruct{pmix_rank_t}. All definitions were introduced in version 1 of the standard unless otherwise marked. Valid rank values start at zero.
 
 \begin{constantdesc}
 %
@@ -408,6 +416,7 @@ A value to request job-level data where the information itself is not associated
 \declareconstitem{PMIX_RANK_WILDCARD}
 A value to indicate that the user wants the data for the given key from every rank that posted that key.
 %
+\versionMarker{2.0}
 \declareconstitem{PMIX_RANK_LOCAL_NODE}
 Special rank value used to define groups of ranks for use in collectives.
 This constant defines the group of all ranks on a local node.
@@ -422,6 +431,7 @@ This constant defines the group of all ranks on a local node.
 The \refstruct{pmix_proc_t} structure is used to identify a single process in the PMIx universe.
 It contains a reference to the namespace and the \refstruct{pmix_rank_t} within that namespace.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_proc \{
@@ -431,15 +441,105 @@ typedef struct pmix_proc \{
 \end{codepar}
 \cspecificend
 
+\subsection{Process structure support macros}
+The following macros are provided to support the \refstruct{pmix_proc_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_proc_t} structure}
+\declaremacro{PMIX_PROC_CONSTRUCT}
+
+Initialize the \refstruct{pmix_proc_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_proc_t})}
+\end{arglist}
+
+\subsubsection{Destruct the \refstruct{pmix_proc_t} structure}
+\declaremacro{PMIX_PROC_DESTRUCT}
+
+Clear the \refstruct{pmix_proc_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_proc_t})}
+\end{arglist}
+
+This macro performs the identical operations as \refmacro{PMIX_PROC_CONSTRUCT}, but is provided for symmetry in user code.
+
+
+\subsubsection{Create a \refstruct{pmix_proc_t} array}
+\declaremacro{PMIX_PROC_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_proc_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_proc_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+
+\subsubsection{Free a\refstruct{pmix_proc_t} array}
+\declaremacro{PMIX_PROC_FREE}
+
+Release an array of \refstruct{pmix_proc_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_proc_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+\subsubsection{Load a\refstruct{pmix_proc_t} structure}
+\declaremacro{PMIX_PROC_LOAD}
+
+Load values into a \refstruct{pmix_proc_t}
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_LOAD(m, n, r)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_proc_t})}
+\argin{n}{Namespace to be loaded (\refstruct{pmix_nspace_t})}
+\argin{r}{Rank to be assigned (\refstruct{pmix_rank_t})}
+\end{arglist}
+
 
 %%%%%%%%%%%
 \subsection{Process State Structure}
 \label{api:struct:processstate}
 \declarestruct{pmix_proc_state_t}
 
-The \refstruct{pmix_proc_state_t} structure is a \code{uint8_t} type for process state values.
-
-The following constants can be used to set a variable of the type \refstruct{pmix_proc_state_t}.
+\versionMarker{2.0}
+The \refstruct{pmix_proc_state_t} structure is a \code{uint8_t} type for process state values. The following constants can be used to set a variable of the type \refstruct{pmix_proc_state_t}. All values were originally defined in version 2 of the standard unless otherwise marked.
 
 \adviceuserstart
 The fine-grained nature of the following constants may exceed the ability of an \ac{RM} to provide updated process state values during the process lifetime. This is particularly true of states in the launch process, and for short-lived processes.
@@ -521,6 +621,7 @@ Unable to launch process
 
 The \refstruct{pmix_proc_info_t} structure defines a set of information about a specific process including it's name, location, and state.
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_proc_info \{
@@ -542,11 +643,88 @@ typedef struct pmix_proc_info \{
 
 
 %%%%%%%%%%%
+\subsection{Process Information Structure support macros}
+
+The following macros are provided to support the \refstruct{pmix_proc_info_t} structure.
+
+%%%%
+\subsubsection{Initialize the \refstruct{pmix_proc_info_t} structure}
+\declaremacro{PMIX_PROC_INFO_CONSTRUCT}
+
+Initialize the \refstruct{pmix_proc_info_t} fields
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_INFO_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_proc_info_t})}
+\end{arglist}
+
+%%%%
+\subsubsection{Destruct the \refstruct{pmix_proc_info_t} structure}
+\declaremacro{PMIX_PROC_INFO_DESTRUCT}
+
+Destruct the \refstruct{pmix_proc_info_t} fields
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_INFO_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_proc_info_t})}
+\end{arglist}
+
+%%%%
+\subsubsection{Create a \refstruct{pmix_proc_info_t} array}
+\declaremacro{PMIX_PROC_INFO_CREATE}
+
+Allocate and initialize a \refstruct{pmix_proc_info_t} array
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_INFO_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_proc_info_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+%%%%
+\subsubsection{Free a\refstruct{pmix_proc_info_t} array}
+\declaremacro{PMIX_PROC_INFO_FREE}
+
+Release an array of \refstruct{pmix_proc_info_t} structures
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_INFO_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_proc_info_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+
+%%%%%%%
 \subsection{Scope of Put Data}
 \declarestruct{pmix_scope_t}
 
+\versionMarker{1.0}
 The \refstruct{pmix_scope_t} structure is a \code{uint8_t} type that defines the scope for data passed to \refapi{PMIx_Put}.
-The following constants can be used to set a variable of the type \refstruct{pmix_scope_t}.
+The following constants can be used to set a variable of the type \refstruct{pmix_scope_t}. All definitions were introduced in version 1 of the standard unless otherwise marked.
 
 Specific implementations may support different scope values, but all implementations must support at least \refconst{PMIX_GLOBAL}.
 If a scope value is not supported, then the \refapi{PMIx_Put} call must return \refconst{PMIX_ERR_NOT_SUPPORTED}.
@@ -567,6 +745,7 @@ Data marked in this way will not be shared with other processes on the same node
 \declareconstitem{PMIX_GLOBAL}
 The data is to be shared with all other requesting processes, regardless of location.
 %
+\versionMarker{2.0}
 \declareconstitem{PMIX_INTERNAL}
 The data is intended solely for this process and is not shared with other processes.
 %
@@ -575,11 +754,12 @@ The data is intended solely for this process and is not shared with other proces
 
 
 %%%%%%%%%%%
-\subsection{Scope of Published Data}
+\subsection{Range of Published Data}
 \declarestruct{pmix_data_range_t}
 
-The \refstruct{pmix_data_range_t} structure is a \code{uint8_t} type that defines a range for data ``published'' via functions other than \refapi{PMIx_Put} - e.g., the \refapi{PMIx_Publish} \ac{API}.
-The following constants can be used to set a variable of the type \refstruct{pmix_data_range_t}.
+\versionMarker{1.0}
+The \refstruct{pmix_data_range_t} structure is a \code{uint8_t} type that defines a range for data \textit{published} via functions other than \refapi{PMIx_Put} - e.g., the \refapi{PMIx_Publish} \ac{API}.
+The following constants can be used to set a variable of the type \refstruct{pmix_data_range_t}. Several values were initially defined in version 1 of the standard but subsequently renamed and other values added in version 2. Thus, all values shown below are as they were defined in version 2 except where noted.
 
 \begin{constantdesc}
 %
@@ -609,14 +789,17 @@ Data is only available to this process.
 %
 \end{constantdesc}
 
-
+\adviceuserstart
+The names of the \refstruct{pmix_data_range_t} values changed between version 1 and version 2 of the standard, thereby breaking backward compatibility
+\adviceuserend
 
 %%%%%%%%%%%
 \subsection{Data Persistence Structure}
 \declarestruct{pmix_persistence_t}
 
+\versionMarker{1.0}
 The \refstruct{pmix_persistence_t} structure is a \code{uint8_t} type that defines the policy for data published by clients via the \refapi{PMIx_Publish} \ac{API}.
-The following constants can be used to set a variable of the type \refstruct{pmix_persistence_t}.
+The following constants can be used to set a variable of the type \refstruct{pmix_persistence_t}. All definitions were introduced in version 1 of the standard unless otherwise marked.
 
 \begin{constantdesc}
 %
@@ -637,12 +820,382 @@ Retain data until the session/allocation terminates.
 %
 \end{constantdesc}
 
+%%%%%%%%%%%
+\subsection{Value Structure}
+\declarestruct{pmix_value_t}
 
+The \refstruct{pmix_value_t} structure is used to represent the value passed to \refapi{PMIx_Put} and retrieved by \refapi{PMIx_Get}, as well as many of the other \ac{PMIx} functions.
+
+A collection of values may be specified under a single key by passing a \refstruct{pmix_value_t} containing an array of type \refstruct{pmix_data_array_t}, with each array element containing its own object. All members shown below were introduced in version 1 of the standard unless otherwise marked.
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_value \{
+    pmix_data_type_t type;
+    union \{
+        bool flag;
+        uint8_t byte;
+        char *string;
+        size_t size;
+        pid_t pid;
+        int integer;
+        int8_t int8;
+        int16_t int16;
+        int32_t int32;
+        int64_t int64;
+        unsigned int uint;
+        uint8_t uint8;
+        uint16_t uint16;
+        uint32_t uint32;
+        uint64_t uint64;
+        float fval;
+        double dval;
+        struct timeval tv;
+        time_t time;                    // version 2.0
+        pmix_status_t status;           // version 2.0
+        pmix_rank_t rank;               // version 2.0
+        pmix_proc_t *proc;              // version 2.0
+        pmix_byte_object_t bo;
+        pmix_persistence_t persist;     // version 2.0
+        pmix_scope_t scope;             // version 2.0
+        pmix_data_range_t range;        // version 2.0
+        pmix_proc_state_t state;        // version 2.0
+        pmix_proc_info_t *pinfo;        // version 2.0
+        pmix_data_array_t *darray;      // version 2.0
+        void *ptr;                      // version 2.0
+        pmix_alloc_directive_t adir;    // version 2.0
+        /**** DEPRECATED in PMIx 2 ****/
+        pmix_info_array_t *array;
+        /******************************/
+    \} data;
+\} pmix_value_t;
+\end{codepar}
+\cspecificend
+
+%%%%%%%%%%%
+\subsection{Value structure support macros}
+The following macros are provided to support the \refstruct{pmix_value_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_value_t} structure}
+\declaremacro{PMIX_VALUE_CONSTRUCT}
+
+Initialize the \refstruct{pmix_value_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_VALUE_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_value_t})}
+\end{arglist}
+
+\subsubsection{Destruct the \refstruct{pmix_value_t} structure}
+\declaremacro{PMIX_VALUE_DESTRUCT}
+
+Destruct the \refstruct{pmix_value_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_VALUE_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_value_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Create a \refstruct{pmix_value_t} array}
+\declaremacro{PMIX_VALUE_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_value_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_VALUE_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_value_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%
+\subsubsection{Free a\refstruct{pmix_value_t} array}
+\declaremacro{PMIX_VALUE_FREE}
+
+Release an array of \refstruct{pmix_value_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_VALUE_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_value_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsection{Load a \refstruct{pmix_value_t} structure}
+\declaremacro{PMIX_VALUE_LOAD}
+
+%%%%
+\summary
+
+Load data into a \refstruct{pmix_value_t} structure.
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_VALUE_LOAD(v, d, t);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{v}{The \refstruct{pmix_value_t} into which the data is to be loaded (pointer to \refstruct{pmix_value_t})}
+\argin{d}{Pointer to the data value to be loaded (handle)}
+\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+%%%%
+\descr
+
+This macro simplifies the loading of data into a \refstruct{pmix_value_t} by correctly assigning values to the structure's fields.
+
+\adviceuserstart
+The data will be copied into the \refstruct{pmix_value_t} - thus, any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+
+%%%%%%%%%%%
+\subsubsection{Transfer data between \refstruct{pmix_value_t} structures}
+\declaremacro{PMIX_VALUE_XFER}
+
+%%%%
+\summary
+
+Transfer the data value between two \refstruct{pmix_value_t} structures.
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_VALUE_XFER(r, d, s);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{r}{Status code indicating success or failure of the transfer (\refstruct{pmix_status_t})}
+\argin{d}{Pointer to the \refstruct{pmix_value_t} destination (handle)}
+\argin{s}{Pointer to the \refstruct{pmix_value_t} source (handle)}
+\end{arglist}
+
+%%%%
+\descr
+
+This macro simplifies the transfer of data between two \refstruct{pmix_value_t} structures, ensuring that all fields are properly copied.
+
+\adviceuserstart
+The data will be copied into the destination \refstruct{pmix_value_t} - thus, any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+
+%%%%%%%%%%%
+\subsection{Info and Info Array Structures}
+\declarestruct{pmix_info_t}
+\declarestruct{pmix_info_array}
+
+The \refstruct{pmix_info_t} structure defines a key/value pair with associated directive. All fields were defined in version 1.0 unless otherwise marked.
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_info_t \{
+    pmix_key_t key;
+    pmix_info_directives_t flags;    // version 2.0
+    pmix_value_t value;
+\} pmix_info_t;
+\end{codepar}
+\cspecificend
+
+The \refstruct{pmix_info_array} structure defines an array of \refstruct{pmix_info_t} structures.
+
+\notestart
+\noteheader
+The \refstruct{pmix_info_array} structure has been deprecated and will be removed in future versions of the \ac{PMIx} Standard.
+\noteend
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_info_array \{
+    size_t size;
+    pmix_info_t *array;
+\} pmix_info_array_t;
+\end{codepar}
+\cspecificend
+
+%%%%%%%%%%%
+\subsection{Info structure support macros}
+The following macros are provided to support the \refstruct{pmix_info_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_info_t} structure}
+\declaremacro{PMIX_INFO_CONSTRUCT}
+
+Initialize the \refstruct{pmix_info_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+\subsubsection{Destruct the \refstruct{pmix_info_t} structure}
+\declaremacro{PMIX_INFO_DESTRUCT}
+
+Destruct the \refstruct{pmix_info_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Create a \refstruct{pmix_info_t} array}
+\declaremacro{PMIX_INFO_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_info_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_info_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%
+\subsubsection{Free a\refstruct{pmix_info_t} array}
+\declaremacro{PMIX_INFO_FREE}
+
+Release an array of \refstruct{pmix_info_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_info_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Load key and value data into a \refstruct{pmix_info_t}}
+\declaremacro{PMIX_INFO_LOAD}
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_LOAD(v, k, d, t);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{v}{Pointer to the \refstruct{pmix_info_t} into which the key and data are to be loaded (pointer to \refstruct{pmix_info_t})}
+\argin{k}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
+\argin{d}{Pointer to the data value to be loaded (handle)}
+\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+This macro simplifies the loading of key and data into a \refstruct{pmix_info_t} by correctly assigning values to the structure's fields.
+
+\adviceuserstart
+Both key and data will be copied into the \refstruct{pmix_info_t} - thus, the key and any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsubsection{Copy data between \refstruct{pmix_info_t} structures}
+\declaremacro{PMIX_INFO_XFER}
+
+Copy all data (including key, value, and directives) between two \refstruct{pmix_info_t} structures.
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_XFER(d, s);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{d}{Pointer to the destination \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\argin{s}{Pointer to the source \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This macro simplifies the transfer of data between two\refstruct{pmix_info_t} structures.
+
+\adviceuserstart
+All data (including key, value, and directives) will be copied into the destination \refstruct{pmix_info_t} - thus, the source \refstruct{pmix_info_t} may be free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+
+%%%%%%%%%%%
+\subsubsection{Test a boolean \refstruct{pmix_info_t}}
+\declaremacro{PMIX_INFO_TRUE}
+
+A special macro for checking if a boolean \refstruct{pmix_info_t} is \code{true}
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_TRUE(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to a \refstruct{pmix_info_t} structure (handle)}
+\end{arglist}
+
+A \refstruct{pmix_info_t} structure is considered to be of type \refconst{PMIX_BOOL} and value \code{true} if:
+
+\begin{itemize}
+    \item the structure reports a type of \refconst{PMIX_UNDEF}, or
+    \item the structure reports a type of \refconst{PMIX_BOOL} and the data flag is \code{true}
+\end{itemize}
 
 %%%%%%%%%%%
 \subsection{Info Type Directives}
 \declarestruct{pmix_info_directives_t}
 
+\versionMarker{2.0}
 The \refstruct{pmix_info_directives_t} structure is a \code{uint32_t} type that defines the behavior of command directives via \refstruct{pmix_info_t} arrays.
 By default, the values in the \refstruct{pmix_info_t} array passed to a PMIx are \emph{optional}.
 
@@ -657,7 +1210,7 @@ If the user relies on the behavior defined by the \refstruct{pmix_info_t} then t
 The top 16-bits of the \refstruct{pmix_info_directives_t} are reserved for internal use by \ac{PMIx} library implementers - the \ac{PMIx} standard will \textit{not} specify their intent, leaving them for customized use by implementers. Implementers are advised to use the provided \refmacro{PMIX_INFO_IS_REQUIRED} macro for testing this flag, and must return \refconst{PMIX_ERR_NOT_SUPPORTED} as soon as possible to the caller if the required behavior is not supported.
 \adviceimplend
 
-The following constants can be used to set a variable of the type \refstruct{pmix_info_directives_t}.
+The following constants were introduced in version 2.0 (unless otherwise marked) and can be used to set a variable of the type \refstruct{pmix_info_directives_t}.
 
 \begin{constantdesc}
 %
@@ -671,14 +1224,63 @@ Host environments are advised to use the provided \refmacro{PMIX_INFO_IS_REQUIRE
 \advicermend
 
 
+\subsection{Info Directive support macros}
+
+The following macros are provided to support the setting and testing of \refstruct{pmix_info_t} directives.
+
+%%%%
+\subsubsection{Mark an info structure as required}
+\declaremacro{PMIX_INFO_REQUIRED}
+
+%%%%
+\summary
+
+Set the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure.
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_REQUIRED(info);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This macro simplifies the setting of the \refstruct{PMIX_INFO_REQD} flag in \refstruct{pmix_info_t} structures.
+
+%%%%%%%%%%%
+\subsubsection{Test an info structure for \textit{required} directive}
+\declaremacro{PMIX_INFO_IS_REQUIRED}
+
+%%%%
+\summary
+
+Test the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure, returning \code{true} if the flag is set.
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_IS_REQUIRED(info);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This macro simplifies the testing of the required flag in \refstruct{pmix_info_t} structures.
+
 
 
 %%%%%%%%%%%
 \subsection{Job Allocation Directives}
 \declarestruct{pmix_alloc_directive_t}
 
+\versionMarker{2.0}
 The \refstruct{pmix_alloc_directive_t} structure is a \code{uint8_t} type that defines the behavior of allocation requests.
-The following constants can be used to set a variable of the type \refstruct{pmix_alloc_directive_t}.
+The following constants can be used to set a variable of the type \refstruct{pmix_alloc_directive_t}. All definitions were introduced in version 2 of the standard unless otherwise marked.
 
 \begin{constantdesc}
 %
@@ -709,6 +1311,7 @@ A value boundary above which implementers are free to define their own directive
 
 The \refstruct{pmix_pdata_t} structure is used by \refapi{PMIx_Lookup} to describe the data being accessed.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_pdata \{
@@ -719,6 +1322,136 @@ typedef struct pmix_pdata \{
 \end{codepar}
 \cspecificend
 
+\subsection{Lookup data structure support macros}
+
+The following macros are provided to support the \refstruct{pmix_pdata_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_pdata_t} structure}
+\declaremacro{PMIX_PDATA_CONSTRUCT}
+
+Initialize the \refstruct{pmix_pdata_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PDATA_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_pdata_t})}
+\end{arglist}
+
+\subsubsection{Destruct the \refstruct{pmix_pdata_t} structure}
+\declaremacro{PMIX_PDATA_DESTRUCT}
+
+Destruct the \refstruct{pmix_pdata_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PDATA_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_pdata_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Create a \refstruct{pmix_pdata_t} array}
+\declaremacro{PMIX_PDATA_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_pdata_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PDATA_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_pdata_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%
+\subsubsection{Free a\refstruct{pmix_pdata_t} array}
+\declaremacro{PMIX_PDATA_FREE}
+
+Release an array of \refstruct{pmix_pdata_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PDATA_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_pdata_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Load a lookup data structure}
+\declaremacro{PMIX_PDATA_LOAD}
+
+%%%%
+\summary
+
+Load key, process identifier, and data value into a \refstruct{pmix_pdata_t} structure.
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PDATA_LOAD(m, p, k, d, t);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the \refstruct{pmix_pdata_t} structure into which the key and data are to be loaded (pointer to \refstruct{pmix_pdata_t})}
+\argin{p}{Pointer to the \refstruct{pmix_proc_t} structure containing the identifier of the process being referenced (pointer to \refstruct{pmix_proc_t})}
+\argin{k}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
+\argin{d}{Pointer to the data value to be loaded (handle)}
+\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+This macro simplifies the loading of key, process identifier, and data into a \refstruct{pmix_proc_t} by correctly assigning values to the structure's fields.
+
+\adviceuserstart
+Key, process identifier, and data will all be copied into the \refstruct{pmix_pdata_t} - thus, the source information can be modified or free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsubsection{Transfer a lookup data structure}
+\declaremacro{PMIX_PDATA_XFER}
+
+%%%%
+\summary
+
+Transfer key, process identifier, and data value between two \refstruct{pmix_pdata_t} structures.
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_PDATA_XFER(d, s);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{d}{Pointer to the destination \refstruct{pmix_pdata_t} (pointer to \refstruct{pmix_pdata_t})}
+\argin{s}{Pointer to the source \refstruct{pmix_pdata_t} (pointer to \refstruct{pmix_pdata_t})}
+\end{arglist}
+
+This macro simplifies the transfer of key and data between two\refstruct{pmix_pdata_t} structures.
+
+\adviceuserstart
+Key, process identifier, and data will all be copied into the destination \refstruct{pmix_pdata_t} - thus, the source \refstruct{pmix_pdata_t} may free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
 
 %%%%%%%%%%%
 \subsection{Application Structure}
@@ -726,6 +1459,7 @@ typedef struct pmix_pdata \{
 
 The \refstruct{pmix_app_t} structure describes the application context for the \refapi{PMIx_Spawn} and \refapi{PMIx_Spawn_nb} operations.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_app \{
@@ -747,6 +1481,77 @@ typedef struct pmix_app \{
 \end{codepar}
 \cspecificend
 
+\subsection{App structure support macros}
+The following macros are provided to support the \refstruct{pmix_app_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_app_t} structure}
+\declaremacro{PMIX_APP_CONSTRUCT}
+
+Initialize the \refstruct{pmix_app_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_app_t})}
+\end{arglist}
+
+\subsubsection{Destruct the \refstruct{pmix_app_t} structure}
+\declaremacro{PMIX_APP_DESTRUCT}
+
+Destruct the \refstruct{pmix_app_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_app_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Create a \refstruct{pmix_app_t} array}
+\declaremacro{PMIX_APP_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_app_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_app_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%
+\subsubsection{Free a\refstruct{pmix_app_t} array}
+\declaremacro{PMIX_APP_FREE}
+
+Release an array of \refstruct{pmix_app_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_app_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
 
 %%%%%%%%%%%
 \subsection{Query Structure}
@@ -754,6 +1559,7 @@ typedef struct pmix_app \{
 
 The \refstruct{pmix_query_t} structure is used by \refapi{PMIx_Query_info_nb} to describe a single query operation.
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_query \{
@@ -764,6 +1570,77 @@ typedef struct pmix_query \{
 \end{codepar}
 \cspecificend
 
+\subsection{Query structure support macros}
+The following macros are provided to support the \refstruct{pmix_query_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_query_t} structure}
+\declaremacro{PMIX_QUERY_CONSTRUCT}
+
+Initialize the \refstruct{pmix_query_t} fields
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_QUERY_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_query_t})}
+\end{arglist}
+
+\subsubsection{Destruct the \refstruct{pmix_query_t} structure}
+\declaremacro{PMIX_QUERY_DESTRUCT}
+
+Destruct the \refstruct{pmix_query_t} fields
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_QUERY_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_query_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Create a \refstruct{pmix_query_t} array}
+\declaremacro{PMIX_QUERY_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_query_t} structures
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_QUERY_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_query_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%
+\subsubsection{Free a\refstruct{pmix_query_t} array}
+\declaremacro{PMIX_QUERY_FREE}
+
+Release an array of \refstruct{pmix_query_t} structures
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_QUERY_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_query_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
 
 %%%%%%%%%%%
 \subsection{Modex Structure}
@@ -773,9 +1650,10 @@ The \refstruct{pmix_modex_data_t} structure describes the \ac{BCX} information.
 
 \notestart
 \noteheader
-This structure has been deprecated and will be removed in future versions of the \ac{PMIx} Standard.
+This structure and its supporting macros have been deprecated and will be removed in future versions of the \ac{PMIx} Standard.
 \noteend
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_modex_data \{
@@ -787,6 +1665,77 @@ typedef struct pmix_modex_data \{
 \end{codepar}
 \cspecificend
 
+\subsection{Modex data structure support macros}
+The following macros are provided to support the \refstruct{pmix_modex_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_modex_t} structure}
+\declaremacro{PMIX_MODEX_CONSTRUCT}
+
+Initialize the \refstruct{pmix_modex_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_MODEX_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_modex_t})}
+\end{arglist}
+
+\subsubsection{Destruct the \refstruct{pmix_modex_t} structure}
+\declaremacro{PMIX_MODEX_DESTRUCT}
+
+Destruct the \refstruct{pmix_modex_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_MODEX_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_modex_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Create a \refstruct{pmix_modex_t} array}
+\declaremacro{PMIX_MODEX_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_modex_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_MODEX_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_modex_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%
+\subsubsection{Free a\refstruct{pmix_modex_t} array}
+\declaremacro{PMIX_MODEX_FREE}
+
+Release an array of \refstruct{pmix_modex_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_MODEX_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_modex_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
 
 %%%%%%%%%%%
 \section{Data Packing/Unpacking Types and Structures}
@@ -799,6 +1748,7 @@ This section defines types and structures used to pack and unpack data passed th
 
 The \refstruct{pmix_byte_object_t} structure describes a raw byte sequence.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_byte_object \{
@@ -808,6 +1758,93 @@ typedef struct pmix_byte_object \{
 \end{codepar}
 \cspecificend
 
+\subsection{Byte object support macros}
+The following macros support the \refstruct{pmix_byte_object_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_byte_object_t} structure}
+\declaremacro{PMIX_PROC_CONSTRUCT}
+
+Initialize the \refstruct{pmix_byte_object_t} fields
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_BYTE_OBJECT_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_byte_object_t})}
+\end{arglist}
+
+\subsubsection{Destruct the \refstruct{pmix_byte_object_t} structure}
+\declaremacro{PMIX_BYTE_OBJECT_DESTRUCT}
+
+Clear the \refstruct{pmix_byte_object_t} fields
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_BYTE_OBJECT_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_byte_object_t})}
+\end{arglist}
+
+\subsubsection{Create a \refstruct{pmix_byte_object_t} structure}
+\declaremacro{PMIX_BYTE_OBJECT_CREATE}
+
+Allocate and intitialize an array of \refstruct{pmix_byte_object_t} structures
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_BYTE_OBJECT_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_byte_object_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+\subsubsection{Free a \refstruct{pmix_byte_object_t} array}
+\declaremacro{PMIX_BYTE_OBJECT_FREE}
+
+Release an array of \refstruct{pmix_byte_object_t} structures
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_BYTE_OBJECT_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_byte_object_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+\subsubsection{Load a\refstruct{pmix_byte_object_t} structure}
+\declaremacro{PMIX_BYTE_OBJECT_LOAD}
+
+Load values into a \refstruct{pmix_byte_object_t}
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_BYTE_OBJECT_LOAD(b, d, s)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{b}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_byte_object_t})}
+\argin{d}{Pointer to the data to be loaded (\code{char*})}
+\argin{s}{Number of bytes in the data array (\code{size_t})}
+\end{arglist}
+
 
 %%%%%%%%%%%
 \subsection{Data Buffer Type}
@@ -815,6 +1852,7 @@ typedef struct pmix_byte_object \{
 
 The \refstruct{pmix_data_buffer_t} structure describes a data buffer used for packing and unpacking.
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_data_buffer \{
@@ -835,6 +1873,72 @@ typedef struct pmix_data_buffer \{
 \end{codepar}
 \cspecificend
 
+\subsection{Data buffer support macros}
+The following macros support the \refstruct{pmix_data_buffer_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_data_buffer_t} structure}
+\declaremacro{PMIX_PROC_CONSTRUCT}
+
+Initialize the \refstruct{pmix_data_buffer_t} fields
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_BUFFER_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_data_buffer_t})}
+\end{arglist}
+
+\subsubsection{Destruct the \refstruct{pmix_data_buffer_t} structure}
+\declaremacro{PMIX_DATA_BUFFER_DESTRUCT}
+
+Clear the \refstruct{pmix_data_buffer_t} fields
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_BUFFER_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_data_buffer_t})}
+\end{arglist}
+
+\subsubsection{Create a \refstruct{pmix_data_buffer_t} structure}
+\declaremacro{PMIX_DATA_BUFFER_CREATE}
+
+Allocate and intitialize a \refstruct{pmix_data_buffer_t} structure
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_BUFFER_CREATE(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the \refstruct{pmix_data_buffer_t} structure shall be stored (handle)}
+\end{arglist}
+
+\subsubsection{Free a \refstruct{pmix_data_buffer_t}}
+\declaremacro{PMIX_DATA_BUFFER_RELEASE}
+
+Release a \refstruct{pmix_data_buffer_t} structure
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_BUFFER_RELEASE(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the \refstruct{pmix_data_buffer_t} structure to be released (handle)}
+\end{arglist}
 
 
 %%%%%%%%%%%
@@ -843,6 +1947,7 @@ typedef struct pmix_data_buffer \{
 
 The \refstruct{pmix_data_array_t} structure defines an array data structure.
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_data_array \{
@@ -855,50 +1960,18 @@ typedef struct pmix_data_array \{
 
 
 
-%%%%%%%%%%%
-\subsection{Info and Info Array Structures}
-\declarestruct{pmix_info_t}
-\declarestruct{pmix_info_array}
-
-The \refstruct{pmix_info_t} structure defines a key/value pair with associated directive.
-
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_info_t \{
-    pmix_key_t key;
-    pmix_info_directives_t flags;
-    pmix_value_t value;
-\} pmix_info_t;
-\end{codepar}
-\cspecificend
-
-The \refstruct{pmix_info_array} structure defines an array of \refstruct{pmix_info_t} structures.
-
-\notestart
-\noteheader
-The \refstruct{pmix_info_array} structure has been deprecated and will be removed in future versions of the \ac{PMIx} Standard.
-\noteend
-
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_info_array \{
-    size_t size;
-    pmix_info_t *array;
-\} pmix_info_array_t;
-\end{codepar}
-\cspecificend
-
-
-%%%%%%%%%%%
+%%%%%%%%%%
 \subsection{Generalized Data Types Used for Packing/Unpacking}
 \declarestruct{pmix_data_type_t}
 
 The \refstruct{pmix_data_type_t} structure is a \code{uint16_t} type for identifying the data type for packing/unpacking purposes.
 
-The following constants can be used to set a variable of the type \refstruct{pmix_data_type_t}.
-The C language type is specified for clarity of intent.
-A PMIx implementation, especially those in other languages, may choose types more appropriate for their implementation.
-Additionally, a PMIx implementation may choose to add additional types.
+\adviceimplstart
+The following constants can be used to set a variable of the type \refstruct{pmix_data_type_t}. Data types in the \ac{PMIx} Standard are defined in terms of the C-programming language. Implementers wishing to support other languages should provide the equivalent definitions in a language-appropriate manner. Additionally, a PMIx implementation may choose to add additional types.
+\adviceimplend
+
+\subsubsection{PMIx v1 Data Types}
+The following types were introduced in version 1 of the \ac{PMIx} Standard.
 
 \begin{constantdesc}
 %
@@ -912,7 +1985,7 @@ Boolean (converted to/from native \code{true}/\code{false}) (\code{bool})
 A byte of data (\code{uint8_t})
 %
 \declareconstitem{PMIX_STRING}
-\code{NUL} terminated string (\code{char*})
+\code{NULL} terminated string (\code{char*})
 %
 \declareconstitem{PMIX_SIZE}
 Size \code{size_t}
@@ -962,10 +2035,6 @@ Time value (\code{struct timeval})
 \declareconstitem{PMIX_TIME}
 Time (\code{time_t})
 %
-\declareconstitem{PMIX_STATUS}
-Status (\refstruct{pmix_status_t}).
-Note that this needs to be tracked separately from integer for those times when we are embedded and it needs to be converted to the host error definitions.
-%
 \declareconstitem{PMIX_VALUE}
 Value (\refstruct{pmix_value_t})
 %
@@ -995,6 +2064,21 @@ Modex
 %
 \declareconstitem{PMIX_PERSIST}
 Persistance (\refstruct{pmix_persistence_t})
+%
+\declareconstitemDEP{PMIX_INFO_ARRAY}{2.0}
+Info array
+%
+\end{constantdesc}
+
+
+\subsubsection{PMIx v2 Data Types}
+The following types were introduced in version 2 of the \ac{PMIx} Standard.
+
+\begin{constantdesc}
+
+%
+\declareconstitem{PMIX_STATUS}
+Status (\refstruct{pmix_status_t})
 %
 \declareconstitem{PMIX_POINTER}
 Pointer (\code{void*})
@@ -1035,66 +2119,10 @@ Compressed string (with zlib)
 \declareconstitem{PMIX_ALLOC_DIRECTIVE}
 Allocation directive (\refstruct{pmix_alloc_directive_t})
 %
-\declareconstitemDEP{PMIX_INFO_ARRAY}{2.0}
-Info array
-%
 \declareconstitem{PMIX_DATA_TYPE_MAX}
 A boundary for implementers above which they can add their own data types.
 %
 \end{constantdesc}
-
-
-%%%%%%%%%%%
-\subsection{Value Structure}
-\declarestruct{pmix_value_t}
-
-The \refstruct{pmix_value_t} structure is used to represent the value passed to \refapi{PMIx_Put} and retrieved by \refapi{PMIx_Get}, as well as many of the other \ac{PMIx} functions.
-
-A collection of values may be specified under a single key by passing a \refstruct{pmix_value_t} containing an array of type \refstruct{pmix_data_array_t}, with each array element containing its own object.
-
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_value \{
-    pmix_data_type_t type;
-    union \{
-        bool flag;
-        uint8_t byte;
-        char *string;
-        size_t size;
-        pid_t pid;
-        int integer;
-        int8_t int8;
-        int16_t int16;
-        int32_t int32;
-        int64_t int64;
-        unsigned int uint;
-        uint8_t uint8;
-        uint16_t uint16;
-        uint32_t uint32;
-        uint64_t uint64;
-        float fval;
-        double dval;
-        struct timeval tv;
-        time_t time;
-        pmix_status_t status;
-        pmix_rank_t rank;
-        pmix_proc_t *proc;
-        pmix_byte_object_t bo;
-        pmix_persistence_t persist;
-        pmix_scope_t scope;
-        pmix_data_range_t range;
-        pmix_proc_state_t state;
-        pmix_proc_info_t *pinfo;
-        pmix_data_array_t *darray;
-        void *ptr;
-        pmix_alloc_directive_t adir;
-        /**** DEPRECATED in PMIx 2 ****/
-        pmix_info_array_t *array;
-        /******************************/
-    \} data;
-\} pmix_value_t;
-\end{codepar}
-\cspecificend
 
 
 %%%%%%%%%%%
@@ -1105,11 +2133,13 @@ The PMIx standard defines a relatively small set of APIs and the caller may cust
 Additionally, attributes may be keys passed to \refapi{PMIx_Get} calls to access the specified values from the system.
 
 Each attribute is represented by a \var{key} string, and a type for the associated \var{value}.
-This section defines a set of \textbf{reserved} keys which are prefixed with \code{pmix.} to designate them as PMIx standard reserved keys.
-The application or associated libraries (e.g., \ac{MPI}) may choose to define additional attributes
+This section defines a set of \textbf{reserved} keys which are prefixed with \code{pmix.} to designate them as PMIx standard reserved keys. All definitions were introduced in version 1 of the standard unless otherwise marked.
+
+Applications or associated libraries (e.g., \ac{MPI}) may choose to define additional attributes.
 The attributes defined in this section are of the system and job as opposed to the attributes that the application (or associated libraries) might choose to expose.
 Due to this extensibility the \refapi{PMIx_Get} API will return \refconst{PMIX_ERR_NOT_FOUND} if the provided \var{key} cannot be found.
 
+Attributes added in this version of the standard are shown in \textit{\textbf{\color{magenta}magenta}} to distinguish them from those defined in prior versions, which are shown in \textit{\textbf{black}}. Deprecated attributes are shown in \textit{\textbf{\color{green!80!black}green}} and will be removed in future versions of the standard.
 
 \declareAttribute{PMIX_ATTR_UNDEF}{NULL}{NULL}{
 Constant representing an undefined attribute.
@@ -1122,22 +2152,22 @@ Constant representing an undefined attribute.
 These attributes are defined to assist the caller with initialization.
 
 %
-\declareAttribute{PMIX_EVENT_BASE}{"pmix.evbase"}{struct event_base *}{
+\declareNewAttribute{PMIX_EVENT_BASE}{"pmix.evbase"}{struct event_base *}{
 Pointer to libevent\footnote{\url{http://libevent.org/}} \code{event_base} to use in place of the internal progress thread.
 }
 
 %
-\declareAttribute{PMIX_SERVER_TOOL_SUPPORT}{"pmix.srvr.tool"}{bool}{
+\declareNewAttribute{PMIX_SERVER_TOOL_SUPPORT}{"pmix.srvr.tool"}{bool}{
 The host \ac{RM} wants to declare itself as willing to accept tool connection requests.
 }
 
 %
-\declareAttribute{PMIX_SERVER_REMOTE_CONNECTIONS}{"pmix.srvr.remote"}{bool}{
+\declareNewAttribute{PMIX_SERVER_REMOTE_CONNECTIONS}{"pmix.srvr.remote"}{bool}{
 Allow connections from remote tools. Forces the PMIx server to not exclusively use loopback device.
 }
 
 %
-\declareAttribute{PMIX_SERVER_SYSTEM_SUPPORT}{"pmix.srvr.sys"}{bool}{
+\declareNewAttribute{PMIX_SERVER_SYSTEM_SUPPORT}{"pmix.srvr.sys"}{bool}{
 The host \ac{RM} wants to declare itself as being the local system server for PMIx connection requests.
 }
 
@@ -1147,27 +2177,27 @@ Top-level temporary directory for all \emph{client} processes connected to this 
 }
 
 %
-\declareAttribute{PMIX_SYSTEM_TMPDIR}{"pmix.sys.tmpdir"}{char*}{
+\declareNewAttribute{PMIX_SYSTEM_TMPDIR}{"pmix.sys.tmpdir"}{char*}{
 Temporary directory for this system, and where a PMIx server that declares itself to be a system-level server will place a \emph{tool} rendezvous point and contact information.
 }
 
 %
-\declareAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
+\declareNewAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
 Registration is for the namespace only. Do not copy job data.
 }
 
 %
-\declareAttribute{PMIX_SERVER_ENABLE_MONITORING}{"pmix.srv.monitor"}{bool}{
+\declareNewAttribute{PMIX_SERVER_ENABLE_MONITORING}{"pmix.srv.monitor"}{bool}{
 Enable PMIx internal monitoring by the PMIx server.
 }
 
 %
-\declareAttribute{PMIX_SERVER_NSPACE}{"pmix.srv.nspace"}{char*}{
+\declareNewAttribute{PMIX_SERVER_NSPACE}{"pmix.srv.nspace"}{char*}{
 Name of the namespace to use for this PMIx server.
 }
 
 %
-\declareAttribute{PMIX_SERVER_RANK}{"pmix.srv.rank"}{pmix_rank_t}{
+\declareNewAttribute{PMIX_SERVER_RANK}{"pmix.srv.rank"}{pmix_rank_t}{
 Rank of this PMIx server
 }
 
@@ -1179,52 +2209,52 @@ Rank of this PMIx server
 These attributes are defined to assist PMIx-enabled tools to connect with the PMIx server.
 
 %
-\declareAttribute{PMIX_TOOL_NSPACE}{"pmix.tool.nspace"}{char*}{
+\declareNewAttribute{PMIX_TOOL_NSPACE}{"pmix.tool.nspace"}{char*}{
 Name of the namespace to use for this tool.
 }
 
 %
-\declareAttribute{PMIX_TOOL_RANK}{"pmix.tool.rank"}{uint32_t}{
+\declareNewAttribute{PMIX_TOOL_RANK}{"pmix.tool.rank"}{uint32_t}{
 Rank of this tool.
 }
 
 %
-\declareAttribute{PMIX_SERVER_PIDINFO}{"pmix.srvr.pidinfo"}{pid_t}{
+\declareNewAttribute{PMIX_SERVER_PIDINFO}{"pmix.srvr.pidinfo"}{pid_t}{
 \ac{PID} of the target PMIx server for a tool.
 }
 
 %
-\declareAttribute{PMIX_CONNECT_TO_SYSTEM}{"pmix.cnct.sys"}{bool}{
+\declareNewAttribute{PMIX_CONNECT_TO_SYSTEM}{"pmix.cnct.sys"}{bool}{
 The requestor requires that a connection be made only to a local, system-level PMIx server.
 }
 
 %
-\declareAttribute{PMIX_CONNECT_SYSTEM_FIRST}{"pmix.cnct.sys.first"}{bool}{
+\declareNewAttribute{PMIX_CONNECT_SYSTEM_FIRST}{"pmix.cnct.sys.first"}{bool}{
 Preferentially, look for a system-level PMIx server first.
 }
 
 %
-\declareAttribute{PMIX_SERVER_URI}{"pmix.srvr.uri"}{char*}{
+\declareNewAttribute{PMIX_SERVER_URI}{"pmix.srvr.uri"}{char*}{
 \ac{URI} of the PMIx server to be contacted.
 }
 
 %
-\declareAttribute{PMIX_SERVER_HOSTNAME}{"pmix.srvr.host"}{char*}{
+\declareNewAttribute{PMIX_SERVER_HOSTNAME}{"pmix.srvr.host"}{char*}{
 Host where target PMIx server is located.
 }
 
 %
-\declareAttribute{PMIX_CONNECT_MAX_RETRIES}{"pmix.tool.mretries"}{uint32_t}{
+\declareNewAttribute{PMIX_CONNECT_MAX_RETRIES}{"pmix.tool.mretries"}{uint32_t}{
 Maximum number of times to try to connect to PMIx server.
 }
 
 %
-\declareAttribute{PMIX_CONNECT_RETRY_DELAY}{"pmix.tool.retry"}{uint32_t}{
+\declareNewAttribute{PMIX_CONNECT_RETRY_DELAY}{"pmix.tool.retry"}{uint32_t}{
 Time in seconds between connection attempts to a PMIx server.
 }
 
 %
-\declareAttribute{PMIX_TOOL_DO_NOT_CONNECT}{"pmix.tool.nocon"}{bool}{
+\declareNewAttribute{PMIX_TOOL_DO_NOT_CONNECT}{"pmix.tool.nocon"}{bool}{
 The tool wants to use internal PMIx support, but does not want to connect to a PMIx server.
 }
 
@@ -1251,37 +2281,37 @@ Path to shared memory data storage (dstore) files.
 }
 
 %
-\declareAttribute{PMIX_VERSION_INFO}{"pmix.version"}{char*}{
+\declareNewAttribute{PMIX_VERSION_INFO}{"pmix.version"}{char*}{
 PMIx version of contractor.
 }
 
 %
-\declareAttribute{PMIX_PROGRAMMING_MODEL}{"pmix.pgm.model"}{char*}{
+\declareNewAttribute{PMIX_PROGRAMMING_MODEL}{"pmix.pgm.model"}{char*}{
 Programming model being initialized (e.g., ``MPI'' or ``OpenMP'')
 }
 
 %
-\declareAttribute{PMIX_MODEL_LIBRARY_NAME}{"pmix.mdl.name"}{char*}{
+\declareNewAttribute{PMIX_MODEL_LIBRARY_NAME}{"pmix.mdl.name"}{char*}{
 Programming model implementation ID (e.g., ``OpenMPI'' or ``MPICH'')
 }
 
 %
-\declareAttribute{PMIX_MODEL_LIBRARY_VERSION}{"pmix.mld.vrs"}{char*}{
+\declareNewAttribute{PMIX_MODEL_LIBRARY_VERSION}{"pmix.mld.vrs"}{char*}{
 Programming model version string (e.g., ``2.1.1'')
 }
 
 %
-\declareAttribute{PMIX_THREADING_MODEL}{"pmix.threads"}{char*}{
+\declareNewAttribute{PMIX_THREADING_MODEL}{"pmix.threads"}{char*}{
 Threading model used (e.g., ``pthreads'')
 }
 
 %
-\declareAttribute{PMIX_REQUESTOR_IS_TOOL}{"pmix.req.tool"}{bool}{
+\declareNewAttribute{PMIX_REQUESTOR_IS_TOOL}{"pmix.req.tool"}{bool}{
 The requesting process is a PMIx tool.
 }
 
 %
-\declareAttribute{PMIX_REQUESTOR_IS_CLIENT}{"pmix.req.client"}{bool}{
+\declareNewAttribute{PMIX_REQUESTOR_IS_CLIENT}{"pmix.req.client"}{bool}{
 The requesting process is a PMIx client.
 }
 
@@ -1293,17 +2323,17 @@ The requesting process is a PMIx client.
 These attributes are used to describe a UNIX socket for rendezvous with the local \ac{RM}.
 
 %
-\declareAttribute{PMIX_USOCK_DISABLE}{"pmix.usock.disable"}{bool}{
+\declareNewAttribute{PMIX_USOCK_DISABLE}{"pmix.usock.disable"}{bool}{
 Disable legacy UNIX socket (usock) support
 }
 
 %
-\declareAttribute{PMIX_SOCKET_MODE}{"pmix.sockmode"}{uint32_t}{
+\declareNewAttribute{PMIX_SOCKET_MODE}{"pmix.sockmode"}{uint32_t}{
 POSIX \var{mode_t} (9 bits valid)
 }
 
 %
-\declareAttribute{PMIX_SINGLE_LISTENER}{"pmix.sing.listnr"}{bool}{
+\declareNewAttribute{PMIX_SINGLE_LISTENER}{"pmix.sing.listnr"}{bool}{
 Use only one rendezvous socket, letting priorities and/or environment parameters select the active transport.
 }
 
@@ -1315,42 +2345,42 @@ Use only one rendezvous socket, letting priorities and/or environment parameters
 These attributes are used to describe a TCP socket for rendezvous with the local \ac{RM}.
 
 %
-\declareAttribute{PMIX_TCP_REPORT_URI}{"pmix.tcp.repuri"}{char*}{
+\declareNewAttribute{PMIX_TCP_REPORT_URI}{"pmix.tcp.repuri"}{char*}{
 If provided, directs that the TCP \ac{URI} be reported and indicates the desired method of reporting: \code{'-'} for stdout, \code{'+'} for stderr, or filename.
 }
 
 %
-\declareAttribute{PMIX_TCP_URI}{"pmix.tcp.uri"}{char*}{
+\declareNewAttribute{PMIX_TCP_URI}{"pmix.tcp.uri"}{char*}{
 The \ac{URI} of the PMIx server to connect to, or a file name containing it in the form of \code{file:<name of file containing it>}.
 }
 
 %
-\declareAttribute{PMIX_TCP_IF_INCLUDE}{"pmix.tcp.ifinclude"}{char*}{
+\declareNewAttribute{PMIX_TCP_IF_INCLUDE}{"pmix.tcp.ifinclude"}{char*}{
 Comma-delimited list of devices and/or \ac{CIDR} notation to include when establishing the TCP connection.
 }
 
 %
-\declareAttribute{PMIX_TCP_IF_EXCLUDE}{"pmix.tcp.ifexclude"}{char*}{
+\declareNewAttribute{PMIX_TCP_IF_EXCLUDE}{"pmix.tcp.ifexclude"}{char*}{
 Comma-delimited list of devices and/or \ac{CIDR} notation to exclude when establishing the TCP connection.
 }
 
 %
-\declareAttribute{PMIX_TCP_IPV4_PORT}{"pmix.tcp.ipv4"}{int}{
+\declareNewAttribute{PMIX_TCP_IPV4_PORT}{"pmix.tcp.ipv4"}{int}{
 The IPv4 port to be used.
 }
 
 %
-\declareAttribute{PMIX_TCP_IPV6_PORT}{"pmix.tcp.ipv6"}{int}{
+\declareNewAttribute{PMIX_TCP_IPV6_PORT}{"pmix.tcp.ipv6"}{int}{
 The IPv6 port to be used.
 }
 
 %
-\declareAttribute{PMIX_TCP_DISABLE_IPV4}{"pmix.tcp.disipv4"}{bool}{
+\declareNewAttribute{PMIX_TCP_DISABLE_IPV4}{"pmix.tcp.disipv4"}{bool}{
 Set to \code{true} to disable IPv4 family of addresses.
 }
 
 %
-\declareAttribute{PMIX_TCP_DISABLE_IPV6}{"pmix.tcp.disipv6"}{bool}{
+\declareNewAttribute{PMIX_TCP_DISABLE_IPV6}{"pmix.tcp.disipv6"}{bool}{
 Set to \code{true} to disable IPv6 family of addresses.
 }
 
@@ -1362,7 +2392,7 @@ Set to \code{true} to disable IPv6 family of addresses.
 These attributes are used to define the behavior of the \ac{GDS} used to manage key/value pairs.
 
 %
-\declareAttribute{PMIX_GDS_MODULE}{"pmix.gds.mod"}{char*}{
+\declareNewAttribute{PMIX_GDS_MODULE}{"pmix.gds.mod"}{char*}{
 Comma-delimited string of desired modules.
 }
 
@@ -1416,7 +2446,7 @@ Full path to the subdirectory under \refattr{PMIX_NSDIR} assigned to the process
 }
 
 %
-\declareAttribute{PMIX_TDIR_RMCLEAN}{"pmix.tdir.rmclean"}{bool}{
+\declareNewAttribute{PMIX_TDIR_RMCLEAN}{"pmix.tdir.rmclean"}{bool}{
 Resource Manager will clean session directories
 }
 
@@ -1428,12 +2458,12 @@ Resource Manager will clean session directories
 These attributes are used to describe information about relative ranks as assigned by the \ac{RM}.
 
 %
-\declareAttribute{PMIX_PROCID}{"pmix.procid"}{pmix_proc_t}{
+\declareNewAttribute{PMIX_PROCID}{"pmix.procid"}{pmix_proc_t}{
 Process identifier
 }
 
 %
-\declareAttribute{PMIX_NSPACE}{"pmix.nspace"}{char*}{
+\declareNewAttribute{PMIX_NSPACE}{"pmix.nspace"}{char*}{
 Namespace of the job.
 }
 
@@ -1488,12 +2518,12 @@ Lowest rank in this application within this job.
 }
 
 %
-\declareAttribute{PMIX_PROC_PID}{"pmix.ppid"}{pid_t}{
+\declareNewAttribute{PMIX_PROC_PID}{"pmix.ppid"}{pid_t}{
 \ac{PID} of specified process.
 }
 
 %
-\declareAttribute{PMIX_SESSION_ID}{"pmix.session.id"}{uint32_t}{
+\declareNewAttribute{PMIX_SESSION_ID}{"pmix.session.id"}{uint32_t}{
 Session identifier.
 }
 
@@ -1503,7 +2533,7 @@ Comma-delimited list of nodes running processes for the specified namespace.
 }
 
 %
-\declareAttribute{PMIX_ALLOCATED_NODELIST}{"pmix.alist"}{char*}{
+\declareNewAttribute{PMIX_ALLOCATED_NODELIST}{"pmix.alist"}{char*}{
 Comma-delimited list of all nodes in this allocation regardless of whether or not they currently host processes.
 }
 
@@ -1538,12 +2568,12 @@ Colon-delimited cpusets of local peers within the specified namespace.
 }
 
 %
-\declareAttribute{PMIX_LOCALITY}{"pmix.loc"}{uint16_t}{
+\declareNewAttribute{PMIX_LOCALITY}{"pmix.loc"}{uint16_t}{
 Relative locality of two processes.
 }
 
 %
-\declareAttribute{PMIX_PARENT_ID}{"pmix.parent"}{pmix_proc_t}{
+\declareNewAttribute{PMIX_PARENT_ID}{"pmix.parent"}{pmix_proc_t}{
 Process identifier of the parent process of the calling process.
 }
 
@@ -1565,12 +2595,12 @@ Number of processes in this job.
 }
 
 %
-\declareAttribute{PMIX_JOB_NUM_APPS}{"pmix.job.napps"}{uint32_t}{
+\declareNewAttribute{PMIX_JOB_NUM_APPS}{"pmix.job.napps"}{uint32_t}{
 Number of applications in this job.
 }
 
 %
-\declareAttribute{PMIX_APP_SIZE}{"pmix.app.size"}{uint32_t}{
+\declareNewAttribute{PMIX_APP_SIZE}{"pmix.app.size"}{uint32_t}{
 Number of processes in this application.
 }
 
@@ -1590,7 +2620,7 @@ Maximum number of processes for this job.
 }
 
 %
-\declareAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
+\declareNewAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
 Number of nodes in this namespace.
 }
 
@@ -1602,17 +2632,17 @@ Number of nodes in this namespace.
 These attributes are used to describe memory available and used in the system.
 
 %
-\declareAttribute{PMIX_AVAIL_PHYS_MEMORY}{"pmix.pmem"}{uint64_t}{
+\declareNewAttribute{PMIX_AVAIL_PHYS_MEMORY}{"pmix.pmem"}{uint64_t}{
 Total available physical memory on this node.
 }
 
 %
-\declareAttribute{PMIX_DAEMON_MEMORY}{"pmix.dmn.mem"}{float}{
+\declareNewAttribute{PMIX_DAEMON_MEMORY}{"pmix.dmn.mem"}{float}{
 Megabytes of memory currently used by the \ac{RM} daemon.
 }
 
 %
-\declareAttribute{PMIX_CLIENT_AVG_MEMORY}{"pmix.cl.mem.avg"}{float}{
+\declareNewAttribute{PMIX_CLIENT_AVG_MEMORY}{"pmix.cl.mem.avg"}{float}{
 Average Megabytes of memory used by client processes.
 }
 
@@ -1644,12 +2674,12 @@ Pointer to the PMIx client's internal hwloc topology object.
 }
 
 %
-\declareAttribute{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
+\declareNewAttribute{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
 Topology signature string.
 }
 
 %
-\declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
+\declareNewAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
 String describing a process's bound location.
 The string is of the form:\\
 \code{NM\%s:SK\%s:L3\%s:L2\%s:L1\%s:CR\%s:HT\%s}\\
@@ -1668,27 +2698,27 @@ This means numa node \code{0}, socket \code{0}, L3 caches \code{0,1,2,3,4}, L2 c
 }
 
 %
-\declareAttribute{PMIX_HWLOC_SHMEM_ADDR}{"pmix.hwlocaddr"}{size_t}{
+\declareNewAttribute{PMIX_HWLOC_SHMEM_ADDR}{"pmix.hwlocaddr"}{size_t}{
 Address of the hwloc shared memory segment.
 }
 
 %
-\declareAttribute{PMIX_HWLOC_SHMEM_SIZE}{"pmix.hwlocsize"}{size_t}{
+\declareNewAttribute{PMIX_HWLOC_SHMEM_SIZE}{"pmix.hwlocsize"}{size_t}{
 Size of the hwloc shared memory segment.
 }
 
 %
-\declareAttribute{PMIX_HWLOC_SHMEM_FILE}{"pmix.hwlocfile"}{char*}{
+\declareNewAttribute{PMIX_HWLOC_SHMEM_FILE}{"pmix.hwlocfile"}{char*}{
 Path to the hwloc shared memory file.
 }
 
 %
-\declareAttribute{PMIX_HWLOC_XML_V1}{"pmix.hwlocxml1"}{char*}{
+\declareNewAttribute{PMIX_HWLOC_XML_V1}{"pmix.hwlocxml1"}{char*}{
 \ac{XML} representation of local topology using hwloc's v1.x format.
 }
 
 %
-\declareAttribute{PMIX_HWLOC_XML_V2}{"pmix.hwlocxml2"}{char*}{
+\declareNewAttribute{PMIX_HWLOC_XML_V2}{"pmix.hwlocxml2"}{char*}{
 \ac{XML} representation of local topology using hwloc's v2.x format.
 }
 
@@ -1711,7 +2741,7 @@ The timeout parameter can help avoid ``hangs'' due to programming errors that pr
 }
 
 %
-\declareAttribute{PMIX_IMMEDIATE}{"pmix.immediate"}{bool}{
+\declareNewAttribute{PMIX_IMMEDIATE}{"pmix.immediate"}{bool}{
 Specified operation should immediately return an error from the PMIx server if the requested data cannot be found - do not request it from the host \ac{RM}.
 }
 
@@ -1746,7 +2776,7 @@ Value for calls to \refapi{PMIx_Publish}.
 }
 
 %
-\declareAttribute{PMIX_DATA_SCOPE}{"pmix.scope"}{pmix_scope_t}{
+\declareNewAttribute{PMIX_DATA_SCOPE}{"pmix.scope"}{pmix_scope_t}{
 Scope of the data to be found in a \refapi{PMIx_Get} call.
 }
 
@@ -1756,32 +2786,32 @@ Look only in the client's local data store for the requested value - do not requ
 }
 
 %
-\declareAttribute{PMIX_EMBED_BARRIER}{"pmix.embed.barrier"}{bool}{
+\declareNewAttribute{PMIX_EMBED_BARRIER}{"pmix.embed.barrier"}{bool}{
 Execute a blocking fence operation before executing the specified operation.
 By default, \refapi{PMIx_Finalize} does not include an internal barrier operation.
 This attribute directs \refapi{PMIx_Finalize} to execute a barrier as part of the finalize operation.
 }
 
 %
-\declareAttribute{PMIX_JOB_TERM_STATUS}{"pmix.job.term.status"}{pmix_status_t}{
+\declareNewAttribute{PMIX_JOB_TERM_STATUS}{"pmix.job.term.status"}{pmix_status_t}{
 Status to be returned upon job termination.
 }
 
 %
-\declareAttribute{PMIX_PROC_STATE_STATUS}{"pmix.proc.state"}{pmix_proc_state_t}{
+\declareNewAttribute{PMIX_PROC_STATE_STATUS}{"pmix.proc.state"}{pmix_proc_state_t}{
 Process state
 }
 
 
 %%%%%%%%%%%
-\subsection{Sever-to-PMIx library attributes}
+\subsection{Server-to-PMIx library attributes}
 \label{api:struct:attributes:server2cl}
 
-Attributes used by the host PMIx server to pass data to the PMIx server's PMIx library.
+Attributes used by the host environment to pass data to its PMIx server library.
 The data will then be parsed and provided to the local PMIx clients.
 
 %
-\declareAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
+\declareNewAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
 Registration is for this namespace only, do not copy job data.
 }
 
@@ -1806,18 +2836,18 @@ Process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation.
 }
 
 %
-\declareAttribute{PMIX_APP_MAP_TYPE}{"pmix.apmap.type"}{char*}{
+\declareNewAttribute{PMIX_APP_MAP_TYPE}{"pmix.apmap.type"}{char*}{
 Type of mapping used to layout the application (e.g., \code{cyclic}).
 }
 
 %
-\declareAttribute{PMIX_APP_MAP_REGEX}{"pmix.apmap.regex"}{char*}{
+\declareNewAttribute{PMIX_APP_MAP_REGEX}{"pmix.apmap.regex"}{char*}{
 Regular expression describing the result of the process mapping.
 }
 
 
 %%%%%%%%%%%
-\subsection{Sever-to-Client attributes}
+\subsection{Srever-to-Client attributes}
 \label{api:struct:attributes:server2client}
 
 Attributes used internally to communicate data from the PMIx server to the PMIx client.
@@ -1839,94 +2869,138 @@ Packed blob of process location.
 
 Attributes to support event registration and notification.
 
+\adviceuserstart
+The event handler subsystem defined in the \ac{PMIx} \textit{ad hoc} version 1 Standard was completely overhauled in version 2 to resolve design flaws. Deprecated attributes shown below were therefore removed in the version 2 Standard.
+\adviceuserend
+
 %
-\declareAttribute{PMIX_EVENT_HDLR_NAME}{"pmix.evname"}{char*}{
+\declareDepAttribute{PMIX_ERROR_NAME}{"pmix.errname"}{pmix_status_t}{
+Specific error to be notified
+}
+%
+\declareDepAttribute{PMIX_ERROR_GROUP_COMM}{"pmix.errgroup.comm"}{bool}{
+Set true to get comm errors notification
+}
+%
+\declareDepAttribute{PMIX_ERROR_GROUP_ABORT}{"pmix.errgroup.abort"}{bool}{
+Set true to get abort errors notification
+}
+%
+\declareDepAttribute{PMIX_ERROR_GROUP_MIGRATE}{"pmix.errgroup.migrate"}{bool}{
+Set true to get migrate errors notification
+}
+%
+\declareDepAttribute{PMIX_ERROR_GROUP_RESOURCE}{"pmix.errgroup.resource"}{bool}{
+Set true to get resource errors notification
+}
+%
+\declareDepAttribute{PMIX_ERROR_GROUP_SPAWN}{"pmix.errgroup.spawn"}{bool}{
+Set true to get spawn errors notification
+}
+%
+\declareDepAttribute{PMIX_ERROR_GROUP_NODE}{"pmix.errgroup.node"}{bool}{
+Set true to get node status notification
+}
+%
+\declareDepAttribute{PMIX_ERROR_GROUP_LOCAL}{"pmix.errgroup.local"}{bool}{
+Set true to get local errors notification
+}
+%
+\declareDepAttribute{PMIX_ERROR_GROUP_GENERAL}{"pmix.errgroup.gen"}{bool}{
+Set true to get notified of generic errors
+}
+%
+\declareDepAttribute{PMIX_ERROR_HANDLER_ID}{"pmix.errhandler.id"}{int}{
+Errhandler reference id of notification being reported
+}
+%
+\declareNewAttribute{PMIX_EVENT_HDLR_NAME}{"pmix.evname"}{char*}{
 String name identifying this handler.
 }
 
 %
-\declareAttribute{PMIX_EVENT_JOB_LEVEL}{"pmix.evjob"}{bool}{
+\declareNewAttribute{PMIX_EVENT_JOB_LEVEL}{"pmix.evjob"}{bool}{
 Register for job-specific events only.
 }
 
 %
-\declareAttribute{PMIX_EVENT_ENVIRO_LEVEL}{"pmix.evenv"}{bool}{
+\declareNewAttribute{PMIX_EVENT_ENVIRO_LEVEL}{"pmix.evenv"}{bool}{
 Register for environment events only.
 }
 
 %
-\declareAttribute{PMIX_EVENT_HDLR_FIRST}{"pmix.evfirst"}{bool}{
+\declareNewAttribute{PMIX_EVENT_HDLR_FIRST}{"pmix.evfirst"}{bool}{
 Invoke this event handler before any other handlers.
 }
 
 %
-\declareAttribute{PMIX_EVENT_HDLR_LAST}{"pmix.evlast"}{bool}{
+\declareNewAttribute{PMIX_EVENT_HDLR_LAST}{"pmix.evlast"}{bool}{
 Invoke this event handler after all other handlers have been called.
 }
 
 %
-\declareAttribute{PMIX_EVENT_HDLR_FIRST_IN_CATEGORY}{"pmix.evfirstcat"}{bool}{
+\declareNewAttribute{PMIX_EVENT_HDLR_FIRST_IN_CATEGORY}{"pmix.evfirstcat"}{bool}{
 Invoke this event handler before any other handlers in this category.
 }
 
 %
-\declareAttribute{PMIX_EVENT_HDLR_LAST_IN_CATEGORY}{"pmix.evlastcat"}{bool}{
+\declareNewAttribute{PMIX_EVENT_HDLR_LAST_IN_CATEGORY}{"pmix.evlastcat"}{bool}{
 Invoke this event handler after all other handlers in this category have been called.
 }
 
 %
-\declareAttribute{PMIX_EVENT_HDLR_BEFORE}{"pmix.evbefore"}{char*}{
+\declareNewAttribute{PMIX_EVENT_HDLR_BEFORE}{"pmix.evbefore"}{char*}{
 Put this event handler immediately before the one specified in the \code{(char*)} value.
 }
 
 %
-\declareAttribute{PMIX_EVENT_HDLR_AFTER}{"pmix.evafter"}{char*}{
+\declareNewAttribute{PMIX_EVENT_HDLR_AFTER}{"pmix.evafter"}{char*}{
 Put this event handler immediately after the one specified in the \code{(char*)} value.
 }
 
 %
-\declareAttribute{PMIX_EVENT_HDLR_PREPEND}{"pmix.evprepend"}{bool}{
+\declareNewAttribute{PMIX_EVENT_HDLR_PREPEND}{"pmix.evprepend"}{bool}{
 Prepend this handler to the precedence list within its category.
 }
 
 %
-\declareAttribute{PMIX_EVENT_HDLR_APPEND}{"pmix.evappend"}{bool}{
+\declareNewAttribute{PMIX_EVENT_HDLR_APPEND}{"pmix.evappend"}{bool}{
 Append this handler to the precedence list within its category.
 }
 
 %
-\declareAttribute{PMIX_EVENT_CUSTOM_RANGE}{"pmix.evrange"}{pmix_data_array_t*}{
+\declareNewAttribute{PMIX_EVENT_CUSTOM_RANGE}{"pmix.evrange"}{pmix_data_array_t*}{
 Array of \refstruct{pmix_proc_t} defining range of event notification.
 }
 
 %
-\declareAttribute{PMIX_EVENT_AFFECTED_PROC}{"pmix.evproc"}{pmix_proc_t}{
+\declareNewAttribute{PMIX_EVENT_AFFECTED_PROC}{"pmix.evproc"}{pmix_proc_t}{
 The single process that was affected.
 }
 
 %
-\declareAttribute{PMIX_EVENT_AFFECTED_PROCS}{"pmix.evaffected"}{pmix_data_array_t*}{
+\declareNewAttribute{PMIX_EVENT_AFFECTED_PROCS}{"pmix.evaffected"}{pmix_data_array_t*}{
 Array of \refstruct{pmix_proc_t} defining affected processes.
 }
 
 %
-\declareAttribute{PMIX_EVENT_NON_DEFAULT}{"pmix.evnondef"}{bool}{
+\declareNewAttribute{PMIX_EVENT_NON_DEFAULT}{"pmix.evnondef"}{bool}{
 Event is not to be delivered to default event handlers.
 }
 
 %
-\declareAttribute{PMIX_EVENT_RETURN_OBJECT}{"pmix.evobject"}{void *}{
+\declareNewAttribute{PMIX_EVENT_RETURN_OBJECT}{"pmix.evobject"}{void *}{
 Object to be returned whenever the registered callback function \code{cbfunc} is invoked.
 The object will \emph{only} be returned to the process that registered it.
 }
 
 %
-\declareAttribute{PMIX_EVENT_DO_NOT_CACHE}{"pmix.evnocache"}{bool}{
+\declareNewAttribute{PMIX_EVENT_DO_NOT_CACHE}{"pmix.evnocache"}{bool}{
 Instruct the PMIx server not to cache the event.
 }
 
 %
-\declareAttribute{PMIX_EVENT_SILENT_TERMINATION}{"pmix.evsilentterm"}{bool}{
+\declareNewAttribute{PMIX_EVENT_SILENT_TERMINATION}{"pmix.evsilentterm"}{bool}{
 Do not generate an event when this job normally terminates.
 }
 
@@ -1938,37 +3012,37 @@ Do not generate an event when this job normally terminates.
 Attributes to support fault tolerance behaviors.
 
 %
-\declareAttribute{PMIX_EVENT_TERMINATE_SESSION}{"pmix.evterm.sess"}{bool}{
+\declareNewAttribute{PMIX_EVENT_TERMINATE_SESSION}{"pmix.evterm.sess"}{bool}{
 The \ac{RM} intends to terminate this session.
 }
 
 %
-\declareAttribute{PMIX_EVENT_TERMINATE_JOB}{"pmix.evterm.job"}{bool}{
+\declareNewAttribute{PMIX_EVENT_TERMINATE_JOB}{"pmix.evterm.job"}{bool}{
 The \ac{RM} intends to terminate this job.
 }
 
 %
-\declareAttribute{PMIX_EVENT_TERMINATE_NODE}{"pmix.evterm.node"}{bool}{
+\declareNewAttribute{PMIX_EVENT_TERMINATE_NODE}{"pmix.evterm.node"}{bool}{
 The \ac{RM} intends to terminate all processes on this node.
 }
 
 %
-\declareAttribute{PMIX_EVENT_TERMINATE_PROC}{"pmix.evterm.proc"}{bool}{
+\declareNewAttribute{PMIX_EVENT_TERMINATE_PROC}{"pmix.evterm.proc"}{bool}{
 The \ac{RM} intends to terminate just this process.
 }
 
 %
-\declareAttribute{PMIX_EVENT_ACTION_TIMEOUT}{"pmix.evtimeout"}{int}{
+\declareNewAttribute{PMIX_EVENT_ACTION_TIMEOUT}{"pmix.evtimeout"}{int}{
 The time in seconds before the \ac{RM} will execute error response.
 }
 
 %
-\declareAttribute{PMIX_EVENT_NO_TERMINATION}{"pmix.evnoterm"}{bool}{
+\declareNewAttribute{PMIX_EVENT_NO_TERMINATION}{"pmix.evnoterm"}{bool}{
 Indicates that the handler has satisfactorily handled the event and believes termination of the application is not required.
 }
 
 %
-\declareAttribute{PMIX_EVENT_WANT_TERMINATION}{"pmix.evterm"}{bool}{
+\declareNewAttribute{PMIX_EVENT_WANT_TERMINATION}{"pmix.evterm"}{bool}{
 Indicates that the handler has determined that the application should be terminated
 }
 
@@ -2065,98 +3139,98 @@ Spawned process rank that is to receive \code{stdin}.
 }
 
 %
-\declareAttribute{PMIX_FWD_STDIN}{"pmix.fwd.stdin"}{bool}{
+\declareNewAttribute{PMIX_FWD_STDIN}{"pmix.fwd.stdin"}{bool}{
 Forward this process's \code{stdin} to the designated process.
 }
 
 %
-\declareAttribute{PMIX_FWD_STDOUT}{"pmix.fwd.stdout"}{bool}{
+\declareNewAttribute{PMIX_FWD_STDOUT}{"pmix.fwd.stdout"}{bool}{
 Forward \code{stdout} from spawned processes to this process.
 }
 
 %
-\declareAttribute{PMIX_FWD_STDERR}{"pmix.fwd.stderr"}{bool}{
+\declareNewAttribute{PMIX_FWD_STDERR}{"pmix.fwd.stderr"}{bool}{
 Forward \code{stderr} from spawned processes to this process.
 }
 
 %
-\declareAttribute{PMIX_DEBUGGER_DAEMONS}{"pmix.debugger"}{bool}{
+\declareNewAttribute{PMIX_DEBUGGER_DAEMONS}{"pmix.debugger"}{bool}{
 Spawned application consists of debugger daemons.
 }
 
 %
-\declareAttribute{PMIX_COSPAWN_APP}{"pmix.cospawn"}{bool}{
+\declareNewAttribute{PMIX_COSPAWN_APP}{"pmix.cospawn"}{bool}{
 Designated application is to be spawned as a disconnected job.
-Meaning that it is not part of the ``comm_world'' of the job.
+Meaning that it is not part of the ``comm_world'' of the parent process.
 }
 
 %
-\declareAttribute{PMIX_SET_SESSION_CWD}{"pmix.ssncwd"}{bool}{
+\declareNewAttribute{PMIX_SET_SESSION_CWD}{"pmix.ssncwd"}{bool}{
 Set the application's current working directory to the session working directory assigned by the \ac{RM}.
 }
 
 %
-\declareAttribute{PMIX_TAG_OUTPUT}{"pmix.tagout"}{bool}{
+\declareNewAttribute{PMIX_TAG_OUTPUT}{"pmix.tagout"}{bool}{
 Tag application output with the identity of the source process.
 }
 
 %
-\declareAttribute{PMIX_TIMESTAMP_OUTPUT}{"pmix.tsout"}{bool}{
+\declareNewAttribute{PMIX_TIMESTAMP_OUTPUT}{"pmix.tsout"}{bool}{
 Timestamp output from applications.
 }
 
 %
-\declareAttribute{PMIX_MERGE_STDERR_STDOUT}{"pmix.mergeerrout"}{bool}{
+\declareNewAttribute{PMIX_MERGE_STDERR_STDOUT}{"pmix.mergeerrout"}{bool}{
 Merge \code{stdout} and \code{stderr} streams from application processes.
 }
 
 %
-\declareAttribute{PMIX_OUTPUT_TO_FILE}{"pmix.outfile"}{char*}{
+\declareNewAttribute{PMIX_OUTPUT_TO_FILE}{"pmix.outfile"}{char*}{
 Output application output to the specified file.
 }
 
 %
-\declareAttribute{PMIX_INDEX_ARGV}{"pmix.indxargv"}{bool}{
+\declareNewAttribute{PMIX_INDEX_ARGV}{"pmix.indxargv"}{bool}{
 Mark the \code{argv} with the rank of the process.
 }
 
 %
-\declareAttribute{PMIX_CPUS_PER_PROC}{"pmix.cpuperproc"}{uint32_t}{
+\declareNewAttribute{PMIX_CPUS_PER_PROC}{"pmix.cpuperproc"}{uint32_t}{
 Number of cpus to assign to each rank.
 }
 
 %
-\declareAttribute{PMIX_NO_PROCS_ON_HEAD}{"pmix.nolocal"}{bool}{
+\declareNewAttribute{PMIX_NO_PROCS_ON_HEAD}{"pmix.nolocal"}{bool}{
 Do not place processes on the head node.
 }
 
 %
-\declareAttribute{PMIX_NO_OVERSUBSCRIBE}{"pmix.noover"}{bool}{
+\declareNewAttribute{PMIX_NO_OVERSUBSCRIBE}{"pmix.noover"}{bool}{
 Do not oversubscribe the cpus.
 }
 
 %
-\declareAttribute{PMIX_REPORT_BINDINGS}{"pmix.repbind"}{bool}{
+\declareNewAttribute{PMIX_REPORT_BINDINGS}{"pmix.repbind"}{bool}{
 Report bindings of the individual processes.
 }
 
 %
-\declareAttribute{PMIX_CPU_LIST}{"pmix.cpulist"}{char*}{
+\declareNewAttribute{PMIX_CPU_LIST}{"pmix.cpulist"}{char*}{
 List of cpus to use for this job.
 }
 
 %
-\declareAttribute{PMIX_JOB_RECOVERABLE}{"pmix.recover"}{bool}{
+\declareNewAttribute{PMIX_JOB_RECOVERABLE}{"pmix.recover"}{bool}{
 Application supports recoverable operations.
 }
 
 %
-\declareAttribute{PMIX_JOB_CONTINUOUS}{"pmix.continuous"}{bool}{
+\declareNewAttribute{PMIX_JOB_CONTINUOUS}{"pmix.continuous"}{bool}{
 Application is continuous, all failed processes should be immediately restarted.
 }
 
 %
-\declareAttribute{PMIX_MAX_RESTARTS}{"pmix.maxrestarts"}{uint32_t}{
+\declareNewAttribute{PMIX_MAX_RESTARTS}{"pmix.maxrestarts"}{uint32_t}{
 Maximum number of times to restart a job.
 }
 
@@ -2168,77 +3242,77 @@ Maximum number of times to restart a job.
 Attributes used to describe \refapi{PMIx_Query_info_nb} behavior.
 
 %
-\declareAttribute{PMIX_QUERY_NAMESPACES}{"pmix.qry.ns"}{char*}{
+\declareNewAttribute{PMIX_QUERY_NAMESPACES}{"pmix.qry.ns"}{char*}{
 Request a comma-delimited list of active namespaces.
 }
 
 %
-\declareAttribute{PMIX_QUERY_JOB_STATUS}{"pmix.qry.jst"}{pmix_status_t}{
+\declareNewAttribute{PMIX_QUERY_JOB_STATUS}{"pmix.qry.jst"}{pmix_status_t}{
 Status of a specified, currently executing job.
 }
 
 %
-\declareAttribute{PMIX_QUERY_QUEUE_LIST}{"pmix.qry.qlst"}{char*}{
+\declareNewAttribute{PMIX_QUERY_QUEUE_LIST}{"pmix.qry.qlst"}{char*}{
 Request a comma-delimited list of scheduler queues.
 }
 
 %
-\declareAttribute{PMIX_QUERY_QUEUE_STATUS}{"pmix.qry.qst"}{TBD}{
+\declareNewAttribute{PMIX_QUERY_QUEUE_STATUS}{"pmix.qry.qst"}{TBD}{
 Status of a specified scheduler queue.
 }
 
 %
-\declareAttribute{PMIX_QUERY_PROC_TABLE}{"pmix.qry.ptable"}{char*}{
+\declareNewAttribute{PMIX_QUERY_PROC_TABLE}{"pmix.qry.ptable"}{char*}{
 Input namespace of the job whose information is being requested returns (\refstruct{pmix_data_array_t}) an array of \refstruct{pmix_proc_info_t}.
 }
 
 %
-\declareAttribute{PMIX_QUERY_LOCAL_PROC_TABLE}{"pmix.qry.lptable"}{char*}{
+\declareNewAttribute{PMIX_QUERY_LOCAL_PROC_TABLE}{"pmix.qry.lptable"}{char*}{
 Input namespace of the job whose information is being requested returns (\refstruct{pmix_data_array_t}) an array of \refstruct{pmix_proc_info_t} for processes in job on same node.
 }
 
 %
-\declareAttribute{PMIX_QUERY_AUTHORIZATIONS}{"pmix.qry.auths"}{bool}{
+\declareNewAttribute{PMIX_QUERY_AUTHORIZATIONS}{"pmix.qry.auths"}{bool}{
 Return operations the PMIx tool is authorized to perform.
 }
 
 %
-\declareAttribute{PMIX_QUERY_SPAWN_SUPPORT}{"pmix.qry.spawn"}{bool}{
+\declareNewAttribute{PMIX_QUERY_SPAWN_SUPPORT}{"pmix.qry.spawn"}{bool}{
 Return a comma-delimited list of supported spawn attributes.
 }
 
 %
-\declareAttribute{PMIX_QUERY_DEBUG_SUPPORT}{"pmix.qry.debug"}{bool}{
+\declareNewAttribute{PMIX_QUERY_DEBUG_SUPPORT}{"pmix.qry.debug"}{bool}{
 Return a comma-delimited list of supported debug attributes.
 }
 
 %
-\declareAttribute{PMIX_QUERY_MEMORY_USAGE}{"pmix.qry.mem"}{bool}{
+\declareNewAttribute{PMIX_QUERY_MEMORY_USAGE}{"pmix.qry.mem"}{bool}{
 Return information on memory usage for the processes indicated in the qualifiers.
 }
 
 %
-\declareAttribute{PMIX_QUERY_LOCAL_ONLY}{"pmix.qry.local"}{bool}{
+\declareNewAttribute{PMIX_QUERY_LOCAL_ONLY}{"pmix.qry.local"}{bool}{
 Constrain the query to local information only.
 }
 
 %
-\declareAttribute{PMIX_QUERY_REPORT_AVG}{"pmix.qry.avg"}{bool}{
+\declareNewAttribute{PMIX_QUERY_REPORT_AVG}{"pmix.qry.avg"}{bool}{
 Report average values.
 }
 
 %
-\declareAttribute{PMIX_QUERY_REPORT_MINMAX}{"pmix.qry.minmax"}{bool}{
+\declareNewAttribute{PMIX_QUERY_REPORT_MINMAX}{"pmix.qry.minmax"}{bool}{
 Report minimum and maximum values.
 }
 
 %
-\declareAttribute{PMIX_QUERY_ALLOC_STATUS}{"pmix.query.alloc"}{char*}{
+\declareNewAttribute{PMIX_QUERY_ALLOC_STATUS}{"pmix.query.alloc"}{char*}{
 String identifier of the allocation whose status is being requested.
 }
 
 %
-\declareAttribute{PMIX_TIME_REMAINING}{"pmix.time.remaining"}{char*}{
+\declareNewAttribute{PMIX_TIME_REMAINING}{"pmix.time.remaining"}{char*}{
 Query number of seconds (\code{uint32_t}) remaining in allocation for the specified namespace.
 }
 
@@ -2250,43 +3324,43 @@ Query number of seconds (\code{uint32_t}) remaining in allocation for the specif
 Attributes used to describe \refapi{PMIx_Log_nb} behavior.
 
 %
-\declareAttribute{PMIX_LOG_STDERR}{"pmix.log.stderr"}{char*}{
+\declareNewAttribute{PMIX_LOG_STDERR}{"pmix.log.stderr"}{char*}{
 Log string to \code{stderr}.
 }
 
 %
-\declareAttribute{PMIX_LOG_STDOUT}{"pmix.log.stdout"}{char*}{
+\declareNewAttribute{PMIX_LOG_STDOUT}{"pmix.log.stdout"}{char*}{
 Log string to \code{stdout}.
 }
 
 %
-\declareAttribute{PMIX_LOG_SYSLOG}{"pmix.log.syslog"}{char*}{
+\declareNewAttribute{PMIX_LOG_SYSLOG}{"pmix.log.syslog"}{char*}{
 Log data to syslog.
 Defaults to \code{ERROR} priority.
 }
 
 %
-\declareAttribute{PMIX_LOG_MSG}{"pmix.log.msg"}{pmix_byte_object_t}{
+\declareNewAttribute{PMIX_LOG_MSG}{"pmix.log.msg"}{pmix_byte_object_t}{
 Message blob to be sent somewhere.
 }
 
 %
-\declareAttribute{PMIX_LOG_EMAIL}{"pmix.log.email"}{pmix_data_array_t}{
+\declareNewAttribute{PMIX_LOG_EMAIL}{"pmix.log.email"}{pmix_data_array_t}{
 Log via email based on \refstruct{pmix_info_t} containing directives.
 }
 
 %
-\declareAttribute{PMIX_LOG_EMAIL_ADDR}{"pmix.log.emaddr"}{char*}{
+\declareNewAttribute{PMIX_LOG_EMAIL_ADDR}{"pmix.log.emaddr"}{char*}{
 Comma-delimited list of email addresses that are to receive the message.
 }
 
 %
-\declareAttribute{PMIX_LOG_EMAIL_SUBJECT}{"pmix.log.emsub"}{char*}{
+\declareNewAttribute{PMIX_LOG_EMAIL_SUBJECT}{"pmix.log.emsub"}{char*}{
 Subject line for email.
 }
 
 %
-\declareAttribute{PMIX_LOG_EMAIL_MSG}{"pmix.log.emmsg"}{char*}{
+\declareNewAttribute{PMIX_LOG_EMAIL_MSG}{"pmix.log.emmsg"}{char*}{
 Message to be included in email.
 }
 
@@ -2298,28 +3372,28 @@ Message to be included in email.
 Attributes used to assist debuggers.
 
 %
-\declareAttribute{PMIX_DEBUG_STOP_ON_EXEC}{"pmix.dbg.exec"}{bool}{
+\declareNewAttribute{PMIX_DEBUG_STOP_ON_EXEC}{"pmix.dbg.exec"}{bool}{
 Job is being spawned under debugger.
 The processes are instructed to pause on start.
 }
 
 %
-\declareAttribute{PMIX_DEBUG_STOP_IN_INIT}{"pmix.dbg.init"}{bool}{
+\declareNewAttribute{PMIX_DEBUG_STOP_IN_INIT}{"pmix.dbg.init"}{bool}{
 Instruct job to stop processes during \refapi{PMIx_Init}.
 }
 
 %
-\declareAttribute{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
+\declareNewAttribute{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
 Block at desired point until receiving debugger release notification.
 }
 
 %
-\declareAttribute{PMIX_DEBUG_JOB}{"pmix.dbg.job"}{char*}{
+\declareNewAttribute{PMIX_DEBUG_JOB}{"pmix.dbg.job"}{char*}{
 Namespace of the job to be debugged.
 }
 
 %
-\declareAttribute{PMIX_DEBUG_WAITING_FOR_NOTIFY}{"pmix.dbg.waiting"}{bool}{
+\declareNewAttribute{PMIX_DEBUG_WAITING_FOR_NOTIFY}{"pmix.dbg.waiting"}{bool}{
 Job to be debugged is waiting for a release.
 }
 
@@ -2331,12 +3405,12 @@ Job to be debugged is waiting for a release.
 Attributes used to describe the \ac{RM}.
 
 %
-\declareAttribute{PMIX_RM_NAME}{"pmix.rm.name"}{char*}{
+\declareNewAttribute{PMIX_RM_NAME}{"pmix.rm.name"}{char*}{
 String name of the \ac{RM}.
 }
 
 %
-\declareAttribute{PMIX_RM_VERSION}{"pmix.rm.version"}{char*}{
+\declareNewAttribute{PMIX_RM_VERSION}{"pmix.rm.version"}{char*}{
 \ac{RM} version string.
 }
 
@@ -2348,12 +3422,12 @@ String name of the \ac{RM}.
 Attributes used to adjust environment variables.
 
 %
-\declareAttribute{PMIX_SET_ENVAR}{"pmix.set.envar"}{char*}{
+\declareNewAttribute{PMIX_SET_ENVAR}{"pmix.set.envar"}{char*}{
 String ``\code{key=value}'' value shall be put into the environment.
 }
 
 %
-\declareAttribute{PMIX_UNSET_ENVAR}{"pmix.unset.envar"}{char*}{
+\declareNewAttribute{PMIX_UNSET_ENVAR}{"pmix.unset.envar"}{char*}{
 Unset the environment variable specified in the string.
 }
 
@@ -2365,63 +3439,63 @@ Unset the environment variable specified in the string.
 Attributes used to describe the job allocation.
 
 %
-\declareAttribute{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
+\declareNewAttribute{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
 Provide a string identifier for this allocation request which can later be used to query status of the request.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NUM_NODES}{"pmix.alloc.nnodes"}{uint64_t}{
+\declareNewAttribute{PMIX_ALLOC_NUM_NODES}{"pmix.alloc.nnodes"}{uint64_t}{
 The number of nodes.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NODE_LIST}{"pmix.alloc.nlist"}{char*}{
+\declareNewAttribute{PMIX_ALLOC_NODE_LIST}{"pmix.alloc.nlist"}{char*}{
 Regular expression of the specific nodes.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NUM_CPUS}{"pmix.alloc.ncpus"}{uint64_t}{
+\declareNewAttribute{PMIX_ALLOC_NUM_CPUS}{"pmix.alloc.ncpus"}{uint64_t}{
 Number of cpus.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NUM_CPU_LIST}{"pmix.alloc.ncpulist"}{char*}{
+\declareNewAttribute{PMIX_ALLOC_NUM_CPU_LIST}{"pmix.alloc.ncpulist"}{char*}{
 Regular expression of the number of cpus for each node.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_CPU_LIST}{"pmix.alloc.cpulist"}{char*}{
+\declareNewAttribute{PMIX_ALLOC_CPU_LIST}{"pmix.alloc.cpulist"}{char*}{
 Regular expression of the specific cpus indicating the cpus involved.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_MEM_SIZE}{"pmix.alloc.msize"}{float}{
+\declareNewAttribute{PMIX_ALLOC_MEM_SIZE}{"pmix.alloc.msize"}{float}{
 Number of Megabytes.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
-Array of \refstruct{pmix_info_t} describing network resources.
-If not given as part of an \refstruct{pmix_info_t} struct that identifies the impacted nodes, then the description will be applied across all nodes in the requestor's allocation.
+\declareNewAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
+Array of \refstruct{pmix_info_t} describing requested network resources.
+If not given as part of an \refstruct{pmix_info_t} struct that identifies the involved nodes, then the description will be applied across all nodes in the requestor's allocation.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
+\declareNewAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
 Name of the network.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_BANDWIDTH}{"pmix.alloc.bw"}{float}{
+\declareNewAttribute{PMIX_ALLOC_BANDWIDTH}{"pmix.alloc.bw"}{float}{
 Mbits/sec.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_QOS}{"pmix.alloc.netqos"}{char*}{
+\declareNewAttribute{PMIX_ALLOC_NETWORK_QOS}{"pmix.alloc.netqos"}{char*}{
 Quality of service level.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_TIME}{"pmix.alloc.time"}{uint32_t}{
+\declareNewAttribute{PMIX_ALLOC_TIME}{"pmix.alloc.time"}{uint32_t}{
 Time in seconds.
 }
 
@@ -2430,85 +3504,85 @@ Time in seconds.
 \subsection{Job control attributes}
 \label{api:struct:attributes:jobcontrol}
 
-Attributes used to control the job allocation.
+Attributes used to request control operations on an executing application.
 
 %
-\declareAttribute{PMIX_JOB_CTRL_ID}{"pmix.jctrl.id"}{char*}{
+\declareNewAttribute{PMIX_JOB_CTRL_ID}{"pmix.jctrl.id"}{char*}{
 Provide a string identifier for this request.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_PAUSE}{"pmix.jctrl.pause"}{bool}{
+\declareNewAttribute{PMIX_JOB_CTRL_PAUSE}{"pmix.jctrl.pause"}{bool}{
 Pause the specified processes.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_RESUME}{"pmix.jctrl.resume"}{bool}{
+\declareNewAttribute{PMIX_JOB_CTRL_RESUME}{"pmix.jctrl.resume"}{bool}{
 Resume (``un-pause'') the specified processes.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_CANCEL}{"pmix.jctrl.cancel"}{char*}{
+\declareNewAttribute{PMIX_JOB_CTRL_CANCEL}{"pmix.jctrl.cancel"}{char*}{
 Cancel the specified request (\code{NULL} implies cancel all requests from this requestor).
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_KILL}{"pmix.jctrl.kill"}{bool}{
+\declareNewAttribute{PMIX_JOB_CTRL_KILL}{"pmix.jctrl.kill"}{bool}{
 Forcibly terminate the specified processes and cleanup.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_RESTART}{"pmix.jctrl.restart"}{char*}{
+\declareNewAttribute{PMIX_JOB_CTRL_RESTART}{"pmix.jctrl.restart"}{char*}{
 Restart the specified processes using the given checkpoint ID.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT}{"pmix.jctrl.ckpt"}{char*}{
+\declareNewAttribute{PMIX_JOB_CTRL_CHECKPOINT}{"pmix.jctrl.ckpt"}{char*}{
 Checkpoint the specified processes and assign the given ID to it.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_EVENT}{"pmix.jctrl.ckptev"}{bool}{
+\declareNewAttribute{PMIX_JOB_CTRL_CHECKPOINT_EVENT}{"pmix.jctrl.ckptev"}{bool}{
 Use event notification to trigger a process checkpoint.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_SIGNAL}{"pmix.jctrl.ckptsig"}{int}{
+\declareNewAttribute{PMIX_JOB_CTRL_CHECKPOINT_SIGNAL}{"pmix.jctrl.ckptsig"}{int}{
 Use the given signal to trigger a process checkpoint.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_TIMEOUT}{"pmix.jctrl.ckptsig"}{int}{
+\declareNewAttribute{PMIX_JOB_CTRL_CHECKPOINT_TIMEOUT}{"pmix.jctrl.ckptsig"}{int}{
 Time in seconds to wait for a checkpoint to complete.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_METHOD}{"pmix.jctrl.ckmethod"}{pmix_data_array_t}{
+\declareNewAttribute{PMIX_JOB_CTRL_CHECKPOINT_METHOD}{"pmix.jctrl.ckmethod"}{pmix_data_array_t}{
 Array of \refstruct{pmix_info_t} declaring each method and value supported by this application.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_SIGNAL}{"pmix.jctrl.sig"}{int}{
+\declareNewAttribute{PMIX_JOB_CTRL_SIGNAL}{"pmix.jctrl.sig"}{int}{
 Send given signal to specified processes.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_PROVISION}{"pmix.jctrl.pvn"}{char*}{
+\declareNewAttribute{PMIX_JOB_CTRL_PROVISION}{"pmix.jctrl.pvn"}{char*}{
 Regular expression identifying nodes that are to be provisioned.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_PROVISION_IMAGE}{"pmix.jctrl.pvnimg"}{char*}{
+\declareNewAttribute{PMIX_JOB_CTRL_PROVISION_IMAGE}{"pmix.jctrl.pvnimg"}{char*}{
 Name of the image that is to be provisioned.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_PREEMPTIBLE}{"pmix.jctrl.preempt"}{bool}{
+\declareNewAttribute{PMIX_JOB_CTRL_PREEMPTIBLE}{"pmix.jctrl.preempt"}{bool}{
 Indicate that the job can be pre-empted.
 }
 
 %
-\declareAttribute{PMIX_JOB_CTRL_TERMINATE}{"pmix.jctrl.term"}{bool}{
+\declareNewAttribute{PMIX_JOB_CTRL_TERMINATE}{"pmix.jctrl.term"}{bool}{
 Politely terminate the specified processes.
 }
 
@@ -2517,70 +3591,70 @@ Politely terminate the specified processes.
 \subsection{Monitoring attributes}
 \label{api:struct:attributes:monitor}
 
-Attributes used to monitor the job.
+Attributes used to control monitoring of an executing application.
 
 %
-\declareAttribute{PMIX_MONITOR_ID}{"pmix.monitor.id"}{char*}{
+\declareNewAttribute{PMIX_MONITOR_ID}{"pmix.monitor.id"}{char*}{
 Provide a string identifier for this request.
 }
 
 %
-\declareAttribute{PMIX_MONITOR_CANCEL}{"pmix.monitor.cancel"}{char*}{
+\declareNewAttribute{PMIX_MONITOR_CANCEL}{"pmix.monitor.cancel"}{char*}{
 Identifier to be canceled (\code{NULL} means cancel all monitoring for this process).
 }
 
 %
-\declareAttribute{PMIX_MONITOR_APP_CONTROL}{"pmix.monitor.appctrl"}{bool}{
+\declareNewAttribute{PMIX_MONITOR_APP_CONTROL}{"pmix.monitor.appctrl"}{bool}{
 The application desires to control the response to a monitoring event.
 }
 
 %
-\declareAttribute{PMIX_MONITOR_HEARTBEAT}{"pmix.monitor.mbeat"}{void}{
+\declareNewAttribute{PMIX_MONITOR_HEARTBEAT}{"pmix.monitor.mbeat"}{void}{
 Register to have the PMIx server monitor the requestor for heartbeats.
 }
 
 %
-\declareAttribute{PMIX_SEND_HEARTBEAT}{"pmix.monitor.beat"}{void}{
+\declareNewAttribute{PMIX_SEND_HEARTBEAT}{"pmix.monitor.beat"}{void}{
 Send heartbeat to local PMIx server.
 }
 
 %
-\declareAttribute{PMIX_MONITOR_HEARTBEAT_TIME}{"pmix.monitor.btime"}{uint32_t}{
+\declareNewAttribute{PMIX_MONITOR_HEARTBEAT_TIME}{"pmix.monitor.btime"}{uint32_t}{
 Time in seconds before declaring heartbeat missed.
 }
 
 %
-\declareAttribute{PMIX_MONITOR_HEARTBEAT_DROPS}{"pmix.monitor.bdrop"}{uint32_t}{
+\declareNewAttribute{PMIX_MONITOR_HEARTBEAT_DROPS}{"pmix.monitor.bdrop"}{uint32_t}{
 Number of heartbeats that can be missed before generating the event.
 }
 
 %
-\declareAttribute{PMIX_MONITOR_FILE}{"pmix.monitor.fmon"}{char*}{
+\declareNewAttribute{PMIX_MONITOR_FILE}{"pmix.monitor.fmon"}{char*}{
 Register to monitor file for signs of life.
 }
 
 %
-\declareAttribute{PMIX_MONITOR_FILE_SIZE}{"pmix.monitor.fsize"}{bool}{
+\declareNewAttribute{PMIX_MONITOR_FILE_SIZE}{"pmix.monitor.fsize"}{bool}{
 Monitor size of given file is growing to determine if the application is running.
 }
 
 %
-\declareAttribute{PMIX_MONITOR_FILE_ACCESS}{"pmix.monitor.faccess"}{char*}{
+\declareNewAttribute{PMIX_MONITOR_FILE_ACCESS}{"pmix.monitor.faccess"}{char*}{
 Monitor time since last access of given file to determine if the application is running.
 }
 
 %
-\declareAttribute{PMIX_MONITOR_FILE_MODIFY}{"pmix.monitor.fmod"}{char*}{
+\declareNewAttribute{PMIX_MONITOR_FILE_MODIFY}{"pmix.monitor.fmod"}{char*}{
 Monitor time since last modified of given file to determine if the application is running.
 }
 
 %
-\declareAttribute{PMIX_MONITOR_FILE_CHECK_TIME}{"pmix.monitor.ftime"}{uint32_t}{
+\declareNewAttribute{PMIX_MONITOR_FILE_CHECK_TIME}{"pmix.monitor.ftime"}{uint32_t}{
 Time in seconds between checking the file.
 }
 
 %
-\declareAttribute{PMIX_MONITOR_FILE_DROPS}{"pmix.monitor.fdrop"}{uint32_t}{
+\declareNewAttribute{PMIX_MONITOR_FILE_DROPS}{"pmix.monitor.fdrop"}{uint32_t}{
 Number of file checks that can be missed before generating the event.
 }
 
@@ -2606,6 +3680,7 @@ The \refapi{pmix_release_cbfunc_t} is used by the \refapi{pmix_modex_cbfunc_t} a
 %%%%
 \format
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_release_cbfunc_t)
@@ -2632,6 +3707,7 @@ Since the data is ``owned'' by the host server, provide a callback function to n
 
 The \refapi{pmix_modex_cbfunc_t} is used by the \refapi{pmix_server_fencenb_fn_t} and \refapi{pmix_server_dmodex_req_fn_t} PMIx server operations to return modex \ac{BCX} data.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_modex_cbfunc_t)
@@ -2669,6 +3745,7 @@ The returned blob contains the data collected from each server participating in 
 
 The \refapi{pmix_spawn_cbfunc_t} is used on the PMIx client side by \refapi{PMIx_Spawn_nb} and on the PMIx server side by \refapi{pmix_server_spawn_fn_t}.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_spawn_cbfunc_t)
@@ -2703,6 +3780,7 @@ Note that the returned \refarg{nspace} value will not be protected by the \ac{PR
 
 The \refapi{pmix_op_cbfunc_t} is used by operations that simply return a status.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_op_cbfunc_t)
@@ -2731,6 +3809,7 @@ This callback function is used to return a status to an often nonblocking operat
 
 The \refapi{pmix_lookup_cbfunc_t} is used by \refapi{PMIx_Lookup_nb} to return data.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_lookup_cbfunc_t)
@@ -2768,6 +3847,7 @@ Note that these structures will be released upon return from the callback functi
 
 The \refapi{pmix_value_cbfunc_t} is used by \refapi{PMIx_Get_nb} to return data.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_value_cbfunc_t)
@@ -2801,6 +3881,7 @@ The pointer will be \code{NULL} if the requested data was not found.
 
 The \refapi{pmix_info_cbfunc_t} is a general information callback used by various APIs.
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_info_cbfunc_t)
@@ -2830,11 +3911,16 @@ An array of \refstruct{pmix_info_t} will contain the key/value pairs.
 
 
 %%%%%%%%%%%
-\subsection{Event Handler Registration Function}
+\subsection{Event Handler Registration Callback Function}
 \declareapi{pmix_evhdlr_reg_cbfunc_t}
 
 The \refapi{pmix_evhdlr_reg_cbfunc_t} callback function.
 
+\adviceuserstart
+The \ac{PMIx} \textit{ad hoc} v1.0 Standard defined an error handler registration callback function with a compatible signature, but with a different type definition function name (pmix_errhandler_reg_cbfunc_t). It was removed from the v2.0 Standard and is not included in this document to avoid confusion.
+\adviceuserend
+
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_evhdlr_reg_cbfunc_t)
@@ -2867,6 +3953,7 @@ Define a callback function for calls to \refapi{PMIx_Register_event_handler}
 
 The \refapi{pmix_event_notification_cbfunc_fn_t} is called by event handlers to indicate completion of their operations.
 
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_event_notification_cbfunc_fn_t)
@@ -2903,6 +3990,12 @@ If non-NULL, the provided callback function will be called to allow the event ha
 
 The \refapi{pmix_notification_fn_t} is called by \ac{PMIx} to deliver notification of an event.
 
+\adviceuserstart
+The \ac{PMIx} \textit{ad hoc} v1.0 Standard defined an error notification function with an identical name, but different signature than the v2.0 Standard described below. The \textit{ad hoc} v1.0 version was removed from the v2.0 Standard is not included in this document to avoid confusion.
+\adviceuserend
+
+
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_notification_fn_t)
