@@ -444,7 +444,7 @@ PMIx_Publish(const pmix_info_t info[], size_t ninfo)
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the \refattr{PMIX_USER_ID} attribute specifying the user id (UID) of the client process that published the info.
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that published the info.
 
 \reqattrend
 
@@ -516,7 +516,7 @@ PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo,
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the \refattr{PMIX_USER_ID} attribute specifying the user id (UID) of the client process that published the info.
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that published the info.
 
 \reqattrend
 
@@ -572,7 +572,7 @@ PMIx_Lookup(pmix_pdata_t data[], size_t ndata,
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the \refattr{PMIX_USER_ID} attribute specifying the user id (UID) of the client process that is requesting the info.
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the info.
 
 \reqattrend
 
@@ -645,7 +645,7 @@ PMIx_Lookup_nb(char **keys,
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the \refattr{PMIX_USER_ID} attribute specifying the user id (UID) of the client process that is requesting the info.
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the info.
 
 \reqattrend
 
@@ -702,7 +702,7 @@ PMIx_Unpublish(char **keys,
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the \refattr{PMIX_USER_ID} attribute specifying the user id (UID) of the client process that is requesting the operation.
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the operation.
 
 \reqattrend
 
@@ -763,7 +763,7 @@ PMIx_Unpublish_nb(char **keys,
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the \refattr{PMIX_USER_ID} attribute specifying the user id (UID) of the client process that is requesting the operation.
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the operation.
 
 \reqattrend
 
