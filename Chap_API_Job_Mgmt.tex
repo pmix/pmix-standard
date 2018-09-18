@@ -14,9 +14,9 @@ Members of this category include the \refapi{PMIx_Allocation_request_nb}, \refap
 
 As the level of interaction between applications and the host \ac{SMS} grows, so too does the need for the application to query the \ac{SMS} regarding its capabilities and state information. \ac{PMIx} provides a generalized query interface for this purpose, along with a set of standardized attribute keys to support a range of requests. This includes requests to determine the status of scheduling queues and active allocations, the scope of \ac{API} and attribute support offered by the \ac{SMS}, namespaces of active jobs, location and information about a job's processes, and information regarding available resources.
 
-An example use-case for the \refapi{PMIx_Query_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully, e.g., to write a checkpoint before termination, it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
+An example use-case for the \refapi{PMIx_Query_info_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully, e.g., to write a checkpoint before termination, it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
 
-\ac{PMIx} defines an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_nb} interface to obtain the number of seconds remaining in the current job allocation. Note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time. \ac{PMIx} provides such alternate methods as a means of maximizing the probability of a host system supporting at least one method by which the application can obtain the desired service.
+\ac{PMIx} supports this use-case by defining an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_info_nb} interface to obtain the number of seconds remaining in the current job allocation. Note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time. \ac{PMIx} provides such alternate methods as a means of maximizing the probability of a host system supporting at least one method by which the application can obtain the desired service.
 
 The following \acp{API} support query of various session and environment values.
 
@@ -59,7 +59,7 @@ that are executing on that node.
 If the \refarg{nspace} is \code{NULL}, then all processes on the node will be returned.
 If the specified node does not currently host any processes, then the returned array will be \code{NULL}, and \refarg{nprocs} will be \code{0}.
 The caller is responsible for releasing the \refarg{procs} array when done with it.
-The \refapi{PMIX_PROC_FREE} macro is provided for this purpose.
+The \refmacro{PMIX_PROC_FREE} macro is provided for this purpose.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Resolve_nodes}}
@@ -115,12 +115,6 @@ Query information about the system in general.
 pmix_status_t
 PMIx_Query_info_nb(pmix_query_t queries[], size_t nqueries,
                    pmix_info_cbfunc_t cbfunc, void *cbdata)
-
-typedef void (*pmix_info_cbfunc_t)(pmix_status_t status,
-                                   pmix_info_t *info, size_t ninfo,
-                                   void *cbdata,
-                                   pmix_release_cbfunc_t release_fn,
-                                   void *release_cbdata)
 \end{codepar}
 \cspecificend
 
@@ -131,6 +125,8 @@ typedef void (*pmix_info_cbfunc_t)(pmix_status_t status,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
+Returns one of the following constants:
+
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} All data has been returned
 \item \refconst{PMIX_ERR_NOT_FOUND} None of the requested data was available
@@ -138,26 +134,31 @@ typedef void (*pmix_info_cbfunc_t)(pmix_status_t status,
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The host \ac{RM} does not support this function
 \end{constantdesc}
 
-\priattr
-The PMIx_Query_info_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, any provided attributes are passed to the host \ac{SMS} daemon for processing.
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
-\optattr
-A complete implementation would include support for the following attributes:
+\reqattrend
 
-\pasteAttributeItem{PMIX_QUERY_NAMESPACES}
-\pasteAttributeItem{PMIX_QUERY_JOB_STATUS}
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pastePRRTEAttributeItem{PMIX_QUERY_NAMESPACES}
+\pastePRRTEAttributeItem{PMIX_QUERY_JOB_STATUS}
 \pasteAttributeItem{PMIX_QUERY_QUEUE_LIST}
 \pasteAttributeItem{PMIX_QUERY_QUEUE_STATUS}
-\pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
-\pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
+\pastePRRTEAttributeItem{PMIX_QUERY_PROC_TABLE}
+\pastePRRTEAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
 \pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
 \pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
-\pasteAttributeItem{PMIX_QUERY_MEMORY_USAGE}
-\pasteAttributeItem{PMIX_QUERY_LOCAL_ONLY}
-\pasteAttributeItem{PMIX_QUERY_REPORT_AVG}
-\pasteAttributeItem{PMIX_QUERY_REPORT_MINMAX}
+\pastePRRTEAttributeItem{PMIX_QUERY_MEMORY_USAGE}
+\pastePRRTEAttributeItem{PMIX_QUERY_LOCAL_ONLY}
+\pastePRRTEAttributeItem{PMIX_QUERY_REPORT_AVG}
+\pastePRRTEAttributeItem{PMIX_QUERY_REPORT_MINMAX}
 \pasteAttributeItem{PMIX_QUERY_ALLOC_STATUS}
 \pasteAttributeItem{PMIX_TIME_REMAINING}
+
+\optattrend
 
 %%%%
 \descr
@@ -209,14 +210,14 @@ Request an allocation operation from the host resource manager.
 \begin{codepar}
 pmix_status_t
 PMIx_Allocation_request_nb(pmix_alloc_directive_t directive,
-                           pmix_info_t *info, size_t ninfo,
+                           pmix_info_t info[], size_t ninfo,
                            pmix_info_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{directive}{Allocation directive (handle)}
-\argin{info}{Array of info structures (array of handles)}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
@@ -224,19 +225,20 @@ PMIx_Allocation_request_nb(pmix_alloc_directive_t directive,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\priattr
-The PMIx_Allocation_request_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, the attributes are passed to the host RM for processing.
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
-\reqattr
-\acp{RM} that implement support for the \refapi{PMIx_Allocation_request_nb} are required to support the following attributes:
+Host environments that implement support for this operation are required to support the following attributes:
 
 \pasteAttributeItem{PMIX_ALLOC_ID}
 \pasteAttributeItem{PMIX_ALLOC_NUM_NODES}
 \pasteAttributeItem{PMIX_ALLOC_NUM_CPUS}
 \pasteAttributeItem{PMIX_ALLOC_TIME}
 
-\optattr
-A complete implementation that supports the \refapi{PMIx_Allocation_request_nb} would include support for the following attributes:
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_ALLOC_NODE_LIST}
 \pasteAttributeItem{PMIX_ALLOC_NUM_CPU_LIST}
@@ -247,6 +249,7 @@ A complete implementation that supports the \refapi{PMIx_Allocation_request_nb} 
 \pasteAttributeItem{PMIX_ALLOC_BANDWIDTH}
 \pasteAttributeItem{PMIX_ALLOC_NETWORK_QOS}
 
+\optattrend
 
 %%%%
 \descr
@@ -311,21 +314,22 @@ PMIx_Job_control_nb(const pmix_proc_t targets[], size_t ntargets,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\priattr
-The PMIx_Job_control_nb function in the \ac{PRI} does not parse or utilize the attributes directly. However, the attributes are passed to the host RM for processing.
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
-\reqattr
-\acp{RM} that implement support for the \refapi{PMIx_Job_control_nb} are required to support the following attributes:
+Host environments that implement support for this operation are required to support the following attributes:
 
-\pasteAttributeItem{PMIX_JOB_CTRL_ID}
-\pasteAttributeItem{PMIX_JOB_CTRL_PAUSE}
-\pasteAttributeItem{PMIX_JOB_CTRL_RESUME}
-\pasteAttributeItem{PMIX_JOB_CTRL_KILL}
-\pasteAttributeItem{PMIX_JOB_CTRL_SIGNAL}
-\pasteAttributeItem{PMIX_JOB_CTRL_TERMINATE}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_ID}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_PAUSE}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_RESUME}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_KILL}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_SIGNAL}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_TERMINATE}
 
-\optattr
-A complete implementation that supports the \refapi{PMIx_Job_control_nb} would include support for the following attributes:
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_JOB_CTRL_CANCEL}
 \pasteAttributeItem{PMIX_JOB_CTRL_RESTART}
@@ -338,6 +342,7 @@ A complete implementation that supports the \refapi{PMIx_Job_control_nb} would i
 \pasteAttributeItem{PMIX_JOB_CTRL_PROVISION_IMAGE}
 \pasteAttributeItem{PMIX_JOB_CTRL_PREEMPTIBLE}
 
+\optattrend
 
 %%%%
 \descr
@@ -397,22 +402,23 @@ PMIx_Process_monitor_nb(const pmix_info_t *monitor, pmix_status_t error,
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\priattr
-\ac{PMIx} provides several monitoring methods in the \ac{PRI}. All other requests are passed to the host \ac{SMS}. Internally supported attributes include:
+\optattrstart
+The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the requesting process:
 
-\pasteAttributeItem{PMIX_MONITOR_ID}
-\pasteAttributeItem{PMIX_MONITOR_CANCEL}
-\pasteAttributeItem{PMIX_MONITOR_APP_CONTROL}
-\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT}
-\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
-\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
-\pasteAttributeItem{PMIX_MONITOR_FILE}
-\pasteAttributeItem{PMIX_MONITOR_FILE_SIZE}
-\pasteAttributeItem{PMIX_MONITOR_FILE_ACCESS}
-\pasteAttributeItem{PMIX_MONITOR_FILE_MODIFY}
-\pasteAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
-\pasteAttributeItem{PMIX_MONITOR_FILE_DROPS}
+\pastePRIAttributeItem{PMIX_MONITOR_ID}
+\pastePRIAttributeItem{PMIX_MONITOR_CANCEL}
+\pastePRIAttributeItem{PMIX_MONITOR_APP_CONTROL}
+\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT}
+\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
+\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE_SIZE}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE_ACCESS}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE_MODIFY}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE_DROPS}
 
+\optattrend
 
 %%%%
 \descr
@@ -497,30 +503,35 @@ PMIx_Log_nb(const pmix_info_t data[], size_t ndata,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
+Return codes are one of the following:
+
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The logging request is valid and is being processed. The resulting status from the operation will be provided in the callback function.
 \item \refconst{PMIX_ERR_BAD_PARAM} The logging request contains at least one incorrect entry that prevents it from being processed. The callback function will \emph{not} be called.
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function. The callback function will \emph{not} be called.
 \end{constantdesc}
 
-\priattr
-The \refapi{PMIx_Log_nb} function in the \ac{PRI} does not parse or utilize the attributes directly. However, the attributes are passed to the host RM for processing.
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
-\reqattr
-\acp{RM} that implement support for the \refapi{PMIx_Log_nb} are required to support the following attributes:
+Host environments that implement support for this operation are required to support the following attributes:
 
-\pasteAttributeItem{PMIX_LOG_STDERR}
-\pasteAttributeItem{PMIX_LOG_STDOUT}
-\pasteAttributeItem{PMIX_LOG_SYSLOG}
+\pastePRIAttributeItem{PMIX_LOG_STDERR}
+\pastePRIAttributeItem{PMIX_LOG_STDOUT}
+\pastePRIAttributeItem{PMIX_LOG_SYSLOG}
 
-\optattr
-A complete implementation that supports the \refapi{PMIx_Log_nb} would include support for the following attributes:
+\reqattrend
 
-\pasteAttributeItem{PMIX_LOG_MSG}
-\pasteAttributeItem{PMIX_LOG_EMAIL}
-\pasteAttributeItem{PMIX_LOG_EMAIL_ADDR}
-\pasteAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
-\pasteAttributeItem{PMIX_LOG_EMAIL_MSG}
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pastePRRTEAttributeItem{PMIX_LOG_MSG}
+\pastePRRTEAttributeItem{PMIX_LOG_EMAIL}
+\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_ADDR}
+\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
+\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_MSG}
+
+\optattrend
 
 %%%%
 \descr
