@@ -45,10 +45,10 @@ Users can specify the callback order of a handler within its category at the tim
 
 In addition, one event handler can be declared as the \textit{first} handler to be executed in the chain. This handler will \textit{always} be called prior to any other handler, regardless of category, provided the incoming event matches both the specified range and event code. Only one handler can be so designated --- attempts to designate additional handlers as \textit{first} will return an error. Deregistration of the declared \textit{first} handler will re-open the position for subsequent assignment.
 
-Similarly, one event handler can be declared as the \textit{last} handler to be executed in the chain. Note that this handler will not be called if the chain is terminated by an earlier handler. Only one handler can be designated as \textit{last} --- attempts to designate additional handlers as \textit{last} will return an error. Deregistration of the declared \textit{last} handler will re-open the position for subsequent assignment.
+Similarly, one event handler can be declared as the \textit{last} handler to be executed in the chain. This handler will \textit{always} be called after all other handlers have executed, regardless of category, provided the incoming event matches both the specified range and event code. Note that this handler will not be called if the chain is terminated by an earlier handler. Only one handler can be designated as \textit{last} --- attempts to designate additional handlers as \textit{last} will return an error. Deregistration of the declared \textit{last} handler will re-open the position for subsequent assignment.
 
 \adviceuserstart
-Note that \textit{first} and \textit{last} handlers are qualified within their category. That is, default event handlers will always be invoked after a single code event handler, even when the later is qualified as \textit{last}.
+Note that the \textit{last} handler is called \textit{after} all registered default handlers that match the specified range of the incoming event unless a handler prior to it terminates the chain. Thus, if the application intends to define a \textit{last} handler, it should ensure that no default handler aborts the process before it.
 \adviceuserend
 
 Upon completing its work and prior to returning, each handler \textit{must} call the event handler completion function provided when it was invoked (including a status code plus any information to be passed to later handlers) so that the chain can continue being progressed. \ac{PMIx} automatically aggregates the status and any results of each handler (as provided in the completion callback) with status from all prior handlers so that each step in the chain has full knowledge of what preceded it. An event handler can terminate all further progress along the chain by passing the \refconst{PMIX_EVENT_ACTION_COMPLETE} status to the completion callback function.
@@ -88,42 +88,44 @@ PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes,
 \argin{cbdata}{Data to be passed to the cbfunc callback function (memory reference)}
 \end{arglist}
 
-\priattr
-The following attributes are supported in the \ac{PRI}:
+\reqattrstart
+The following attributes are required to be supported by all \ac{PMIx} libraries:
 
-\pasteAttributeItem{PMIX_EVENT_HDLR_NAME}
-\pasteAttributeItem{PMIX_EVENT_HDLR_FIRST}
-\pasteAttributeItem{PMIX_EVENT_HDLR_LAST}
-\pasteAttributeItem{PMIX_EVENT_HDLR_FIRST_IN_CATEGORY}
-\pasteAttributeItem{PMIX_EVENT_HDLR_LAST_IN_CATEGORY}
-\pasteAttributeItem{PMIX_EVENT_HDLR_BEFORE}
-\pasteAttributeItem{PMIX_EVENT_HDLR_AFTER}
-\pasteAttributeItem{PMIX_EVENT_HDLR_PREPEND}
-\pasteAttributeItem{PMIX_EVENT_HDLR_APPEND}
-\pasteAttributeItem{PMIX_EVENT_CUSTOM_RANGE}
-\pasteAttributeItem{PMIX_RANGE}
-\pasteAttributeItem{PMIX_EVENT_RETURN_OBJECT}
-\pasteAttributeItem{PMIX_EVENT_JOB_LEVEL}
-\pasteAttributeItem{PMIX_EVENT_ENVIRO_LEVEL}
+\pastePRIAttributeItem{PMIX_EVENT_HDLR_NAME}
+\pastePRIAttributeItem{PMIX_EVENT_HDLR_FIRST}
+\pastePRIAttributeItem{PMIX_EVENT_HDLR_LAST}
+\pastePRIAttributeItem{PMIX_EVENT_HDLR_FIRST_IN_CATEGORY}
+\pastePRIAttributeItem{PMIX_EVENT_HDLR_LAST_IN_CATEGORY}
+\pastePRIAttributeItem{PMIX_EVENT_HDLR_BEFORE}
+\pastePRIAttributeItem{PMIX_EVENT_HDLR_AFTER}
+\pastePRIAttributeItem{PMIX_EVENT_HDLR_PREPEND}
+\pastePRIAttributeItem{PMIX_EVENT_HDLR_APPEND}
+\pastePRIAttributeItem{PMIX_EVENT_CUSTOM_RANGE}
+\pastePRIAttributeItem{PMIX_RANGE}
+\pastePRIAttributeItem{PMIX_EVENT_RETURN_OBJECT}
+\pastePRIAttributeItem{PMIX_EVENT_JOB_LEVEL}
+\pastePRIAttributeItem{PMIX_EVENT_ENVIRO_LEVEL}
 
-\reqattr
-\acp{RM} that implement support for PMIx event notification are required to support the following attributes:
+Host environments that implement support for \ac{PMIx} event notification are required to support the following attributes:
 
-\pasteAttributeItem{PMIX_EVENT_JOB_LEVEL}
-\pasteAttributeItem{PMIX_EVENT_ENVIRO_LEVEL}
-\pasteAttributeItem{PMIX_EVENT_AFFECTED_PROC}
-\pasteAttributeItem{PMIX_EVENT_AFFECTED_PROCS}
+\pastePRRTEAttributeItem{PMIX_EVENT_JOB_LEVEL}
+\pastePRRTEAttributeItem{PMIX_EVENT_ENVIRO_LEVEL}
+\pastePRRTEAttributeItem{PMIX_EVENT_AFFECTED_PROC}
+\pastePRRTEAttributeItem{PMIX_EVENT_AFFECTED_PROCS}
 
-\optattr
-A complete implementation that supports \ac{PMIx} event notification would offer notifications for environmental events impacting the job, for \ac{SMS} events relating to the job, and include support for the following attributes:
+\reqattrend
 
-\pasteAttributeItem{PMIX_EVENT_TERMINATE_SESSION}
-\pasteAttributeItem{PMIX_EVENT_TERMINATE_JOB}
-\pasteAttributeItem{PMIX_EVENT_TERMINATE_NODE}
+\optattrstart
+Host environment that support \ac{PMIx} event notification \textit{may} offer notifications for environmental events impacting the job and for \ac{SMS} events relating to the job. The following attributes are optional for host environments that suppport this operation:
+
+\pastePRRTEAttributeItem{PMIX_EVENT_TERMINATE_SESSION}
+\pastePRRTEAttributeItem{PMIX_EVENT_TERMINATE_JOB}
+\pastePRRTEAttributeItem{PMIX_EVENT_TERMINATE_NODE}
 \pasteAttributeItem{PMIX_EVENT_TERMINATE_PROC}
-\pasteAttributeItem{PMIX_EVENT_ACTION_TIMEOUT}
-\pasteAttributeItem{PMIX_EVENT_SILENT_TERMINATION}
+\pastePRRTEAttributeItem{PMIX_EVENT_ACTION_TIMEOUT}
+\pastePRRTEAttributeItem{PMIX_EVENT_SILENT_TERMINATION}
 
+\optattrend
 
 %%%%
 \descr
@@ -237,13 +239,18 @@ PMIx_Notify_event(pmix_status_t status,
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification, or in the case of a \ac{PMIx} server calling the API, the range extended beyond the local node and the host \ac{SMS} environment does not support event notification. The callback function will \textit{not} be called.
 \end{constantdesc}
 
-\priattr
-The following attributes are supported in the \ac{PRI}:
+\reqattrstart
+The following attributes are required to be supported by all \ac{PMIx} libraries:
 
-\pasteAttributeItem{PMIX_EVENT_AFFECTED_PROC}
-\pasteAttributeItem{PMIX_EVENT_AFFECTED_PROCS}
-\pasteAttributeItem{PMIX_EVENT_NON_DEFAULT}
-\pasteAttributeItem{PMIX_EVENT_CUSTOM_RANGE}
+\pastePRIAttributeItem{PMIX_EVENT_NON_DEFAULT}
+\pastePRIAttributeItem{PMIX_EVENT_CUSTOM_RANGE}
+
+Host environments that implement support for \ac{PMIx} event notification are required to provide the following attributes for all events generated by the environment:
+
+\pastePRRTEAttributeItem{PMIX_EVENT_AFFECTED_PROC}
+\pastePRRTEAttributeItem{PMIX_EVENT_AFFECTED_PROCS}
+
+\reqattrend
 
 %%%%
 \descr
