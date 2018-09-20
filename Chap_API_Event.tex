@@ -103,20 +103,16 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \pastePRIAttributeItem{PMIX_EVENT_CUSTOM_RANGE}
 \pastePRIAttributeItem{PMIX_RANGE}
 \pastePRIAttributeItem{PMIX_EVENT_RETURN_OBJECT}
-\pastePRIAttributeItem{PMIX_EVENT_JOB_LEVEL}
-\pastePRIAttributeItem{PMIX_EVENT_ENVIRO_LEVEL}
 
 Host environments that implement support for \ac{PMIx} event notification are required to support the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_EVENT_JOB_LEVEL}
-\pastePRRTEAttributeItem{PMIX_EVENT_ENVIRO_LEVEL}
 \pastePRRTEAttributeItem{PMIX_EVENT_AFFECTED_PROC}
 \pastePRRTEAttributeItem{PMIX_EVENT_AFFECTED_PROCS}
 
 \reqattrend
 
 \optattrstart
-Host environment that support \ac{PMIx} event notification \textit{may} offer notifications for environmental events impacting the job and for \ac{SMS} events relating to the job. The following attributes are optional for host environments that suppport this operation:
+Host environments that support \ac{PMIx} event notification \textit{may} offer notifications for environmental events impacting the job and for \ac{SMS} events relating to the job. The following attributes are optional for host environments that suppport this operation:
 
 \pastePRRTEAttributeItem{PMIX_EVENT_TERMINATE_SESSION}
 \pastePRRTEAttributeItem{PMIX_EVENT_TERMINATE_JOB}
@@ -130,16 +126,7 @@ Host environment that support \ac{PMIx} event notification \textit{may} offer no
 %%%%
 \descr
 
-Register an event handler to report events. By default, only events that directly affect the process and/or any process to which it is connected (via the \refapi{PMIx_Connect} call) will be reported. Options to modify that behavior can be provided in the info array, including:
-
-\begin{itemize}
-
-\item Both the client application and the host \ac{SMS} can register handlers for specific events. \ac{PMIx} client/server calls the registered event handler upon receiving event notify notification (via \refapi{PMIx_Notify_event}) from the other end (Resource Manager/Client application).
-
-\item Multiple event handlers can be registered for different events. PMIX returns a \code{size_t} reference to each register handler in the callback function. The caller \textit{must} retain the reference in order to deregister the evhdlr. The notification behavior can be modified by deregistering the current evhdlr, and then registering again using a new set of info values.
-\end{itemize}
-
-Note that the codes being registered do \textit{not} need to be \ac{PMIx} error constants --- any integer value can be registered. This allows for registration of non-PMIx events such as those defined by a particular \ac{SMS} vendor or by an application itself.
+Register an event handler to report events. Note that the codes being registered do \textit{not} need to be \ac{PMIx} error constants --- any integer value can be registered. This allows for registration of non-PMIx events such as those defined by a particular \ac{SMS} vendor or by an application itself.
 
 \adviceuserstart
 In order to avoid potential conflicts, users are advised to only define codes that lie outside the range of the \ac{PMIx} standard's error codes. Thus, \ac{SMS} vendors and application developers should constrain their definitions to positive values or negative values beyond the \refconst{PMIX_EXTERNAL_ERR_BASE} boundary.

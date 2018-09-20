@@ -2919,16 +2919,6 @@ String name identifying this handler.
 }
 
 %
-\declareNewAttribute{PMIX_EVENT_JOB_LEVEL}{"pmix.evjob"}{bool}{
-Register for job-specific events only.
-}
-
-%
-\declareNewAttribute{PMIX_EVENT_ENVIRO_LEVEL}{"pmix.evenv"}{bool}{
-Register for environment events only.
-}
-
-%
 \declareNewAttribute{PMIX_EVENT_HDLR_FIRST}{"pmix.evfirst"}{bool}{
 Invoke this event handler before any other handlers.
 }
@@ -4117,6 +4107,74 @@ typedef void (*pmix_dmodex_response_fn_t)(pmix_status_t status,
 
 \descr
 Define a function to be called by the PMIx server library for return of information posted by a local application process (via \refapi{PMIx_Put} with subsequent \refapi{PMIx_Commit}) in response to a request from the host RM. The returned \refarg{data} blob is owned by the PMIx server library and will be free’d upon return from the function.
+
+%%%%%%%%%%%
+\subsection{\code{pmix_connection_cbfunc_t}}
+\declareapi{pmix_connection_cbfunc_t}
+
+%%%%
+\summary
+
+Callback function for incoming connection request from a local client
+
+%%%%
+\format
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_connection_cbfunc_t)(
+                             int incoming_sd, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{incoming_sd}{(integer)}
+\argin{cbdata}{ (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Callback function for incoming connection requests from local clients - only used by host environments that wish to directly handle socket connection requests.
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_tool_connection_cbfunc_t}}
+\declareapi{pmix_tool_connection_cbfunc_t}
+
+%%%%
+\summary
+
+Callback function for incoming tool connections.
+
+%%%%
+\format
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_tool_connection_cbfunc_t)(
+                             pmix_status_t status,
+                             pmix_proc_t *proc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{status}{\refstruct{pmix_status_t} value (handle)}
+\argin{proc}{\refstruct{pmix_proc_t} structure containing the identifier assigned to the tool (handle)}
+\argin{cbdata}{Data to be passed (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Callback function for incoming tool connections.
+The host environment shall provide a namespace/rank identifier for the connecting tool.
+
+\advicermstart
+It is assumed that \code{rank=0} will be the normal assignment, but allow for the future possibility of a parallel set of tools connecting, and thus each process requiring a unique rank.
+\advicermend
 
 %%%%%%%%%%%
 \subsection{Constant String Functions}
