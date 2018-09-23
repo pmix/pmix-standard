@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter: Job Allocation Management
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Job Allocation Management and Reporting}
+\chapter{Job Management and Reporting}
 \label{chap:api_job_mgmt}
 
 The job management \acp{API} provide an application with the ability to orchestrate its operation in partnership with the \ac{SMS}.
@@ -191,7 +191,87 @@ These are primarily used in the following scenarios:
 \item \textit{Resilient} applications that need to request replacement resources in the face of failures
 \item \textit{Rigid} jobs where the user has requested a static allocation of resources for a fixed period of time, but realizes that they underestimated their required time while executing
 \end{itemize}
-\ac{PMIx} attempts to address this range of use-cases with a single, flexible \ac{API}.
+\ac{PMIx} attempts to address this range of use-cases with a flexible \ac{API}.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Allocation_request}}
+\declareapi{PMIx_Allocation_request}
+
+%%%%
+\summary
+
+Request an allocation operation from the host resource manager.
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Allocation_request(pmix_alloc_directive_t directive,
+                        pmix_info_t info[], size_t ninfo);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{directive}{Allocation directive (handle)}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+
+Host environments that implement support for this operation are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_ALLOC_ID}
+\pasteAttributeItem{PMIX_ALLOC_NUM_NODES}
+\pasteAttributeItem{PMIX_ALLOC_NUM_CPUS}
+\pasteAttributeItem{PMIX_ALLOC_TIME}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_ALLOC_NODE_LIST}
+\pasteAttributeItem{PMIX_ALLOC_NUM_CPU_LIST}
+\pasteAttributeItem{PMIX_ALLOC_CPU_LIST}
+\pasteAttributeItem{PMIX_ALLOC_MEM_SIZE}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_ID}
+\pasteAttributeItem{PMIX_ALLOC_BANDWIDTH}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_QOS}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_TYPE}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_PLANE}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_ENDPTS}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_ENDPTS_NODE}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_SEC_KEY}
+
+\optattrend
+
+%%%%
+\descr
+
+Request an allocation operation from the host resource manager.
+Several broad categories are envisioned, including the ability to:
+
+\begin{compactitem}
+%
+\item Request allocation of additional resources, including memory, bandwidth, and compute.
+This should be accomplished in a non-blocking manner so that the application can continue to progress while waiting for resources to become available.
+Note that the new allocation will be disjoint from (i.e., not affiliated with) the allocation of the requestor - thus the termination of one allocation will not impact the other.
+%
+\item Extend the reservation on currently allocated resources, subject to scheduling availability and priorities.
+This includes extending the time limit on current resources, and/or requesting additional resources be allocated to the requesting job.
+Any additional allocated resources will be considered as part of the current allocation, and thus will be released at the same time.
+%
+\item Return no-longer-required resources to the scheduler.
+This includes the ``loan'' of resources back to the scheduler with a promise to return them upon subsequent request.
+\end{compactitem}
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Allocation_request_nb}}
@@ -248,42 +328,116 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_ALLOC_NETWORK_ID}
 \pasteAttributeItem{PMIX_ALLOC_BANDWIDTH}
 \pasteAttributeItem{PMIX_ALLOC_NETWORK_QOS}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_TYPE}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_PLANE}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_ENDPTS}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_ENDPTS_NODE}
+\pasteAttributeItem{PMIX_ALLOC_NETWORK_SEC_KEY}
 
 \optattrend
 
 %%%%
 \descr
 
-Request an allocation operation from the host resource manager.
-Several broad categories are envisioned, including the ability to:
+Non-blocking form of the \refapi{PMIx_Allocation_request} \ac{API}.
 
-\begin{compactitem}
-%
-\item Request allocation of additional resources, including memory, bandwidth, and compute.
-This should be accomplished in a non-blocking manner so that the application can continue to progress while waiting for resources to become available.
-Note that the new allocation will be disjoint from (i.e., not affiliated with) the allocation of the requestor - thus the termination of one allocation will not impact the other.
-%
-\item Extend the reservation on currently allocated resources, subject to scheduling availability and priorities.
-This includes extending the time limit on current resources, and/or requesting additional resources be allocated to the requesting job.
-Any additional allocated resources will be considered as part of the current allocation, and thus will be released at the same time.
-%
-\item Return no-longer-required resources to the scheduler.
-This includes the ``loan'' of resources back to the scheduler with a promise to return them upon subsequent request.
-\end{compactitem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Job Control}
+\label{chap:api_job_mgmt:jctrl}
+
+This section defines \acp{API} that enable the application and host environment to coordinate the response to failures and other events.
+This can include requesting termination of the entire job or a subset of processes within a job, but can
+also be used in combination with other \ac{PMIx} capabilities (e.g., allocation support and event notification) for more nuanced responses. For example, an application notified of an incipient over-temperature condition on a node could use the \refapi{PMIx_Allocation_request_nb} interface to request replacement nodes while simultaneously using the \refapi{PMIx_Job_control_nb} interface to direct that a checkpoint event be delivered to all processes in the application. If replacement resources are not available, the application might use the \refapi{PMIx_Job_control_nb} interface to request that the job continue at a lower power setting, perhaps sufficient to avoid the over-temperature failure.
+
+The job control \acp{API} can also be used by an application to register itself as available for preemption when operating in an environment such as a cloud or where incentives, financial or otherwise, are provided to jobs willing to be preempted. Registration can include attributes indicating how many resources are being offered for preemption (e.g., all or only some portion), whether the application will require time to prepare for preemption, etc. Jobs that
+request a warning will receive an event notifying them of an impending preemption (possibly including information as to the resources that will be taken away, how much time the application will be given prior to being preempted, whether the preemption will be a suspension or full termination, etc.) so they have an opportunity to save
+their work. Once the application is ready, it calls the provided event completion callback function to indicate that
+the SMS is free to suspend or terminate it, and can include directives regarding any desired restart.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Job_control}}
+\declareapi{PMIx_Job_control}
+
+%%%%
+\summary
+
+Request a job control action.
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Job_control(const pmix_proc_t targets[], size_t ntargets,
+                 const pmix_info_t directives[], size_t ndirs)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{targets}{Array of proc structures (array of handles)}
+\argin{ntargets}{Number of element in the \refarg{targets} array (integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of element in the \refarg{directives} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+
+Host environments that implement support for this operation are required to support the following attributes:
+
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_ID}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_PAUSE}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_RESUME}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_KILL}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_SIGNAL}
+\pastePRRTEAttributeItem{PMIX_JOB_CTRL_TERMINATE}
+\pastePRRTEAttributeItem{PMIX_REGISTER_CLEANUP}
+\pastePRRTEAttributeItem{PMIX_REGISTER_CLEANUP_DIR}
+\pastePRRTEAttributeItem{PMIX_CLEANUP_RECURSIVE}
+\pastePRRTEAttributeItem{PMIX_CLEANUP_EMPTY}
+\pastePRRTEAttributeItem{PMIX_CLEANUP_IGNORE}
+\pastePRRTEAttributeItem{PMIX_CLEANUP_LEAVE_TOPDIR}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_JOB_CTRL_CANCEL}
+\pasteAttributeItem{PMIX_JOB_CTRL_RESTART}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_EVENT}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_SIGNAL}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_TIMEOUT}
+\pasteAttributeItem{PMIX_JOB_CTRL_CHECKPOINT_METHOD}
+\pasteAttributeItem{PMIX_JOB_CTRL_PROVISION}
+\pasteAttributeItem{PMIX_JOB_CTRL_PROVISION_IMAGE}
+\pasteAttributeItem{PMIX_JOB_CTRL_PREEMPTIBLE}
+
+\optattrend
+
+%%%%
+\descr
+
+Request a job control action.
+The \refarg{targets} array identifies the processes to which the requested job control action is to be applied.
+A \code{NULL} value can be used to indicate all processes in the caller's namespace.
+The use of \refconst{PMIX_RANK_WILDARD} can also be used to indicate that all processes in the given namespace are to be included.
+
+The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
 
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Job_control_nb}}
 \declareapi{PMIx_Job_control_nb}
-
-The \refapi{PMIx_Job_control_nb} \ac{API} enables the application and \ac{SMS} to coordinate the response to failures and other events.
-This can include requesting termination of the entire job or a subset of processes within a job, but can
-also be used in combination with other \ac{PMIx} capabilities (e.g., allocation support and event notification) for more nuanced responses. For example, an application notified of an incipient over-temperature condition on a node could use the \refapi{PMIx_Allocation_request_nb} interface to request replacement nodes while simultaneously using the \refapi{PMIx_Job_control_nb} interface to direct that a checkpoint event be delivered to all processes in the application. If replacement resources are not available, the application might use the \refapi{PMIx_Job_control_nb} interface to request that the job continue at a lower power setting, perhaps sufficient to avoid the over-temperature failure.
-
-The job control API can also be used by an application to register itself as available for preemption when operating in an environment such as a cloud or where incentives, financial or otherwise, are provided to jobs willing to be preempted. Registration can include attributes indicating how many resources are being offered for preemption (e.g., all or only some portion), whether the application will require time to prepare for preemption, etc. Jobs that
-request a warning will receive an event notifying them of an impending preemption (possibly including information as to the resources that will be taken away, how much time the application will be given prior to being preempted, whether the preemption will be a suspension or full termination, etc.) so they have an opportunity to save
-their work. Once the application is ready, it calls the provided event completion callback function to indicate that
-the SMS is free to suspend or terminate it, and can include directives regarding any desired restart.
 
 %%%%
 \summary
@@ -347,13 +501,7 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Request a job control action.
-The \refarg{targets} array identifies the processes to which the requested job control action is to be applied.
-A \code{NULL} value can be used to indicate all processes in the caller's namespace.
-The use of \refconst{PMIX_RANK_WILDARD} can also be used to indicate that all processes in the given namespace are to be included.
-
-The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
-The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
+Non-blocking form of the \refapi{PMIx_Job_control} \ac{API}. The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -368,6 +516,72 @@ job. Various watchdog methods have been developed for detecting this situation, 
 from the application and monitoring a specified file for changes in size and/or modification time.
 
 At the request of \ac{SMS} vendors and members, a monitoring support interface has been included in the PMIx v2 standard. The defined \ac{API} allows applications to request monitoring, directing what is to be monitored, the frequency of the associated check, whether or not the application is to be notified (via the event notification subsystem) of stall detection, and other characteristics of the operation. In addition, heartbeat and file monitoring methods have been included in the \ac{PRI} but are active only when requested.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Process_monitor}}
+\declareapi{PMIx_Process_monitor}
+
+%%%%
+\summary
+
+Request that application processes be monitored.
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Process_monitor(const pmix_info_t *monitor, pmix_status_t error,
+                     const pmix_info_t directives[], size_t ndirs)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{monitor}{info (handle)}
+\argin{error}{status (integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\optattrstart
+The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the requesting process:
+
+\pastePRIAttributeItem{PMIX_MONITOR_ID}
+\pastePRIAttributeItem{PMIX_MONITOR_CANCEL}
+\pastePRIAttributeItem{PMIX_MONITOR_APP_CONTROL}
+\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT}
+\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
+\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE_SIZE}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE_ACCESS}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE_MODIFY}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
+\pastePRIAttributeItem{PMIX_MONITOR_FILE_DROPS}
+
+\optattrend
+
+%%%%
+\descr
+
+Request that application processes be monitored via several possible methods.
+For example, that the server monitor this process for periodic heartbeats as an indication that the process has not become ``wedged''.
+When a monitor detects the specified alarm condition, it will generate an event notification using the provided error code and passing along any available relevant information.
+It is up to the caller to register a corresponding event handler.
+
+The \refarg{monitor} argument is an attribute indicating the type of monitor being requested.
+For example, \refattr{PMIX_MONITOR_FILE} to indicate that the requestor is asking that a file be monitored.
+
+The \refarg{error} argument is the status code to be used when generating an event notification alerting that the monitor has been triggered.
+The range of the notification defaults to \refconst{PMIX_RANGE_NAMESPACE}.
+This can be changed by providing a \refconst{PMIX_RANGE} directive.
+
+The \refarg{directives} argument characterizes the monitoring request (e.g., monitor file size) and frequency of checking to be done
+
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Process_monitor_nb}}
@@ -423,22 +637,8 @@ The following attributes may be implemented by a \ac{PMIx} library or by the hos
 %%%%
 \descr
 
-Request that application processes be monitored via several possible methods.
-For example, that the server monitor this process for periodic heartbeats as an indication that the process has not become ``wedged''.
-When a monitor detects the specified alarm condition, it will generate an event notification using the provided error code and passing along any available relevant information.
-It is up to the caller to register a corresponding event handler.
 
-The \refarg{monitor} argument is an attribute indicating the type of monitor being requested.
-For example, \refattr{PMIX_MONITOR_FILE} to indicate that the requestor is asking that a file be monitored.
-
-The \refarg{error} argument is the status code to be used when generating an event notification alerting that the monitor has been triggered.
-The range of the notification defaults to \refconst{PMIX_RANGE_NAMESPACE}.
-This can be changed by providing a \refconst{PMIX_RANGE} directive.
-
-The \refarg{directives} argument characterizes the monitoring request (e.g., monitor file size) and frequency of checking to be done
-
-The \refarg{cbfunc} function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
-
+Non-blocking form of the \refapi{PMIx_Process_monitor} \ac{API}. The \refarg{cbfunc} function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Heartbeat}}
@@ -455,7 +655,7 @@ Send a heartbeat to the \ac{PMIx} server library
 \versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
-void PMIx_Heartbeat(void)
+PMIx_Heartbeat(void)
 \end{codepar}
 \cspecificend
 
@@ -473,6 +673,87 @@ A simplified macro wrapping \refapi{PMIx_Process_monitor_nb} that sends a heartb
 
 The logging interface supports posting information by applications and SMS elements to persistent storage. This function is \textit{not} intended for output of computational results, but rather for reporting status and saving state information such as inserting computation progress reports into the application's \ac{SMS} job log or error reports to the local syslog.
 
+\subsection{\code{PMIx_Log}}
+\declareapi{PMIx_Log}
+
+%%%%
+\summary
+
+Log data to a data service.
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Log(const pmix_info_t data[], size_t ndata,
+            const pmix_info_t directives[], size_t ndirs)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{data}{Array of info structures (array of handles)}
+\argin{ndata}{Number of elements in the \refarg{data} array (\code{size_t})}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\end{arglist}
+
+Return codes are one of the following:
+
+\begin{constantdesc}
+    \item \refconst{PMIX_SUCCESS} The logging request was successful.
+    \item \refconst{PMIX_ERR_BAD_PARAM} The logging request contains at least one incorrect entry.
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation or host environment does not support this function.
+\end{constantdesc}
+
+\reqattrstart
+If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
+
+\pastePRIAttributeItem{PMIX_USERID}
+\pastePRIAttributeItem{PMIX_GRPID}
+
+Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes:
+
+\pastePRIAttributeItem{PMIX_LOG_STDERR}
+\pastePRIAttributeItem{PMIX_LOG_STDOUT}
+\pastePRIAttributeItem{PMIX_LOG_SYSLOG}
+\pastePRIAttributeItem{PMIX_LOG_LOCAL_SYSLOG}
+\pastePRIAttributeItem{PMIX_LOG_GLOBAL_SYSLOG}
+\pastePRIAttributeItem{PMIX_LOG_SYSLOG_PRI}
+\pastePRIAttributeItem{PMIX_LOG_ONCE}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments or \ac{PMIx} libraries that support this operation:
+
+\pastePRIAttributeItem{PMIX_LOG_SOURCE}
+\pastePRIAttributeItem{PMIX_LOG_TIMESTAMP}
+\pastePRIAttributeItem{PMIX_LOG_GENERATE_TIMESTAMP}
+\pastePRIAttributeItem{PMIX_LOG_TAG_OUTPUT}
+\pastePRIAttributeItem{PMIX_LOG_TIMESTAMP_OUTPUT}
+\pastePRIAttributeItem{PMIX_LOG_XML_OUTPUT}
+\pastePRRTEAttributeItem{PMIX_LOG_EMAIL}
+\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_ADDR}
+\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
+\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_MSG}
+\pasteAttributeItem{PMIX_LOG_JOB_RECORD}
+\pasteAttributeItem{PMIX_LOG_GLOBAL_DATASTORE}
+
+\optattrend
+
+%%%%
+\descr
+
+Log data subject to the services offered by the host environment. The data to be logged is provided in the \refarg{data} array. The (optional) \refarg{directives} can be used to direct the choice of logging channel.
+
+\adviceuserstart
+It is strongly recommended that the \refapi{PMIx_Log} API not be used by applications for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon. Note that a return of \refconst{PMIX_SUCCESS} only denotes that the data was successfully handed to the appropriate system call (for local channels) or the host environment and does not indicate receipt at the final destination.
+\adviceuserend
+
+%
 \subsection{\code{PMIx_Log_nb}}
 \declareapi{PMIx_Log_nb}
 
@@ -506,9 +787,10 @@ PMIx_Log_nb(const pmix_info_t data[], size_t ndata,
 Return codes are one of the following:
 
 \begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The logging request is valid and is being processed. The resulting status from the operation will be provided in the callback function.
-\item \refconst{PMIX_ERR_BAD_PARAM} The logging request contains at least one incorrect entry that prevents it from being processed. The callback function will \emph{not} be called.
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function. The callback function will \emph{not} be called.
+    \item \refconst{PMIX_SUCCESS} The logging request is valid and is being processed. The resulting status from the operation will be provided in the callback function.
+    \item \refconst{PMIX_ERR_BAD_PARAM} The logging request contains at least one incorrect entry that prevents it from being processed. The callback function will \emph{not} be called.
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation or host environment does not support this function. The callback function will \emph{not} be called.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED} The request has been completed - the callback function will \emph{not} be called.
 \end{constantdesc}
 
 \reqattrstart
@@ -517,22 +799,33 @@ If the \ac{PMIx} library does not itself perform this operation, then it is requ
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
 
-Host environments that implement support for this operation are required to support the following attributes:
+Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes:
 
 \pastePRIAttributeItem{PMIX_LOG_STDERR}
 \pastePRIAttributeItem{PMIX_LOG_STDOUT}
 \pastePRIAttributeItem{PMIX_LOG_SYSLOG}
+\pastePRIAttributeItem{PMIX_LOG_LOCAL_SYSLOG}
+\pastePRIAttributeItem{PMIX_LOG_GLOBAL_SYSLOG}
+\pastePRIAttributeItem{PMIX_LOG_SYSLOG_PRI}
+\pastePRIAttributeItem{PMIX_LOG_ONCE}
 
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments that support this operation:
+The following attributes are optional for host environments or \ac{PMIx} libraries that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_LOG_MSG}
+\pastePRIAttributeItem{PMIX_LOG_SOURCE}
+\pastePRIAttributeItem{PMIX_LOG_TIMESTAMP}
+\pastePRIAttributeItem{PMIX_LOG_GENERATE_TIMESTAMP}
+\pastePRIAttributeItem{PMIX_LOG_TAG_OUTPUT}
+\pastePRIAttributeItem{PMIX_LOG_TIMESTAMP_OUTPUT}
+\pastePRIAttributeItem{PMIX_LOG_XML_OUTPUT}
 \pastePRRTEAttributeItem{PMIX_LOG_EMAIL}
 \pastePRRTEAttributeItem{PMIX_LOG_EMAIL_ADDR}
 \pastePRRTEAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
 \pastePRRTEAttributeItem{PMIX_LOG_EMAIL_MSG}
+\pasteAttributeItem{PMIX_LOG_JOB_RECORD}
+\pasteAttributeItem{PMIX_LOG_GLOBAL_DATASTORE}
 
 \optattrend
 
@@ -543,7 +836,7 @@ Log data subject to the services offered by the host environment. The data to be
 The callback function will be executed when the log operation has been completed. The \refarg{data} and \refarg{directives} arrays must be maintained until the callback is provided.
 
 \adviceuserstart
-It is strongly recommended that the \refapi{PMIx_Log_nb} API not be used by applications for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon.
+It is strongly recommended that the \refapi{PMIx_Log_nb} API not be used by applications for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon. Note that a return of \refconst{PMIX_SUCCESS} only denotes that the data was successfully handed to the appropriate system call (for local channels) or the host environment and does not indicate receipt at the final destination.
 \adviceuserend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

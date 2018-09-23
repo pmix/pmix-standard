@@ -1,4 +1,4 @@
-# Makefile for the PMIx Standard document in LaTex format. 
+# Makefile for the PMIx Standard document in LaTex format.
 # For more information, see the master document, pmix-standard.tex.
 
 version=2.0
@@ -15,6 +15,7 @@ CHAPTERS= \
 	Chap_API_Job_Mgmt.tex \
 	Chap_API_Event.tex \
 	Chap_API_Data_Mgmt.tex \
+	Chap_API_Security.tex \
 	Chap_API_Server.tex \
 	App_Support.tex \
 	Acknowledgements.tex
@@ -23,7 +24,7 @@ SOURCES=
 # SOURCES=sources/*.c \
 # 	sources/*.cpp \
 # 	sources/*.f90 \
-# 	sources/*.f 
+# 	sources/*.f
 
 INTERMEDIATE_FILES=pmix-standard.pdf \
 		pmix-standard.toc \

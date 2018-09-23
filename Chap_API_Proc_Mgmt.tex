@@ -529,4 +529,199 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect_nb} or its blocking version, \textit{and} the host environment has completed any required supporting operations.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{IO Forwarding}
+\label{chap:api_proc_mgmt:iof}
+
+This section defines functions by which tools (e.g., debuggers) can request forwarding of input/output to/from other processes. The term ``tool'' widely refers to non-computational programs executed by the user or system administrator on a command line. Tools almost always interact with either the host environment, user applications, or both to perform administrative and support functions. For example, a debugger tool might be used to remotely control the processes of a parallel application, monitoring their behavior on a step-by-step basis.
+
+Underlying the operation of many tools is a common need to forward stdin from the tool to targeted processes, and to return stdout/stderr from those processes for display on the user’s console. Historically, each tool developer was responsible for creating their own \ac{IO} forwarding subsystem. However, with the introduction of \ac{PMIx} as a standard mechanism for interacting between applications and the host environment, it has become possible to relieve tool developers of this burden.
+
+\advicermstart
+The responsibility of the host environment in forwarding of \ac{IO} falls into the following areas:
+
+\begin{itemize}
+    \item Capturing output from specified child processes
+    \item Forwarding that output to the host of the \ac{PMIx} server library that requested it
+    \item Delivering that payload to the \ac{PMIx} server library via the \refapi{PMIx_server_IOF_deliver} \ac{API} for final disposition
+\end{itemize}
+
+It is the responsibility of the \ac{PMIx} library to buffer, format, and deliver the payload to the requesting client.
+\advicermend
+
+\adviceuserstart
+The forwarding of \ac{IO} via \ac{PMIx} requires that both the host environment and the tool support \ac{PMIx}, but does not impose any similar requirements on the application itself.
+\adviceuserend
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_IOF_pull}}
+\declareapi{PMIx_IOF_pull}
+
+%%%%
+\summary
+
+Register to receive output forwarded from a remote process.
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_IOF_pull(const pmix_proc_t procs[], size_t nprocs,
+              const pmix_info_t directives[], size_t ndirs,
+              pmix_iof_channel_t channel, pmix_iof_cbfunc_t cbfunc,
+              pmix_hdlr_reg_cbfunc_t regcbfunc, void *regcbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{procs}{Array of proc structures identifying desired source processes (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\argin{channel}{Bitmask of IO channels included in the request (\refstruct{pmix_iof_channel_t})}
+\argin{cbfunc}{Callback function for delivering relevant output (function reference)}
+\argin{regcbfunc}{Function to be called when registration is completed (function reference)}
+\argin{regcbdata}{Data to be passed to the \refarg{regcbfunc} callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{regcbfunc} will \textit{not} be called
+
+\reqattrstart
+The following attributes are required for \ac{PMIx} libraries that support \ac{IO} forwarding:
+
+\pastePRIAttributeItem{PMIX_IOF_CACHE_SIZE}
+\pastePRIAttributeItem{PMIX_IOF_DROP_OLDEST}
+\pastePRIAttributeItem{PMIX_IOF_DROP_NEWEST}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for \ac{PMIx} libraries that support \ac{IO} forwarding:
+
+\pastePRIAttributeItem{PMIX_IOF_BUFFERING_SIZE}
+\pastePRIAttributeItem{PMIX_IOF_BUFFERING_TIME}
+\pastePRIAttributeItem{PMIX_IOF_TAG_OUTPUT}
+\pastePRIAttributeItem{PMIX_IOF_TIMESTAMP_OUTPUT}
+\pastePRIAttributeItem{PMIX_IOF_XML_OUTPUT}
+
+\optattrend
+
+%%%%
+\descr
+
+Register to receive output forwarded from a remote process.
+
+\adviceuserstart
+Providing a \code{NULL} function pointer for the \refarg{cbfunc} parameter will cause output for the indicated channels to be written to their corresponding stdout/stderr file descriptors. Use of \refconst{PMIX_RANK_WILDCARD} to specify all processes in a given namespace is supported but should be used carefully due to bandwidth considerations.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_IOF_deregister}}
+\declareapi{PMIx_IOF_deregister}
+
+%%%%
+\summary
+
+Deregister from output forwarded from a remote process.
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_IOF_deregister(size_t iofhdlr,
+                    const pmix_info_t directives[], size_t ndirs,
+                    pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{iofhdlr}{Registration number returned from the call to PMIx_IOF_pull (\code{size_t})}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\argin{cbfunc}{Callback function to be called when deregistration has been completed. (function reference)}
+\argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called
+
+%%%%
+\descr
+
+Deregister from output forwarded from a remote process
+
+\adviceimplstart
+Any currently buffered \ac{IO} should be flushed upon receipt of a deregistration request. All received \ac{IO} after receipt of the request shall be discarded.
+\adviceimplend
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_IOF_push}}
+\declareapi{PMIx_IOF_push}
+
+%%%%
+\summary
+
+Push data collected locally (typically from stdin or a file) to stdin of the target recipients.
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_IOF_push(const pmix_proc_t targets[], size_t ntargets,
+              pmix_byte_object_t *bo,
+              const pmix_info_t directives[], size_t ndirs,
+              pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{targets}{Array of proc structures identifying desired target processes (array of handles)}
+\argin{ntargets}{Number of elements in the \refarg{targets} array (integer)}
+\argin{bo}{Pointer to \refstruct{pmix_byte_object_t} containing the payload to be delivered (handle)}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{cbfunc}{Callback function to be called when operation has been completed. (function reference)}
+\argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called
+
+\reqattrstart
+The following attributes are required for \ac{PMIx} libraries that support \ac{IO} forwarding:
+
+\pastePRIAttributeItem{PMIX_IOF_CACHE_SIZE}
+\pastePRIAttributeItem{PMIX_IOF_DROP_OLDEST}
+\pastePRIAttributeItem{PMIX_IOF_DROP_NEWEST}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for \ac{PMIx} libraries that support \ac{IO} forwarding:
+
+\pastePRIAttributeItem{PMIX_IOF_BUFFERING_SIZE}
+\pastePRIAttributeItem{PMIX_IOF_BUFFERING_TIME}
+
+\optattrend
+
+%%%%
+\descr
+
+Push data collected locally (typically from stdin or a file) to stdin of the target recipients.
+
+\adviceuserstart
+Execution of the \refarg{cbfunc} callback function serves as notice that the \ac{PMIx} library no longer requires the caller to maintain the \refarg{bo} data object - it does \textit{not} indicate delivery of the payload to the targets. Use of \refconst{PMIX_RANK_WILDCARD} to specify all processes in a given namespace is supported but should be used carefully due to bandwidth considerations.
+\adviceuserend
+
+
