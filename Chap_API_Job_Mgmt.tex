@@ -442,12 +442,12 @@ The \refarg{cbfunc} function provides a \refarg{status} to indicate whether or n
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Heartbeat}}
-\declareapi{PMIx_Heartbeat}
+\declaremacro{PMIx_Heartbeat}
 
 %%%%
 \summary
 
-Send a heartbeat to the \ac{RM}
+Send a heartbeat to the \ac{PMIx} server library
 
 %%%%
 \format
@@ -463,7 +463,7 @@ void PMIx_Heartbeat(void)
 %%%%
 \descr
 
-A simplified version of \refapi{PMIx_Process_monitor_nb} that sends a heartbeat to the \ac{RM}.
+A simplified macro wrapping \refapi{PMIx_Process_monitor_nb} that sends a heartbeat to the \ac{PMIx} server library.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -512,7 +512,10 @@ Return codes are one of the following:
 \end{constantdesc}
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
+
+\pastePRIAttributeItem{PMIX_USERID}
+\pastePRIAttributeItem{PMIX_GRPID}
 
 Host environments that implement support for this operation are required to support the following attributes:
 
