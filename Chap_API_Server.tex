@@ -8,6 +8,10 @@ The \ac{RM} daemon that hosts the \ac{PMIx} server library interacts with that l
 
 Second, the host can provide a set of callback functions by which the \ac{PMIx} server library can pass requests upward for servicing by the host. These include notifications of client connection and finalize, as well as requests by clients for information and/or services that the \ac{PMIx} server library does not itself provide.
 
+%%%%%%%%%%%
+\section{Server Support Functions}
+
+The following \acp{API} allow the \ac{RM} daemon that hosts the \ac{PMIx} server library to request specific services from the \ac{PMIx} library.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_generate_regex}}
