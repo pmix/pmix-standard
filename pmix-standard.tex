@@ -45,8 +45,8 @@
 \documentclass[10pt,letterpaper,twoside,makeidx,hidelinks]{scrreprt}
 
 % Text to appear in the footer on even-numbered pages:
-\newcommand{\VER}{2.0}
-\newcommand{\VERDATE}{September 2018}
+\newcommand{\VER}{3.0 (draft)}
+\newcommand{\VERDATE}{November 2018}
 \newcommand{\footerText}{PMIx Standard -- Version \VER{} -- \VERDATE}
 
 % Unified style sheet for PMIx documents:
@@ -79,6 +79,7 @@
 \acrodef{PRI}[PRI]{PMIx Reference Implementation}
 \acrodef{ECC}[ECC]{Error Check and Correction}
 \acrodef{FM}[FM]{Fabric Manager}
+\acrodef{IO}[IO]{Input/Output}
 
 %%%%%%%%%%%%%%%%%%%
 
@@ -147,6 +148,9 @@
     % Data Packing & Unpacking
     %  - (un)pack, copy
     \input{Chap_API_Data_Mgmt.tex}
+
+    % Security credentials
+    \input{Chap_API_Security.tex}
 
     % PMIx Server Specific Interfaces
     %  - setup_fork, (de)register_nspace, pmix_server_module_t
