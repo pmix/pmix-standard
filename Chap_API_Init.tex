@@ -335,6 +335,58 @@ Finalize the PMIx tool library, closing the connection to the server.
 An error code will be returned if, for some reason, the connection cannot be cleanly terminated --- in this case, the connection is dropped.
 
 
+%%%%%%%%%%%
+\subsection{\code{PMIx_tool_connect_to_server}}
+\declareapi{PMIx_tool_connect_to_server}
+
+%%%%
+\summary
+
+Switch connection from the current \ac{PMIx} server to another one, or initialize a connection to a specified server.
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_tool_connect_to_server(pmix_proc_t *proc,
+                            pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\reqattrstart
+The following attributes are required to be supported by all \ac{PMIx} libraries:
+
+\pastePRIAttributeItem{PMIX_CONNECT_TO_SYSTEM}
+\pastePRIAttributeItem{PMIX_CONNECT_SYSTEM_FIRST}
+\pastePRIAttributeItem{PMIX_SERVER_URI}
+\pastePRIAttributeItem{PMIX_SERVER_NSPACE}
+\pastePRIAttributeItem{PMIX_SERVER_PIDINFO}
+
+\reqattrend
+
+%%%%
+\descr
+
+Switch connection from the current \ac{PMIx} server to another one, or initialize a connection to a specified server. Closes the connection, if existing, to a server and establishes a connection to the specified server. This function can be called at any time by a \ac{PMIx} tool to shift connections between servers.
+
+\adviceimplstart
+\ac{PMIx} tools and clients are prohibited from being connected to more than one server at a time to avoid confusion in subsystems such as event notification.
+\adviceimplend
+
+\adviceuserstart
+Passing a \code{NULL} value for the \refarg{info} pointer is not allowed and will result in return of an error.
+
+\ac{PMIx} does not currently support on-the-fly changes to the tool's identifier. Thus, the new server must be under the same namespace manager (e.g., host \ac{RM}) as the prior server so that the original namespace assigned to the tool remains unique. The \refarg{proc} parameter is included here for obsolence protection in case this constraint is someday removed. Meantime, the parameter (if non-NULL) will be filled with the tool's existing nspace/rank.
+
+\adviceuserend
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Server Initialization and Finalization}
