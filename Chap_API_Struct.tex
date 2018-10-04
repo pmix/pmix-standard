@@ -2345,11 +2345,6 @@ Temporary directory for this system, and where a PMIx server that declares itsel
 }
 
 %
-\declareAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
-Registration is for the namespace only. Do not copy job data.
-}
-
-%
 \declareAttribute{PMIX_SERVER_ENABLE_MONITORING}{"pmix.srv.monitor"}{bool}{
 Enable PMIx internal monitoring by the PMIx server.
 }
@@ -2889,11 +2884,6 @@ These attributes are used to describe topology information in the PMIx universe.
 %
 \declareAttribute{PMIX_LOCAL_TOPO}{"pmix.ltopo"}{char*}{
 \ac{XML} representation of local node topology.
-}
-
-%
-\declareAttribute{PMIX_NODE_LIST}{"pmix.nlist"}{char*}{
-Comma-delimited list of nodes running processes for this job.
 }
 
 %
