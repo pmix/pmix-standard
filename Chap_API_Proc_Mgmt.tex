@@ -534,7 +534,7 @@ Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called on
 \section{IO Forwarding}
 \label{chap:api_proc_mgmt:iof}
 
-This section defines functions by which tools (e.g., debuggers) can request forwarding of input/output to/from other processes. The term ``tool'' widely refers to non-computational programs executed by the user or system administrator on a command line. Tools almost always interact with either the host environment, user applications, or both to perform administrative and support functions. For example, a debugger tool might be used to remotely control the processes of a parallel application, monitoring their behavior on a step-by-step basis.
+This section defines functions by which tools (e.g., debuggers) can request forwarding of input/output to/from other processes. The term ``tool'' widely refers to non-computational programs executed by the user or system administrator to monitor or control a principal computational program. Tools almost always interact with either the host environment, user applications, or both to perform administrative and support functions. For example, a debugger tool might be used to remotely control the processes of a parallel application, monitoring their behavior on a step-by-step basis.
 
 Underlying the operation of many tools is a common need to forward stdin from the tool to targeted processes, and to return stdout/stderr from those processes for display on the user’s console. Historically, each tool developer was responsible for creating their own \ac{IO} forwarding subsystem. However, with the introduction of \ac{PMIx} as a standard mechanism for interacting between applications and the host environment, it has become possible to relieve tool developers of this burden.
 
@@ -544,7 +544,7 @@ The responsibility of the host environment in forwarding of \ac{IO} falls into t
 \begin{itemize}
     \item Capturing output from specified child processes
     \item Forwarding that output to the host of the \ac{PMIx} server library that requested it
-    \item Delivering that payload to the \ac{PMIx} server library via the \refapi{PMIx_server_IOF_deliver} \ac{API} for final disposition
+    \item Delivering that payload to the \ac{PMIx} server library via the \refapi{PMIx_server_IOF_deliver} \ac{API} for final dispatch
 \end{itemize}
 
 It is the responsibility of the \ac{PMIx} library to buffer, format, and deliver the payload to the requesting client.
