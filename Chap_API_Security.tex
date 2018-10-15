@@ -14,7 +14,7 @@ This section defines two \ac{PMIx} client-side \acp{API} for this purpose. These
 \section{Obtaining Credentials}
 \label{chap:api_security:obtain}
 
-The \ac{API} for obtaining a credential is defined as a non-blocking operation since the host environment may have to contact a remote credential service. The definition takes into account the potential that the returned credential could be sent via some mechanism to another application that resides in an environment using a different security mechanism. Thus, provision is made for the system to return additional information (e.g., the identity of the issuing agent) outside of the credential itself and visible to the application.
+The \ac{API} for obtaining a credential is a non-blocking operation since the host environment may have to contact a remote credential service. The definition takes into account the potential that the returned credential could be sent via some mechanism to another application that resides in an environment using a different security mechanism. Thus, provision is made for the system to return additional information (e.g., the identity of the issuing agent) outside of the credential itself and visible to the application.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Get_credential}}
@@ -75,7 +75,7 @@ Request a credential from the \ac{PMIx} server library or the host environment
 \section{Validating Credentials}
 \label{chap:api_security:validate}
 
-The \ac{API} for validating a credential is again defined as a non-blocking operation since the host environment may have to contact a remote credential service. Provision is made for the system to return additional information regarding possible authorization limitations beyond simple authentication.
+The \ac{API} for validating a credential is a non-blocking operation since the host environment may have to contact a remote credential service. Provision is made for the system to return additional information regarding possible authorization limitations beyond simple authentication.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Validate_credential}}
