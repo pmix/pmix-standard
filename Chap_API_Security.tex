@@ -51,7 +51,9 @@ Returns one of the following:
 \end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, if the request cannot be processed by the library itself, then any attributes provided by the client must be passed to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
+\ac{PMIx} libraries that choose not to support this operation \textit{must} return \refconst{PMIX_ERR_NOT_SUPPORTED} when the function is called. Implementations that support the operation may choose to internally execute integration for some security environments (e.g., directly contacting a \textit{munge} server) - there are no identified required attributes for this \ac{API}.
+
+However, if the \ac{PMIx} implementation provides support for this \ac{API} and the request cannot be processed by the library itself, then any attributes that are provided by the client must be passed to the host environment for processing. In addition, the following attributes are required to be included in the \refarg{info} array passed from the \ac{PMIx} library to the host environment:
 
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
@@ -64,6 +66,10 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
 
 %%%%
 \descr
@@ -114,7 +120,9 @@ Returns one of the following:
 \end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, if the request cannot be processed by the library itself, then any attributes provided by the client must be passed to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
+\ac{PMIx} libraries that choose not to support this operation \textit{must} return \refconst{PMIX_ERR_NOT_SUPPORTED} when the function is called. Implementations that support the operation may choose to internally execute integration for some security environments (e.g., directly contacting a \textit{munge} server) - there are no identified required attributes for this \ac{API}.
+
+However, if the \ac{PMIx} implementation provides support for this \ac{API} and the request cannot be processed by the library itself, then any attributes that are provided by the client must be passed to the host environment for processing. In addition, the following attributes are required to be included in the \refarg{info} array passed from the \ac{PMIx} library to the host environment:
 
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
