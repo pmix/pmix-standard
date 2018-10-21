@@ -285,6 +285,7 @@ The \ac{GDS} action has completed
 \declareconstitem{PMIX_ERR_INVALID_OPERATION}
 The requested operation is supported by the implementation and host environment, but fails to meet a requirement (e.g., requesting to \textit{disconnect} from processes without first \textit{connecting} to them).
 
+\versionMarker{3.0}
 \declareconstitemNEW{PMIX_PROC_HAS_CONNECTED}
 A tool or client has connected to the \ac{PMIx} server
 %
@@ -1332,7 +1333,7 @@ PMIX_INFO_REQUIRED(info);
 \argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-This macro simplifies the setting of the \refstruct{PMIX_INFO_REQD} flag in \refstruct{pmix_info_t} structures.
+This macro simplifies the setting of the \refconst{PMIX_INFO_REQD} flag in \refstruct{pmix_info_t} structures.
 
 %%%%
 \subsubsection{Mark an info structure as optional}
@@ -1431,11 +1432,11 @@ A value boundary above which implementers are free to define their own directive
 
 
 %%%%%%%%%%%
-\subsection{IOF Channels}
+\subsection{IO Forwarding Channels}
 \declarestruct{pmix_iof_channel_t}
 
 \versionMarker{3.0}
-The \refstruct{pmix_iof_channel_t} structure is a \code{uint16_t} type that defines a set of bit-mask flags for specifying IO forwarding channels. These can be OR'd together to reference multiple channels
+The \refstruct{pmix_iof_channel_t} structure is a \code{uint16_t} type that defines a set of bit-mask flags for specifying IO forwarding channels. These can be bitwise OR'd together to reference multiple channels.
 
 \begin{constantdesc}
 %
@@ -1466,12 +1467,12 @@ Forward all available channels
 
 \versionMarker{3.0}
 Define a structure for specifying environment variable modifications.
-Standard environment variables (e.g., PATH, LD_LIBRARY_PATH, and LD_PRELOAD)
+Standard environment variables (e.g., \code{PATH}, \code{LD_LIBRARY_PATH}, and \code{LD_PRELOAD})
 take multiple arguments separated by delimiters. Unfortunately, the delimiters
 depend upon the variable itself - some use semi-colons, some colons, etc. Thus,
 the operation requires not only the name of the variable to be modified and
 the value to be inserted, but also the separator to be used when composing
-the aggregate value
+the aggregate value.
 
 \cspecificstart
 \begin{codepar}
@@ -3766,14 +3767,13 @@ Number of Megabytes.
 
 %
 \declareNewAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
-Array of \refstruct{pmix_info_t} describing requested network resources. This must include at least: PMIX_ALLOC_NETWORK_ID, PMIX_ALLOC_NETWORK_TYPE, and PMIX_ALLOC_NETWORK_ENDPTS, plus whatever other descriptors are desired
+Array of \refstruct{pmix_info_t} describing requested network resources. This must include at least: \refattr{PMIX_ALLOC_NETWORK_ID}, \refattr{PMIX_ALLOC_NETWORK_TYPE}, and \refattr{PMIX_ALLOC_NETWORK_ENDPTS}, plus whatever other descriptors are desired.
 }
 
 %
 \declareNewAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
-key to be used when accessing this requested network allocation. The allocation will be returned/stored as a \refstruct{pmix_data_array_t} of
-\refstruct{pmix_info_t} indexed by this key and containing at least one entry with the same key and the allocated resource description.
-The type of the included value depends upon the network support. For example, a TCP allocation might consist of a comma-delimited string of socket ranges such as "32000-32100,33005,38123-38146". Additional entries will consist of any provided resource request directives, along with their assigned values. Examples include: PMIX_ALLOC_NETWORK_TYPE - the type of resources provided; PMIX_ALLOC_NETWORK_PLANE - if applicable, what plane the resources were assigned from; PMIX_ALLOC_NETWORK_QOS - the assigned QoS; PMIX_ALLOC_BANDWIDTH - the allocated bandwidth; PMIX_ALLOC_NETWORK_SEC_KEY - a security key for the requested network allocation. NOTE: the assigned values may differ from those requested, especially if \refstruct{PMIX_INFO_REQD} was not set in the request
+The key to be used when accessing this requested network allocation. The allocation will be returned/stored as a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} indexed by this key and containing at least one entry with the same key and the allocated resource description.
+The type of the included value depends upon the network support. For example, a TCP allocation might consist of a comma-delimited string of socket ranges such as \var{"32000-32100,33005,38123-38146"}. Additional entries will consist of any provided resource request directives, along with their assigned values. Examples include: \refattr{PMIX_ALLOC_NETWORK_TYPE} - the type of resources provided; \refattr{PMIX_ALLOC_NETWORK_PLANE} - if applicable, what plane the resources were assigned from; \refattr{PMIX_ALLOC_NETWORK_QOS} - the assigned QoS; \refattr{PMIX_ALLOC_BANDWIDTH} - the allocated bandwidth; \refattr{PMIX_ALLOC_NETWORK_SEC_KEY} - a security key for the requested network allocation. NOTE: the assigned values may differ from those requested, especially if \refconst{PMIX_INFO_REQD} was not set in the request.
 }
 
 %
@@ -3793,7 +3793,7 @@ Time in seconds.
 
 %
 \declareNewAttribute{PMIX_ALLOC_NETWORK_TYPE}{"pmix.alloc.nettype"}{char*}{
-Type of desired transport (e.g., ``tcp'', ``udp'')
+Type of desired transport (e.g., \var{``tcp''}, \var{``udp''})
 }
 
 %
@@ -3930,7 +3930,7 @@ Comma-delimited list of filenames that are not to be removed
 
 %
 \declareNewAttribute{PMIX_CLEANUP_LEAVE_TOPDIR}{"pmix.clnup.lvtop"}{bool}{
-When recursively cleaning subdirs, do not remove the top-level directory (the one given in the cleanup request)
+When recursively cleaning subdirectories, do not remove the top-level directory (the one given in the cleanup request)
 }
 
 
@@ -4009,13 +4009,14 @@ Number of file checks that can be missed before generating the event.
 \subsection{Security attributes}
 \label{api:struct:attributes:security}
 
+\versionMarker{3.0}
 Attributes for managing security credentials
 
 %
 \declareNewAttribute{PMIX_CRED_TYPE}{"pmix.sec.ctype"}{char*}{
 When passed in \refapi{PMIx_Get_credential}, a prioritized, comma-delimited list of desired credential types for use
 in environments where multiple authentication mechanisms may be available. When returned in a callback function, a
-string identifier of the credential type
+string identifier of the credential type.
 }
 
 %
@@ -4028,42 +4029,43 @@ Blob containing crypto key
 \subsection{IO Forwarding attributes}
 \label{api:struct:attributes:security}
 
-Attributes used to control IO forwarding behaviors
+\versionMarker{3.0}
+Attributes used to control IO forwarding behavior
 
 %
 \declareNewAttribute{PMIX_IOF_CACHE_SIZE}{"pmix.iof.csize"}{uint32_t}{
-requested size of the server cache in bytes for each specified channel. By default, the server is allowed (but not required) to drop all bytes received beyond the max size
+The requested size of the server cache in bytes for each specified channel. By default, the server is allowed (but not required) to drop all bytes received beyond the max size.
 }
 
 %
 \declareNewAttribute{PMIX_IOF_DROP_OLDEST}{"pmix.iof.old"}{bool}{
-In an overflow situation, drop the oldest bytes to make room in the cache
+In an overflow situation, drop the oldest bytes to make room in the cache.
 }
 
 %
 \declareNewAttribute{PMIX_IOF_DROP_NEWEST}{"pmix.iof.new"}{bool}{
-In an overflow situation, drop any new bytes received until room becomes available in the cache (default)
+In an overflow situation, drop any new bytes received until room becomes available in the cache (default).
 }
 
 %
 \declareNewAttribute{PMIX_IOF_BUFFERING_SIZE}{"pmix.iof.bsize"}{uint32_t}{
-Controls grouping of IO on the specified channel(s) to avoid being called every time a bit of IO arrives. The library will execute the callback whenever the specified number of bytes becomes available. Any remaining buffered data will be ``flushed'' upon call to deregister the respective channel
+Controls grouping of IO on the specified channel(s) to avoid being called every time a bit of IO arrives. The library will execute the callback whenever the specified number of bytes becomes available. Any remaining buffered data will be ``flushed'' upon call to deregister the respective channel.
 }
 
 %
 \declareNewAttribute{PMIX_IOF_BUFFERING_TIME}{"pmix.iof.btime"}{uint32_t}{
 Max time in seconds to buffer IO before delivering it. Used in conjunction with buffering size, this
-prevents IO from being held indefinitely while waiting for another payload to arrive
+prevents IO from being held indefinitely while waiting for another payload to arrive.
 }
 
 %
 \declareNewAttribute{PMIX_IOF_COMPLETE}{"pmix.iof.cmp"}{bool}{
-Indicates whether or not the specified IO channel has been closed by the source
+Indicates whether or not the specified IO channel has been closed by the source.
 }
 
 %
 \declareNewAttribute{PMIX_IOF_TAG_OUTPUT}{"pmix.iof.tag"}{bool}{
-Tag output with the channel it comes from
+Tag output with the channel it comes from.
 }
 
 %
@@ -4080,6 +4082,7 @@ Format output in \ac{XML}
 \subsection{Application setup attributes}
 \label{api:struct:attributes:security}
 
+\versionMarker{3.0}
 Attributes for controlling contents of application setup data
 
 %
@@ -4702,10 +4705,10 @@ typedef void (*pmix_validation_cbfunc_t)(
 %%%%
 \descr
 
-Define a validation callback function to indicate if a provided credential is valid, and any corresponding information regarding authorizations and other security matters
+Define a validation callback function to indicate if a provided credential is valid, and any corresponding information regarding authorizations and other security matters.
 
 \adviceuserstart
-The precise contents of the array will depend on the host environment and its associated security system. At the minimum, it is expected (but not required) that the array will contain entries for the \refattr{PMIX_USERID} and \refattr{PMIX_GROUPID} of the client described in the credential. The \refarg{info} array is owned by the \ac{PMIx} library and is not to be released or altered by the receiving party.
+The precise contents of the array will depend on the host environment and its associated security system. At the minimum, it is expected (but not required) that the array will contain entries for the \refattr{PMIX_USERID} and \refattr{PMIX_GRPID} of the client described in the credential. The \refarg{info} array is owned by the \ac{PMIx} library and is not to be released or altered by the receiving party.
 \adviceuserend
 
 %%%%%%%%%%%
@@ -4734,7 +4737,7 @@ typedef void (*pmix_iof_cbfunc_t)(
 \argin{iofhdlr}{Registration number of the handler being invoked (\code{size_t})}
 \argin{channel}{bitmask identifying the channel the data arrived on (\refstruct{pmix_iof_channel_t})}
 \argin{source}{Pointer to a \refstruct{pmix_proc_t} identifying the namespace/rank of the process that generated the data (\code{char*})}
-\argin{payload}{Pointer to character array containing the data. Note that }
+\argin{payload}{Pointer to character array containing the data.}
 \argin{info}{Array of \refstruct{pmix_info_t} provided by the source containing metadata about the payload. This could include \refconst{PMIX_IOF_COMPLETE} (handle)}
 \argin{ninfo}{Number of elements in \refarg{info} (\code{size_t})}
 \end{arglist}
@@ -4748,6 +4751,40 @@ specified buffering size and/or time has been met.
 \adviceuserstart
 Multiple strings may be included in a given \refarg{payload}, and the \refarg{payload} may \textit{not} be \code{NULL} terminated. The user is responsible for releasing the \refarg{payload} memory. The \refarg{info} array is owned by the \ac{PMIx} library and is not to be released or altered by the receiving party.
 \adviceuserend
+
+
+%%%%%%%%%%%
+\subsection{IOF and Event registration function}
+\declareapi{pmix_hdlr_reg_cbfunc_t}
+
+%%%%
+\summary
+
+Callback function for calls to register handlers, e.g., event notification and IOF requests.
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_hdlr_reg_cbfunc_t)(pmix_status_t status,
+                                       size_t refid,
+                                       void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{status}{\refconst{PMIX_SUCCESS} or an appropriate error constant (\refstruct{pmix_status_t})}
+\argin{refid}{reference identifier assigned to the handler by PMIx, used to deregister the handler (\code{size_t})}
+\argin{cbdata}{object provided to the registration call (pointer)}
+\end{arglist}
+
+%%%%
+\descr
+
+Callback function for calls to register handlers, e.g., event notification and IOF requests.
+
 
 %%%%%%%%%%%
 \section{Constant String Functions}

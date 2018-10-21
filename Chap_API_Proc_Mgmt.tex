@@ -562,7 +562,7 @@ The forwarding of \ac{IO} via \ac{PMIx} requires that both the host environment 
 %%%%
 \summary
 
-Register to receive output forwarded from a remote process.
+Register to receive output forwarded from a set of remote processes.
 
 %%%%
 \format
@@ -584,12 +584,12 @@ PMIx_IOF_pull(const pmix_proc_t procs[], size_t nprocs,
 \argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
 \argin{channel}{Bitmask of IO channels included in the request (\refstruct{pmix_iof_channel_t})}
-\argin{cbfunc}{Callback function for delivering relevant output (function reference)}
-\argin{regcbfunc}{Function to be called when registration is completed (function reference)}
+\argin{cbfunc}{Callback function for delivering relevant output (\refapi{pmix_iof_cbfunc_t} function reference)}
+\argin{regcbfunc}{Function to be called when registration is completed (\refapi{pmix_hdlr_reg_cbfunc_t} function reference)}
 \argin{regcbdata}{Data to be passed to the \refarg{regcbfunc} callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{regcbfunc} will \textit{not} be called
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{regcbfunc} will \textit{not} be called.
 
 \reqattrstart
 The following attributes are required for \ac{PMIx} libraries that support \ac{IO} forwarding:
@@ -614,7 +614,7 @@ The following attributes are optional for \ac{PMIx} libraries that support \ac{I
 %%%%
 \descr
 
-Register to receive output forwarded from a remote process.
+Register to receive output forwarded from a set of remote processes.
 
 \adviceuserstart
 Providing a \code{NULL} function pointer for the \refarg{cbfunc} parameter will cause output for the indicated channels to be written to their corresponding stdout/stderr file descriptors. Use of \refconst{PMIX_RANK_WILDCARD} to specify all processes in a given namespace is supported but should be used carefully due to bandwidth considerations.
@@ -627,7 +627,7 @@ Providing a \code{NULL} function pointer for the \refarg{cbfunc} parameter will 
 %%%%
 \summary
 
-Deregister from output forwarded from a remote process.
+Deregister from output forwarded from a set of remote processes.
 
 %%%%
 \format
@@ -643,19 +643,19 @@ PMIx_IOF_deregister(size_t iofhdlr,
 \cspecificend
 
 \begin{arglist}
-\argin{iofhdlr}{Registration number returned from the call to PMIx_IOF_pull (\code{size_t})}
+\argin{iofhdlr}{Registration number returned from the \refapi{pmix_hdlr_reg_cbfunc_t} callback from the call to \refapi{PMIx_IOF_pull} (\code{size_t})}
 \argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
 \argin{cbfunc}{Callback function to be called when deregistration has been completed. (function reference)}
 \argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called.
 
 %%%%
 \descr
 
-Deregister from output forwarded from a remote process
+Deregister from output forwarded from a set of remote processes.
 
 \adviceimplstart
 Any currently buffered \ac{IO} should be flushed upon receipt of a deregistration request. All received \ac{IO} after receipt of the request shall be discarded.
@@ -692,11 +692,11 @@ PMIx_IOF_push(const pmix_proc_t targets[], size_t ntargets,
 \argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
 \argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
-\argin{cbfunc}{Callback function to be called when operation has been completed. (function reference)}
+\argin{cbfunc}{Callback function to be called when operation has been completed. (\refapi{pmix_op_cbfunc_t} function reference)}
 \argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called.
 
 \reqattrstart
 The following attributes are required for \ac{PMIx} libraries that support \ac{IO} forwarding:
