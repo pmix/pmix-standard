@@ -1,7 +1,7 @@
 # Makefile for the PMIx Standard document in LaTex format.
 # For more information, see the master document, pmix-standard.tex.
 
-version=2.0
+version=3.0
 default: pmix-standard.pdf
 
 CHAPTERS= \
