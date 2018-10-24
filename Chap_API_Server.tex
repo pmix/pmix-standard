@@ -588,7 +588,7 @@ PMIx_server_IOF_deliver(const pmix_proc_t *source,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called.
 
 %%%%
 \descr
@@ -611,19 +611,21 @@ Collect inventory of resources on a node
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_server_collect_inventory(const pmix_info_t directives[], size_t ndirs,
-                              pmix_info_cbfunc_t cbfunc, void *cbdata);
+PMIx_server_collect_inventory(const pmix_info_t directives[],
+                              size_t ndirs,
+                              pmix_info_cbfunc_t cbfunc,
+                              void *cbdata);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{directives}{Array of \refstruct{pmix_info_t} directing the request (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
-\argin{cbfunc}{Callback function to return collected data (function reference)}
+\argin{cbfunc}{Callback function to return collected data (\refapi{pmix_info_cbfunc_t} function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called.
 
 %%%%
 \descr
@@ -650,9 +652,12 @@ Pass collected inventory to the \ac{PMIx} server library for storage
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_server_deliver_inventory(const pmix_info_t info[], size_t ninfo,
-                              const pmix_info_t directives[], size_t ndirs,
-                              pmix_op_cbfunc_t cbfunc, void *cbdata);
+PMIx_server_deliver_inventory(const pmix_info_t info[],
+                              size_t ninfo,
+                              const pmix_info_t directives[],
+                              size_t ndirs,
+                              pmix_op_cbfunc_t cbfunc,
+                              void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -665,12 +670,12 @@ PMIx_server_deliver_inventory(const pmix_info_t info[], size_t ninfo,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called.
 
 %%%%
 \descr
 
-Provide a function by which the host environment can pass inventory information obtained from a node to the \ac{PMIx} server library for storage. Inventory data is subsequently used by the \ac{PMIx} server library for allocations in response to \refapi{PMIx_server_setup_application}, and may be available to the library's host via the \ac{PMIx_Get} \ac{API} (depending upon \ac{PMIx} implementation). The \refarg{cbfunc} callback function will be called once the \ac{PMIx} server library no longer requires access to the provided data.
+Provide a function by which the host environment can pass inventory information obtained from a node to the \ac{PMIx} server library for storage. Inventory data is subsequently used by the \ac{PMIx} server library for allocations in response to \refapi{PMIx_server_setup_application}, and may be available to the library's host via the \refapi{PMIx_Get} \ac{API} (depending upon \ac{PMIx} implementation). The \refarg{cbfunc} callback function will be called once the \ac{PMIx} server library no longer requires access to the provided data.
 
 %%%%%%%%%%%
 \section{Server Function Pointers}
@@ -782,12 +787,12 @@ the client.
 The server_object parameter will be the value of the server_object parameter passed to
 \refapi{PMIx_server_register_client} by the host server when registering the connecting client.  If provided, an implementation of \refapi{pmix_server_client_connected_fn_t}
 is only required to
-call the callback function designated.  A host server can choose to not be notified when clients connect by setting \refapi{client_connected} to \code{NULL}.
+call the callback function designated.  A host server can choose to not be notified when clients connect by setting \refapi{pmix_server_client_connected_fn_t} to \code{NULL}.
 
-It is possible that only a subset of the clients in a namespace call \refapi{PMIx_init}.   The server's \refapi{pmix_server_client_connected_fn_t} implementation
+It is possible that only a subset of the clients in a namespace call \refapi{PMIx_Init}.   The server's \refapi{pmix_server_client_connected_fn_t} implementation
 should not depend on being called once per rank in a namespace or delay calling the callback function until all ranks have connected.
 However, if a rank makes any \ac{PMIx} calls, it must first call \refapi{PMIx_Init} and
-therefore the server's \refapi{mpix_server_client_connected_fn_t} will be called before any other server functions specific to the rank.
+therefore the server's \refapi{pmix_server_client_connected_fn_t} will be called before any other server functions specific to the rank.
 
 \advicermstart
  This operation is an opportunity for a host environment
@@ -835,10 +840,10 @@ Note that the client will be in a blocked state until the host server executes t
 The server_object parameter will be the value of the server_object parameter passed to
 \refapi{PMIx_server_register_client} by the host server when registering the connecting client.  If provided, an implementation of \refapi{pmix_server_client_finalized_fn_t}
 is only required to
-call the callback function designated.  A host server can choose to not be notified when clients finalize by setting \refapi{client_finalized} to \code{NULL}.
+call the callback function designated.  A host server can choose to not be notified when clients finalize by setting \refapi{pmix_server_client_finalized_fn_t} to \code{NULL}.
 
 Note that the host server is only being informed that the client has called \refapi{PMIx_Finalize}.  The client might not have exited.  If a client
-exits without calling \refapi{PMIx_Finalize}, the server support library will not call the \refapi{PMIx_server_client_finalized_fn_t} implementation.
+exits without calling \refapi{PMIx_Finalize}, the server support library will not call the \refapi{pmix_server_client_finalized_fn_t} implementation.
 
 \advicermstart
 This operation is an opportunity for a host server
@@ -2119,8 +2124,10 @@ Request a credential from the host environment
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_get_cred_fn_t)(
                              const pmix_proc_t *proc,
-                             const pmix_info_t directives[], size_t ndirs,
-                             pmix_credential_cbfunc_t cbfunc, void *cbdata);
+                             const pmix_info_t directives[],
+                             size_t ndirs,
+                             pmix_credential_cbfunc_t cbfunc,
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2128,11 +2135,11 @@ typedef pmix_status_t (*pmix_server_get_cred_fn_t)(
 \argin{proc}{\refstruct{pmix_proc_t} structure of requesting process (handle)}
 \argin{directives}{Array of info structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function to return the credential (function reference)}
+\argin{cbfunc}{Callback function to return the credential (\refapi{pmix_credential_cbfunc_t} function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called.
 
 \reqattrstart
 If the \ac{PMIx} library does not itself provide the requested credential, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
@@ -2182,8 +2189,10 @@ Request validation of a credential
 typedef pmix_status_t (*pmix_server_validate_cred_fn_t)(
                              const pmix_proc_t *proc,
                              const pmix_byte_object_t *cred,
-                             const pmix_info_t directives[], size_t ndirs,
-                             pmix_validation_cbfunc_t cbfunc, void *cbdata);
+                             const pmix_info_t directives[],
+                             size_t ndirs,
+                             pmix_validation_cbfunc_t cbfunc,
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2192,7 +2201,7 @@ typedef pmix_status_t (*pmix_server_validate_cred_fn_t)(
 \argin{cred}{Pointer to \refstruct{pmix_byte_object_t} containing the credential (handle)}
 \argin{directives}{Array of info structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function to return the result (function reference)}
+\argin{cbfunc}{Callback function to return the result (\refapi{pmix_validation_cbfunc_t} function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
@@ -2238,7 +2247,7 @@ Request validation of a credential obtained from the host environment via a prio
 %%%%
 \summary
 
-Request the specified IO channels be forwarded from the given array of procs.
+Request the specified IO channels be forwarded from the given array of processes.
 
 %%%%
 \format
@@ -2247,10 +2256,10 @@ Request the specified IO channels be forwarded from the given array of procs.
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_iof_fn_t)(
-                             const pmix_proc_t procs[], size_t nprocs,
-                             const pmix_info_t directives[], size_t ndirs,
-                             pmix_iof_channel_t channels,
-                             pmix_op_cbfunc_t cbfunc, void *cbdata);
+                        const pmix_proc_t procs[], size_t nprocs,
+                        const pmix_info_t directives[], size_t ndirs,
+                        pmix_iof_channel_t channels,
+                        pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2296,10 +2305,10 @@ The following attributes may be supported by a host environment.
 %%%%
 \descr
 
-Request the specified IO channels be forwarded from the given array of procs. An error shall be returned in the callback function if the requested service from \textit{any} of the requested procs cannot be provided.
+Request the specified IO channels be forwarded from the given array of processes. An error shall be returned in the callback function if the requested service from \textit{any} of the requested processes cannot be provided.
 
 \adviceimplstart
-The forwarding of stdin is a \textit{push} process - procs cannot request that it be \textit{pulled} from some other source. Requests including the \refconst{PMIX_FWD_STDIN_CHANNEL} channel will return a \refconst{PMIX_ERR_NOT_SUPPORTED} error.
+The forwarding of stdin is a \textit{push} process - processes cannot request that it be \textit{pulled} from some other source. Requests including the \refconst{PMIX_FWD_STDIN_CHANNEL} channel will return a \refconst{PMIX_ERR_NOT_SUPPORTED} error.
 \adviceimplend
 
 
@@ -2310,7 +2319,7 @@ The forwarding of stdin is a \textit{push} process - procs cannot request that i
 %%%%
 \summary
 
-Pass stdin data to the host environment for transmission to specified recipients.
+Pass standard input data to the host environment for transmission to specified recipients.
 
 %%%%
 \format
@@ -2319,11 +2328,13 @@ Pass stdin data to the host environment for transmission to specified recipients
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_stdin_fn_t)(
-                             const pmix_proc_t *source,
-                             const pmix_proc_t targets[], size_t ntargets,
-                             const pmix_info_t directives[], size_t ndirs,
-                             const pmix_byte_object_t *bo,
-                             pmix_op_cbfunc_t cbfunc, void *cbdata);
+                           const pmix_proc_t *source,
+                           const pmix_proc_t targets[],
+                           size_t ntargets,
+                           const pmix_info_t directives[],
+                           size_t ndirs,
+                           const pmix_byte_object_t *bo,
+                           pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 

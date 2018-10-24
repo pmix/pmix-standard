@@ -1,7 +1,7 @@
 # Makefile for the PMIx Standard document in LaTex format.
 # For more information, see the master document, pmix-standard.tex.
 
-version=2.0
+version=3.0
 default: pmix-standard.pdf
 
 CHAPTERS= \
@@ -56,7 +56,10 @@ pmix-standard.pdf: $(CHAPTERS) $(SOURCES) pmix.sty pmix-standard.tex figs/pmix-l
 	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex || \
 		pdflatex -interaction=errorstopmode -file-line-error pmix-standard.tex  < /dev/null
 	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex
-	@echo "====> Success"
+	@echo "====> Checking References (pmix-standard.log)"
+	@grep "Hyper reference" pmix-standard.log | grep Warning && \
+	echo "====> Error check references (above)" || \
+	echo "====> Success"
 	cp pmix-standard.pdf pmix-standard-${version}.pdf
 
 clean:

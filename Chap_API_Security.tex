@@ -31,15 +31,16 @@ Request a credential from the \ac{PMIx} server library or the host environment
 \versionMarker{3.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_Get_credential(const pmix_info_t info[], size_t ninfo,
-                             pmix_credential_cbfunc_t cbfunc, void *cbdata)
+pmix_status_t
+PMIx_Get_credential(const pmix_info_t info[], size_t ninfo,
+                    pmix_credential_cbfunc_t cbfunc, void *cbdata)
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\argin{info}{Array of \refattr{pmix_info_t} structures (array of handles)}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
-\argin{cbfunc}{Callback function to return credential (function reference)}
+\argin{cbfunc}{Callback function to return credential (\refapi{pmix_credential_cbfunc_t} function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
@@ -98,17 +99,19 @@ Request validation of a credential by the \ac{PMIx} server library or the host e
 \versionMarker{3.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_Validate_credential(const pmix_byte_object_t *cred,
-                             const pmix_info_t info[], size_t ninfo,
-                             pmix_validation_cbfunc_t cbfunc, void *cbdata)
+pmix_status_t
+PMIx_Validate_credential(const pmix_byte_object_t *cred,
+                         const pmix_info_t info[], size_t ninfo,
+                         pmix_validation_cbfunc_t cbfunc,
+                         void *cbdata)
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{cred}{Pointer to \refstruct{pmix_byte_object_t} containing the credential (handle)}
-\argin{info}{Array of \refattr{pmix_info_t} structures (array of handles)}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
-\argin{cbfunc}{Callback function to return result (function reference)}
+\argin{cbfunc}{Callback function to return result (\refapi{pmix_validation_cbfunc_t} function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
@@ -144,7 +147,7 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 %%%%
 \descr
 
-Request validation of a credential by the \ac{PMIx} server library or the host environment
+Request validation of a credential by the \ac{PMIx} server library or the host environment.
 
 
 
