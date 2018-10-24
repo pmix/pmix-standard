@@ -37,7 +37,7 @@ pmix_status_t PMIx_Get_credential(const pmix_info_t info[], size_t ninfo,
 \cspecificend
 
 \begin{arglist}
-\argin{info}{Array of \refattr{pmix_info_t} structures (array of handles)}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
 \argin{cbfunc}{Callback function to return credential (function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
@@ -100,7 +100,7 @@ pmix_status_t PMIx_Validate_credential(const pmix_byte_object_t *cred,
 
 \begin{arglist}
 \argin{cred}{Pointer to \refstruct{pmix_byte_object_t} containing the credential (handle)}
-\argin{info}{Array of \refattr{pmix_info_t} structures (array of handles)}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
 \argin{cbfunc}{Callback function to return result (function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
