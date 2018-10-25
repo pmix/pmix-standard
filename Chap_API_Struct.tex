@@ -2991,7 +2991,7 @@ Caller requests that the PMIx server wait until at least the specified number of
 
 %
 \declareAttribute{PMIX_COLLECTIVE_ALGO}{"pmix.calgo"}{char*}{
-Comma-delimited list of algorithms to use for the collective operation.
+Comma-delimited list of algorithms to use for the collective operation. \ac{PMIx} does not impose any requirements on a host environment's collective algorithms. Thus, the acceptable values for this attribute will be environment-dependent - users are encouraged to check their host environment for supported values.
 }
 
 %
