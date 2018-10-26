@@ -52,9 +52,17 @@ Returns one of the following:
 \end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries that choose not to support this operation \textit{must} return \refconst{PMIX_ERR_NOT_SUPPORTED} when the function is called. Implementations that support the operation may choose to internally execute integration for some security environments (e.g., directly contacting a \textit{munge} server) - there are no identified required attributes for this \ac{API}.
+\ac{PMIx} libraries that choose not to support this operation \textit{must} return \refconst{PMIX_ERR_NOT_SUPPORTED} when the function is called.
 
-However, if the \ac{PMIx} implementation provides support for this \ac{API} and the request cannot be processed by the library itself, then any attributes that are provided by the client must be passed to the host environment for processing. In addition, the following attributes are required to be included in the \refarg{info} array passed from the \ac{PMIx} library to the host environment:
+There are no required attributes for this \ac{API} mplementations that support the operation may choose to internally execute integration for some security environments (e.g., directly contacting a \textit{munge} server) - there are no identified required attributes for this \ac{API}.
+
+For implementations that support the operation, there are no identified required
+attributes for this \ac{API}. Note that implementations may choose to internally
+execute integration for some security environments (e.g., directly
+contacting a \textit{munge} server).
+
+Finally, for implementations that support the operation but the client's request
+cannot be processed by the \ac{PMIx} library itself, then any attributes that are provided by the client must be passed to the host environment for processing. In addition, the following attributes are required to be included in the \refarg{info} array passed from the \ac{PMIx} library to the host environment:
 
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
@@ -123,9 +131,17 @@ Returns one of the following:
 \end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries that choose not to support this operation \textit{must} return \refconst{PMIX_ERR_NOT_SUPPORTED} when the function is called. Implementations that support the operation may choose to internally execute integration for some security environments (e.g., directly contacting a \textit{munge} server) - there are no identified required attributes for this \ac{API}.
+\ac{PMIx} libraries that choose not to support this operation \textit{must} return \refconst{PMIX_ERR_NOT_SUPPORTED} when the function is called.
 
-However, if the \ac{PMIx} implementation provides support for this \ac{API} and the request cannot be processed by the library itself, then any attributes that are provided by the client must be passed to the host environment for processing. In addition, the following attributes are required to be included in the \refarg{info} array passed from the \ac{PMIx} library to the host environment:
+There are no required attributes for this \ac{API} mplementations that support the operation may choose to internally execute integration for some security environments (e.g., directly contacting a \textit{munge} server) - there are no identified required attributes for this \ac{API}.
+
+For implementations that support the operation, there are no identified required
+attributes for this \ac{API}. Note that implementations may choose to internally
+execute integration for some security environments (e.g., directly
+contacting a \textit{munge} server).
+
+Finally, for implementations that support the operation but the client's request
+cannot be processed by the \ac{PMIx} library itself, then any attributes that are provided by the client must be passed to the host environment for processing. In addition, the following attributes are required to be included in the \refarg{info} array passed from the \ac{PMIx} library to the host environment:
 
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
