@@ -157,8 +157,8 @@ Recognizing the burden this places on SMS vendors, the PMIx community has includ
 which the host can request support from local SMS elements. Once the SMS has transferred the request to
 an appropriate location, a PMIx server interface can be used to pass the request between SMS subsystems.
 For example, a request for network traffic statistics can utilize the
-PMIx networking abstractions to retrieve the information from the FM. This reduces the portability and 
-interoperability issues between the individual subsystems by transferring the burden of defining the 
+PMIx networking abstractions to retrieve the information from the FM. This reduces the portability and
+interoperability issues between the individual subsystems by transferring the burden of defining the
 interoperable interfaces from the SMS subsystems to the PMIx community, which continues
 to work with those providers to develop the necessary support.
 
@@ -302,4 +302,16 @@ The following \acp{API} were introduced in v2.0 of the PMIx Standard:
 
 The \refapi{PMIx_Init} \ac{API} was modified in v2.0 of the standard from its \textit{ad hoc} v1.0 signature to include passing of a \refstruct{pmix_info_t} array for flexibility and ``future-proofing'' of the \ac{API}.
 In addition, the \code{PMIx_Notify_error}, \code{PMIx_Register_errhandler}, and \code{PMIx_Deregister_errhandler} \acp{API} were replaced.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% History: Version 2.1
+\section{Version 2.1: Nov. 2018}
+
+The v2.1 update includes minor clarifications and corrections:
+
+\begin{itemize}
+    \item Clarify description of \refapi{PMIx_Connect} and \refapi{PMIx_Disconnect} \acp{API}.
+    \item Explain that values for the \refattr{PMIX_COLLECTIVE_ALGO} are environment-dependent
+    \item Identify the namespace/rank values required for retrieving attribute-associated information using the \refapi{PMIx_Get} \ac{API}
+\end{itemize}
 
