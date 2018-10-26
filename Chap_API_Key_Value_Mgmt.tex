@@ -132,7 +132,7 @@ The \refarg{info} array is used to pass user requests regarding the get operatio
 \adviceuserstart
 Information provided by the \ac{PMIx} server at time of process start is accessed by providing the namespace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. The list of data referenced in this way is maintained on the \ac{PMIx} web site at \url{https://pmix.org/support/faq/wildcard-rank-access/} but includes items such as the number of processes in the namespace (\refattr{PMIX_JOB_SIZE}), total available slots in the allocation (\refattr{PMIX_UNIV_SIZE}), and the number of nodes in the allocation (\refattr{PMIX_NUM_NODES}).
 
-In general, only data posted by a process via \refapi{PMIx_Put} needs to be retrieved by specifying the rank of the posting process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD}.
+Data posted by a process via \refapi{PMIx_Put} needs to be retrieved by specifying the rank of the posting process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD} when the information being retrieved refers to something non-rank specific (e.g., number of processes on a node, number of processes in a job), and using the rank of the relevant process when requesting information that is rank-specific (e.g., the \ac{URI} of the process, or the node upon which it is executing). Each subsection of Section \ref{api:struct:attributes} indicates the appropriate rank value for referencing the defined attribute.
 \adviceuserend
 
 %%%%%%%%%%%

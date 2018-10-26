@@ -2313,7 +2313,7 @@ Constant representing an undefined attribute.
 \subsection{Initialization attributes}
 \label{api:struct:attributes:init}
 
-These attributes are defined to assist the caller with initialization.
+These attributes are defined to assist the caller with initialization by passing them into the appropriate initialization \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_EVENT_BASE}{"pmix.evbase"}{struct event_base *}{
@@ -2370,7 +2370,8 @@ Server is acting as a gateway for PMIx requests that cannot be serviced on backe
 \subsection{Tool-related attributes}
 \label{api:struct:attributes:tool}
 
-These attributes are defined to assist PMIx-enabled tools to connect with the PMIx server.
+These attributes are defined to assist PMIx-enabled tools to connect with the PMIx server by passing them into the \refapi{PMIx_tool_init} \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
+
 
 %
 \declareAttribute{PMIX_TOOL_NSPACE}{"pmix.tool.nspace"}{char*}{
@@ -2437,7 +2438,7 @@ Tool is a launcher and needs rendezvous files created
 \subsection{Identification attributes}
 \label{api:struct:attributes:ident}
 
-These attributes are defined to identify a process
+These attributes are defined to identify a process and it's associated PMIx-enabled library. They are not typically accessed via the \refapi{PMIx_Get} \ac{API}, and thus are not associated with a particular rank.
 
 %
 \declareAttribute{PMIX_USERID}{"pmix.euid"}{uint32_t}{
@@ -2534,7 +2535,7 @@ Thread affinity policy - e.g.:
 \subsection{UNIX socket rendezvous socket attributes}
 \label{api:struct:attributes:usock}
 
-These attributes are used to describe a UNIX socket for rendezvous with the local \ac{RM}.
+These attributes are used to describe a UNIX socket for rendezvous with the local \ac{RM} by passing them into the relevant initialization \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_USOCK_DISABLE}{"pmix.usock.disable"}{bool}{
@@ -2556,7 +2557,7 @@ Use only one rendezvous socket, letting priorities and/or environment parameters
 \subsection{TCP connection attributes}
 \label{api:struct:attributes:tcp}
 
-These attributes are used to describe a TCP socket for rendezvous with the local \ac{RM}.
+These attributes are used to describe a TCP socket for rendezvous with the local \ac{RM} by passing them into the relevant initialization \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_TCP_REPORT_URI}{"pmix.tcp.repuri"}{char*}{
@@ -2603,7 +2604,7 @@ Set to \code{true} to disable IPv6 family of addresses.
 \subsection{Global Data Storage (GDS) attributes}
 \label{api:struct:attributes:gds}
 
-These attributes are used to define the behavior of the \ac{GDS} used to manage key/value pairs.
+These attributes are used to define the behavior of the \ac{GDS} used to manage key/value pairs by passing them into the relevant initialization \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_GDS_MODULE}{"pmix.gds.mod"}{char*}{
@@ -2615,7 +2616,7 @@ Comma-delimited string of desired modules.
 \subsection{General process-level attributes}
 \label{api:struct:attributes:gproc}
 
-These attributes are used to define process attributes.
+These attributes are used to define process attributes and are referenced by their process rank.
 
 %
 \declareAttribute{PMIX_CPUSET}{"pmix.cpuset"}{char*}{
@@ -2642,7 +2643,7 @@ Architecture flag.
 \subsection{Scratch directory attributes}
 \label{api:struct:attributes:scratchdir}
 
-These attributes are used to define an application scratch directory.
+These attributes are used to define an application scratch directory and are referenced using the \refconst{PMIX_RANK_WILDCARD} rank.
 
 %
 \declareAttribute{PMIX_TMPDIR}{"pmix.tmpdir"}{char*}{
@@ -2669,7 +2670,7 @@ Resource Manager will clean session directories
 \subsection{Relative Rank Descriptive Attributes}
 \label{api:struct:attributes:relrankinfo}
 
-These attributes are used to describe information about relative ranks as assigned by the \ac{RM}.
+These attributes are used to describe information about relative ranks as assigned by the \ac{RM}, and thus are referenced using the process rank except where noted.
 
 %
 \declareNewAttribute{PMIX_CLUSTER_ID}{"pmix.clid"}{char*}{
@@ -2713,7 +2714,7 @@ Process rank within this application.
 
 %
 \declareAttribute{PMIX_NPROC_OFFSET}{"pmix.offset"}{pmix_rank_t}{
-Starting global rank of this job.
+Starting global rank of this job - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
@@ -2728,12 +2729,12 @@ Process rank on this node spanning all jobs.
 
 %
 \declareAttribute{PMIX_LOCALLDR}{"pmix.lldr"}{pmix_rank_t}{
-Lowest rank on this node within this job.
+Lowest rank on this node within this job - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
 \declareAttribute{PMIX_APPLDR}{"pmix.aldr"}{pmix_rank_t}{
-Lowest rank in this application within this job.
+Lowest rank in this application within this job - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
@@ -2743,17 +2744,17 @@ Lowest rank in this application within this job.
 
 %
 \declareAttribute{PMIX_SESSION_ID}{"pmix.session.id"}{uint32_t}{
-Session identifier.
+Session identifier - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
 \declareAttribute{PMIX_NODE_LIST}{"pmix.nlist"}{char*}{
-Comma-delimited list of nodes running processes for the specified namespace.
+Comma-delimited list of nodes running processes for the specified namespace - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
 \declareAttribute{PMIX_ALLOCATED_NODELIST}{"pmix.alist"}{char*}{
-Comma-delimited list of all nodes in this allocation regardless of whether or not they currently host processes.
+Comma-delimited list of all nodes in this allocation regardless of whether or not they currently host processes - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
@@ -2768,17 +2769,17 @@ Node identifier where the specified process is located, expressed as the node's 
 
 %
 \declareAttribute{PMIX_LOCAL_PEERS}{"pmix.lpeers"}{char*}{
-Comma-delimited list of ranks on this node within the specified namespace.
+Comma-delimited list of ranks on this node within the specified namespace - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
 \declareAttribute{PMIX_LOCAL_PROCS}{"pmix.lprocs"}{pmix_proc_t array}{
-Array of \refstruct{pmix_proc_t} of processes on the specified node.
+Array of \refstruct{pmix_proc_t} of processes on the specified node - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
 \declareAttribute{PMIX_LOCAL_CPUSETS}{"pmix.lcpus"}{char*}{
-Colon-delimited cpusets of local peers within the specified namespace.
+Colon-delimited cpusets of local peers within the specified namespace - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
@@ -2788,7 +2789,7 @@ Colon-delimited cpusets of local peers within the specified namespace.
 
 %
 \declareAttribute{PMIX_LOCALITY}{"pmix.loc"}{uint16_t}{
-Relative locality of two processes.
+Relative locality of the specified process to the requestor.
 }
 
 %
@@ -2806,7 +2807,7 @@ Exit code returned when process terminated
 \subsection{Size information attributes}
 \label{api:struct:attributes:sizeinfo}
 
-These attributes are used to describe the size of various dimensions of the PMIx universe.
+These attributes are used to describe the size of various dimensions of the PMIx universe - all are referenced using \refconst{PMIX_RANK_WILDCARD}.
 
 %
 \declareAttribute{PMIX_UNIV_SIZE}{"pmix.univ.size"}{uint32_t}{
@@ -2853,7 +2854,7 @@ Number of nodes in this namespace.
 \subsection{Memory information attributes}
 \label{api:struct:attributes:meminfo}
 
-These attributes are used to describe memory available and used in the system.
+These attributes are used to describe memory available and used in the system - all are referenced using \refconst{PMIX_RANK_WILDCARD}.
 
 %
 \declareAttribute{PMIX_AVAIL_PHYS_MEMORY}{"pmix.pmem"}{uint64_t}{
@@ -2875,7 +2876,7 @@ Average Megabytes of memory used by client processes.
 \subsection{Topology information attributes}
 \label{api:struct:attributes:topoinfo}
 
-These attributes are used to describe topology information in the PMIx universe.
+These attributes are used to describe topology information in the PMIx universe - all are referenced using \refconst{PMIX_RANK_WILDCARD} except where noted.
 
 %
 \declareAttribute{PMIX_NET_TOPO}{"pmix.ntopo"}{char*}{
@@ -2909,7 +2910,7 @@ Topology signature string.
 
 %
 \declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
-String describing a process's bound location.
+String describing a process's bound location - referenced using the process's rank.
 The string is of the form:\\
 \code{NM\%s:SK\%s:L3\%s:L2\%s:L1\%s:CR\%s:HT\%s}\\
 Where the \code{\%s} is replaced with an integer index or inclusive range for hwloc.
@@ -2966,7 +2967,7 @@ Kind of VM ``hole'' HWLOC should use for shared memory
 \subsection{Request-related attributes}
 \label{api:struct:attributes:request}
 
-These attributes are used to influence the behavior of various PMIx operations.
+These attributes are used to influence the behavior of various PMIx operations - they do not represent values accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_COLLECT_DATA}{"pmix.collect"}{bool}{
@@ -3027,8 +3028,8 @@ Look only in the client's local data store for the requested value - do not requ
 %
 \declareAttribute{PMIX_EMBED_BARRIER}{"pmix.embed.barrier"}{bool}{
 Execute a blocking fence operation before executing the specified operation.
-By default, \refapi{PMIx_Finalize} does not include an internal barrier operation.
-This attribute directs \refapi{PMIx_Finalize} to execute a barrier as part of the finalize operation.
+For example, \refapi{PMIx_Finalize} does not include an internal barrier operation by default.
+This attribute would direct \refapi{PMIx_Finalize} to execute a barrier as part of the finalize operation.
 }
 
 %
@@ -3047,11 +3048,12 @@ Process state
 \label{api:struct:attributes:server2cl}
 
 Attributes used by the host environment to pass data to its PMIx server library.
-The data will then be parsed and provided to the local PMIx clients.
+The data will then be parsed and provided to the local PMIx clients. These attributes
+are all referenced using \refconst{PMIX_RANK_WILDCARD} except where noted.
 
 %
 \declareAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
-Registration is for this namespace only, do not copy job data.
+Registration is for this namespace only, do not copy job data - this attribute is not accessed using the \refapi{PMIx_Get}
 }
 
 %
@@ -3089,7 +3091,7 @@ Regular expression describing the result of the process mapping.
 \subsection{Server-to-Client attributes}
 \label{api:struct:attributes:server2client}
 
-Attributes used internally to communicate data from the PMIx server to the PMIx client.
+Attributes used internally to communicate data from the PMIx server to the PMIx client - they do not represent values accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_PROC_BLOB}{"pmix.pblob"}{pmix_byte_object_t}{
@@ -3106,7 +3108,7 @@ Packed blob of process location.
 \subsection{Event handler registration and notification attributes}
 \label{api:struct:attributes:event}
 
-Attributes to support event registration and notification.
+Attributes to support event registration and notification - they are values passed to the event registration and notification \acp{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_EVENT_HDLR_NAME}{"pmix.evname"}{char*}{
@@ -3194,7 +3196,7 @@ Do not generate an event when this job normally terminates.
 \subsection{Fault tolerance attributes}
 \label{api:struct:attributes:faulttolerance}
 
-Attributes to support fault tolerance behaviors.
+Attributes to support fault tolerance behaviors - they are values passed to the event notification \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_EVENT_TERMINATE_SESSION}{"pmix.evterm.sess"}{bool}{
@@ -3236,7 +3238,7 @@ Indicates that the handler has determined that the application should be termina
 \subsection{Spawn attributes}
 \label{api:struct:attributes:spawn}
 
-Attributes used to describe \refapi{PMIx_Spawn} behavior.
+Attributes used to describe \refapi{PMIx_Spawn} behavior - they are values passed to the \refapi{PMIx_Spawn} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API} when used in that context. However, some of the attributes defined in this section can be provided by the host environment for other purposes - e.g., the environment might provide the \refattr{PMIX_MAPPER} attribute in the job-related information so that an application can use \refapi{PMIx_Get} to discover the layout algorithm used for determining process locations. Multi-use attributes and their respective access reference rank are denoted below.
 
 %
 \declareAttribute{PMIX_PERSONALITY}{"pmix.pers"}{char*}{
@@ -3275,7 +3277,7 @@ Working directory for spawned processes.
 
 %
 \declareAttribute{PMIX_MAPPER}{"pmix.mapper"}{char*}{
-Mapping mechanism to use for placing spawned processes.
+Mapping mechanism to use for placing spawned processes - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the mapping mechanism used for the provided namespace.
 }
 
 %
@@ -3290,17 +3292,17 @@ Number of processes to spawn on each identified resource.
 
 %
 \declareAttribute{PMIX_MAPBY}{"pmix.mapby"}{char*}{
-Process mapping policy.
+Process mapping policy - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the mapping policy used for the provided namespace
 }
 
 %
 \declareAttribute{PMIX_RANKBY}{"pmix.rankby"}{char*}{
-Process ranking policy.
+Process ranking policy - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the ranking algorithm used for the provided namespace
 }
 
 %
 \declareAttribute{PMIX_BINDTO}{"pmix.bindto"}{char*}{
-Process binding policy.
+Process binding policy - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the binding policy used for the provided namespace
 }
 
 %
@@ -3356,7 +3358,7 @@ Meaning that it is not part of the ``comm_world'' of the parent process.
 
 %
 \declareAttribute{PMIX_SET_SESSION_CWD}{"pmix.ssncwd"}{bool}{
-Set the application's current working directory to the session working directory assigned by the \ac{RM}.
+Set the application's current working directory to the session working directory assigned by the \ac{RM} - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the session working directory assigned to the provided namespace
 }
 
 %
@@ -3386,7 +3388,7 @@ Mark the \code{argv} with the rank of the process.
 
 %
 \declareAttribute{PMIX_CPUS_PER_PROC}{"pmix.cpuperproc"}{uint32_t}{
-Number of cpus to assign to each rank.
+Number of cpus to assign to each rank - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the cpus/process assigned to the provided namespace
 }
 
 %
@@ -3406,7 +3408,7 @@ Report bindings of the individual processes.
 
 %
 \declareAttribute{PMIX_CPU_LIST}{"pmix.cpulist"}{char*}{
-List of cpus to use for this job.
+List of cpus to use for this job - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the cpu list used for the provided namespace
 }
 
 %
@@ -3421,7 +3423,7 @@ Application is continuous, all failed processes should be immediately restarted.
 
 %
 \declareAttribute{PMIX_MAX_RESTARTS}{"pmix.maxrestarts"}{uint32_t}{
-Maximum number of times to restart a job.
+Maximum number of times to restart a job - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the max restarts for the provided namespace
 }
 
 
@@ -3429,7 +3431,7 @@ Maximum number of times to restart a job.
 \subsection{Query attributes}
 \label{api:struct:attributes:query}
 
-Attributes used to describe \refapi{PMIx_Query_info_nb} behavior.
+Attributes used to describe \refapi{PMIx_Query_info_nb} behavior - these are values passed to the \refapi{PMIx_Query_info_nb} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_QUERY_NAMESPACES}{"pmix.qry.ns"}{char*}{
@@ -3511,7 +3513,7 @@ Query number of seconds (\code{uint32_t}) remaining in allocation for the specif
 \subsection{Log attributes}
 \label{api:struct:attributes:log}
 
-Attributes used to describe \refapi{PMIx_Log_nb} behavior.
+Attributes used to describe \refapi{PMIx_Log_nb} behavior - these are values passed to the \refapi{PMIx_Log_nb} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareNewAttribute{PMIX_LOG_SOURCE}{"pmix.log.source"}{pmix_proc_t*}{
@@ -3636,32 +3638,31 @@ Log the provided information to the host environment's job record
 \subsection{Debugger attributes}
 \label{api:struct:attributes:debugger}
 
-Attributes used to assist debuggers.
+Attributes used to assist debuggers - these are values that can be passed to the \refapi{PMIx_Spawn} or \refapi{PMIx_Init} \acp{API}. Some may be accessed using the \refapi{PMIx_Get} \ac{API} with the \refconst{PMIX_RANK_WILDCARD} rank.
 
 %
 \declareAttribute{PMIX_DEBUG_STOP_ON_EXEC}{"pmix.dbg.exec"}{bool}{
-Job is being spawned under debugger.
-The processes are instructed to pause on start.
+Passed to \refapi{PMIx_Spawn} to indicate that the specified application is being spawned under debugger, and that the launcher is to pause the resulting application processes on first instruction for debugger attach.
 }
 
 %
 \declareAttribute{PMIX_DEBUG_STOP_IN_INIT}{"pmix.dbg.init"}{bool}{
-Instruct job to stop processes during \refapi{PMIx_Init}.
+Passed to \refapi{PMIx_Spawn} to indicate that the specified application is being spawned under debugger, and that the \ac{PMIx} client library is to pause the resulting application processes during \refapi{PMIx_Init} until debugger attach and release.
 }
 
 %
 \declareAttribute{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
-Block at desired point until receiving debugger release notification.
+Passed to \refapi{PMIx_Spawn} to indicate that the specified application is being spawned under debugger, and that the resulting application processes are to pause at some application-determined location until debugger attach and release.
 }
 
 %
 \declareAttribute{PMIX_DEBUG_JOB}{"pmix.dbg.job"}{char*}{
-Namespace of the job to be debugged.
+Namespace of the job to be debugged - provided to the debugger upon launch.
 }
 
 %
 \declareAttribute{PMIX_DEBUG_WAITING_FOR_NOTIFY}{"pmix.dbg.waiting"}{bool}{
-Job to be debugged is waiting for a release.
+Job to be debugged is waiting for a release - this is not a value accessed using the \refapi{PMIx_Get} \ac{API}.
 }
 
 %
@@ -3679,7 +3680,7 @@ Array of app-level directives
 \subsection{Resource manager attributes}
 \label{api:struct:attributes:rm}
 
-Attributes used to describe the \ac{RM}.
+Attributes used to describe the \ac{RM} - these are values assigned by the host environment and accessed using the \refapi{PMIx_Get} \ac{API}. The value of the provided namespace is unimportant but should be given as the namespace of the requesting process and a rank of \refconst{PMIX_RANK_WILDCARD} used to indicate that the information will be found with the job-level information.
 
 %
 \declareAttribute{PMIX_RM_NAME}{"pmix.rm.name"}{char*}{
@@ -3696,7 +3697,7 @@ String name of the \ac{RM}.
 \subsection{Environment variable attributes}
 \label{api:struct:attributes:envar}
 
-Attributes used to adjust environment variables.
+Attributes used to adjust environment variables - these are values passed to the \refapi{PMIx_Spawn} \ac{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareNewAttribute{PMIX_SET_ENVAR}{"pmix.envar.set"}{pmix_envar_t*}{
@@ -3728,7 +3729,7 @@ Append the given value to the specified environmental value using the given sepa
 \subsection{Job Allocation attributes}
 \label{api:struct:attributes:joballoc}
 
-Attributes used to describe the job allocation.
+Attributes used to describe the job allocation - these are values passed to the \refapi{PMIx_Allocation_request_nb} \ac{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}
 
 %
 \declareAttribute{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
@@ -3821,7 +3822,7 @@ Network security key
 \subsection{Job control attributes}
 \label{api:struct:attributes:jobcontrol}
 
-Attributes used to request control operations on an executing application.
+Attributes used to request control operations on an executing application - these are values passed to the \refapi{PMIx_Job_control_nb} \ac{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_JOB_CTRL_ID}{"pmix.jctrl.id"}{char*}{
@@ -3938,7 +3939,7 @@ When recursively cleaning subdirectories, do not remove the top-level directory 
 \subsection{Monitoring attributes}
 \label{api:struct:attributes:monitor}
 
-Attributes used to control monitoring of an executing application.
+Attributes used to control monitoring of an executing application- these are values passed to the \refapi{PMIx_Process_monitor_nb} \ac{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_MONITOR_ID}{"pmix.monitor.id"}{char*}{
@@ -4099,7 +4100,6 @@ Include all relevant data other than environmental variables
 \declareNewAttribute{PMIX_SETUP_APP_ALL}{"pmix.setup.all"}{bool}{
 Include all relevant data
 }
-
 
 %%%%%%%%%%%
 \section{Callback Functions}
