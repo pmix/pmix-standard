@@ -57,10 +57,10 @@ pmix-standard.pdf: $(CHAPTERS) $(SOURCES) pmix.sty pmix-standard.tex figs/pmix-l
 		pdflatex -interaction=errorstopmode -file-line-error pmix-standard.tex  < /dev/null
 	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex
 	@echo "====> Checking References (pmix-standard.log)"
-	@grep "Hyper reference" pmix-standard.log | grep Warning && \
-	echo "====> Error check references (above)" || \
-	echo "====> Success"
-	cp pmix-standard.pdf pmix-standard-${version}.pdf
+	@grep "Hyper reference" pmix-standard.log | grep Warning \
+	&& { echo "====> Error check references (above)" ; exit 1; } || { exit 0; }
+	@echo "====> Success"
+	@cp pmix-standard.pdf pmix-standard-${version}.pdf
 
 clean:
-	rm -f $(INTERMEDIATE_FILES)
+	rm -f $(INTERMEDIATE_FILES) pmix-standard-*.pdf
