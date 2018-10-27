@@ -636,12 +636,12 @@ the client.
 The server_object parameter will be the value of the server_object parameter passed to
 \refapi{PMIx_server_register_client} by the host server when registering the connecting client.  If provided, an implementation of \refapi{pmix_server_client_connected_fn_t}
 is only required to
-call the callback function designated.  A host server can choose to not be notified when clients connect by setting \refapi{client_connected} to \code{NULL}.
+call the callback function designated.  A host server can choose to not be notified when clients connect by setting \refapi{pmix_server_client_connected_fn_t} to \code{NULL}.
 
-It is possible that only a subset of the clients in a namespace call \refapi{PMIx_init}.   The server's \refapi{pmix_server_client_connected_fn_t} implementation
+It is possible that only a subset of the clients in a namespace call \refapi{PMIx_Init}.   The server's \refapi{pmix_server_client_connected_fn_t} implementation
 should not depend on being called once per rank in a namespace or delay calling the callback function until all ranks have connected.
 However, if a rank makes any \ac{PMIx} calls, it must first call \refapi{PMIx_Init} and
-therefore the server's \refapi{mpix_server_client_connected_fn_t} will be called before any other server functions specific to the rank.
+therefore the server's \refapi{pmix_server_client_connected_fn_t} will be called before any other server functions specific to the rank.
 
 \advicermstart
  This operation is an opportunity for a host environment
@@ -689,10 +689,10 @@ Note that the client will be in a blocked state until the host server executes t
 The server_object parameter will be the value of the server_object parameter passed to
 \refapi{PMIx_server_register_client} by the host server when registering the connecting client.  If provided, an implementation of \refapi{pmix_server_client_finalized_fn_t}
 is only required to
-call the callback function designated.  A host server can choose to not be notified when clients finalize by setting \refapi{client_finalized} to \code{NULL}.
+call the callback function designated.  A host server can choose to not be notified when clients finalize by setting \refapi{pmix_server_client_finalized_fn_t} to \code{NULL}.
 
 Note that the host server is only being informed that the client has called \refapi{PMIx_Finalize}.  The client might not have exited.  If a client
-exits without calling \refapi{PMIx_Finalize}, the server support library will not call the \refapi{PMIx_server_client_finalized_fn_t} implementation.
+exits without calling \refapi{PMIx_Finalize}, the server support library will not call the \refapi{pmix_server_client_finalized_fn_t} implementation.
 
 \advicermstart
 This operation is an opportunity for a host server
