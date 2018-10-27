@@ -368,7 +368,7 @@ Characters in the key must be standard alphanumeric values supported by common u
 \adviceuserstart
 References to keys in \ac{PMIx} v1 rwere defined simply as an array of characters of size \code{PMIX_MAX_KEYLEN+1}. The \refstruct{pmix_key_t} type definition was introduced in version 2 of the standard. The two definitions are code-compatible and thus do not represent a break in backward compatibility.
 
-Passing a \refstruct{pmix_key_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_key_t)} and instead rely on the \refstruct{PMIX_MAX_KEYLEN} constant.
+Passing a \refstruct{pmix_key_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_key_t)} and instead rely on the \refconst{PMIX_MAX_KEYLEN} constant.
 \adviceuserend
 
 %%%%%%%%%%%
@@ -389,7 +389,7 @@ Characters in the namespace must be standard alphanumeric values supported by co
 \adviceuserstart
 References to namespace values in \ac{PMIx} v1 rwere defined simply as an array of characters of size \code{PMIX_MAX_NSLEN+1}. The \refstruct{pmix_nspace_t} type definition was introduced in version 2 of the standard. The two definitions are code-compatible and thus do not represent a break in backward compatibility.
 
-Passing a \refstruct{pmix_nspace_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_nspace_t)} and instead rely on the \refstruct{PMIX_MAX_NSLEN} constant.
+Passing a \refstruct{pmix_nspace_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_nspace_t)} and instead rely on the \refconst{PMIX_MAX_NSLEN} constant.
 \adviceuserend
 
 
@@ -1248,7 +1248,7 @@ PMIX_INFO_REQUIRED(info);
 \argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-This macro simplifies the setting of the \refstruct{PMIX_INFO_REQD} flag in \refstruct{pmix_info_t} structures.
+This macro simplifies the setting of the \refconst{PMIX_INFO_REQD} flag in \refstruct{pmix_info_t} structures.
 
 %%%%%%%%%%%
 \subsubsection{Test an info structure for \textit{required} directive}
@@ -1666,12 +1666,12 @@ typedef struct pmix_modex_data \{
 \cspecificend
 
 \subsection{Modex data structure support macros}
-The following macros are provided to support the \refstruct{pmix_modex_t} structure.
+The following macros are provided to support the \refstruct{pmix_modex_data_t} structure.
 
-\subsubsection{Initialize the \refstruct{pmix_modex_t} structure}
+\subsubsection{Initialize the \refstruct{pmix_modex_data_t} structure}
 \declaremacro{PMIX_MODEX_CONSTRUCT}
 
-Initialize the \refstruct{pmix_modex_t} fields
+Initialize the \refstruct{pmix_modex_data_t} fields
 
 \versionMarker{1.0}
 \cspecificstart
@@ -1681,13 +1681,13 @@ PMIX_MODEX_CONSTRUCT(m)
 \cspecificend
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_modex_t})}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_modex_data_t})}
 \end{arglist}
 
-\subsubsection{Destruct the \refstruct{pmix_modex_t} structure}
+\subsubsection{Destruct the \refstruct{pmix_modex_data_t} structure}
 \declaremacro{PMIX_MODEX_DESTRUCT}
 
-Destruct the \refstruct{pmix_modex_t} fields
+Destruct the \refstruct{pmix_modex_data_t} fields
 
 \versionMarker{1.0}
 \cspecificstart
@@ -1697,14 +1697,14 @@ PMIX_MODEX_DESTRUCT(m)
 \cspecificend
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_modex_t})}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_modex_data_t})}
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create a \refstruct{pmix_modex_t} array}
+\subsubsection{Create a \refstruct{pmix_modex_data_t} array}
 \declaremacro{PMIX_MODEX_CREATE}
 
-Allocate and initialize an array of \refstruct{pmix_modex_t} structures
+Allocate and initialize an array of \refstruct{pmix_modex_data_t} structures
 
 \versionMarker{1.0}
 \cspecificstart
@@ -1714,16 +1714,16 @@ PMIX_MODEX_CREATE(m, n)
 \cspecificend
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_modex_t} structures shall be stored (handle)}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_modex_data_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
 
 %%%%%%%%%%%
-\subsubsection{Free a\refstruct{pmix_modex_t} array}
+\subsubsection{Free a\refstruct{pmix_modex_data_t} array}
 \declaremacro{PMIX_MODEX_FREE}
 
-Release an array of \refstruct{pmix_modex_t} structures
+Release an array of \refstruct{pmix_modex_data_t} structures
 
 \versionMarker{1.0}
 \cspecificstart
@@ -1733,7 +1733,7 @@ PMIX_MODEX_FREE(m, n)
 \cspecificend
 
 \begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_modex_t} structures (handle)}
+\argin{m}{Pointer to the array of \refstruct{pmix_modex_data_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
@@ -3885,7 +3885,7 @@ typedef void (*pmix_info_cbfunc_t)
 \cspecificend
 
 \begin{arglist}
-\argin{status}{Status associated with the operation (\refattr{pmix_status_t})}
+\argin{status}{Status associated with the operation (\refstruct{pmix_status_t})}
 \argin{info}{Array of \refstruct{pmix_info_t} returned by the operation (pointer)}
 \argin{ninfo}{Number of elements in the \argref{info} array (\code{size_t})}
 \argin{cbdata}{Callback data passed to original API call (memory reference)}
@@ -3922,7 +3922,7 @@ typedef void (*pmix_evhdlr_reg_cbfunc_t)
 \cspecificend
 
 \begin{arglist}
-\argin{status}{Status indicates if the request was successful or not (\refattr{pmix_status_t})}
+\argin{status}{Status indicates if the request was successful or not (\refstruct{pmix_status_t})}
 \argin{evhdlr_ref}{Reference assigned to the event handler by \ac{PMIx} --- this reference
  * must be used to deregister the err handler (\code{size_t})}
 \argin{cbdata}{Callback data passed to original API call (memory reference)}
@@ -3956,7 +3956,7 @@ typedef void (*pmix_event_notification_cbfunc_fn_t)
 \cspecificend
 
 \begin{arglist}
-\argin{status}{Status returned by the event handler's operation (\refattr{pmix_status_t})}
+\argin{status}{Status returned by the event handler's operation (\refstruct{pmix_status_t})}
 \argin{results}{Results from this event handler's operation on the event (\refstruct{pmix_info_t})}
 \argin{nresults}{Number of elements in the results array (\code{size_t})}
 \argin{cbfunc}{\refapi{pmix_op_cbfunc_t} function to be executed when \ac{PMIx} completes processing the callback (function reference)}
@@ -4002,7 +4002,7 @@ typedef void (*pmix_notification_fn_t)
 
 \begin{arglist}
 \argin{evhdlr_registration_id}{Registration number of the handler being called (\code{size_t})}
-\argin{status}{Status associated with the operation (\refattr{pmix_status_t})}
+\argin{status}{Status associated with the operation (\refstruct{pmix_status_t})}
 \argin{source}{Identifier of the process that generated the event (\refstruct{pmix_proc_t})}. If the source is the \ac{SMS}, then the nspace will be empty and the rank will be PMIX_RANK_UNDEF
 \argin{info}{Information describing the event (\refstruct{pmix_info_t})}. This argument will be NULL if no additional information was provided by the event generator.
 \argin{ninfo}{Number of elements in the info array (\code{size_t})}

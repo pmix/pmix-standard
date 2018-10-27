@@ -79,7 +79,7 @@ PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes,
 \cspecificend
 
 \begin{arglist}
-\argin{codes}{Array of status codes (array of \refattr{pmix_status_t})}
+\argin{codes}{Array of status codes (array of \refstruct{pmix_status_t})}
 \argin{ncodes}{Number of elements in the \refarg{codes} array (\code{size_t})}
 \argin{info}{Array of info structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
@@ -211,10 +211,10 @@ PMIx_Notify_event(pmix_status_t status,
 \cspecificend
 
 \begin{arglist}
-\argin{status}{Status code of the event (\refattr{pmix_status_t})}
-\argin{source}{Pointer to a \refapi{pmix_proc_t} identifying the original reporter of the event (handle)}
-\argin{range}{Range across which this notification shall be delivered (\refattr{pmix_data_range_t})}
-\argin{info}{Array of \refapi{pmix_info_t} structures containing any further info provided by the originator of the event (array of handles)}
+\argin{status}{Status code of the event (\refstruct{pmix_status_t})}
+\argin{source}{Pointer to a \refstruct{pmix_proc_t} identifying the original reporter of the event (handle)}
+\argin{range}{Range across which this notification shall be delivered (\refstruct{pmix_data_range_t})}
+\argin{info}{Array of \refstruct{pmix_info_t} structures containing any further info provided by the originator of the event (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
 \argin{cbfunc}{Callback function to be executed upon completion of operation \refapi{pmix_op_cbfunc_t} (function reference)}
 \argin{cbdata}{Data to be passed to the cbfunc callback function (memory reference)}
