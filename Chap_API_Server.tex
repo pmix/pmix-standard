@@ -160,15 +160,12 @@ Host environments are \textit{required} to provide the following attributes:
 If more than one application is included in the namespace, then the host environment is also \textit{required} to provide the following attributes:
 
 \begin{itemize}
-    \item for each application:
+    \item for each process:
         \begin{itemize}
             \item \pastePRRTEAttributeItem{PMIX_APPNUM}
             \item \pastePRRTEAttributeItem{PMIX_APPLDR}
             \item \pastePRRTEAttributeItem{PMIX_APP_SIZE}
-        \end{itemize}
-    \item for each process:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_APP_RANK}
+             \item \pastePRRTEAttributeItem{PMIX_APP_RANK}
         \end{itemize}
 \end{itemize}
 
@@ -185,17 +182,12 @@ The following attributes \textit{may} be provided by host environments:
             \item \pastePRRTEAttributeItem{PMIX_SERVER_NSPACE}
             \item \pastePRRTEAttributeItem{PMIX_SERVER_RANK}
             \item \pastePRRTEAttributeItem{PMIX_NPROC_OFFSET}
-            \item \pastePRRTEAttributeItem{PMIX_APPLDR}
             \item \pastePRRTEAttributeItem{PMIX_SESSION_ID}
             \item \pastePRRTEAttributeItem{PMIX_ALLOCATED_NODELIST}
             \item \pastePRRTEAttributeItem{PMIX_JOB_NUM_APPS}
             \item \pastePRRTEAttributeItem{PMIX_MAPBY}
             \item \pastePRRTEAttributeItem{PMIX_RANKBY}
             \item \pastePRRTEAttributeItem{PMIX_BINDTO}
-        \end{itemize}
-    \item for each application in the given namespace:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_APP_SIZE}
         \end{itemize}
     \item for its own node:
         \begin{itemize}
@@ -223,6 +215,37 @@ Attributes not directly provided by the host environment \textit{may} be derived
 
 Pass job-related information to the \ac{PMIx} server library for distribution to local client processes.
 
+The \refarg{info} argument is expected to be a set of
+\begin{itemize}
+    \item namespace-level key-values: 
+    \begin{itemize}
+        \item required: \refattr{PMIX_NSPACE}, \refattr{PMIX_JOBID}, \refattr{PMIX_NODE_LIST}, \refattr{PMIX_UNIV_SIZE}, \refattr{PMIX_JOB_SIZE}, \refattr{PMIX_MAX_PROCS}, \refattr{PMIX_NUM_NODES}, \refattr{PMIX_NODE_MAP}, \refattr{PMIX_PROC_MAP}
+        \item optional: \refattr{PMIX_SERVER_NSPACE}, \refattr{PMIX_SERVER_RANK}, \refattr{PMIX_NPROC_OFFSET}, \refattr{PMIX_APPLDR}, \refattr{PMIX_SESSION_ID}, \refattr{PMIX_ALLOCATED_NODELIST}, \refattr{PMIX_JOB_NUM_APPS}, \refattr{PMIX_MAPBY}, \refattr{PMIX_RANKBY}, \refattr{PMIX_BINDTO}
+    \end{itemize}
+    \item node-level key-values: 
+    \begin{itemize}
+        \item required: \refattr{PMIX_LOCAL_SIZE}, \refattr{PMIX_LOCAL_PEERS}. \refattr{PMIX_LOCAL_CPUSETS}
+        \item optional: \refattr{PMIX_AVAIL_PHYS_MEMORY}, \refattr{PMIX_HWLOC_XML_V1}, \refattr{PMIX_HWLOC_XML_V2}, \refattr{PMIX_LOCALLDR}, \refattr{PMIX_NODE_SIZE}, \refattr{PMIX_LOCAL_PROCS}
+    \end{itemize}
+    \item Multiple complex key-values, each named \refattr{PMIX_PROC_DATA}, encapsulating per-process information.
+
+          \pastePRRTEAttributeItem{PMIX_PROC_DATA}
+
+          \refattr{PMIX_PROC_DATA} must have type \emph{PMIX_DATA_ARRAY} (\refstruct{pmix_data_array_t}) with elements of type \emph{PMIX_INFO} (\refstruct{pmix_info_t}).
+          The set of information enclosed in each of such keys is provided below (NOTE that the first key-value must be rank of the process as per \refattr{PMIX_PROC_DATA} description).
+    \begin{itemize}
+        \item application-level key-values (in case of multiple applications):
+        \begin{itemize}
+            \item required: \refattr{PMIX_APPNUM}, \refattr{PMIX_APPLDR}, \refattr{PMIX_APP_SIZE}, \refattr{PMIX_APP_RANK}
+        \end{itemize}
+        \item process-level key-values:
+        \begin{itemize}
+            \item required: \refattr{PMIX_RANK}, \refattr{PMIX_LOCAL_RANK}, \refattr{PMIX_NODE_RANK}, \refattr{PMIX_NODEID}
+            \item optional: \refattr{PMIX_PROCID}, \refattr{PMIX_GLOBAL_RANK}, \refattr{PMIX_HOSTNAME}
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
 \advicermstart
 Host environments are \textit{required} to execute this operation prior to starting any local application process within the given namespace.
 
@@ -237,6 +260,7 @@ This is required for the \ac{PMIx} server library to correctly handle collective
 \adviceuserstart
 The number of local processes for any given namespace is generally fixed at the time of application launch. Calls to \refapi{PMIx_Spawn} result in processes launched in their own namespace, not that of their parent. However, it is possible for processes to \textit{migrate} to another node via a call to \refapi{PMIx_Job_control_nb}, thus resulting in a change to the number of local processes on both the initial node and the node to which the process moved. It is therefore \textit{critical} that applications not migrate processes without first ensuring that \ac{PMIx}-based collective operations are not in progress, and that no such operations be initiated until process migration has completed.
 \adviceuserend
+
 
 
 %%%%%%%%%%%
