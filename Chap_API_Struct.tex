@@ -2587,12 +2587,12 @@ These attributes are used to describe the size of various dimensions of the PMIx
 
 %
 \declareAttribute{PMIX_UNIV_SIZE}{"pmix.univ.size"}{uint32_t}{
-Number of allocated slots in a session.
+Number of allocated slots in a session - each slot may or may not be occupied by an executing process.
 }
 
 %
 \declareAttribute{PMIX_JOB_SIZE}{"pmix.job.size"}{uint32_t}{
-Number of processes in this job.
+Total number of processes in this job across all contained applications
 }
 
 %
