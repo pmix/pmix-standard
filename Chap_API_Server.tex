@@ -776,7 +776,13 @@ typedef pmix_status_t (*pmix_server_client_connected_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 %%%%
 \descr
@@ -830,7 +836,13 @@ typedef pmix_status_t (*pmix_server_client_finalized_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 %%%%
 \descr
@@ -890,7 +902,13 @@ typedef pmix_status_t (*pmix_server_abort_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 %%%%
 \descr
@@ -938,7 +956,13 @@ typedef pmix_status_t (*pmix_server_fencenb_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
@@ -1010,7 +1034,13 @@ typedef pmix_status_t (*pmix_server_dmodex_req_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
@@ -1065,7 +1095,13 @@ typedef pmix_status_t (*pmix_server_publish_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
@@ -1138,7 +1174,13 @@ typedef pmix_status_t (*pmix_server_lookup_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
@@ -1209,7 +1251,13 @@ typedef pmix_status_t (*pmix_server_unpublish_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
@@ -1278,7 +1326,13 @@ typedef pmix_status_t (*pmix_server_spawn_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
@@ -1379,7 +1433,13 @@ typedef pmix_status_t (*pmix_server_connect_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
@@ -1438,7 +1498,13 @@ typedef pmix_status_t (*pmix_server_disconnect_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
@@ -1499,7 +1565,13 @@ Register to receive notifications for the specified events.
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
@@ -1560,7 +1632,13 @@ Deregister to receive notifications for the specified events.
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 %%%%
 \descr
@@ -1613,7 +1691,13 @@ typedef pmix_status_t (*pmix_server_notify_event_fn_t)(pmix_status_t code,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
@@ -1664,7 +1748,7 @@ typedef pmix_status_t (*pmix_server_listener_fn_t)(
 \argin{cbdata}{ (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns \refconst{PMIX_SUCCESS} indicating that the request is accepted, or a negative value corresponding to a PMIx error constant indicating that the request has been rejected.
 
 %%%%
 \descr
@@ -1706,7 +1790,13 @@ typedef pmix_status_t (*pmix_server_query_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
@@ -1802,7 +1892,8 @@ Register that a tool has connected to the server, and request that the tool be a
 The \refstruct{pmix_info_t} array is used to pass qualifiers for the connection request, including the effective uid and gid of the calling tool for authentication purposes.
 
 \advicermstart
-The host environment is solely responsible for authenticating and authorizing the connection, and for authorizing all subsequent tool requests.
+The host environment is solely responsible for authenticating and authorizing the connection, and for authorizing all subsequent tool requests. The host \emph{must not} execute the callback function prior to returning from the \ac{API}.
+
 \advicermend
 
 
@@ -1868,7 +1959,7 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Log data on behalf of a client. This function is \textit{not} intended for output of computational results, but rather for reporting status and error messages.
+Log data on behalf of a client. This function is \textit{not} intended for output of computational results, but rather for reporting status and error messages. The host \emph{must not} execute the callback function prior to returning from the \ac{API}.
 
 
 %%%%%%%%%%%
@@ -1903,10 +1994,15 @@ typedef pmix_status_t (*pmix_server_alloc_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
@@ -1987,7 +2083,13 @@ typedef pmix_status_t (*pmix_server_job_control_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any attributes provided by the client to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
@@ -2066,7 +2168,15 @@ typedef pmix_status_t (*pmix_server_monitor_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. This entry point is only called for monitoring requests that are not directly supported by the \ac{PRI}.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
+
+This entry point is only called for monitoring requests that are not directly supported by the \ac{PMIx} server library itself.
 
 \reqattrstart
 If supported by the \ac{PMIx} server library, then the library must not pass any supported attributes to the host environment. Any attributes provided by the client that are not directly supported by the server library must be passed to the host environment if it provides this module entry. In addition, the following attributes are required to be included in the passed \refarg{info} array:
