@@ -237,6 +237,36 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 Store some data locally for retrieval by other areas of the proc.
 This is data that has only internal scope - it will never be ``pushed'' externally.
 
+%%%%%%%%%%%
+\subsection{Accessing information: examples}
+
+Provide some examples illustrating methods for accessing information at various levels.
+
+\subsubsection{Session-level information}
+
+Done by specifying the namespace of a job within the session, rank of PMIX_RANK_WILDCARD, and include attribute PMIX_SESSION_INFO in the attributes. PMIX_UNIV_SIZE, PMIX_NUM_NODES.
+
+\subsubsection{Job-level information}
+
+Provide namespace of the job, rank of PMIX_RANK_WILDCARD. PMIX_JOB_SIZE, PMIX_NUM_APPS, PMIX_NUM_NODES, PMIX_NUM_SLOTS (num slots allocated to job)
+
+
+\subsubsection{Application-level information}
+
+Provide namespace/rank of process within the application for attributes that are app-level only. PMIX_APP_SIZE
+
+For multi-purpose attributes, can provide arbitrary namespace with rank=wildcard and include PMIX_APP_INFO plus PMIX_APP_NUM in directives. PMIX_NUM_SLOTS (num slots allocated to app), PMIX_HOST_LIST
+
+\subsubsection{Process-level information}
+
+Provide namespace/rank of the process in question. PMIX_PROC_URI, PMIX_HOSTNAME, PMIX_APP_NUM
+
+\subsubsection{Node-level information}
+
+Provide namespace/rank of process executing on the node for attributes that are node-level only. PMIX_LOCAL_SIZE
+
+For multi-purpose attributes, can provide arbitrary namespace with rank=wildcard and include PMIX_NODE_INFO plus PMIX_NODEID or PMIX_HOSTNAME in directives. PMIX_NUM_SLOTS (num slots on node), PMIX_TOPOLOGY, PMIX_LOCAL_PEERS
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
