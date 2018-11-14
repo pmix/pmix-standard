@@ -238,7 +238,11 @@ This is required for the \ac{PMIx} server library to correctly handle collective
 The number of local processes for any given namespace is generally fixed at the time of application launch. Calls to \refapi{PMIx_Spawn} result in processes launched in their own namespace, not that of their parent. However, it is possible for processes to \textit{migrate} to another node via a call to \refapi{PMIx_Job_control_nb}, thus resulting in a change to the number of local processes on both the initial node and the node to which the process moved. It is therefore \textit{critical} that applications not migrate processes without first ensuring that \ac{PMIx}-based collective operations are not in progress, and that no such operations be initiated until process migration has completed.
 \adviceuserend
 
+%%%%%%%%%%%
+\subsubsection{Assembling the registration information}
+\label{chap:api_server:assemble}
 
+Show logical layout of information - not intended to represent actual layout of information in a given pmix library.
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_deregister_nspace}}
 \declareapi{PMIx_server_deregister_nspace}
