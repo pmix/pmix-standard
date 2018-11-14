@@ -240,33 +240,184 @@ This is data that has only internal scope - it will never be ``pushed'' external
 %%%%%%%%%%%
 \subsection{Accessing information: examples}
 
-Provide some examples illustrating methods for accessing information at various levels.
+This section provides examples illustrating methods for accessing information at various levels. The intent of the examples is not to provide comprehensive coding guidance, but rather to illustrate how \refapi{PMIx_Get} can be used to obtain information on a \refterm{session}, \refterm{job}, \refterm{application}, process, and node.
 
 \subsubsection{Session-level information}
 
-Done by specifying the namespace of a job within the session, rank of PMIX_RANK_WILDCARD, and include attribute PMIX_SESSION_INFO in the attributes. PMIX_UNIV_SIZE, PMIX_NUM_NODES.
+The \refapi{PMIx_Get} \ac{API} does not include an argument for specifying the \refterm{session} associated with the information being requested. Information regarding the session containing the requestor can be obtained by the following methods:
+
+\begin{itemize}
+\item for session-level attributes (e.g., \refattr{PMIX_UNIV_SIZE}), specifying the requestor's namespace and a rank of \refconst{PMIX_RANK_WILDCARD}; or
+\item for non-specific attributes (e.g., \refattr{PMIX_NUM_NODES}), including the \refattr{PMIX_SESSION_INFO} attribute to indicate that the session-level information for that attribute is being requested
+\end{itemize}
+
+Example requests are shown below:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info;
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc, wildcard;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the #slots in our session */
+PMIX_PROC_LOAD(&wildcard, myproc.nspace, PMIX_RANK_WILDCARD);
+rc = PMIx_Get(&wildcard, PMIX_UNIV_SIZE, NULL, 0, &value);
+
+/* get the #nodes in our session */
+PMIX_INFO_LOAD(&info, PMIX_SESSION_INFO, NULL, PMIX_BOOL);
+rc = PMIx_Get(&wildcard, PMIX_NUM_NODES, &info, 1, &value);
+\end{codepar}
+\cspecificend
+
+Information regarding a different session can be requested by either specifying the namespace and a rank of \refconst{PMIX_RANK_WILDCARD} for a process in the target session, or adding the \refattr{PMIX_SESSION_ID} attribute identifying the target session. In the latter case, the \refarg{proc} argument to \refapi{PMIx_Get} will be ignored:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info[2];
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc;
+uint32_t sid;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the #nodes in a different session */
+sid = 12345;
+PMIX_INFO_LOAD(&info[0], PMIX_SESSION_INFO, NULL, PMIX_BOOL);
+PMIX_INFO_LOAD(&info[1], PMIX_SESSION_ID, &sid, PMIX_UINT32);
+rc = PMIx_Get(&myproc, PMIX_NUM_NODES, info, 2, &value);
+\end{codepar}
+\cspecificend
 
 \subsubsection{Job-level information}
 
-Provide namespace of the job, rank of PMIX_RANK_WILDCARD. PMIX_JOB_SIZE, PMIX_NUM_APPS, PMIX_NUM_NODES, PMIX_NUM_SLOTS (num slots allocated to job)
+Information regarding a job can be obtained by the following methods:
+
+\begin{itemize}
+\item for job-level attributes (e.g., \refattr{PMIX_JOB_SIZE} or \refattr{PMIX_JOB_NUM_APPS}), specifying the namespace of the job and a rank of \refconst{PMIX_RANK_WILDCARD} for the \refarg{proc} argument to \refapi{PMIx_Get}; or
+\item for non-specific attributes (e.g., \refattr{PMIX_NUM_NODES}), including the \refattr{PMIX_JOB_INFO} attribute to indicate that the job-level information for that attribute is being requested
+\end{itemize}
+
+Example requests are shown below:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info;
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc, wildcard;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the #apps in our job */
+PMIX_PROC_LOAD(&wildcard, myproc.nspace, PMIX_RANK_WILDCARD);
+rc = PMIx_Get(&wildcard, PMIX_JOB_NUM_APPS, NULL, 0, &value);
+
+/* get the #nodes in our job */
+PMIX_INFO_LOAD(&info, PMIX_JOB_INFO, NULL, PMIX_BOOL);
+rc = PMIx_Get(&wildcard, PMIX_NUM_NODES, &info, 1, &value);
+\end{codepar}
+\cspecificend
 
 
 \subsubsection{Application-level information}
 
-Provide namespace/rank of process within the application for attributes that are app-level only. PMIX_APP_SIZE
+Information regarding an application can be obtained by the following methods:
 
-For multi-purpose attributes, can provide arbitrary namespace with rank=wildcard and include PMIX_APP_INFO plus PMIX_APP_NUM in directives. PMIX_NUM_SLOTS (num slots allocated to app), PMIX_HOST_LIST
+\begin{itemize}
+\item for application-level attributes (e.g., \refattr{PMIX_APP_SIZE}), specifying the namespace and rank of a process within that application;
+\item for application-level attributes (e.g., \refattr{PMIX_APP_SIZE}), including the \refattr{PMIX_APPNUM} atttribute specifying the application whose information is being requested. In this case, the \refarg{proc} argument's values are ignored; or
+\item for non-specific attributes (e.g., \refattr{PMIX_NUM_NODES}), including the \refattr{PMIX_APP_INFO} attribute to indicate that the application-level information for that attribute is being requested
+\end{itemize}
+
+Example requests are shown below:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info;
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc, otherproc;
+uint32_t appsize, appnum;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the #processes in our application */
+rc = PMIx_Get(&myproc, PMIX_APP_SIZE, NULL, 0, &value);
+appsize = value->data.uint32;
+
+/* get the #nodes in an application containing "otherproc".
+ * Note that the rank of a process in the other application
+ * must be obtained first - a simple method is shown here */
+
+/* assume for this example that we are in the first application
+ * and we want the #nodes in the second application - use the
+ * rank of the first process in that application, remembering
+ * that ranks start at zero */
+PMIX_PROC_LOAD(&otherproc, myproc.nspace, appsize);
+
+PMIX_INFO_LOAD(&info, PMIX_APP_INFO, NULL, PMIX_BOOL);
+rc = PMIx_Get(&otherproc, PMIX_NUM_NODES, &info, 1, &value);
+
+/* alternatively, we can directly ask for the #nodes in
+ * the second application, again remembering that application
+ * numbers start with zero */
+appnum = 1;
+PMIX_INFO_LOAD(&appinfo[0], PMIX_APP_INFO, NULL, PMIX_BOOL);
+PMIX_INFO_LOAD(&appinfo[1], PMIX_APPNUM, &appnum, PMIX_UINT32);
+rc = PMIx_Get(&myproc, PMIX_NUM_NODES, appinfo, 2, &value);
+
+\end{codepar}
+\cspecificend
 
 \subsubsection{Process-level information}
 
-Provide namespace/rank of the process in question. PMIX_PROC_URI, PMIX_HOSTNAME, PMIX_APP_NUM
+Process-level information is accessed by providing the namespace and rank of the target process. In the absence of any directive as to the level of information being requested, the \ac{PMIx} library will always return the process-level value.
 
 \subsubsection{Node-level information}
 
-Provide namespace/rank of process executing on the node for attributes that are node-level only. PMIX_LOCAL_SIZE
+Information regarding a node within the system can be obtained by the following methods:
 
-For multi-purpose attributes, can provide arbitrary namespace with rank=wildcard and include PMIX_NODE_INFO plus PMIX_NODEID or PMIX_HOSTNAME in directives. PMIX_NUM_SLOTS (num slots on node), PMIX_TOPOLOGY, PMIX_LOCAL_PEERS
+\begin{itemize}
+\item for node-level attributes (e.g., \refattr{PMIX_NODE_SIZE}), specifying the namespace and rank of a process executing on the target node;
+\item for node-level attributes (e.g., \refattr{PMIX_NODE_SIZE}), including the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} atttribute specifying the node whose information is being requested. In this case, the \refarg{proc} argument's values are ignored; or
+\item for non-specific attributes (e.g., \refattr{PMIX_NUM_SLOTS}), including the \refattr{PMIX_NODE_INFO} attribute to indicate that the node-level information for that attribute is being requested
+\end{itemize}
 
+Example requests are shown below:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info[2];
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc, otherproc;
+uint32_t nodeid;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the #procs on our node */
+rc = PMIx_Get(&myproc, PMIX_NODE_SIZE, NULL, 0, &value);
+
+/* get the #slots on another node */
+PMIX_INFO_LOAD(&info[0], PMIX_NODE_INFO, NULL, PMIX_BOOL);
+PMIX_INFO_LOAD(&info[1], PMIX_HOSTNAME, "remotehost", PMIX_STRING);
+rc = PMIx_Get(&myproc, PMIX_NUM_SLOTS, info, 2, &value);
+
+\end{codepar}
+\cspecificend
+
+\adviceuserstart
+An explanation of the use of \refapi{PMIx_Get} versus \refapi{PMIx_Query_info_nb} is provided in \ref{chap:api_job_mgmt:query}.
+\adviceuserend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
