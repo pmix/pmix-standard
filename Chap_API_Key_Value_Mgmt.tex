@@ -332,7 +332,8 @@ Information regarding an application can be obtained by the following methods:
 
 \begin{itemize}
 \item for application-level attributes (e.g., \refattr{PMIX_APP_SIZE}), specifying the namespace and rank of a process within that application;
-\item for application-level attributes (e.g., \refattr{PMIX_APP_SIZE}), including the \refattr{PMIX_APPNUM} atttribute specifying the application whose information is being requested. In this case, the \refarg{proc} argument's values are ignored; or
+\item for application-level attributes (e.g., \refattr{PMIX_APP_SIZE}), including the \refattr{PMIX_APPNUM} attribute specifying the application whose information is being requested. In this case, the namespace field of the \refarg{proc} argument is used to reference the \refterm{job} containing the application - the \refterm{rank} field is ignored;
+\item or application-level attributes (e.g., \refattr{PMIX_APP_SIZE}), including the \refattr{PMIX_APPNUM} and \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes specifying the job/application whose information is being requested. In this case, the \refarg{proc} argument is ignored;
 \item for non-specific attributes (e.g., \refattr{PMIX_NUM_NODES}), including the \refattr{PMIX_APP_INFO} attribute to indicate that the application-level information for that attribute is being requested
 \end{itemize}
 
@@ -367,8 +368,8 @@ PMIX_INFO_LOAD(&info, PMIX_APP_INFO, NULL, PMIX_BOOL);
 rc = PMIx_Get(&otherproc, PMIX_NUM_NODES, &info, 1, &value);
 
 /* alternatively, we can directly ask for the #nodes in
- * the second application, again remembering that application
- * numbers start with zero */
+ * the second application in our job, again remembering that
+ * application numbers start with zero */
 appnum = 1;
 PMIX_INFO_LOAD(&appinfo[0], PMIX_APP_INFO, NULL, PMIX_BOOL);
 PMIX_INFO_LOAD(&appinfo[1], PMIX_APPNUM, &appnum, PMIX_UINT32);

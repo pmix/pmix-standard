@@ -2805,9 +2805,9 @@ Exit code returned when process terminated
 
 %%%%%%%%%%%
 \subsection{Information retrieval attributes}
-\label{api:struct:attributes:sizeinfo}
+\label{api:struct:attributes:retrieval}
 
-These attributes are used to specify the level of information (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) being requested where ambiguity may exist.
+The following attributes are used to specify the level of information (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) being requested where ambiguity may exist - see \ref{} and \ref{} for examples of their use.
 
 %
 \declareNewAttribute{PMIX_SESSION_INFO}{"pmix.ssn.info"}{bool}{
@@ -2829,6 +2829,11 @@ Return information about the specified application. If information about an appl
 Return information about the specified node. If information about a node other than the one containing the requesting process is desired, then the attribute array must contain either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute identifying the desired target.
 }
 
+%%%%%%%%%%%
+\subsection{Information storage attributes}
+\label{api:struct:attributes:storage}
+
+The following attributes are used to assemble information by its level (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) for storage where ambiguity may exist - see \ref{} for examples of their use.
 
 %%%%%%%%%%%
 \subsection{Size information attributes}
