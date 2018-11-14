@@ -125,17 +125,29 @@ PMIx_Query_info_nb(pmix_query_t queries[], size_t nqueries,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following constants:
+Function returns either:
 
-\begin{constantdesc}
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will \emph{not} be executed
+\end{itemize}
+
+If executed, the status returned in the provided callback function will be one of the following constants:
+
+\begin{itemize}
 \item \refconst{PMIX_SUCCESS} All data has been returned
 \item \refconst{PMIX_ERR_NOT_FOUND} None of the requested data was available
 \item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the data has been returned
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The host \ac{RM} does not support this function
-\end{constantdesc}
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure
+\end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+\ac{PMIx} libraries that support this \ac{API} are required to support the following attributes:
+
+\pastePRIAttributeItem{PMIX_QUERY_REFRESH_CACHE}
+
+\ac{PMIx} libraries are not required to directly support any other attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
 \reqattrend
 
@@ -152,7 +164,6 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
 \pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
 \pastePRRTEAttributeItem{PMIX_QUERY_MEMORY_USAGE}
-\pastePRRTEAttributeItem{PMIX_QUERY_LOCAL_ONLY}
 \pastePRRTEAttributeItem{PMIX_QUERY_REPORT_AVG}
 \pastePRRTEAttributeItem{PMIX_QUERY_REPORT_MINMAX}
 \pasteAttributeItem{PMIX_QUERY_ALLOC_STATUS}
@@ -176,6 +187,34 @@ An array of \refstruct{pmix_info_t} will contain each key that was provided and 
 \adviceuserstart
 The desire to query a list of attributes supported by the implementation and/or the host environment has been expressed and noted. The \ac{PMIx} community is exploring the possibility and it will likely become available in a future release
 \adviceuserend
+
+\adviceimplstart
+Information returned from \refapi{PMIx_Query_info_nb} shall be locally cached so that retrieval by subsequent calls to \refapi{PMIx_Get} or \refapi{PMIx_Query_info_nb} can succeed with minimal overhead. The local cache shall be checked prior to querying the \ac{PMIx} server and/or the host environment. Queries that include the \refattr{PMIX_QUERY_REFRESH_CACHE} attribute shall bypass the local cache and retrieve a new value for the query, refreshing the values in the cache upon return.
+\adviceimplend
+
+\subsubsection{Using \refapi{PMIx_Get} vs \refapi{PMIx_Query_info_nb}}
+\label{chap:api_job_mgmt:query}
+
+Both \refapi{PMIx_Get} and \refapi{PMIx_Query_info_nb} can be used to retrieve information about the system. In general, the \emph{get} operation should be used to retrieve:
+
+\begin{itemize}
+\item information provided by the host environment at time of job start. This includes information on the number of processes in the job, their location, and possibly their communication endpoints
+\item information posted by processes via the \refapi{PMIx_Put} function
+\end{itemize}
+
+This information is largely considered to be \emph{static}, although this will not necessarily be true for environments supporting dynamic programming models or fault tolerance. Note that the \refapi{PMIx_Get} function only accesses information about execution environments - i.e., its scope is limited to values pertaining to a specific \refterm{session}, \refterm{job}, \refterm{application}, process, or node. It cannot be used to obtain information about areas such as the status of queues in the \ac{WLM}.
+
+In contrast, the \emph{query} option should be used to access:
+
+\begin{itemize}
+\item system-level information (such as the available \ac{WLM} queues) that would generally not be included in job-level information provided at job start
+\item dynamic information such as application and queue status, and resource utilization statistics. Note that the \refattr{PMIX_QUERY_REFRESH_CACHE} attribute must be provided on each query to ensure current data is returned
+\item information created post job start, such as process tables
+\item information requiring more complex search criteria than supported by the simpler \refapi{PMIx_Get} \ac{API}
+\item queries focused on retrieving multi-attribute blocks of data with a single request, thus bypassing the single-key limitation of the \refapi{PMIx_Get} \ac{API}
+\end{itemize}
+
+In theory, all information can be accessed via \refapi{PMIx_Query_info_nb} as the local cache is typically the same datastore searched by \refapi{PMIx_Get}. However, in practice, the overhead associated with the \emph{query} operation tends to be much higher than the simpler \emph{get} operation. Thus, where appropriate, users should access information via \refapi{PMIx_Get} and use \refapi{PMIx_Query_info_nb} for requests that cannot be otherwise done.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

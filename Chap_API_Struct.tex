@@ -2580,6 +2580,33 @@ Process identifier of the parent process of the calling process.
 
 
 %%%%%%%%%%%
+\subsection{Information retrieval attributes}
+\label{api:struct:attributes:sizeinfo}
+
+These attributes are used to specify the level of information (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) being requested where ambiguity may exist.
+
+%
+\declareNewAttribute{PMIX_SESSION_INFO}{"pmix.ssn.info"}{bool}{
+Return information about the specified session. If information about a session other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_SESSION_ID} attribute identifying the desired target.
+}
+
+%
+\declareNewAttribute{PMIX_JOB_INFO}{"pmix.job.info"}{bool}{
+Return information about the specified job or namespace. If information about a job or namespace other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_JOBID} or \refattr{PMIX_NSPACE} attribute identifying the desired target. Similarly, if information is requested about a job or namespace in a session other than the one containing the requesting process, then an attribute identifying the target session must be provided.
+}
+
+%
+\declareNewAttribute{PMIX_APP_INFO}{"pmix.app.info"}{bool}{
+Return information about the specified application. If information about an application other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_APPNUM} attribute identifying the desired target. Similarly, if information is requested about an application in a job or session other than the one containing the requesting process, then attributes identifying the target job and/or session must be provided.
+}
+
+%
+\declareNewAttribute{PMIX_NODE_INFO}{"pmix.node.info"}{bool}{
+Return information about the specified node. If information about a node other than the one containing the requesting process is desired, then the attribute array must contain either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute identifying the desired target.
+}
+
+
+%%%%%%%%%%%
 \subsection{Size information attributes}
 \label{api:struct:attributes:sizeinfo}
 
@@ -2622,7 +2649,12 @@ Maximum number of processes for this job.
 
 %
 \declareNewAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
-Number of nodes in this namespace.
+Number of nodes in this session or namespace.
+}
+
+%
+\declareNewAttribute{PMIX_NUM_SLOTS}{"pmix.num.slots"}{uint32_t}{
+Number of slots allocated to the session, namespace, or application.
 }
 
 
@@ -3231,7 +3263,12 @@ Maximum number of times to restart a job - when accessed using \refapi{PMIx_Get}
 \subsection{Query attributes}
 \label{api:struct:attributes:query}
 
-Attributes used to describe \refapi{PMIx_Query_info_nb} behavior - these are values passed to the \refapi{PMIx_Query_info_nb} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
+Attributes used to describe \refapi{PMIx_Query_info_nb} behavior - these are values passed to the \refapi{PMIx_Query_info_nb} \ac{API} and therefore are not passed to the \refapi{PMIx_Get} \ac{API}.
+
+%
+\declareNewAttribute{PMIX_QUERY_REFRESH_CACHE}{"pmix.qry.rfsh"}{bool}{
+Retrieve updated information from server.
+}
 
 %
 \declareNewAttribute{PMIX_QUERY_NAMESPACES}{"pmix.qry.ns"}{char*}{
@@ -3281,11 +3318,6 @@ Return a comma-delimited list of supported debug attributes.
 %
 \declareNewAttribute{PMIX_QUERY_MEMORY_USAGE}{"pmix.qry.mem"}{bool}{
 Return information on memory usage for the processes indicated in the qualifiers.
-}
-
-%
-\declareNewAttribute{PMIX_QUERY_LOCAL_ONLY}{"pmix.qry.local"}{bool}{
-Constrain the query to local information only.
 }
 
 %
