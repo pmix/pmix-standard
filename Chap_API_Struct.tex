@@ -2807,7 +2807,7 @@ Exit code returned when process terminated
 \subsection{Information retrieval attributes}
 \label{api:struct:attributes:retrieval}
 
-The following attributes are used to specify the level of information (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) being requested where ambiguity may exist - see \ref{} and \ref{} for examples of their use.
+The following attributes are used to specify the level of information (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) being requested where ambiguity may exist - see \ref{chap:api_kv:getex} for examples of their use.
 
 %
 \declareNewAttribute{PMIX_SESSION_INFO}{"pmix.ssn.info"}{bool}{
@@ -2833,7 +2833,27 @@ Return information about the specified node. If information about a node other t
 \subsection{Information storage attributes}
 \label{api:struct:attributes:storage}
 
-The following attributes are used to assemble information by its level (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) for storage where ambiguity may exist - see \ref{} for examples of their use.
+The following attributes are used to assemble information by its level (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) for storage where ambiguity may exist - see \ref{chap:api_server:assemble} for examples of their use.
+
+%
+\declareNewAttribute{PMIX_SESSION_INFO_ARRAY}{"pmix.ssn.arr"}{pmix_data_array_t}{
+Provide an array of \refstruct{pmix_info_t} containing session-level information. The \refattr{PMIX_SESSION_ID} attribute is \emph{required} to be included in the array.
+}
+
+%
+\declareNewAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
+Provide an array of \refstruct{pmix_info_t} containing job-level information. Information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}. Thus, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes, though either or both of them \emph{may} be included.
+}
+
+%
+\declareNewAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
+Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the appplication, plus its \refattr{PMIX_APPNUM} attribute, are \emph{required} to be included in the array.
+}
+
+%
+\declareNewAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
+Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is \emph{required} to be included in the array, though both \emph{may} be included.
+}
 
 %%%%%%%%%%%
 \subsection{Size information attributes}
@@ -3101,12 +3121,12 @@ Array of process data. Starts with rank, then contains more data.
 
 %
 \declareAttribute{PMIX_NODE_MAP}{"pmix.nmap"}{char*}{
-Regular expression of nodes containing processes for this job.
+Regular expression of nodes - see \ref{cptr:api_server:noderegex} for an explanation of its generation.
 }
 
 %
 \declareAttribute{PMIX_PROC_MAP}{"pmix.pmap"}{char*}{
-Regular expression describing processes on each node within this job.
+Regular expression describing processes on each node  - see \ref{cptr:api_server:ppnregex} for an explanation of its generation.
 }
 
 %
