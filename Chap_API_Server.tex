@@ -132,7 +132,6 @@ Host environments are \textit{required} to provide the following attributes:
 \begin{itemize}
     \item for the session containing the given namespace:
         \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_SESSION_ID}
             \item \pastePRRTEAttributeItem{PMIX_UNIV_SIZE}
         \end{itemize}
     \item for the given namespace:
@@ -170,6 +169,7 @@ If more than one application is included in the namespace, then the host environ
     \item for each process:
         \begin{itemize}
             \item \pastePRRTEAttributeItem{PMIX_APP_RANK}
+            \item \pastePRRTEAttributeItem{PMIX_APPNUM}
         \end{itemize}
 \end{itemize}
 
@@ -181,21 +181,20 @@ If more than one application is included in the namespace, then the host environ
 The following attributes \textit{may} be provided by host environments:
 
 \begin{itemize}
+    \item for the session containing the given namespace:
+        \begin{itemize}
+            \item \pastePRRTEAttributeItem{PMIX_SESSION_ID}
+        \end{itemize}
     \item for the given namespace:
         \begin{itemize}
             \item \pastePRRTEAttributeItem{PMIX_SERVER_NSPACE}
             \item \pastePRRTEAttributeItem{PMIX_SERVER_RANK}
             \item \pastePRRTEAttributeItem{PMIX_NPROC_OFFSET}
-            \item \pastePRRTEAttributeItem{PMIX_APPLDR}
             \item \pastePRRTEAttributeItem{PMIX_ALLOCATED_NODELIST}
             \item \pastePRRTEAttributeItem{PMIX_JOB_NUM_APPS}
             \item \pastePRRTEAttributeItem{PMIX_MAPBY}
             \item \pastePRRTEAttributeItem{PMIX_RANKBY}
             \item \pastePRRTEAttributeItem{PMIX_BINDTO}
-        \end{itemize}
-    \item for each application in the given namespace:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_APP_SIZE}
         \end{itemize}
     \item for its own node:
         \begin{itemize}
@@ -245,9 +244,9 @@ The number of local processes for any given namespace is generally fixed at the 
 
 The following description is not intended to represent the actual layout of information in a given \ac{PMIx} library. Instead, it is describes how information provided in the \refarg{info} parameter of the \refapi{PMIx_server_register_nspace} shall be organized for proper processing by a \ac{PMIx} server library. The ordering of the various information elements is arbitrary - they are presented in a top-down hierarchical form solely for clarity in reading.
 
-\adviceimplstart
-Creating the \refarg{info} array of data requires knowing in advance the number of elements required for the array. This can be difficult to compute and somewhat fragile in practice. One method for resolving the problem is to create a linked list of objects, each containing a single \refstruct{pmix_info_t} structure. Allocation and manipulation of the list can then be accomplished using existing standard methods. Upon completion, the final \refarg{info} array can be allocated based on the number of elements on the list, and then the values in the list object \refstruct{pmix_info_t} structures transferred to the corresponding array element.
-\adviceimplend
+\advicermstart
+Creating the \refarg{info} array of data requires knowing in advance the number of elements required for the array. This can be difficult to compute and somewhat fragile in practice. One method for resolving the problem is to create a linked list of objects, each containing a single \refstruct{pmix_info_t} structure. Allocation and manipulation of the list can then be accomplished using existing standard methods. Upon completion, the final \refarg{info} array can be allocated based on the number of elements on the list, and then the values in the list object \refstruct{pmix_info_t} structures transferred to the corresponding array element utilizing the \refmacro{PMIX_INFO_XFER} macro.
+\advicermend
 
 \label{cptr:api_server:noderegex}A common building block used in several areas is the construction of a regular expression identifying the nodes involved in that area - e.g., the nodes in a \refterm{session} or \refterm{job}. \ac{PMIx} provides several tools to facilitate this operation, beginning by constructing an argv-like array of node names. This array is then passed to the \refapi{PMIx_generate_regex} function to create a regular expression parseable by the \ac{PMIx} server library, as shown below:
 
@@ -263,7 +262,7 @@ pmix_info_t info;
 /* loop over an array of nodes, adding each
  * name to the array */
 for (n=0; n < num_nodes; n++) {
-    PMIX_ARGV_APPEND(&nodes, node->name);
+    PMIX_ARGV_APPEND(&nodes, node[n]->name);
 }
 
 /* join into a comma-delimited string */
@@ -306,12 +305,12 @@ pmix_info_t info;
 for (n=0; n < num_nodes; n++) {
     /* for each node, construct an array of ranks on that node */
     ndppn = NULL;
-    for (m=0; m < node->num_procs; m++) {
+    for (m=0; m < node[n]->num_procs; m++) {
         /* ignore processes that are not part of the target job */
-        if !(PMIX_CHECK_NSPACE(targetjob,node->proc.nspace)) {
+        if (!PMIX_CHECK_NSPACE(targetjob,node[n]->proc[m].nspace)) {
             continue;
         }
-        snprintf(rank, 30, "%d", node->proc.rank);
+        snprintf(rank, 30, "%d", node[n]->proc[m].rank);
         PMIX_ARGV_APPEND(&ndppn, rank);
     }
     /* convert the array into a comma-delimited string of ranks */
@@ -372,7 +371,7 @@ Upon conclusion of this step, the \refarg{info} array might look like:
     \includegraphics[clip,width=0.4\textwidth]{figs/jobinfo.pdf}
   \end{center}
   \caption{Job-level information elements}
-  \label{fig:sessioninfo}
+  \label{fig:jobinfo}
 \end{figure*}
 \endgroup
 
@@ -382,7 +381,7 @@ Note that in this example, \refattr{PMIX_NUM_NODES} is not required as that info
 
 However, in the case of a job consisting of multiple applications, all application-specific values for each application \emph{must} be provided using the \refattr{PMIX_APP_INFO_ARRAY} format, each identified by its \refattr{PMIX_APPNUM} value.
 
-Upon conclusion of this step, the \refarg{info} array might look like the following, assuming there are two applications in the job being registered:
+Upon conclusion of this step, the \refarg{info} array might look like that shown in \ref{fig:appinfo}, assuming there are two applications in the job being registered:
 
 \begingroup
 \begin{figure*}[ht!]
@@ -390,15 +389,100 @@ Upon conclusion of this step, the \refarg{info} array might look like the follow
     \includegraphics[clip,width=0.5\textwidth]{figs/appinfo.pdf}
   \end{center}
   \caption{Application-level information elements}
-  \label{fig:sessioninfo}
+  \label{fig:appinfo}
 \end{figure*}
 \endgroup
 
-\item Process-level information includes an entry for each process in the job being registered
+\item Process-level information includes an entry for each process in the job being registered, each entry marked with the \refattr{PMIX_PROC_DATA} attribute. The \refterm{rank} of the process \emph{must} be the first entry in the array - this provides efficiency when storing the data. Upon conclusion of this step, the \refarg{info} array might look like the diagram in \ref{fig:procinfo}:
 
-\item Node-level information only includes values describing the local node - i.e., it does not include information about other nodes in the job or session.
+\begingroup
+\begin{figure*}[ht!]
+  \begin{center}
+    \includegraphics[clip,width=0.5\textwidth]{figs/procinfo.pdf}
+  \end{center}
+  \caption{Process-level information elements}
+  \label{fig:procinfo}
+\end{figure*}
+\endgroup
+
+\item Node-level information only includes values describing the local node - i.e., it does not include information about other nodes in the job or session. In many cases, the values included in this level are unique to it and can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_NODE_INFO_ARRAY} attribute - this is \emph{required} in cases where non-specific attributes are passed to describe aspects of the node.
+
+The node-level information requires two elements that must be constructed in a manner similar to that used for the node map. The \refattr{PMIX_LOCAL_PEERS} value is computed based on the processes on the local node, filtered to select those from the job being registered, as shown below using the tools provided by \ac{PMIx}:
+
+\cspecificstart
+\begin{codepar}
+char **ndppn = NULL;
+char rank[30];
+char *localranks;
+size_t m;
+pmix_info_t info;
+
+for (m=0; m < mynode->num_procs; m++) {
+    /* ignore processes that are not part of the target job */
+    if (!PMIX_CHECK_NSPACE(targetjob,mynode->proc[m].nspace)) {
+        continue;
+    }
+    snprintf(rank, 30, "%d", mynode->proc[m].rank);
+    PMIX_ARGV_APPEND(&ndppn, rank);
+}
+/* convert the array into a comma-delimited string of ranks */
+localranks = PMIX_ARGV_JOIN(ndppn, ',');
+/* release the local array */
+PMIX_ARGV_FREE(ndppn);
+
+/* pass the string as the value to the PMIX_LOCAL_PEERS key */
+PMIX_INFO_LOAD(&info, PMIX_LOCAL_PEERS, localranks, PMIX_STRING);
+/* release the list */
+free(localranks);
+
+\end{codepar}
+\cspecificend
+
+The \refattr{PMIX_LOCAL_CPUSETS} value is constructed in a similar manner. In the provided example, it is assumed that the \ac{HWLOC} cpuset representation (a comma-delimited string of processor IDs) of the processors assigned to each process has previously been generated and stored on the process description. Thus, the value can be constructed as shown below:
+
+\cspecificstart
+\begin{codepar}
+char **ndcpus = NULL;
+char *localcpus;
+size_t m;
+pmix_info_t info;
+
+for (m=0; m < mynode->num_procs; m++) {
+    /* ignore processes that are not part of the target job */
+    if (!PMIX_CHECK_NSPACE(targetjob,mynode->proc[m].nspace)) {
+        continue;
+    }
+    PMIX_ARGV_APPEND(&ndcpus, mynode->proc[m].cpuset);
+}
+/* convert the array into a colon-delimited string */
+localcpus = PMIX_ARGV_JOIN(ndcpus, ':');
+/* release the local array */
+PMIX_ARGV_FREE(ndcpus);
+
+/* pass the string as the value to the PMIX_LOCAL_CPUSETS key */
+PMIX_INFO_LOAD(&info, PMIX_LOCAL_CPUSETS, localcpus, PMIX_STRING);
+/* release the list */
+free(localcpus);
+
+\end{codepar}
+\cspecificend
+
+Note that for efficiency, these two values can be computed at the same time.
 
 \end{itemize}
+
+The final \refarg{info} array might therefore look like the diagram in \ref{fig:nodeinfo}:
+
+\begingroup
+\begin{figure*}[ht!]
+  \begin{center}
+    \includegraphics[clip,width=0.8\textwidth]{figs/nodeinfo.pdf}
+  \end{center}
+  \caption{Final information array}
+  \label{fig:nodeinfo}
+\end{figure*}
+\endgroup
+
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_deregister_nspace}}
