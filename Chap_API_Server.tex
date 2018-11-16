@@ -130,15 +130,16 @@ The following attributes are \textit{required} to be supported by all \ac{PMIx} 
 Host environments are \textit{required} to provide the following attributes:
 
 \begin{itemize}
+    \item for the session containing the given namespace:
+        \begin{itemize}
+            \item \pastePRRTEAttributeItem{PMIX_SESSION_ID}
+            \item \pastePRRTEAttributeItem{PMIX_UNIV_SIZE}
+        \end{itemize}
     \item for the given namespace:
         \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_NSPACE}
             \item \pastePRRTEAttributeItem{PMIX_JOBID}
-            \item \pastePRRTEAttributeItem{PMIX_NODE_LIST}
-            \item \pastePRRTEAttributeItem{PMIX_UNIV_SIZE}
             \item \pastePRRTEAttributeItem{PMIX_JOB_SIZE}
             \item \pastePRRTEAttributeItem{PMIX_MAX_PROCS}
-            \item \pastePRRTEAttributeItem{PMIX_NUM_NODES}
             \item \pastePRRTEAttributeItem{PMIX_NODE_MAP}
             \item \pastePRRTEAttributeItem{PMIX_PROC_MAP}
         \end{itemize}
@@ -186,7 +187,6 @@ The following attributes \textit{may} be provided by host environments:
             \item \pastePRRTEAttributeItem{PMIX_SERVER_RANK}
             \item \pastePRRTEAttributeItem{PMIX_NPROC_OFFSET}
             \item \pastePRRTEAttributeItem{PMIX_APPLDR}
-            \item \pastePRRTEAttributeItem{PMIX_SESSION_ID}
             \item \pastePRRTEAttributeItem{PMIX_ALLOCATED_NODELIST}
             \item \pastePRRTEAttributeItem{PMIX_JOB_NUM_APPS}
             \item \pastePRRTEAttributeItem{PMIX_MAPBY}
@@ -242,7 +242,163 @@ The number of local processes for any given namespace is generally fixed at the 
 \subsubsection{Assembling the registration information}
 \label{chap:api_server:assemble}
 
-Show logical layout of information - not intended to represent actual layout of information in a given pmix library.
+The following description is not intended to represent the actual layout of information in a given \ac{PMIx} library. Instead, it is describes how information provided in the \refarg{info} parameter of the \refapi{PMIx_server_register_nspace} shall be organized for proper processing by a \ac{PMIx} server library. The ordering of the various information elements is arbitrary - they are presented in a top-down hierarchical form solely for clarity in reading.
+
+\adviceimplstart
+Creating the \refarg{info} array of data requires knowing in advance the number of elements required for the array. This can be difficult to compute and somewhat fragile in practice. One method for resolving the problem is to create a linked list of objects, each containing a single \refstruct{pmix_info_t} structure. Allocation and manipulation of the list can then be accomplished using existing standard methods. Upon completion, the final \refarg{info} array can be allocated based on the number of elements on the list, and then the values in the list object \refstruct{pmix_info_t} structures transferred to the corresponding array element.
+\adviceimplend
+
+\label{cptr:api_server:noderegex}A common building block used in several areas is the construction of a regular expression identifying the nodes involved in that area - e.g., the nodes in a \refterm{session} or \refterm{job}. \ac{PMIx} provides several tools to facilitate this operation, beginning by constructing an argv-like array of node names. This array is then passed to the \refapi{PMIx_generate_regex} function to create a regular expression parseable by the \ac{PMIx} server library, as shown below:
+
+\cspecificstart
+\begin{codepar}
+char **nodes = NULL;
+char *nodelist;
+char *regex;
+size_t n;
+pmix_status_t rc;
+pmix_info_t info;
+
+/* loop over an array of nodes, adding each
+ * name to the array */
+for (n=0; n < num_nodes; n++) {
+    PMIX_ARGV_APPEND(&nodes, node->name);
+}
+
+/* join into a comma-delimited string */
+nodelist = PMIX_ARGV_JOIN(nodes, ',');
+
+/* release the array */
+PMIX_ARGV_FREE(nodes);
+
+/* generate regex */
+rc = PMIx_generate_regex(nodelist, &regex);
+
+/* release list */
+free(nodelist);
+
+/* pass the regex as the value to the PMIX_NODE_MAP key */
+PMIX_INFO_LOAD(&info, PMIX_NODE_MAP, regex, PMIX_STRING);
+/* release the regex */
+free(regex);
+
+\end{codepar}
+\cspecificend
+
+Changing the filter criteria allows the construction of node maps for any level of information.
+
+\label{cptr:api_server:ppnregex}A similar method is used to construct the map of processes on each node from the namespace being registered. This may be done for each information level of interest (e.g., to identify the process map for the entire \refterm{job} or for each \refterm{application} in the job) by changing the search criteria. An example is shown below for the case of creating the process map for a \refterm{job}:
+
+\cspecificstart
+\begin{codepar}
+char **ndppn;
+char rank[30];
+char **ppnarray = NULL;
+char *ppn;
+char *localranks;
+char *regex;
+size_t n, m;
+pmix_status_t rc;
+pmix_info_t info;
+
+/* loop over an array of nodes */
+for (n=0; n < num_nodes; n++) {
+    /* for each node, construct an array of ranks on that node */
+    ndppn = NULL;
+    for (m=0; m < node->num_procs; m++) {
+        /* ignore processes that are not part of the target job */
+        if !(PMIX_CHECK_NSPACE(targetjob,node->proc.nspace)) {
+            continue;
+        }
+        snprintf(rank, 30, "%d", node->proc.rank);
+        PMIX_ARGV_APPEND(&ndppn, rank);
+    }
+    /* convert the array into a comma-delimited string of ranks */
+    localranks = PMIX_ARGV_JOIN(ndppn, ',');
+    /* release the local array */
+    PMIX_ARGV_FREE(ndppn);
+    /* add this node's contribution to the overall array */
+    PMIX_ARGV_APPEND(&ppnarray, localranks);
+    /* release the local list */
+    free(localranks);
+}
+
+/* join into a semicolon-delimited string */
+ppn = PMIX_ARGV_JOIN(ppnarray, ';');
+
+/* release the array */
+PMIX_ARGV_FREE(ppnarray);
+
+/* generate ppn regex */
+rc = PMIx_generate_ppn(ppn, &regex);
+
+/* release list */
+free(ppn);
+
+/* pass the regex as the value to the PMIX_PROC_MAP key */
+PMIX_INFO_LOAD(&info, PMIX_PROC_MAP, regex, PMIX_STRING);
+/* release the regex */
+free(regex);
+
+\end{codepar}
+\cspecificend
+
+Note that the \refattr{PMIX_NODE_MAP} and \refattr{PMIX_PROC_MAP} attributes are linked in that the order of entries in the process map must match the ordering of nodes in the node map - i.e., there is no provision in the \ac{PMIx} process map regular expression generator/parser pair supporting an out-of-order node or a node that has no corresponding process map entry (e.g., a node with no processes on it). Armed with these tools, the registration \refarg{info} array can be constructed as follows:
+
+\begin{itemize}
+\item Session-level information includes all session-specific values. In many cases, only two values (\refattr{PMIX_SESSION_ID} and \refattr{PMIX_UNIV_SIZE}) are included in the registration array. Since both of these values are session-specific, they can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute and identifed by including the \refattr{PMIX_SESSION_ID} attribute in the array - this is \emph{required} in cases where non-specific attributes (e.g., \refattr{PMIX_NUM_NODES} or \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the session. Note that the node map can include nodes not used by the job being registered as no corresponding process map is specified.
+
+The \refarg{info} array at this point might look like:
+
+\begingroup
+\begin{figure*}[ht!]
+  \begin{center}
+    \includegraphics[clip,width=0.3\textwidth]{figs/sessioninfo.pdf}
+  \end{center}
+  \caption{Session-level information elements}
+  \label{fig:sessioninfo}
+\end{figure*}
+\endgroup
+
+
+\item Job-level information includes all job-specific values such as \refattr{PMIX_JOB_SIZE}, \refattr{PMIX_JOB_NUM_APPS}, and \refattr{PMIX_JOBID}. Since each invocation of \refapi{PMIx_server_register_nspace} describes a single \refterm{job}, job-specific values can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} identified by the \refattr{PMIX_JOB_INFO_ARRAY} attribute - this is \emph{required} in cases where non-specific attributes (e.g., \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the job. Note that since the invocation only involves a single namespace, there is no need to include the \refattr{PMIX_NSPACE} attribute in the array.
+
+Upon conclusion of this step, the \refarg{info} array might look like:
+
+\begingroup
+\begin{figure*}[ht!]
+  \begin{center}
+    \includegraphics[clip,width=0.4\textwidth]{figs/jobinfo.pdf}
+  \end{center}
+  \caption{Job-level information elements}
+  \label{fig:sessioninfo}
+\end{figure*}
+\endgroup
+
+Note that in this example, \refattr{PMIX_NUM_NODES} is not required as that information is contained in the \refattr{PMIX_NODE_MAP} attribute. Similarly, \refattr{PMIX_JOB_SIZE} is not technically required as that information is contained in the \refattr{PMIX_PROC_MAP} when combined with the corresponding node map - however, there is no issue with including the job size as a separate entry.
+
+\item Application-level information includes all application-specific values such as \refattr{PMIX_APP_SIZE} and \refattr{PMIX_APPLDR}. If the \refterm{job} contains only a single \refterm{application}, then the application-specific values can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array - or as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_APP_INFO_ARRAY} attribute and identifed by including the \refattr{PMIX_APPNUM} attribute in the array. Use of the array format is  \emph{required} in cases where non-specific attributes (e.g., \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the application.
+
+However, in the case of a job consisting of multiple applications, all application-specific values for each application \emph{must} be provided using the \refattr{PMIX_APP_INFO_ARRAY} format, each identified by its \refattr{PMIX_APPNUM} value.
+
+Upon conclusion of this step, the \refarg{info} array might look like the following, assuming there are two applications in the job being registered:
+
+\begingroup
+\begin{figure*}[ht!]
+  \begin{center}
+    \includegraphics[clip,width=0.5\textwidth]{figs/appinfo.pdf}
+  \end{center}
+  \caption{Application-level information elements}
+  \label{fig:sessioninfo}
+\end{figure*}
+\endgroup
+
+\item Process-level information includes an entry for each process in the job being registered
+
+\item Node-level information only includes values describing the local node - i.e., it does not include information about other nodes in the job or session.
+
+\end{itemize}
+
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_deregister_nspace}}
 \declareapi{PMIx_server_deregister_nspace}

@@ -99,7 +99,6 @@ The caller is responsible for releasing the string when done with it.
 %%%%%%%%%%%
 \subsection{\code{PMIx_Query_info_nb}}
 \declareapi{PMIx_Query_info_nb}
-\declareapi{pmix_info_cbfunc_t}
 
 %%%%
 \summary
@@ -146,6 +145,10 @@ If executed, the status returned in the provided callback function will be one o
 \ac{PMIx} libraries that support this \ac{API} are required to support the following attributes:
 
 \pastePRIAttributeItem{PMIX_QUERY_REFRESH_CACHE}
+\pastePRIAttributeItem{PMIX_SESSION_INFO}
+\pastePRIAttributeItem{PMIX_JOB_INFO}
+\pastePRIAttributeItem{PMIX_APP_INFO}
+\pastePRIAttributeItem{PMIX_NODE_INFO}
 
 \ac{PMIx} libraries are not required to directly support any other attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 

@@ -7,6 +7,8 @@
 Management of key-value pairs in \ac{PMIx} is a distributed responsibility. While the stated objective of the \ac{PMIx} community is to eliminate collective operations, it is recognized that the traditional method of publishing/exchanging data must be supported until that objective can be met. This method relies on processes to discover and publish their local information which is collected by the local PMIx server library.
 Global exchange of the published information is then executed via a collective operation performed by the host \ac{SMS} servers.
 
+Keys are required to be unique within a specific level of informarion as defined in \ref{api:struct:attributes:retrieval}. For example, a value for \refattr{PMIX_NUM_NODES} can be specified for each of the \refterm{session}, \refterm{job}, and \refterm{application} levels. However, subsequently specifying another value for that attribute in the \refterm{session} level will overwrite the prior value.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Setting and Accessing Key/Value Pairs}
@@ -105,6 +107,10 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \pastePRIAttributeItem{PMIX_OPTIONAL}
 \pastePRIAttributeItem{PMIX_IMMEDIATE}
 \pastePRIAttributeItem{PMIX_DATA_SCOPE}
+\pastePRIAttributeItem{PMIX_SESSION_INFO}
+\pastePRIAttributeItem{PMIX_JOB_INFO}
+\pastePRIAttributeItem{PMIX_APP_INFO}
+\pastePRIAttributeItem{PMIX_NODE_INFO}
 
 \reqattrend
 
@@ -166,7 +172,20 @@ PMIx_Get_nb(const pmix_proc_t *proc, const char key[],
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Function returns either:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will \emph{not} be executed
+\end{itemize}
+
+If executed, the status returned in the provided callback function will be one of the following constants:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} The requested data has been returned
+\item \refconst{PMIX_ERR_NOT_FOUND} The requested data was not available
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure
+\end{itemize}
 
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
@@ -174,6 +193,10 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \pastePRIAttributeItem{PMIX_OPTIONAL}
 \pastePRIAttributeItem{PMIX_IMMEDIATE}
 \pastePRIAttributeItem{PMIX_DATA_SCOPE}
+\pastePRIAttributeItem{PMIX_SESSION_INFO}
+\pastePRIAttributeItem{PMIX_JOB_INFO}
+\pastePRIAttributeItem{PMIX_APP_INFO}
+\pastePRIAttributeItem{PMIX_NODE_INFO}
 
 \reqattrend
 
@@ -197,7 +220,7 @@ The \argref{info} array is used as described by the \refapi{PMIx_Get} routine.
 \adviceuserstart
 Information provided by the \ac{PMIx} server at time of process start is accessed by providing the namespace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. The list of data referenced in this way is maintained on the \ac{PMIx} web site at \url{https://pmix.org/support/faq/wildcard-rank-access/} but includes items such as the number of processes in the namespace (\refattr{PMIX_JOB_SIZE}), total available slots in the allocation (\refattr{PMIX_UNIV_SIZE}), and the number of nodes in the allocation (\refattr{PMIX_NUM_NODES}).
 
-In general, only data posted by a process via \refapi{PMIx_Put} needs to be retrieved by specifying the rank of the posting process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD}.
+In general, only data posted by a process via \refapi{PMIx_Put} needs to be retrieved by specifying the rank of the posting process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD}. See \ref{api:struct:attributes:retrieval} for an explanation regarding use of the \emph{level} attributes.
 \adviceuserend
 
 
@@ -239,6 +262,7 @@ This is data that has only internal scope - it will never be ``pushed'' external
 
 %%%%%%%%%%%
 \subsection{Accessing information: examples}
+\label{chap:api_kv:getex}
 
 This section provides examples illustrating methods for accessing information at various levels. The intent of the examples is not to provide comprehensive coding guidance, but rather to illustrate how \refapi{PMIx_Get} can be used to obtain information on a \refterm{session}, \refterm{job}, \refterm{application}, process, and node.
 
