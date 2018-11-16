@@ -2545,7 +2545,7 @@ Name of the host where the specified process is running.
 
 %
 \declareAttribute{PMIX_NODEID}{"pmix.nodeid"}{uint32_t}{
-Node identifier where the specified process is located, expressed as the node's index (beginning at zero) in an array of nodes comprising the users allocation
+Node identifier where the specified process is located, expressed as the node's index (beginning at zero) in the array resulting from expansion of the \refattr{PMIX_NODE_MAP} regular expression for the \refterm{job}
 }
 
 %
@@ -2555,7 +2555,7 @@ Comma-delimited list of ranks on this node within the specified namespace - refe
 
 %
 \declareAttribute{PMIX_LOCAL_PROCS}{"pmix.lprocs"}{pmix_proc_t array}{
-Array of \refstruct{pmix_proc_t} of processes on the specified node - referenced using \refconst{PMIX_RANK_WILDCARD}.
+Array of \refstruct{pmix_proc_t} of all processes on the specified node - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
