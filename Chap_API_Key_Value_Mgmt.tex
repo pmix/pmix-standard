@@ -412,7 +412,7 @@ Information regarding a node within the system can be obtained by the following 
 
 \begin{itemize}
 \item for node-level attributes (e.g., \refattr{PMIX_NODE_SIZE}), specifying the namespace and rank of a process executing on the target node;
-\item for node-level attributes (e.g., \refattr{PMIX_NODE_SIZE}), including the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} atttribute specifying the node whose information is being requested. In this case, the \refarg{proc} argument's values are ignored; or
+\item for node-level attributes (e.g., \refattr{PMIX_NODE_SIZE}), including the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute specifying the node whose information is being requested. In this case, the \refarg{proc} argument's values are ignored; or
 \item for non-specific attributes (e.g., \refattr{PMIX_NUM_SLOTS}), including the \refattr{PMIX_NODE_INFO} attribute to indicate that the node-level information for that attribute is being requested
 \end{itemize}
 
@@ -544,6 +544,13 @@ The \refarg{info} array is used to pass user requests regarding the fence operat
 
 Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence} is to \emph{not} collect the data.
 
+\adviceimplstart
+\refapi{PMIx_Fence} and its non-blocking form are both \emph{collective} operations. Accordingly, the \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
+\adviceimplend
+
+\advicermstart
+The host will receive a single call for each collective operation. It is the responsibility of the host to execute the collective across all participating nodes, notifying the local \ac{PMIx} server library upon completion of the global collective.
+\advicermend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Fence_nb}}
@@ -612,6 +619,7 @@ Note that the function will return an error if a \code{NULL} callback function i
 
 Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence_nb} is to \emph{not} collect the data.
 
+See the \refapi{PMIx_Fence} description for further details.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
