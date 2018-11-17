@@ -571,15 +571,18 @@ Returns one of the following:
 
 Register a client process with the PMIx server library.
 
-\advicermstart
-Host environments are \textit{required} to execute this operation prior to starting the client process.
-The expected user ID and group ID of the child process helps the server library to properly authenticate clients as they connect by requiring the two values to match.
-\advicermend
-
 The host server can also, if it desires, provide an object it wishes to be returned when a server function is called that relates to a specific process.
 For example, the host server may have an object that tracks the specific client.
 Passing the object to the library allows the library to provide that object to the host server during subsequent calls related to that client, such as a \refapi{pmix_server_client_connected_fn_t} function.  This allows the host server to access the object without performing a lookup based on the client's namespace and rank.
 
+\advicermstart
+Host environments are \textit{required} to execute this operation prior to starting the client process.
+The expected user ID and group ID of the child process allows the server library to properly authenticate clients as they connect by requiring the two values to match. Accordingly, the detected user and group ID's of the connecting process are not included in the \refapi{pmix_server_client_connected_fn_t} server module function.
+\advicermend
+
+\adviceimplstart
+For security purposes, the \ac{PMIx} server library should check the user and group ID's of a connecting process against those provided for the declared client process identifier via the \refapi{PMIx_server_register_client} prior to completing the connection.
+\adviceimplend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_deregister_client}}
@@ -1120,6 +1123,10 @@ In either case, the host server will be called via a non-blocking function to ex
 All processes in the specified \refarg{procs} array are required to participate in the \refapi{PMIx_Fence}/\refapi{PMIx_Fence_nb} operation.
 The callback is to be executed once every daemon hosting at least one participant has called the host server's \refapi{pmix_server_fencenb_fn_t} function.
 
+\adviceimplstart
+The \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
+\adviceimplend
+
 \advicermstart
 The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
 \advicermend
@@ -1589,10 +1596,14 @@ The following attributes are optional for host environments that support this op
 
 Record the processes specified by the \refarg{procs} array as \textit{connected} as per the \ac{PMIx} definition\refsection{chap:api_proc_mgmt:connect}. The callback is to be executed once every daemon hosting at least one participant has called the host server's \refapi{pmix_server_connect_fn_t} function, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes.
 
+\adviceimplstart
+The \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
+\adviceimplend
+
 \advicermstart
-The \ac{PMIx} server library will
-call this function once all local participants have called \refapi{PMIx_Connect} or its non-blocking form with the same array of participants.
+The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
 \advicermend
+
 
 %%%%%%%%%%%
 \subsection{\code{pmix_server_disconnect_fn_t}}
@@ -1652,12 +1663,14 @@ The following attributes are optional for host environments that support this op
 
 Disconnect a previously connected set of processes. The callback is to be executed once every daemon hosting at least one participant has called the host server's has called the \refapi{pmix_server_disconnect_fn_t} function, \textit{and} the host environment has completed any required supporting operations.
 
+\adviceimplstart
+The \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
+\adviceimplend
+
 \advicermstart
+The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
+
 A \refconst{PMIX_ERR_INVALID_OPERATION} error must be returned if the specified set of \refarg{procs} was not previously \textit{connected} via a call to the \refapi{pmix_server_connect_fn_t} function.
-
-The \ac{PMIx} server library will
-call this function once all local participants have called \refapi{PMIx_Disconnect} or its non-blocking form with the same array of participants.
-
 \advicermend
 
 
