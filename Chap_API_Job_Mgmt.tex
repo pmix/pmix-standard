@@ -217,7 +217,7 @@ In contrast, the \emph{query} option should be used to access:
 \item queries focused on retrieving multi-attribute blocks of data with a single request, thus bypassing the single-key limitation of the \refapi{PMIx_Get} \ac{API}
 \end{itemize}
 
-In theory, all information can be accessed via \refapi{PMIx_Query_info_nb} as the local cache is typically the same datastore searched by \refapi{PMIx_Get}. However, in practice, the overhead associated with the \emph{query} operation tends to be much higher than the simpler \emph{get} operation. Thus, where appropriate, users should access information via \refapi{PMIx_Get} and use \refapi{PMIx_Query_info_nb} for requests that cannot be otherwise done.
+In theory, all information can be accessed via \refapi{PMIx_Query_info_nb} as the local cache is typically the same datastore searched by \refapi{PMIx_Get}. However, in practice, the overhead associated with the \emph{query} operation may (depending upon implementation) be higher than the simpler \emph{get} operation due to the need to construct and process the more complex \refstruct{pmix_query_t} structure. Thus, requests for a single key value are likely to be accomplished faster with \refapi{PMIx_Get} versus the \emph{query} operation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -268,6 +268,9 @@ pmix_info_t info;
 /* loop over an array of nodes, adding each
  * name to the array */
 for (n=0; n < num_nodes; n++) {
+    /* filter the nodes to ignore those not included
+     * in the target range (session, job, etc.). In
+     * this example, all nodes are accepted */
     PMIX_ARGV_APPEND(&nodes, node[n]->name);
 }
 
@@ -354,7 +357,7 @@ Note that the \refattr{PMIX_NODE_MAP} and \refattr{PMIX_PROC_MAP} attributes are
 \begin{itemize}
 \item Session-level information includes all session-specific values. In many cases, only two values (\refattr{PMIX_SESSION_ID} and \refattr{PMIX_UNIV_SIZE}) are included in the registration array. Since both of these values are session-specific, they can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute and identifed by including the \refattr{PMIX_SESSION_ID} attribute in the array - this is \emph{required} in cases where non-specific attributes (e.g., \refattr{PMIX_NUM_NODES} or \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the session. Note that the node map can include nodes not used by the job being registered as no corresponding process map is specified.
 
-The \refarg{info} array at this point might look like:
+The \refarg{info} array at this point might look like (where the labels identify the corresponding attribute - e.g., ``Session ID'' corresponds to the \refattr{PMIX_SESSION_ID} attribute):
 
 \begingroup
 \begin{figure*}[ht!]
