@@ -357,7 +357,7 @@ All processes engaged in a given \refapi{PMIx_Connect} operation must provide th
 \adviceimplend
 
 \advicermstart
-The host will receive a single call for each collective operation. It is the responsibility of the host to execute the collective across all participating nodes, notifying the local \ac{PMIx} server library upon completion of the global collective.
+The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
 \advicermend
 
 Processes that combine via \refapi{PMIx_Connect} must call \refapi{PMIx_Disconnect} prior to finalizing and/or terminating - any process in the assemblage failing to meet this requirement will cause a \refconst{PMIX_ERR_INVALID_TERMINATION} event to be generated.
@@ -494,7 +494,8 @@ All processes engaged in a given \refapi{PMIx_Disconnect} operation must provide
 \adviceimplend
 
 \advicermstart
-The host will receive a single call for each collective operation. It is the responsibility of the host to execute the collective across all participating nodes, notifying the local \ac{PMIx} server library upon completion of the global collective.
+The host will receive a single call for each collective operation. The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
+
 \advicermend
 
 A process can only engage in \emph{one} disconnect operation involving the identical \refarg{procs} array at a time.
