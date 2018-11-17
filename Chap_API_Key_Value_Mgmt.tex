@@ -549,7 +549,7 @@ Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence} 
 \adviceimplend
 
 \advicermstart
-The host will receive a single call for each collective operation. It is the responsibility of the host to execute the collective across all participating nodes, notifying the local \ac{PMIx} server library upon completion of the global collective.
+The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
 \advicermend
 
 %%%%%%%%%%%
