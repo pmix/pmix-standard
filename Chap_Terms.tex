@@ -19,6 +19,21 @@ It is critical that users and application developers consider whether or not a g
 
 While a \ac{PMIx} library implementer, or an \ac{SMS} component server, may choose to support a particular \ac{PMIx} \ac{API}, they are not required to support every attribute that might apply to it. This would pose a significant barrier to entry for an implementer as there can be a broad range of applicable attributes to a given \ac{API}, at least some of which may rarely be used in a specific market area. The \ac{PMIx} community is attempting to help differentiate the attributes by indicating in the standard those that are generally used (and therefore, of higher importance to support) versus those that a ``complete implementation'' would support.
 
+In addition, the document refers to the following entities and process stages when describing use-cases or operations involving \ac{PMIx}:
+
+\begin{itemize}
+\item \declareterm{session}\emph{session} refers to an allocated set of resources assigned to a particular user by the system \ac{WLM}. Historically, \ac{HPC} sessions have consisted of a static allocation of resources - i.e., a block of resources are assigned to a user in response to a specific request and managed as a unified collection. However, this is changing in response to the growing use of dynamic programming models that require on-the-fly allocation and release of system resources. Accordingly, the term \emph{session} in this document refers to the current block of assigned resources and is a potentially dynamic entity.
+\item \declareterm{slot}\declareterm{slots}\emph{slot} refers to an allocated entry for a process. \acp{WLM} frequently allocate entire nodes to a \emph{session}, but can also be configured to define the maximum number of processes that can simultaneously be executed on each node. This often corresponds to the number of hardware \acp{PU} (typically cores, but can also be defined as hardware threads) on the node. However, the correlation between hardware \acp{PU} and slot allocations strictly depends upon system configuration.
+\item \declareterm{job}\emph{job} refers to a set of one or more \emph{applications} executed as a single invocation by the user within a session. For example, ``\textit{mpiexec -n 1 app1 : -n 2 app2}'' is considered a single \ac{MPMD} job containing two applications.
+\item \declareterm{namespace}\emph{namespace} refers to a character string value assigned by the \ac{RM} to a \textit{job}. All \textit{applications} executed as part of that \textit{job} share the same \emph{namespace}. The \emph{namespace} assigned to each \emph{job} must be unique within the scope of the governing \ac{RM}.
+\item \declareterm{application}\emph{application} refers to a single executable (binary, script, etc.) member of a \emph{job}. Applications consist of one or more \emph{processes}, either operating independently or in parallel at any given time during their execution.
+\item \declareterm{rank}\emph{rank} refers to the numerical location (starting from zero) of a process within the defined scope. Thus, {global rank} is the rank of a process within its \emph{job}, while \emph{application rank} is the rank of that process within its \emph{application}.
+\item \declareterm{workflow}\emph{workflow} refers to an orchestrated execution plan frequently spanning multiple \emph{jobs} carried out under the control of a \emph{workflow manager} process. An example workflow might first execute a computational job to generate the flow of liquid through a complex cavity, followed by a visualization job that takes the output of the first job as its input to produce an image output.
+\item \declareterm{resource manager}\emph{resource manager} is used in a generic sense to represent the system that will host the \ac{PMIx} server library. This could be a vendor's \ac{RM}, a programming library's \ac{RTE}, or some other agent.
+\item \declareterm{host environment}\emph{host environment} is used interchangeably with \emph{resource manager} to refer to the process hosting the \ac{PMIx} server library.
+\end{itemize}
+
+
 This document borrows freely from other standards (most notably from the \ac{MPI} and OpenMP standards) in its use of notation and conventions in an attempt to reduce confusion. The following sections provide an overview of the conventions used throughout the \ac{PMIx} Standard document.
 
 %%%%%%%%%%%
@@ -70,14 +85,6 @@ The following terms will be taken to mean:
 \begin{itemize}
 \item \emph{shall} and \emph{will} indicate that the specified behavior is \emph{required} of all conforming implementations
 \item \emph{should} and \emph{may} indicate behaviors that a quality implementation would include, but are not required of all conforming implementations
-\end{itemize}
-
-In addition, the document refers the following entities and process stages when describing use-cases or operations involving \ac{PMIx}:
-
-\begin{itemize}
-\item \emph{session} refers to an allocated set of resources assigned to a particular user by the system \ac{WLM}.
-\item \emph{job} refers to an application executed by the user within a session
-\item \emph{resource manager} is used in a generic sense to represent the system that will host the \ac{PMIx} server library. This could be a vendor's \ac{RM}, a programming library's \ac{RTE}, or some other agent.
 \end{itemize}
 
 %%%%%%%%%%%
