@@ -149,11 +149,34 @@ If executed, the status returned in the provided callback function will be one o
 \pastePRIAttributeItem{PMIX_JOB_INFO}
 \pastePRIAttributeItem{PMIX_APP_INFO}
 \pastePRIAttributeItem{PMIX_NODE_INFO}
+\pastePRIAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process.
+\pastePRIAttributeItemEnd
+\pastePRIAttributeItemBegin{PMIX_NSPACE} Specifies the namespace of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_RANK} attribute.
+\pastePRIAttributeItemEnd
+\pastePRIAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute.
+\pastePRIAttributeItemEnd
+
+Note that inclusion of the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result.
 
 \ac{PMIx} libraries are not required to directly support any other attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
 \reqattrend
 
+
+\reqattrstart
+Host environments that support this operation are required to support the following attributes as qualifiers to the request:
+
+\pastePRRTEAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process.
+\pastePRIAttributeItemEnd
+
+\pastePRRTEAttributeItemBegin{PMIX_NSPACE} Specifies the namespace of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_RANK} attribute.
+\pastePRIAttributeItemEnd
+
+\pastePRRTEAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute.
+\pastePRIAttributeItemEnd
+
+Note that inclusion of the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result.
+\reqattrend
 
 \optattrstart
 The following attributes are optional for host environments that support this operation:
@@ -164,13 +187,17 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_QUERY_QUEUE_STATUS}
 \pastePRRTEAttributeItem{PMIX_QUERY_PROC_TABLE}
 \pastePRRTEAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
-\pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
-\pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
+\pastePRRTEAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
+\pastePRRTEAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
 \pastePRRTEAttributeItem{PMIX_QUERY_MEMORY_USAGE}
 \pastePRRTEAttributeItem{PMIX_QUERY_REPORT_AVG}
 \pastePRRTEAttributeItem{PMIX_QUERY_REPORT_MINMAX}
 \pasteAttributeItem{PMIX_QUERY_ALLOC_STATUS}
-\pasteAttributeItem{PMIX_TIME_REMAINING}
+\pastePRRTEAttributeItem{PMIX_TIME_REMAINING}
+\pastePRRTEAttributeItemBegin{PMIX_SERVER_URI} Requests the URI of the specified \ac{PMIx} server's \ac{PMIx} connection. Defaults to requesting the information for the local \ac{PMIx} server.
+\pastePRRTEAttributeItemEnd
+\pastePRRTEAttributeItemBegin{PMIX_PROC_URI} Requests the URI of the specified \ac{PMIx} server's out-of-band connection. Defaults to requesting the information for the local \ac{PMIx} server.
+\pastePRRTEAttributeItemEnd
 
 \optattrend
 
