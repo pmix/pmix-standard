@@ -499,7 +499,7 @@ typedef struct pmix_proc \{
 The following macros are provided to support the \refstruct{pmix_proc_t} structure.
 
 \subsubsection{Initialize the \refstruct{pmix_proc_t} structure}
-\declaremacro{PMIX_PROC_CONSTRUCT}
+\refmacro{PMIX_PROC_CONSTRUCT}
 
 Initialize the \refstruct{pmix_proc_t} fields
 
@@ -517,21 +517,7 @@ PMIX_PROC_CONSTRUCT(m)
 \subsubsection{Destruct the \refstruct{pmix_proc_t} structure}
 \declaremacro{PMIX_PROC_DESTRUCT}
 
-Clear the \refstruct{pmix_proc_t} fields
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_PROC_DESTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_proc_t})}
-\end{arglist}
-
-This macro performs the identical operations as \refmacro{PMIX_PROC_CONSTRUCT}, but is provided for symmetry in user code.
-
+There is nothing to release here as the fields in \refstruct{pmix_proc_t} are all declared \emph{static}. However, the macro is provided for symmetry in the code \emph{and} for future-proofing should some allocated field be included some day.
 
 \subsubsection{Create a \refstruct{pmix_proc_t} array}
 \declaremacro{PMIX_PROC_CREATE}
@@ -1093,7 +1079,7 @@ The data will be copied into the destination \refstruct{pmix_value_t} - thus, an
 
 %%%%%%%%%%%
 \subsubsection{Retrieve a numerical value from a \refstruct{pmix_value_t}}
-\declaremacro{PMIX_VALUE_FREE}
+\declaremacro{PMIX_VALUE_GET_NUMBER}
 
 Retrieve a numerical value from a \refstruct{pmix_value_t} structure
 
@@ -1915,7 +1901,7 @@ PMIX_QUERY_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
-\section{Data Packing/Unpacking Types and Structures}
+\section{Packing/Unpacking Types \& Structures}
 
 This section defines types and structures used to pack and unpack data passed through the PMIx API.
 
@@ -2035,16 +2021,20 @@ The \refstruct{pmix_data_buffer_t} structure describes a data buffer used for pa
 typedef struct pmix_data_buffer \{
     /** Start of my memory */
     char *base_ptr;
-    /** Where the next data will be packed to (within the allocated
-        memory starting at base_ptr) */
+    /** Where the next data will be packed to
+        (within the allocated memory starting
+        at base_ptr) */
     char *pack_ptr;
-    /** Where the next data will be unpacked from (within the
-        allocated memory starting as base_ptr) */
+    /** Where the next data will be unpacked
+        from (within the allocated memory
+        starting as base_ptr) */
     char *unpack_ptr;
-    /** Number of bytes allocated (starting at base_ptr) */
+    /** Number of bytes allocated (starting
+        at base_ptr) */
     size_t bytes_allocated;
-    /** Number of bytes used by the buffer (i.e., amount of data --
-        including overhead -- packed in the buffer) */
+    /** Number of bytes used by the buffer
+        (i.e., amount of data -- including
+        overhead -- packed in the buffer) */
     size_t bytes_used;
 \} pmix_data_buffer_t;
 \end{codepar}
@@ -2898,7 +2888,6 @@ Maximum number of processes for this job.
 
 %
 \declareAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
-\declareNewAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
 Number of nodes in this session or namespace.
 }
 
