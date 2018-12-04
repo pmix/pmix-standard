@@ -306,14 +306,24 @@ In addition, the PMIx_Notify_error, PMIx_Register_errhandler, and PMIx_Deregiste
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% History: Version 2.1
-\section{Version 2.1: Nov. 2018}
+\section{Version 2.1: Dec. 2018}
 
-The v2.1 update includes minor clarifications and corrections:
+The v2.1 update includes clarifications and corrections, plus addition of examples:
 
 \begin{itemize}
     \item Clarify description of \refapi{PMIx_Connect} and \refapi{PMIx_Disconnect} \acp{API}.
     \item Explain that values for the \refattr{PMIX_COLLECTIVE_ALGO} are environment-dependent
     \item Identify the namespace/rank values required for retrieving attribute-associated information using the \refapi{PMIx_Get} \ac{API}
+    \item Provide definitions for \refterm{session}, \refterm{job}, \refterm{application}, and other terms used throughout the document
+    \item Clarify definitions of \refattr{PMIX_UNIV_SIZE} versus \refattr{PMIX_JOB_SIZE}
+    \item Clarify server module function return values
+    \item Provide examples of the use of \refapi{PMIx_Get} for retrieval of information
+    \item Clarify the use of \refapi{PMIx_Get} versus \refapi{PMIx_Query_info_nb}
+    \item Clarify return values for non-blocking \acp{API} and emphasize that callback functions must not be invoked prior to return from the \ac{API}
+    \item Provide detailed example for construction of the \refapi{PMIx_server_register_nspace} input information array
+    \item Define information levels (e.g., \refterm{session} vs \refterm{job}) and associated attributes for both storing and retrieving values
+    \item Clarify roles of \ac{PMIx} server library and host environment for collective operations
+    \item Clarify definition of \refattr{PMIX_UNIV_SIZE}
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

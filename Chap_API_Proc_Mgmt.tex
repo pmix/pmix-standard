@@ -198,7 +198,13 @@ PMIx_Spawn_nb(const pmix_info_t job_info[], size_t ninfo,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item a PMIx error constant indicating an error in the request - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
+
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the following attributes to those provided before passing the request to the host:
@@ -346,6 +352,14 @@ Record the processes specified by the \refarg{procs} array as \textit{connected}
 All processes engaged in a given \refapi{PMIx_Connect} operation must provide the identical \refarg{procs} array as ordering of entries in the array and the method by which those processes are identified (e.g., use of \refconst{PMIX_RANK_WILDCARD} versus listing the individual processes) \textit{may} impact the host environment's algorithm for uniquely identifying an operation.
 \adviceuserend
 
+\adviceimplstart
+\refapi{PMIx_Connect} and its non-blocking form are both \emph{collective} operations. Accordingly, the \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
+\adviceimplend
+
+\advicermstart
+The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
+\advicermend
+
 Processes that combine via \refapi{PMIx_Connect} must call \refapi{PMIx_Disconnect} prior to finalizing and/or terminating - any process in the assemblage failing to meet this requirement will cause a \refconst{PMIX_ERR_INVALID_TERMINATION} event to be generated.
 
 A process can only engage in \emph{one} connect operation involving the identical \refarg{procs} array at a time.
@@ -385,7 +399,14 @@ PMIx_Connect_nb(const pmix_proc_t procs[], size_t nprocs,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
+
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
@@ -408,7 +429,7 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 %%%%
 \descr
 
-Nonblocking version of \refapi{PMIx_Connect}. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Connect} or its non-blocking version, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes.
+Nonblocking version of \refapi{PMIx_Connect}. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Connect} or its non-blocking version, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes. See the advice provided in the description for \refapi{PMIx_Connect} for more information.
 
 
 %%%%%%%%%%%
@@ -468,6 +489,15 @@ A \refconst{PMIX_ERR_INVALID_OPERATION} error will be returned if the specified 
 All processes engaged in a given \refapi{PMIx_Disconnect} operation must provide the identical \refarg{procs} array as ordering of entries in the array and the method by which those processes are identified (e.g., use of \refconst{PMIX_RANK_WILDCARD} versus listing the individual processes) \textit{may} impact the host environment's algorithm for uniquely identifying an operation.
 \adviceuserend
 
+\adviceimplstart
+\refapi{PMIx_Disconnect} and its non-blocking form are both \emph{collective} operations. Accordingly, the \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
+\adviceimplend
+
+\advicermstart
+The host will receive a single call for each collective operation. The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
+
+\advicermend
+
 A process can only engage in \emph{one} disconnect operation involving the identical \refarg{procs} array at a time.
 However, a process \emph{can} be simultaneously engaged in multiple disconnect operations, each involving a different \refarg{procs} array.
 
@@ -505,7 +535,13 @@ PMIx_Disconnect_nb(const pmix_proc_t procs[], size_t nprocs,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
@@ -526,7 +562,7 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 %%%%
 \descr
 
-Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect_nb} or its blocking version, \textit{and} the host environment has completed any required supporting operations.
+Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect_nb} or its blocking version, \textit{and} the host environment has completed any required supporting operations. See the advice provided in the description for \refapi{PMIx_Disconnect} for more information.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

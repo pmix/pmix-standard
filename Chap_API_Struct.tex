@@ -499,7 +499,7 @@ typedef struct pmix_proc \{
 The following macros are provided to support the \refstruct{pmix_proc_t} structure.
 
 \subsubsection{Initialize the \refstruct{pmix_proc_t} structure}
-\declaremacro{PMIX_PROC_CONSTRUCT}
+\refmacro{PMIX_PROC_CONSTRUCT}
 
 Initialize the \refstruct{pmix_proc_t} fields
 
@@ -517,21 +517,7 @@ PMIX_PROC_CONSTRUCT(m)
 \subsubsection{Destruct the \refstruct{pmix_proc_t} structure}
 \declaremacro{PMIX_PROC_DESTRUCT}
 
-Clear the \refstruct{pmix_proc_t} fields
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_PROC_DESTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_proc_t})}
-\end{arglist}
-
-This macro performs the identical operations as \refmacro{PMIX_PROC_CONSTRUCT}, but is provided for symmetry in user code.
-
+There is nothing to release here as the fields in \refstruct{pmix_proc_t} are all declared \emph{static}. However, the macro is provided for symmetry in the code \emph{and} for future-proofing should some allocated field be included some day.
 
 \subsubsection{Create a \refstruct{pmix_proc_t} array}
 \declaremacro{PMIX_PROC_CREATE}
@@ -1093,7 +1079,7 @@ The data will be copied into the destination \refstruct{pmix_value_t} - thus, an
 
 %%%%%%%%%%%
 \subsubsection{Retrieve a numerical value from a \refstruct{pmix_value_t}}
-\declaremacro{PMIX_VALUE_FREE}
+\declaremacro{PMIX_VALUE_GET_NUMBER}
 
 Retrieve a numerical value from a \refstruct{pmix_value_t} structure
 
@@ -1915,7 +1901,7 @@ PMIX_QUERY_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
-\section{Data Packing/Unpacking Types and Structures}
+\section{Packing/Unpacking Types \& Structures}
 
 This section defines types and structures used to pack and unpack data passed through the PMIx API.
 
@@ -2035,16 +2021,20 @@ The \refstruct{pmix_data_buffer_t} structure describes a data buffer used for pa
 typedef struct pmix_data_buffer \{
     /** Start of my memory */
     char *base_ptr;
-    /** Where the next data will be packed to (within the allocated
-        memory starting at base_ptr) */
+    /** Where the next data will be packed to
+        (within the allocated memory starting
+        at base_ptr) */
     char *pack_ptr;
-    /** Where the next data will be unpacked from (within the
-        allocated memory starting as base_ptr) */
+    /** Where the next data will be unpacked
+        from (within the allocated memory
+        starting as base_ptr) */
     char *unpack_ptr;
-    /** Number of bytes allocated (starting at base_ptr) */
+    /** Number of bytes allocated (starting
+        at base_ptr) */
     size_t bytes_allocated;
-    /** Number of bytes used by the buffer (i.e., amount of data --
-        including overhead -- packed in the buffer) */
+    /** Number of bytes used by the buffer
+        (i.e., amount of data -- including
+        overhead -- packed in the buffer) */
     size_t bytes_used;
 \} pmix_data_buffer_t;
 \end{codepar}
@@ -2764,7 +2754,7 @@ Name of the host where the specified process is running.
 
 %
 \declareAttribute{PMIX_NODEID}{"pmix.nodeid"}{uint32_t}{
-Node identifier where the specified process is located, expressed as the node's index (beginning at zero) in an array of nodes comprising the users allocation
+Node identifier where the specified process is located, expressed as the node's index (beginning at zero) in the array resulting from expansion of the \refattr{PMIX_NODE_MAP} regular expression for the \refterm{job}
 }
 
 %
@@ -2774,7 +2764,7 @@ Comma-delimited list of ranks on this node within the specified namespace - refe
 
 %
 \declareAttribute{PMIX_LOCAL_PROCS}{"pmix.lprocs"}{pmix_proc_t array}{
-Array of \refstruct{pmix_proc_t} of processes on the specified node - referenced using \refconst{PMIX_RANK_WILDCARD}.
+Array of \refstruct{pmix_proc_t} of all processes on the specified node - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
@@ -2804,6 +2794,58 @@ Exit code returned when process terminated
 
 
 %%%%%%%%%%%
+\subsection{Information retrieval attributes}
+\label{api:struct:attributes:retrieval}
+
+The following attributes are used to specify the level of information (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) being requested where ambiguity may exist - see \ref{chap:api_kv:getex} for examples of their use.
+
+%
+\declareNewAttribute{PMIX_SESSION_INFO}{"pmix.ssn.info"}{bool}{
+Return information about the specified session. If information about a session other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_SESSION_ID} attribute identifying the desired target.
+}
+
+%
+\declareNewAttribute{PMIX_JOB_INFO}{"pmix.job.info"}{bool}{
+Return information about the specified job or namespace. If information about a job or namespace other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_JOBID} or \refattr{PMIX_NSPACE} attribute identifying the desired target. Similarly, if information is requested about a job or namespace in a session other than the one containing the requesting process, then an attribute identifying the target session must be provided.
+}
+
+%
+\declareNewAttribute{PMIX_APP_INFO}{"pmix.app.info"}{bool}{
+Return information about the specified application. If information about an application other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_APPNUM} attribute identifying the desired target. Similarly, if information is requested about an application in a job or session other than the one containing the requesting process, then attributes identifying the target job and/or session must be provided.
+}
+
+%
+\declareNewAttribute{PMIX_NODE_INFO}{"pmix.node.info"}{bool}{
+Return information about the specified node. If information about a node other than the one containing the requesting process is desired, then the attribute array must contain either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute identifying the desired target.
+}
+
+%%%%%%%%%%%
+\subsection{Information storage attributes}
+\label{api:struct:attributes:storage}
+
+The following attributes are used to assemble information by its level (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) for storage where ambiguity may exist - see \ref{chap:api_server:assemble} for examples of their use.
+
+%
+\declareNewAttribute{PMIX_SESSION_INFO_ARRAY}{"pmix.ssn.arr"}{pmix_data_array_t}{
+Provide an array of \refstruct{pmix_info_t} containing session-level information. The \refattr{PMIX_SESSION_ID} attribute is \emph{required} to be included in the array.
+}
+
+%
+\declareNewAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
+Provide an array of \refstruct{pmix_info_t} containing job-level information. Information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}. Thus, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes, though either or both of them \emph{may} be included.
+}
+
+%
+\declareNewAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
+Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the appplication, plus its \refattr{PMIX_APPNUM} attribute, are \emph{required} to be included in the array.
+}
+
+%
+\declareNewAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
+Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is \emph{required} to be included in the array, though both \emph{may} be included.
+}
+
+%%%%%%%%%%%
 \subsection{Size information attributes}
 \label{api:struct:attributes:sizeinfo}
 
@@ -2811,12 +2853,12 @@ These attributes are used to describe the size of various dimensions of the PMIx
 
 %
 \declareAttribute{PMIX_UNIV_SIZE}{"pmix.univ.size"}{uint32_t}{
-Number of processes in this namespace.
+Number of allocated slots in a session - each slot may or may not be occupied by an executing process. Note that this attribute is the equivalent to the combination of \refattr{PMIX_SESSION_INFO_ARRAY} with the \refattr{PMIX_NUM_SLOTS} entry in the array - it is included in the Standard for historical reasons.
 }
 
 %
 \declareAttribute{PMIX_JOB_SIZE}{"pmix.job.size"}{uint32_t}{
-Number of processes in this job.
+Total number of processes in this job across all contained applications
 }
 
 %
@@ -2846,7 +2888,12 @@ Maximum number of processes for this job.
 
 %
 \declareAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
-Number of nodes in this namespace.
+Number of nodes in this session or namespace.
+}
+
+%
+\declareAttribute{PMIX_NUM_SLOTS}{"pmix.num.slots"}{uint32_t}{
+Number of slots allocated to the session, namespace, or application.
 }
 
 
@@ -3063,12 +3110,12 @@ Array of process data. Starts with rank, then contains more data.
 
 %
 \declareAttribute{PMIX_NODE_MAP}{"pmix.nmap"}{char*}{
-Regular expression of nodes containing processes for this job.
+Regular expression of nodes - see \ref{cptr:api_server:noderegex} for an explanation of its generation.
 }
 
 %
 \declareAttribute{PMIX_PROC_MAP}{"pmix.pmap"}{char*}{
-Regular expression describing processes on each node within this job.
+Regular expression describing processes on each node  - see \ref{cptr:api_server:ppnregex} for an explanation of its generation.
 }
 
 %
@@ -3431,7 +3478,12 @@ Maximum number of times to restart a job - when accessed using \refapi{PMIx_Get}
 \subsection{Query attributes}
 \label{api:struct:attributes:query}
 
-Attributes used to describe \refapi{PMIx_Query_info_nb} behavior - these are values passed to the \refapi{PMIx_Query_info_nb} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
+Attributes used to describe \refapi{PMIx_Query_info_nb} behavior - these are values passed to the \refapi{PMIx_Query_info_nb} \ac{API} and therefore are not passed to the \refapi{PMIx_Get} \ac{API}.
+
+%
+\declareNewAttribute{PMIX_QUERY_REFRESH_CACHE}{"pmix.qry.rfsh"}{bool}{
+Retrieve updated information from server.
+}
 
 %
 \declareAttribute{PMIX_QUERY_NAMESPACES}{"pmix.qry.ns"}{char*}{
@@ -3490,7 +3542,7 @@ Constrain the query to local information only.
 
 %
 \declareAttribute{PMIX_QUERY_REPORT_AVG}{"pmix.qry.avg"}{bool}{
-Report average values.
+Report only average values for sampled information.
 }
 
 %
