@@ -124,10 +124,10 @@ PMIx_Query_info_nb(pmix_query_t queries[], size_t nqueries,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Function returns either:
+Returns one of the following:
 
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
 \item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will \emph{not} be executed
 \end{itemize}
 

@@ -229,6 +229,7 @@ PMIx_Data_pack(const pmix_proc_t *target,
 \argin{type}{The type of the data to be packed (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
+Returns one of the following:
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The data has been packed as requested
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
@@ -297,6 +298,7 @@ PMIx_Data_unpack(const pmix_proc_t *source,
 \argin{type}{The type of the data to be unpacked --- must be one of the \ac{PMIx} defined data types (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
+Returns one of the following:
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The data has been unpacked as requested
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
@@ -355,6 +357,7 @@ PMIx_Data_copy(void **dest, void *src,
 \argin{type}{The type of the data to be copied --- must be one of the PMIx defined data types. (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
+Returns one of the following:
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The data has been copied as requested
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
@@ -398,6 +401,7 @@ PMIx_Data_print(char **output, char *prefix,
 \argin{type}{The type of the data value to be printed --- must be one of the PMIx defined data types. (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
+Returns one of the following:
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The data has been printed as requested
 \item \refconst{PMIX_ERR_BAD_PARAM} The provided data type is not recognized.
@@ -436,6 +440,7 @@ PMIx_Data_copy_payload(pmix_data_buffer_t *dest,
 \argin{src}{Pointer to the source \refstruct{pmix_data_buffer_t} (handle)}
 \end{arglist}
 
+Returns one of the following:
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The data has been copied as requested
 \item \refconst{PMIX_ERR_BAD_PARAM} The src and dest \refstruct{pmix_data_buffer_t} types do not match
