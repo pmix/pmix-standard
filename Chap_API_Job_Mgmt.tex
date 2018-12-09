@@ -291,9 +291,8 @@ PMIx_Allocation_request(pmix_alloc_directive_t directive,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request was processed and returned \textit{success}
+    \item a PMIx error constant indicating either an error in the input or that the request was refused
 \end{itemize}
 
 \reqattrstart
@@ -377,7 +376,13 @@ PMIx_Allocation_request_nb(pmix_alloc_directive_t directive,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
@@ -463,9 +468,8 @@ PMIx_Job_control(const pmix_proc_t targets[], size_t ntargets,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request was processed by the host environment and returned \textit{success}
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request was refused
 \end{itemize}
 
 \reqattrstart
@@ -513,7 +517,7 @@ A \code{NULL} value can be used to indicate all processes in the caller's namesp
 The use of \refconst{PMIX_RANK_WILDARD} can also be used to indicate that all processes in the given namespace are to be included.
 
 The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
-
+The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Job_control_nb}}
@@ -546,7 +550,13 @@ PMIx_Job_control_nb(const pmix_proc_t targets[], size_t ntargets,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
@@ -559,6 +569,12 @@ Host environments that implement support for this operation are required to supp
 \pastePRRTEAttributeItem{PMIX_JOB_CTRL_KILL}
 \pastePRRTEAttributeItem{PMIX_JOB_CTRL_SIGNAL}
 \pastePRRTEAttributeItem{PMIX_JOB_CTRL_TERMINATE}
+\pastePRRTEAttributeItem{PMIX_REGISTER_CLEANUP}
+\pastePRRTEAttributeItem{PMIX_REGISTER_CLEANUP_DIR}
+\pastePRRTEAttributeItem{PMIX_CLEANUP_RECURSIVE}
+\pastePRRTEAttributeItem{PMIX_CLEANUP_EMPTY}
+\pastePRRTEAttributeItem{PMIX_CLEANUP_IGNORE}
+\pastePRRTEAttributeItem{PMIX_CLEANUP_LEAVE_TOPDIR}
 
 \reqattrend
 
@@ -581,7 +597,14 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Non-blocking form of the \refapi{PMIx_Job_control} \ac{API}. The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
+Non-blocking form of the \refapi{PMIx_Job_control} \ac{API}.
+The \refarg{targets} array identifies the processes to which the requested job control action is to be applied.
+A \code{NULL} value can be used to indicate all processes in the caller's namespace.
+The use of \refconst{PMIX_RANK_WILDARD} can also be used to indicate that all processes in the given namespace are to be included.
+
+The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
+The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -628,9 +651,8 @@ PMIx_Process_monitor(const pmix_info_t *monitor, pmix_status_t error,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request was processed and returned \textit{success}
+    \item a PMIx error constant indicating either an error in the input or that the request was refused
 \end{itemize}
 
 \optattrstart
@@ -700,7 +722,13 @@ PMIx_Process_monitor_nb(const pmix_info_t *monitor, pmix_status_t error,
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
 
 \optattrstart
 The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the requesting process:
