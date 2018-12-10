@@ -2800,22 +2800,22 @@ Exit code returned when process terminated
 The following attributes are used to specify the level of information (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) being requested where ambiguity may exist - see \ref{chap:api_kv:getex} for examples of their use.
 
 %
-\declareNewAttribute{PMIX_SESSION_INFO}{"pmix.ssn.info"}{bool}{
+\declareAttribute{PMIX_SESSION_INFO}{"pmix.ssn.info"}{bool}{
 Return information about the specified session. If information about a session other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_SESSION_ID} attribute identifying the desired target.
 }
 
 %
-\declareNewAttribute{PMIX_JOB_INFO}{"pmix.job.info"}{bool}{
+\declareAttribute{PMIX_JOB_INFO}{"pmix.job.info"}{bool}{
 Return information about the specified job or namespace. If information about a job or namespace other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_JOBID} or \refattr{PMIX_NSPACE} attribute identifying the desired target. Similarly, if information is requested about a job or namespace in a session other than the one containing the requesting process, then an attribute identifying the target session must be provided.
 }
 
 %
-\declareNewAttribute{PMIX_APP_INFO}{"pmix.app.info"}{bool}{
+\declareAttribute{PMIX_APP_INFO}{"pmix.app.info"}{bool}{
 Return information about the specified application. If information about an application other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_APPNUM} attribute identifying the desired target. Similarly, if information is requested about an application in a job or session other than the one containing the requesting process, then attributes identifying the target job and/or session must be provided.
 }
 
 %
-\declareNewAttribute{PMIX_NODE_INFO}{"pmix.node.info"}{bool}{
+\declareAttribute{PMIX_NODE_INFO}{"pmix.node.info"}{bool}{
 Return information about the specified node. If information about a node other than the one containing the requesting process is desired, then the attribute array must contain either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute identifying the desired target.
 }
 
@@ -2826,22 +2826,22 @@ Return information about the specified node. If information about a node other t
 The following attributes are used to assemble information by its level (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) for storage where ambiguity may exist - see \ref{chap:api_server:assemble} for examples of their use.
 
 %
-\declareNewAttribute{PMIX_SESSION_INFO_ARRAY}{"pmix.ssn.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_SESSION_INFO_ARRAY}{"pmix.ssn.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing session-level information. The \refattr{PMIX_SESSION_ID} attribute is \emph{required} to be included in the array.
 }
 
 %
-\declareNewAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing job-level information. Information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}. Thus, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes, though either or both of them \emph{may} be included.
 }
 
 %
-\declareNewAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the appplication, plus its \refattr{PMIX_APPNUM} attribute, are \emph{required} to be included in the array.
 }
 
 %
-\declareNewAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is \emph{required} to be included in the array, though both \emph{may} be included.
 }
 
@@ -3063,7 +3063,7 @@ Value for calls to \refapi{PMIx_Publish}.
 }
 
 %
-\declareNewAttribute{PMIX_DATA_SCOPE}{"pmix.scope"}{pmix_scope_t}{
+\declareAttribute{PMIX_DATA_SCOPE}{"pmix.scope"}{pmix_scope_t}{
 Scope of the data to be found in a \refapi{PMIx_Get} call.
 }
 
@@ -3481,7 +3481,7 @@ Maximum number of times to restart a job - when accessed using \refapi{PMIx_Get}
 Attributes used to describe \refapi{PMIx_Query_info_nb} behavior - these are values passed to the \refapi{PMIx_Query_info_nb} \ac{API} and therefore are not passed to the \refapi{PMIx_Get} \ac{API}.
 
 %
-\declareNewAttribute{PMIX_QUERY_REFRESH_CACHE}{"pmix.qry.rfsh"}{bool}{
+\declareAttribute{PMIX_QUERY_REFRESH_CACHE}{"pmix.qry.rfsh"}{bool}{
 Retrieve updated information from server.
 }
 
@@ -3752,7 +3752,7 @@ String name of the \ac{RM}.
 Attributes used to adjust environment variables - these are values passed to the \refapi{PMIx_Spawn} \ac{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
-\declareNewAttribute{PMIX_SET_ENVAR}{"pmix.envar.set"}{pmix_envar_t*}{
+\declareAttribute{PMIX_SET_ENVAR}{"pmix.envar.set"}{pmix_envar_t*}{
 Set the envar to the given value, overwriting any pre-existing one
 }
 
@@ -3819,12 +3819,12 @@ Number of Megabytes.
 }
 
 %
-\declareNewAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
+\declareAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
 Array of \refstruct{pmix_info_t} describing requested network resources. This must include at least: \refattr{PMIX_ALLOC_NETWORK_ID}, \refattr{PMIX_ALLOC_NETWORK_TYPE}, and \refattr{PMIX_ALLOC_NETWORK_ENDPTS}, plus whatever other descriptors are desired.
 }
 
 %
-\declareNewAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
+\declareAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
 The key to be used when accessing this requested network allocation. The allocation will be returned/stored as a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} indexed by this key and containing at least one entry with the same key and the allocated resource description.
 The type of the included value depends upon the network support. For example, a TCP allocation might consist of a comma-delimited string of socket ranges such as \var{"32000-32100,33005,38123-38146"}. Additional entries will consist of any provided resource request directives, along with their assigned values. Examples include: \refattr{PMIX_ALLOC_NETWORK_TYPE} - the type of resources provided; \refattr{PMIX_ALLOC_NETWORK_PLANE} - if applicable, what plane the resources were assigned from; \refattr{PMIX_ALLOC_NETWORK_QOS} - the assigned QoS; \refattr{PMIX_ALLOC_BANDWIDTH} - the allocated bandwidth; \refattr{PMIX_ALLOC_NETWORK_SEC_KEY} - a security key for the requested network allocation. NOTE: the assigned values may differ from those requested, especially if \refconst{PMIX_INFO_REQD} was not set in the request.
 }
