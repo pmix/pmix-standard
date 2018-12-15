@@ -3472,6 +3472,11 @@ Application is continuous, all failed processes should be immediately restarted.
 Maximum number of times to restart a job - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the max restarts for the provided namespace
 }
 
+%
+\declareNewAttribute{PMIX_SPAWN_TOOL}{"pmix.spwn.tool"}{bool}{
+Indicate that the job being spawned is a tool
+}
+
 
 %%%%%%%%%%%
 \subsection{Query attributes}
