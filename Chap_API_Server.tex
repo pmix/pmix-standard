@@ -113,7 +113,7 @@ PMIx_server_register_nspace(const pmix_nspace_t nspace,
 \cspecificend
 
 \begin{arglist}
-\argin{nspace}{namespace (string)}
+\argin{nspace}{Character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the namespace identifier (string)}
 \argin{nlocalprocs}{number of local processes (integer)}
 \argin{info}{Array of info structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}

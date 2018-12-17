@@ -1,0 +1,810 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: Process Sets and Groups
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Process Sets and Groups}
+\label{chap:api_sets_groups}
+
+\ac{PMIx} supports two slightly related, but functionally different concepts known as \emph{process sets} and \emph{process groups}. This chapter describes the two definitions and how they are utilized, along with their corresponding \acp{API}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Process Sets}
+\label{chap:api_sets_groups:sets}
+
+A \ac{PMIx} \emph{Process Set} is a user-provided label associated with a given set of application processes. Definition of a \ac{PMIx} process set typically occurs at time of application execution - e.g., on a \ac{PRRTE} command line:
+
+\cspecificstart
+\begin{codepar}
+\$ prun -n 4 --pset ocean myoceanapp : -n 3 --pset ice myiceapp
+\end{codepar}
+\cspecificend
+
+In this example, the processes in the first application will be labeled with a \refattr{PMIX_PSET_NAME} attribute of \emph{ocean} while those in the second application will be labeled with an \emph{ice} value. During the execution, application processes could lookup the process set attribute for any other process using \refapi{PMIx_Get}. Alternatively, other executing applications could utilize the \refapi{PMIx_Query_info_nb} \ac{API} to obtain the number of declared process sets in the system, a list of their names, and other information about them. In other words, the \emph{process set} identifier provides a label by which an application can derive information about a process and its application - it does \emph{not}, however, confer any operational function.
+
+Thus, process \emph{sets} differ from process \emph{groups} in several key ways:
+
+\begin{itemize}
+    \item Process \emph{sets} have no implied relationship between their members - i.e., a process in a process set has no concept of a ``pset rank'' as it would in a process \emph{group}
+    \item Processes can only have one process \emph{set} identifier, but can simultaneously belong to multiple process \emph{groups}
+    \item Process \emph{set} identifiers are considered job-level information set at launch. No \ac{PMIx} \ac{API} is provided by which a user can change the process \emph{set} value of a process on-the-fly. In contrast, \ac{PMIx} process \emph{groups} can only be defined dynamically by the application.
+    \item Process \emph{groups} can be used in calls to \ac{PMIx} operations. Members of process \emph{groups} that are involved in an operation are translated by their \ac{PMIx} server into their \emph{native} identifier prior to the operation being passed to the host environment. For example, an application can define a process group to consist of ranks 0 and 1 from the host-assigned namespace of \emph{210456}, identified by the group id of \emph{foo}. If the application subsequently calls the \refapi{PMIx_Fence} \ac{API} with a process identifier of \{foo, PMIX_RANK_WILDCARD\}, the \ac{PMIx} server will replace that identifier with an array consisting of \{210456, 0\} and \{210456, 1\} - the host-assigned identifers of the participating processes - prior to passing the request up to the host environment
+\end{itemize}
+
+The two concepts do, however, overlap in one specific area. Process \emph{groups} are included in the process \emph{set} information returned by calls to \refapi{PMIx_Query_info_nb}. Thus, a \emph{process group} can effectively be considered an extended version of a \emph{process set} that adds dynamic definition and operational context to the \emph{process set} concept.
+
+\adviceimplstart
+\ac{PMIx} implementations are required to include all active \emph{group} identifiers in the returned list of process \emph{set} names provided in response to the appropriate \refapi{PMIx_Query_info_nb} call.
+\adviceimplend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Process Groups}
+\label{chap:api_sets_groups:groups}
+
+\ac{PMIx} \emph{Groups} are defined as a collection of processes desiring a common, unique identifier for purposes such as passing events or participating in \ac{PMIx} fence operations. As with processes that assemble via \refapi{PMIx_Connect}, each member of the group is provided with both the job-level information of any other namespace represented in the group, and the contact information for all group members. However, \emph{groups} differ from \refapi{PMIx_Connect} assemblages in the following key areas:
+
+\begin{itemize}
+    \item Relation to the host environment
+    \begin{itemize}
+        \item Calls to \refapi{PMIx_Connect} are relayed to the host environment. This means that the host \ac{RM} should treat the failure of any process in the specified assemblage as a reportable event and take appropriate action. However, the environment is not required to define a new identifier for the connected assemblage or any of its member processes, nor does it define a new rank for each process within that assemblage. In addition, the \ac{PMIx} server does not provide any tracking support for the assemblage. Thus, the caller is responsible for addressing members of the connected assemblage using their \ac{RM}-provided identifiers.
+
+        \item Calls to \ac{PMIx} Group \acp{API} are first processed within the local \ac{PMIx} server. When constructed, the server creates a tracker that associates the specified processes with the user-provided group identifier, and assigns a new \emph{group rank} based on their relative position in the array of processes provided in the call to \refapi{PMIx_Group_construct}. Members of the group can subsequently utilize the group identifier in \ac{PMIx} function calls to address the group’s members, using either \refconst{PMIX_RANK_WILDCARD} to refer to all of them or the group-level rank of specific members. The \ac{PMIx} server will translate the specified processes into their \ac{RM}-assigned identifiers prior to passing the request up to its host. Thus, the host environment has no visibility into the group’s existence or membership.
+
+\adviceuserstart
+        User-provided group identifiers must be distinct from anything provided by the \ac{RM} so as to avoid collisions between group identifiers and \ac{RM}-assigned namespaces. This can usually be accomplished through the use of an application-specific prefix – e.g., ``myapp-foo''
+\adviceuserend
+    \end{itemize}
+    \item Construction procedure
+    \begin{itemize}
+        \item \refapi{PMIx_Connect} calls require that every process call the \ac{API} before completing – i.e., it is modeled upon the bulk synchronous traditional \ac{MPI} connect/accept methodology. Thus, a given application thread can only be involved in one connect/accept operation at a time, and is blocked in that operation until all specified processes participate. In addition, there is no provision for replacing processes in the assemblage due to failure to participate, nor a mechanism by which a process might decline participation.
+
+        \item \ac{PMIx} Groups are designed to be more flexible in their construction procedure by relaxing these constraints. While a standard blocking form of constructing groups is provided, the event notification system is utilized to provide a designated \emph{group leader} with the ability to replace participants that fail to participate within a given timeout period. This provides a mechanism by which the application can, if desired, replace members on-the-fly or allow the group to proceed with partial membership. In such cases, the final group membership is returned to all participants upon completion of the operation.
+
+        Additionally, \ac{PMIx} supports dynamic definition of group membership based on an invite/join model. A process can asynchronously initiate construction of a group of any processes via the \refapi{PMIx_Group_invite} function call. Invitations are delivered via a \ac{PMIx} event (using the \refconst{PMIX_GROUP_INVITED} event) to the invited processes which can then either accept or decline the invitation using the \refapi{PMIx_Group_join} \ac{API}. The initiating process tracks responses by registering for the events generated by the call to \refapi{PMIx_Group_join}, timeouts, or process terminations, optionally replacing processes that decline the invitation, fail to respond in time, or terminate without responding. Upon completion of the operation, the final list of participants is communicated to each member of the new group.
+    \end{itemize}
+    \item Destruct procedure
+    \begin{itemize}
+        \item Processes that assemble via \refapi{PMIx_Connect} must all depart the assemblage together – i.e., no member can depart the assemblage while leaving the remaining members in it. Even the non-blocking form of \refapi{PMIx_Disconnect} retains this requirement in that members remain a part of the assemblage until all members have called \refapi{PMIx_Disconnect_nb}
+        \item Members of a \ac{PMIx} Group may depart the group at any time via the \refapi{PMIx_Group_leave} \ac{API}. Other members are notified of the departure via the \refconst{PMIX_GROUP_LEFT} event to distinguish such events from those reporting process termination. This leaves the remaining members free to continue group operations. The \refapi{PMIx_Group_destruct} operation offers a collective method akin to \refapi{PMIx_Disconnect} for deconstructing the entire group.
+
+        Note that applications supporting dynamic group behaviors such as asynchronous departure take responsibility for ensuring global consistency in the group definition prior to executing group collective operations - i.e., it is the application's responsibility to either ensure that knowledge of the current group membership is globally consistent across the participants, or to register for appropriate events to deal with the lack of consistency during the operation.
+    \end{itemize}
+\end{itemize}
+
+In other words, members of \ac{PMIx} Groups are \emph{loosely coupled} as opposed to \emph{tightly connected} when constructed via \refapi{PMIx_Connect}. The relevant \acp{API} are explained below.
+
+\adviceuserstart
+The reliance on \ac{PMIx} events in the \ac{PMIx} Group concept dictates that processes utilizing these \acp{API} must register for the corresponding events. Failure to do so will likely lead to operational failures. Users are recommended to utilize the \refattr{PMIX_TIMEOUT} directive (or retain an internal timer) on calls to \ac{PMIx} Group \acp{API} (especially the blocking form of those functions) as processes that have not registered for required events will never respond.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Group_construct}}
+\declareapi{PMIx_Group_construct}
+
+%%%%
+\summary
+
+Construct a \ac{PMIx} process group
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Group_construct(const char grp[],
+                     const pmix_proc_t procs[], size_t nprocs,
+                     const pmix_info_t directives[], size_t ndirs,
+                     pmix_info_t **results, size_t *nresults)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures containing the \ac{PMIx} identifiers of the member processes (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (\code{size_t})}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\arginout{results}{Pointer to a location where the array of \refstruct{pmix_info_t} describing the results of the operation is to be returned (pointer to handle)}
+\arginout{nresults}{Pointer to a \code{size_t} location where the number of elements in \refarg{results} is to be returned (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request has been successfully completed
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} library and/or the host \ac{RM} does not support this operation
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request failed to be completed
+\end{itemize}
+
+\reqattrstart
+The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries that support this operation:
+
+\pastePRIAttributeItem{PMIX_GROUP_LEADER}
+\pastePRIAttributeItem{PMIX_GROUP_OPTIONAL}
+\pastePRIAttributeItem{PMIX_GROUP_LOCAL_ONLY}
+
+Host environments that support this operation are \textit{required} to provide the following attributes:
+
+\pastePRRTEAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pastePRRTEAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
+
+%%%%
+\descr
+
+Construct a new group composed of the specified processes and identified with the provided group identifier. The group identifier is a user-defined, \code{NULL}-terminated character array of length less than or equal to \refconst{PMIX_MAX_NSLEN}. Only characters accepted by standard string comparison functions (e.g., \emph{strncmp}) are supported. Processes may engage in multiple simultaneous group construct operations so long as each is provided with a unique group ID. The \refarg{directives} array can be used to pass user-level directives regarding timeout constraints and other options available from the \ac{PMIx} server.
+
+If the \refattr{PMIX_GROUP_NOTIFY_TERMINATION} attribute is provided and has a value of \code{true}, then either the construct leader (if \refattr{PMIX_GROUP_LEADER} is provided) or all participants who register for the \refconst{PMIX_GROUP_MEMBER_FAILED} event will receive events whenever a process fails or terminates prior to calling \refapi{PMIx_Group_construct} – i.e. if a \emph{group leader} is declared, \textit{only} that process will receive the event. In the absence of a declared leader, \textit{all} specified group members will receive the event.
+
+The event will contain the identifier of the process that failed to join plus any other information that the host \ac{RM} provided. This provides an opportunity for the leader or the collective members to react to the event – e.g., to decide to proceed with a smaller group or to abort the operation. The decision is communicated to the \ac{PMIx} library in the results array at the end of the event handler. This allows \ac{PMIx} to properly adjust accounting for procedure completion. When construct is complete, the participating \ac{PMIx} servers will be alerted to any change in participants and each group member will receive an updated group membership (marked with the \refattr{PMIX_GROUP_MEMBERSHIP} attribute) as part of the \refarg{results} array returned by this \ac{API}.
+
+Failure of the declared leader at any time will cause a \refconst{PMIX_GROUP_LEADER_FAILED} event to be delivered to all participants so they can optionally declare a new leader. A new leader is identified by providing the \refattr{PMIX_GROUP_LEADER} attribute in the results array in the return of the event handler. Only one process is allowed to return that attribute, thereby declaring itself as the new leader. Results of the leader selection will be communicated to all participants via a \refconst{PMIX_GROUP_LEADER_SELECTED} event identifying the new leader. If no leader was selected, then the \refstruct{pmix_info_t} provided to that event handler will include that information so the participants can take appropriate action.
+
+Any participant that returns \refconst{PMIX_GROUP_CONSTRUCT_ABORT} from either the \refconst{PMIX_GROUP_MEMBER_FAILED} or the \refconst{PMIX_GROUP_LEADER_FAILED} event handler will cause the construct process to abort, returning from the call with a \refconst{PMIX_GROUP_CONSTRUCT_ABORT} status.
+
+If the \refattr{PMIX_GROUP_NOTIFY_TERMINATION} attribute is not provided or has a value of \code{false}, then the \refapi{PMIx_Group_construct} operation will simply return an error whenever a proposed group member fails or terminates prior to calling \refapi{PMIx_Group_construct}.
+
+Providing the \refattr{PMIX_GROUP_OPTIONAL} attribute with a value of \code{true} directs the \ac{PMIx} library to consider participation by any specified group member as non-required - thus, the operation will return \refconst{PMIX_SUCCESS} if all members participate, or \refconst{PMIX_ERR_PARTIAL_SUCCESS} if some members fail to participate. The \refarg{results} array will contain the final group membership in the latter case. Note that this use-case can cause the operation to hang if the \refattr{PMIX_TIMEOUT} attribute is not specified and one or more group members fail to call \refapi{PMIx_Group_construct} while continuing to execute. Also, note that no leader or member failed events will be generated during the operation.
+
+Processes in a group under construction are not allowed to leave the group until group construction is complete. Upon completion of the construct procedure, each group member will have access to the job-level information of all namespaces represented in the group plus any information posted via \refapi{PMIx_Put} (subject to the usual scoping directives) for every group member.
+
+\adviceimplstart
+At the conclusion of the construct operation, the \ac{PMIx} library is \emph{required} to ensure that job-related information from each participating namespace plus any information posted by group members via \refapi{PMIx_Put} (subject to scoping directives) is available to each member via calls to \refapi{PMIx_Get}.
+\adviceimplend
+
+\advicermstart
+The collective nature of this \ac{API} generally results in use of a fence-like operation by the backend host environment. Host environments that utilize the array of process participants as a \emph{signature} for such operations may experience potential conflicts should both a \refapi{PMIx_Group_construct} and a \refapi{PMIx_Fence} operation involving the same participants be simultaneously executed. As \ac{PMIx} allows for such use-cases, it is therefore the responsibility of the host environment to resolve any potential conflicts.
+\advicermend
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Group_construct_nb}}
+\declareapi{PMIx_Group_construct_nb}
+
+%%%%
+\summary
+
+Non-blocking form of \refapi{PMIx_Group_construct}
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Group_construct_nb(const char grp[],
+                        const pmix_proc_t procs[], size_t nprocs,
+                        const pmix_info_t directives[], size_t ndirs,
+                        pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures containing the \ac{PMIx} identifiers of the member processes (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (\code{size_t})}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+\item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} library does not support this operation - the \refarg{cbfunc} will \textit{not} be called
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
+
+If executed, the status returned in the provided callback function will be one of the following constants:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} The operation succeeded and all specified members participated.
+\item \refconst{PMIX_ERR_PARTIAL_SUCCESS} The operation succeeded but not all specified members participated - the final group membership is included in the callback function
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} While the \ac{PMIx} server supports this operation, the host \ac{RM} does not.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure
+\end{itemize}
+
+\reqattrstart
+\ac{PMIx} libraries that choose not to support this operation \textit{must} return \refconst{PMIX_ERR_NOT_SUPPORTED} when the function is called.
+
+The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries that support this operation:
+
+\pastePRIAttributeItem{PMIX_GROUP_LEADER}
+\pastePRIAttributeItem{PMIX_GROUP_OPTIONAL}
+\pastePRIAttributeItem{PMIX_GROUP_LOCAL_ONLY}
+
+Host environments that support this operation are \textit{required} to provide the following attributes:
+
+\pastePRRTEAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pastePRRTEAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
+
+%%%%
+\descr
+
+Non-blocking version of the \refapi{PMIx_Group_construct} operation. The callback function will be called once all group members have called either \refapi{PMIx_Group_construct} or \refapi{PMIx_Group_construct_nb}.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Group_destruct}}
+\declareapi{PMIx_Group_destruct}
+
+%%%%
+\summary
+
+Destruct a \ac{PMIx} process group
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Group_destruct(const char grp[],
+                    const pmix_info_t directives[], size_t ndirs)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the identifier of the group to be destructed (string)}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request has been successfully completed
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} library and/or the host \ac{RM} does not support this operation
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request failed to be completed
+\end{itemize}
+
+\reqattrstart
+For implementations and host environments that support the operation, there are no identified required
+attributes for this \ac{API}.
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
+
+%%%%
+\descr
+
+Destruct a group identified by the provided group identifier. Processes may engage in multiple simultaneous group destruct operations so long as each involves a unique group ID. The \refarg{directives} array can be used to pass user-level directives regarding timeout constraints and other options available from the \ac{PMIx} server.
+
+The destruct \ac{API} will return an error if any group process fails or terminates prior to calling \refapi{PMIx_Group_destruct} or its non-blocking version unless the \refattr{PMIX_GROUP_NOTIFY_TERMINATION} attribute was provided (with a value of \code{false}) at time of group construction. If notification was requested, then the \refconst{PMIX_GROUP_MEMBER_FAILED} event will be delivered for each process that fails to call destruct and the destruct tracker updated to account for the lack of participation. The \refapi{PMIx_Group_destruct} operation will subsequently return \refconst{PMIX_SUCCESS} when the remaining processes have all called destruct – i.e., the event will serve in place of return of an error.
+
+\advicermstart
+The collective nature of this \ac{API} generally results in use of a fence-like operation by the backend host environment. Host environments that utilize the array of process participants as a \emph{signature} for such operations may experience potential conflicts should both a \refapi{PMIx_Group_destruct} and a \refapi{PMIx_Fence} operation involving the same participants be simultaneously executed. As \ac{PMIx} allows for such use-cases, it is therefore the responsibility of the host environment to resolve any potential conflicts.
+\advicermend
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Group_destruct_nb}}
+\declareapi{PMIx_Group_destruct_nb}
+
+%%%%
+\summary
+
+Non-blocking form of \refapi{PMIx_Group_destruct}
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Group_destruct_nb(const char grp[],
+                       const pmix_info_t directives[], size_t ndirs,
+                       pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the identifier of the group to be destructed (string)}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} library does not support this operation - the \refarg{cbfunc} will \textit{not} be called
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
+
+If executed, the status returned in the provided callback function will be one of the following constants:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} The operation was successfully completed
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} While the \ac{PMIx} server supports this operation, the host \ac{RM} does not.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure
+\end{itemize}
+
+\reqattrstart
+\ac{PMIx} libraries that choose not to support this operation \textit{must} return \refconst{PMIX_ERR_NOT_SUPPORTED} when the function is called. For implementations and host environments that support the operation, there are no identified required
+attributes for this \ac{API}.
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
+
+%%%%
+\descr
+
+Non-blocking version of the \refapi{PMIx_Group_destruct} operation. The callback function will be called once all members of the group have executed either \refapi{PMIx_Group_destruct} or \refapi{PMIx_Group_destruct_nb}.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Group_invite}}
+\declareapi{PMIx_Group_invite}
+
+%%%%
+\summary
+
+Asynchronously construct a \ac{PMIx} process group
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Group_invite(const char grp[],
+                  const pmix_proc_t procs[], size_t nprocs,
+                  const pmix_info_t directives[], size_t ndirs,
+                  pmix_info_t **results, size_t *nresult)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures containing the \ac{PMIx} identifiers of the processes to be invited (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (\code{size_t})}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\arginout{results}{Pointer to a location where the array of \refstruct{pmix_info_t} describing the results of the operation is to be returned (pointer to handle)}
+\arginout{nresults}{Pointer to a \code{size_t} location where the number of elements in \refarg{results} is to be returned (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request has been successfully completed
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} library and/or the host \ac{RM} does not support this operation
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request failed to be completed
+\end{itemize}
+
+\reqattrstart
+The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries that support this operation:
+
+\pastePRIAttributeItem{PMIX_GROUP_OPTIONAL}
+
+Host environments that support this operation are \textit{required} to provide the following attributes:
+
+\pastePRRTEAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pastePRRTEAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
+
+%%%%
+\descr
+
+Explicitly invite the specified processes to join a group. The process making the \refapi{PMIx_Group_invite} call is automatically declared to be the \emph{group leader}. Each invited process will be notified of the invitation via the \refconst{PMIX_GROUP_INVITED} event - the processes being invited must therefore register for the \refconst{PMIX_GROUP_INVITED} event in order to be notified of the invitation. Note that the \ac{PMIx} event notification system caches events - thus, no ordering of invite versus event registration is required.
+
+The invitation event will include the identity of the inviting process plus the name of the group. When ready to respond, each invited process provides a response using either the blocking or non-blocking form of \refapi{PMIx_Group_join}. This will notify the inviting process that the invitation was either accepted (via the \refconst{PMIX_GROUP_INVITE_ACCEPTED} event) or declined (via the \refconst{PMIX_GROUP_INVITE_DECLINED} event). The \refconst{PMIX_GROUP_INVITE_ACCEPTED} event is captured by the \ac{PMIx} client library of the inviting process – i.e., the application itself does not need to register for this event. The library will track the number of accepting processes and alert the inviting process (by returning from the blocking form of \refapi{PMIx_Group_invite} or calling the callback function of the non-blocking form) when group construction completes.
+
+The inviting process should, however, register for the \refconst{PMIX_GROUP_INVITE_DECLINED} if the application allows invited processes to decline the invitation. This provides an opportunity for the application to either invite a replacement, declare ``abort'', or choose to remove the declining process from the final group. The inviting process should also register to receive \refconst{PMIX_GROUP_INVITE_FAILED} events whenever a process fails or terminates prior to responding to the invitation. Actions taken by the inviting process in response to these events must be communicated at the end of the event handler by returning the corresponding result so that the \ac{PMIx} library can adjust accordingly.
+
+Upon completion of the operation, all members of the new group will receive access to the job-level information of each other’s namespaces plus any information posted via \refapi{PMIx_Put} by the other members.
+
+The inviting process is automatically considered the leader of the asynchronous group construction procedure and will receive all failure or termination events for invited members prior to completion. The inviting process is required to provide a \refconst{PMIX_GROUP_CONSTRUCT_COMPLETE} event once the group has been fully assembled – this event is used by the \ac{PMIx} library as a trigger to release participants from their call to \refapi{PMIx_Group_join} and provides information (e.g., the final group membership) to be returned in the \refarg{results} array.
+
+\adviceuserstart
+Applications are not allowed to use the group in any operations until group construction is complete. This is required in order to ensure consistent knowledge of group membership across all participants.
+\adviceuserend
+
+Failure of the inviting process at any time will cause a \refconst{PMIX_GROUP_LEADER_FAILED} event to be delivered to all participants so they can optionally declare a new leader. A new leader is identified by providing the \refattr{PMIX_GROUP_LEADER} attribute in the results array in the return of the event handler. Only one process is allowed to return that attribute, declaring itself as the new leader. Results of the leader selection will be communicated to all participants via a \refconst{PMIX_GROUP_LEADER_SELECTED} event identifying the new leader. If no leader was selected, then the status code provided in the event handler will provide an error value so the participants can take appropriate action.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Group_invite_nb}}
+\declareapi{PMIx_Group_invite_nb}
+
+%%%%
+\summary
+
+Non-blocking form of \refapi{PMIx_Group_invite}
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Group_invite_nb(const char grp[],
+                     const pmix_proc_t procs[], size_t nprocs,
+                     const pmix_info_t directives[], size_t ndirs,
+                     pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
+\argin{procs}{Array of \refstruct{pmix_proc_t} structures containing the \ac{PMIx} identifiers of the processes to be invited (array of handles)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (\code{size_t})}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} library does not support this operation - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
+
+If executed, the status returned in the provided callback function will be one of the following constants:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} The operation succeeded and all specified members participated.
+\item \refconst{PMIX_ERR_PARTIAL_SUCCESS} The operation succeeded but not all specified members participated - the final group membership is included in the callback function
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} While the \ac{PMIx} server supports this operation, the host \ac{RM} does not.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure
+\end{itemize}
+
+\reqattrstart
+The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries that support this operation:
+
+\pastePRIAttributeItem{PMIX_GROUP_OPTIONAL}
+
+Host environments that support this operation are \textit{required} to provide the following attributes:
+
+\pastePRRTEAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pastePRRTEAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
+%%%%
+\descr
+
+Non-blocking version of the \refapi{PMIx_Group_invite} operation. The callback function will be called once all invited members of the group (or their substitutes) have executed either \refapi{PMIx_Group_join} or \refapi{PMIx_Group_join_nb}.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Group_join}}
+\declareapi{PMIx_Group_join}
+
+%%%%
+\summary
+
+Accept an invitation to join a \ac{PMIx} process group
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Group_join(const char grp[],
+                const pmix_proc_t *leader,
+                pmix_group_opt_t opt,
+                const pmix_info_t directives[], size_t ndirs,
+                pmix_info_t **results, size_t *nresult)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
+\argin{leader}{Process that generated the invitation (handle)}
+\argin{opt}{Accept or decline flag (\refstruct{pmix_group_opt_t})}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\arginout{results}{Pointer to a location where the array of \refstruct{pmix_info_t} describing the results of the operation is to be returned (pointer to handle)}
+\arginout{nresults}{Pointer to a \code{size_t} location where the number of elements in \refarg{results} is to be returned (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request has been successfully completed
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} library and/or the host \ac{RM} does not support this operation
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request failed to be completed
+\end{itemize}
+
+\reqattrstart
+There are no identified required attributes for implementers.
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
+
+%%%%
+\descr
+
+Respond to an invitation to join a group that is being asynchronously constructed. The process must have registered for the \refconst{PMIX_GROUP_INVITED} event in order to be notified of the invitation. When called, the event information will include the \refstruct{pmix_proc_t} identifier of the process that generated the invitation along with the identifier of the group being constructed. When ready to respond, the process provides a response using either form of \refapi{PMIx_Group_join}.
+
+\adviceuserstart
+Since the process is alerted to the invitation in a \ac{PMIx} event handler, the process \emph{must not} use the blocking form of this call unless it first ``thread shifts'' out of the handler and into its own thread context. Likewise, while it is safe to call the non-blocking form of the \ac{API} from the event handler, the process \emph{must not} block in the handler while waiting for the callback function to be called.
+\adviceuserend
+
+Calling this function causes the inviting process (aka the \emph{group leader}) to be notified that the process has either accepted or declined the request. The blocking form of the \ac{API} will return once the group has been completely constructed or the group’s construction has failed (as described below) – likewise, the callback function of the non-blocking form will be executed upon the same conditions.
+
+Failure of the leader during the call to \refapi{PMIx_Group_join} will cause a \refconst{PMIX_GROUP_LEADER_FAILED} event to be delivered to all invited participants so they can optionally declare a new leader. A new leader is identified by providing the \refattr{PMIX_GROUP_LEADER} attribute in the results array in the return of the event handler. Only one process is allowed to return that attribute, declaring itself as the new leader. Results of the leader selection will be communicated to all participants via a \refconst{PMIX_GROUP_LEADER_SELECTED} event identifying the new leader. If no leader was selected, then the status code provided in the event handler will provide an error value so the participants can take appropriate action.
+
+Any participant that returns \refconst{PMIX_GROUP_CONSTRUCT_ABORT} from the leader failed event handler will cause all participants to receive an event notifying them of that status. Similarly, the leader may elect to abort the procedure by either returning \refconst{PMIX_GROUP_CONSTRUCT_ABORT} from the handler assigned to the \refconst{PMIX_GROUP_INVITE_ACCEPTED} or \refconst{PMIX_GROUP_INVITE_DECLINED} codes, or by generating an event for the abort code. Abort events will be sent to all invited participants.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Group_join_nb}}
+\declareapi{PMIx_Group_join_nb}
+
+%%%%
+\summary
+
+Non-blocking form of \refapi{PMIx_Group_join}
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Group_join_nb(const char grp[],
+                   const pmix_proc_t *leader,
+                   pmix_group_opt_t opt,
+                   const pmix_info_t directives[], size_t ndirs,
+                   pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
+\argin{leader}{Process that generated the invitation (handle)}
+\argin{opt}{Accept or decline flag (\refstruct{pmix_group_opt_t})}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} library does not support this operation - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
+
+If executed, the status returned in the provided callback function will be one of the following constants:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} The operation succeeded and group membership is in the callback function parameters
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} While the \ac{PMIx} server supports this operation, the host \ac{RM} does not.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure
+\end{itemize}
+
+
+\reqattrstart
+There are no identified required attributes for implementers.
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
+%%%%
+\descr
+
+Non-blocking version of the \refapi{PMIx_Group_join} operation. The callback function will be called once all invited members of the group (or their substitutes) have executed either \refapi{PMIx_Group_join} or \refapi{PMIx_Group_join_nb}.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Group_leave}}
+\declareapi{PMIx_Group_leave}
+
+%%%%
+\summary
+
+Leave a \ac{PMIx} process group
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Group_leave(const char grp[],
+                 const pmix_info_t directives[], size_t ndirs)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request has been communicated to the local \ac{PMIx} server
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} library and/or the host \ac{RM} does not support this operation
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request is unsupported
+\end{itemize}
+
+\reqattrstart
+There are no identified required attributes for implementers.
+\reqattrend
+
+
+%%%%
+\descr
+
+Leave a PMIx Group. Calls to \refapi{PMIx_Group_leave} (or its non-blocking form) will cause a \refconst{PMIX_GROUP_LEFT} event to be generated notifying all members of the group of the caller’s departure. The function will return (or the non-blocking function will execute the specified callback function) once the event has been locally generated and is not indicative of remote receipt. All \ac{PMIx}-based collectives such as \refapi{PMIx_Fence} in action across the group will automatically be adjusted if the collective was called with the \refattr{PMIX_GROUP_FT_COLLECTIVE} attribute (default is false) – otherwise, the standard error return behavior for that collective will be executed.
+
+\adviceuserstart
+The PMIx_Group_leave API is intended solely for asynchronous departures of individual processes from a group as it is not a scalable operation – i.e., when a process determines it should no longer be a part of a defined group, but the remainder of the group retains a valid reason to continue in existence. Developers are advised to use PMIx_Group_destruct (or its non-blocking form) for all other scenarios as it represents a more scalable operation.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Group_leave_nb}}
+\declareapi{PMIx_Group_leave_nb}
+
+%%%%
+\summary
+
+Non-blocking form of \refapi{PMIx_Group_leave}
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Group_leave_nb(const char grp[],
+                    const pmix_info_t directives[], size_t ndirs,
+                    pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
+\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} library does not support this operation - the \refarg{cbfunc} will \textit{not} be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
+
+If executed, the status returned in the provided callback function will be one of the following constants:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} The operation succeeded - i.e., the \refconst{PMIX_GROUP_LEFT} event was generated
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} While the \ac{PMIx} library supports this operation, the host \ac{RM} does not.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure
+\end{itemize}
+
+
+\reqattrstart
+There are no identified required attributes for implementers.
+
+\reqattrend
+
+%%%%
+\descr
+
+Non-blocking version of the \refapi{PMIx_Group_leave} operation. The callback function will be called once the event has been locally generated and is not indicative of remote receipt.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

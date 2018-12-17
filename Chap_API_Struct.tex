@@ -2308,6 +2308,23 @@ PMIX_REGATTR_XFER(m, n)
 \argin{m}{Pointer to the source \refstruct{pmix_regattr_t} structure (handle)}
 \end{arglist}
 
+%%%%%%%%%%%
+\subsection{PMIx Group Directives}
+\declarestruct{pmix_group_opt_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_group_opt_t} type is an enumerated type used with the \refapi{PMIx_Group_join} \ac{API} to indicate \emph{accept} or \emph{decline} of the invitation - these are provided for readability of user code:
+
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_GROUP_DECLINE}
+Decline the invitation
+%
+\declareconstitem{PMIX_GROUP_ACCEPT}
+Accept the invitation.
+%
+\end{constantdesc}
+
 
 %%%%%%%%%%%
 \subsection{Byte Object Type}
@@ -2973,6 +2990,11 @@ The requesting process is a PMIx tool.
 %
 \declareAttribute{PMIX_REQUESTOR_IS_CLIENT}{"pmix.req.client"}{bool}{
 The requesting process is a PMIx client.
+}
+
+%
+\declareNewAttribute{PMIX_PSET_NAME}{"pmix.pset.nm"}{char*}{
+User-assigned name for the process set containing the given process.
 }
 
 %%%%%%%%%%%
@@ -4106,7 +4128,15 @@ Query number of seconds (\code{uint32_t}) remaining in allocation for the specif
 Query list of supported attributes for specified \acp{API}
 }
 
+%
+\declareNewAttribute{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
+Return the number of psets defined in the specified range (defaults to session).
+}
 
+%
+\declareNewAttribute{PMIX_QUERY_PSET_NAMES}{"pmix.qry.psets"}{char*}{
+Return a comma-delimited list of the names of the psets defined in the specified range (defaults to session).
+}
 
 
 %%%%%%%%%%%
@@ -4752,6 +4782,69 @@ Used in \refstruct{pmix_regattr_t} to describe the minimum valid value for the a
 \declareNewAttribute{PMIX_ENUM_VALUE}{"pmix.descr.enum"}{char*}{
 Used in \refstruct{pmix_regattr_t} to describe accepted values for the associated attribute. Numerical values shall be presented in a form convertible to the attribute's declared data type. Named values (i.e., values defined by constant names via a typical C-language enum declaration) must be provided as their numerical equivalent.
 }
+
+%%%%%%%%%%%
+\subsection{Process group attributes}
+\label{api:struct:attributes:pgrp}
+
+\versionMarker{4.0}
+Attributes for controlling the \ac{PMIx} Group \acp{API}
+
+%
+\declareNewAttribute{PMIX_GROUP_ID}{"pmix.grp.id"}{char*}{
+User-provided group identifier
+}
+
+%
+\declareNewAttribute{PMIX_GROUP_LEADER}{"pmix.grp.ldr"}{bool}{
+This process is the leader of the group
+}
+
+%
+\declareNewAttribute{PMIX_GROUP_OPTIONAL}{"pmix.grp.opt"}{bool}{
+Participation is optional - do not return an error if any of the specified processes terminate without having joined. The default is false
+}
+
+%
+\declareNewAttribute{PMIX_GROUP_NOTIFY_TERMINATION}{"pmix.grp.notterm"}{bool}{
+Notify remaining members when another member terminates without first leaving the group. The default is false
+}
+
+%
+\declareNewAttribute{PMIX_GROUP_INVITE_DECLINE}{"pmix.grp.decline"}{bool}{
+Notify the inviting process that this process does not wish to participate in the proposed group The default is true
+}
+
+%
+\declareNewAttribute{PMIX_GROUP_FT_COLLECTIVE}{"pmix.grp.ftcoll"}{bool}{
+Adjust internal tracking for terminated processes. Default is false
+}
+
+%
+\declareNewAttribute{PMIX_GROUP_MEMBERSHIP}{"pmix.grp.mbrs"}{pmix_data_array_t*}{
+Array of group member ID's
+}
+
+%
+\declareNewAttribute{PMIX_GROUP_ASSIGN_CONTEXT_ID}{"pmix.grp.actxid"}{bool}{
+Notify remaining members when another member terminates without first leaving the group. The default is false
+}
+
+%
+\declareNewAttribute{PMIX_GROUP_CONTEXT_ID}{"pmix.grp.ctxid"}{size_t}{
+Context ID assigned to group
+}
+
+%
+\declareNewAttribute{PMIX_GROUP_LOCAL_ONLY}{"pmix.grp.lcl"}{bool}{
+Group operation only involves local processes. \ac{PMIx} implementations are \textit{required} to automatically scan an array of group members for local vs remote processes - if only local processes are detected, the implementation need not execute a global collective for the operation unless a context ID has been requested from the host environment. This can result in significant time savings. This attribute can be used to optimize the operation by indicating whether or not only local processes are represented, thus allowing the implementation to bypass the scan. The default is false
+}
+
+%
+\declareNewAttribute{PMIX_GROUP_ENDPT_DATA}{"pmix.grp.endpt"}{pmix_byte_object_t}{
+Data collected to be shared during group construction
+}
+
 
 %%%%%%%%%%%
 \section{Callback Functions}
