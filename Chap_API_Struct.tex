@@ -4,7 +4,7 @@
 \chapter{Data Structures and Types}
 \label{chap:struct}
 
-This chapter defines PMIx standard data structures, types, and constants.
+This chapter defines PMIx standard data structures (along with macros for convenient use), types, and constants.
 These apply to all consumers of the PMIx interface.
 Where necessary for clarification, the description of, for example, an attribute may be copied from this chapter into a section where it is used.
 
@@ -17,6 +17,37 @@ If a PMIx implementation chooses to define additional attributes they should avo
 This helps the end user distinguish between what is defined by the PMIx standard and what is specific to that PMIx implementation, and avoids potential conflicts with attributes defined by the standard.
 \adviceimplend
 
+\adviceuserstart
+Use of increment/decrement operations on indices inside \ac{PMIx} macros is discouraged due to unpredictable behavior. For example, the following sequence:
+
+\begin{codepar}
+PMIX_INFO_LOAD(&array[n++], "mykey", &mystring, PMIX_STRING);
+PMIX_INFO_LOAD(&array[n++], "mykey2", &myint, PMIX_INT);
+\end{codepar}
+
+will load the given key-values into incorrect locations if the macro is implemented as:
+
+\begin{codepar}
+define PMIX_INFO_LOAD(m, k, v, t)                      \textbackslash
+  do \{                                                 \textbackslash
+    if (NULL != (k)) \{                                 \textbackslash
+      pmix_strncpy((m)->key, (k), PMIX_MAX_KEYLEN);    \textbackslash
+    \}                                                  \textbackslash
+    (m)->flags = 0;                                    \textbackslash
+    pmix_value_load(&((m)->value), (v), (t));          \textbackslash
+  \} while (0)
+\end{codepar}
+
+since the index is cited more than once in the macro. The \ac{PMIx} standard only governs the existence and syntax of macros - it \emph{does not} specify their implementation. Given the freedom of implementation, a safer call sequence might be as follows:
+
+\begin{codepar}
+PMIX_INFO_LOAD(&array[n], "mykey", &mystring, PMIX_STRING);
+++n;
+PMIX_INFO_LOAD(&array[n], "mykey2", &myint, PMIX_INT);
+++n;
+\end{codepar}
+
+\adviceuserend
 
 %%%%%%%%%%%
 \section{Constants}
