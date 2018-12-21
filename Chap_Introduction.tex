@@ -357,3 +357,13 @@ The following \acp{API} were introduced in v3.0 of the PMIx Standard:
 
 The document added a chapter on security credentials, a new section for \ac{IO} forwarding to the Process Management chapter, and a few blocking forms of previously-existing non-blocking \acp{API}. Attributes supporting the new \acp{API} were introduced, as well as additional attributes for a few existing functions.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% History: Version 3.1
+\section{Version 3.1: Jan. 2019}
+
+The v3.1 update includes clarifications and corrections:
+
+\begin{itemize}
+    \item Direct modex upcall function (\refapi{pmix_server_dmodex_req_fn_t}) cannot complete atomically as the \ac{API} cannot return the requested information except via the provided callback function
+\end{itemize}
+
