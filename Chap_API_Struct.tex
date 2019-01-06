@@ -2830,22 +2830,22 @@ Exit code returned when process terminated
 The following attributes are used to specify the level of information (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) being requested where ambiguity may exist - see \ref{chap:api_kv:getex} for examples of their use.
 
 %
-\declareAttribute{PMIX_SESSION_INFO}{"pmix.ssn.info"}{bool}{
+\declareNewAttribute{PMIX_SESSION_INFO}{"pmix.ssn.info"}{bool}{
 Return information about the specified session. If information about a session other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_SESSION_ID} attribute identifying the desired target.
 }
 
 %
-\declareAttribute{PMIX_JOB_INFO}{"pmix.job.info"}{bool}{
+\declareNewAttribute{PMIX_JOB_INFO}{"pmix.job.info"}{bool}{
 Return information about the specified job or namespace. If information about a job or namespace other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_JOBID} or \refattr{PMIX_NSPACE} attribute identifying the desired target. Similarly, if information is requested about a job or namespace in a session other than the one containing the requesting process, then an attribute identifying the target session must be provided.
 }
 
 %
-\declareAttribute{PMIX_APP_INFO}{"pmix.app.info"}{bool}{
+\declareNewAttribute{PMIX_APP_INFO}{"pmix.app.info"}{bool}{
 Return information about the specified application. If information about an application other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_APPNUM} attribute identifying the desired target. Similarly, if information is requested about an application in a job or session other than the one containing the requesting process, then attributes identifying the target job and/or session must be provided.
 }
 
 %
-\declareAttribute{PMIX_NODE_INFO}{"pmix.node.info"}{bool}{
+\declareNewAttribute{PMIX_NODE_INFO}{"pmix.node.info"}{bool}{
 Return information about the specified node. If information about a node other than the one containing the requesting process is desired, then the attribute array must contain either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute identifying the desired target.
 }
 
@@ -2856,22 +2856,22 @@ Return information about the specified node. If information about a node other t
 The following attributes are used to assemble information by its level (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) for storage where ambiguity may exist - see \ref{chap:api_server:assemble} for examples of their use.
 
 %
-\declareAttribute{PMIX_SESSION_INFO_ARRAY}{"pmix.ssn.arr"}{pmix_data_array_t}{
+\declareNewAttribute{PMIX_SESSION_INFO_ARRAY}{"pmix.ssn.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing session-level information. The \refattr{PMIX_SESSION_ID} attribute is \emph{required} to be included in the array.
 }
 
 %
-\declareAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
+\declareNewAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing job-level information. Information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}. Thus, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes, though either or both of them \emph{may} be included.
 }
 
 %
-\declareAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
+\declareNewAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the appplication, plus its \refattr{PMIX_APPNUM} attribute, are \emph{required} to be included in the array.
 }
 
 %
-\declareAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
+\declareNewAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is \emph{required} to be included in the array, though both \emph{may} be included.
 }
 
@@ -3418,7 +3418,7 @@ Forward \code{stderr} from spawned processes to this process.
 }
 
 %
-\declareNewAttribute{PMIX_FWD_STDDOAG}{"pmix.fwd.stddiag"}{bool}{
+\declareNewAttribute{PMIX_FWD_STDDIAG}{"pmix.fwd.stddiag"}{bool}{
 If a diagnostic channel exists, forward any output on it from the spawned processes to this process (typically used by a tool)
 }
 
