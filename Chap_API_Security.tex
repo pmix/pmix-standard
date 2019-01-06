@@ -1,0 +1,170 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: Security
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Security}
+\label{chap:api_security}
+
+\ac{PMIx} utilizes a multi-layered approach toward security that differs for client versus tool processes. \emph{Client} processes (i.e., processes started by the host environment) must be preregistered with the \ac{PMIx} server library via the \refapi{PMIx_server_register_client} \ac{API} before they are spawned. This \ac{API} requires that you pass the expected uid/gid of the client process.
+
+When the client attempts to connect to the \ac{PMIx} server, the server uses available standard \ac{OS} methods to determine the effective uid/gid of the process requesting the connection. \ac{PMIx} implementations shall not rely on any values reported by the client process itself as that would be unsafe. The effective uid/gid reported by the \ac{OS} is compared to the values provided by the host during registration - if they don't match, the \ac{PMIx} server is required to drop the connection request. This ensures that the \ac{PMIx} server does not allow connection from a client that doesn't at least meet some minimal security requirement.
+
+Once the requesting client passes the initial test, the \ac{PMIx} server can, at the choice of the implementor, perform additional security checks. This may involve a variety of methods such as exchange of a system-provided key or credential. At the conclusion of that process, the \ac{PMIx} server reports the client connection request to the host via the \refapi{pmix_server_client_connected_fn_t} interface. The host may then perform any additional checks and operations before responding with either \refconst{PMIX_SUCCESS} to indicate that the connection is approved, or a \ac{PMIx} error constant indicating that the connection request is refused. In this latter case, the \ac{PMIx} server is required to drop the connection.
+
+Tools started by the host environment are classed as a subgroup of client processes and follow the client process procedure. However, tools that are not started by the host environment must be handled differently as registration information is not available prior to the connection request. In these cases, the \ac{PMIx} server library is required to use available standard \ac{OS} methods to get the effective uid/gid and report them upwards as part of invoking the \refapi{pmix_server_tool_connection_fn_t} interface, deferring initial security screening to the host. It is recognized that this may represent a security risk - for this reason, \ac{PMIx} server libraries \emph{must not} enable tool connections by default. Instead, the host has to explicitly enable them via the \refattr{PMIX_SERVER_TOOL_SUPPORT} attribute, thus recognizing the associated risk. Once the host has completed its authentication procedure, it again informs the \ac{PMIx} server of the result.
+
+Applications and tools often interact with the host environment in ways that require security beyond just verifying the user's identity - e.g., access to that user's relevant authorizations. This is particularly important when tools connect directly to a system-level \ac{PMIx} server that may be operating at a privileged level. A variety of system management software packages provide authorization services, but the lack of standardized interfaces makes portability problematic.
+
+This section defines two \ac{PMIx} client-side \acp{API} for this purpose. These are most likely to be used by user-space applications/tools, but are not restricted to that realm.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Obtaining Credentials}
+\label{chap:api_security:obtain}
+
+The \ac{API} for obtaining a credential is a non-blocking operation since the host environment may have to contact a remote credential service. The definition takes into account the potential that the returned credential could be sent via some mechanism to another application that resides in an environment using a different security mechanism. Thus, provision is made for the system to return additional information (e.g., the identity of the issuing agent) outside of the credential itself and visible to the application.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Get_credential}}
+\declareapi{PMIx_Get_credential}
+
+%%%%
+\summary
+
+Request a credential from the \ac{PMIx} server library or the host environment
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Get_credential(const pmix_info_t info[], size_t ninfo,
+                    pmix_credential_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
+\argin{cbfunc}{Callback function to return credential (\refapi{pmix_credential_cbfunc_t} function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request has been communicated to the local \ac{PMIx} server - result will be returned in the provided \refarg{cbfunc}
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request is unsupported - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
+
+\reqattrstart
+\ac{PMIx} libraries that choose not to support this operation \textit{must} return \refconst{PMIX_ERR_NOT_SUPPORTED} when the function is called.
+
+There are no required attributes for this \ac{API}. Note that implementations may choose to internally
+execute integration for some security environments (e.g., directly
+contacting a \textit{munge} server).
+
+Implementations that support the operation but cannot directly process the client's request must pass any attributes that are provided by the client to the host environment for processing. In addition, the following attributes are required to be included in the \refarg{info} array passed from the \ac{PMIx} library to the host environment:
+
+\pastePRIAttributeItem{PMIX_USERID}
+\pastePRIAttributeItem{PMIX_GRPID}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
+%%%%
+\descr
+
+Request a credential from the \ac{PMIx} server library or the host environment
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Validating Credentials}
+\label{chap:api_security:validate}
+
+The \ac{API} for validating a credential is a non-blocking operation since the host environment may have to contact a remote credential service. Provision is made for the system to return additional information regarding possible authorization limitations beyond simple authentication.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Validate_credential}}
+\declareapi{PMIx_Validate_credential}
+
+%%%%
+\summary
+
+Request validation of a credential by the \ac{PMIx} server library or the host environment
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Validate_credential(const pmix_byte_object_t *cred,
+                         const pmix_info_t info[], size_t ninfo,
+                         pmix_validation_cbfunc_t cbfunc,
+                         void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{cred}{Pointer to \refstruct{pmix_byte_object_t} containing the credential (handle)}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
+\argin{cbfunc}{Callback function to return result (\refapi{pmix_validation_cbfunc_t} function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request has been communicated to the local \ac{PMIx} server - result will be returned in the provided \refarg{cbfunc}
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request is unsupported - the \refarg{cbfunc} will \textit{not} be called
+\end{itemize}
+
+\reqattrstart
+\ac{PMIx} libraries that choose not to support this operation \textit{must} return \refconst{PMIX_ERR_NOT_SUPPORTED} when the function is called.
+
+There are no required attributes for this \ac{API}. Note that implementations may choose to internally
+execute integration for some security environments (e.g., directly
+contacting a \textit{munge} server).
+
+Implementations that support the operation but cannot directly process the client's request must pass any attributes that are provided by the client to the host environment for processing. In addition, the following attributes are required to be included in the \refarg{info} array passed from the \ac{PMIx} library to the host environment:
+
+\pastePRIAttributeItem{PMIX_USERID}
+\pastePRIAttributeItem{PMIX_GRPID}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+\adviceimplstart
+We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+\adviceimplend
+
+
+%%%%
+\descr
+
+Request validation of a credential by the \ac{PMIx} server library or the host environment.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

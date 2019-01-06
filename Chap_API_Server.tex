@@ -133,6 +133,8 @@ The following attributes are \textit{required} to be supported by all \ac{PMIx} 
 
 \pastePRIAttributeItem{PMIX_REGISTER_NODATA}
 
+\divider
+
 Host environments are \textit{required} to provide the following attributes:
 
 \begin{itemize}
@@ -1096,6 +1098,8 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
 
+\divider
+
 The following attributes are required to be supported by all host environments:
 
 \pastePRRTEAttributeItem{PMIX_COLLECT_DATA}
@@ -1245,6 +1249,8 @@ Returns one of the following:
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
 
+\divider
+
 Host environments that implement this entry point are required to support the following attributes:
 
 \pastePRRTEAttributeItem{PMIX_RANGE}
@@ -1324,6 +1330,8 @@ Returns one of the following:
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
 
+\divider
+
 Host environments that implement this entry point are required to support the following attributes:
 
 \pastePRRTEAttributeItem{PMIX_RANGE}
@@ -1401,6 +1409,8 @@ Returns one of the following:
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
 
+\divider
+
 Host environments that implement this entry point are required to support the following attributes:
 
 \pastePRRTEAttributeItem{PMIX_RANGE}
@@ -1475,6 +1485,8 @@ Returns one of the following:
 
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
+
+\divider
 
 Host environments that provide this module entry point are required to pass the \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes to all \ac{PMIx} servers launching new child processes so those values can be returned to clients upon connection to the \ac{PMIx} server. In addition, they are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
 
@@ -1844,6 +1856,8 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
 
+\divider
+
 Host environments that provide this module entry point are required to support the following attributes:
 
 \pastePRRTEAttributeItem{PMIX_RANGE}
@@ -2079,6 +2093,8 @@ typedef void (*pmix_server_log_fn_t)(
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
 
+\divider
+
 Host environments that provide this module entry point are required to support the following attributes:
 
 \pastePRRTEAttributeItem{PMIX_LOG_STDERR}
@@ -2149,6 +2165,8 @@ Returns one of the following:
 
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
+
+\divider
 
 Host environments that provide this module entry point are required to support the following attributes:
 
@@ -2240,6 +2258,8 @@ Returns one of the following:
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
 
+\divider
+
 Host environments that provide this module entry point are required to support the following attributes:
 
 \pastePRRTEAttributeItem{PMIX_JOB_CTRL_ID}
@@ -2328,12 +2348,14 @@ If supported by the \ac{PMIx} server library, then the library must not pass any
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
 
+\divider
+
 Host environments are not required to support any specific monitoring attributes.
 
 \reqattrend
 
 \optattrstart
-The following attributes may be implemented by a  host environment.
+The following attributes may be implemented by a host environment.
 
 \pastePRIAttributeItem{PMIX_MONITOR_ID}
 \pastePRIAttributeItem{PMIX_MONITOR_CANCEL}
