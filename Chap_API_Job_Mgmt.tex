@@ -160,10 +160,8 @@ Note that inclusion of the \refattr{PMIX_PROCID} directive and either the \refat
 
 \ac{PMIx} libraries are not required to directly support any other attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
-\reqattrend
+\divider
 
-
-\reqattrstart
 Host environments that support this operation are required to support the following attributes as qualifiers to the request:
 
 \pastePRRTEAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Only required when the request is for information on a specific process.
@@ -298,6 +296,8 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
+\divider
+
 Host environments that implement support for this operation are required to support the following attributes:
 
 \pasteAttributeItem{PMIX_ALLOC_ID}
@@ -387,6 +387,8 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
+\divider
+
 Host environments that implement support for this operation are required to support the following attributes:
 
 \pasteAttributeItem{PMIX_ALLOC_ID}
@@ -475,6 +477,8 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
+\divider
+
 Host environments that implement support for this operation are required to support the following attributes:
 
 \pastePRRTEAttributeItem{PMIX_JOB_CTRL_ID}
@@ -560,6 +564,8 @@ Returns one of the following:
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+
+\divider
 
 Host environments that implement support for this operation are required to support the following attributes:
 
@@ -828,6 +834,8 @@ If the \ac{PMIx} library does not itself perform this operation, then it is requ
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
 
+\divider
+
 Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes:
 
 \pastePRIAttributeItem{PMIX_LOG_STDERR}
@@ -912,6 +920,8 @@ If the \ac{PMIx} library does not itself perform this operation, then it is requ
 
 \pastePRIAttributeItem{PMIX_USERID}
 \pastePRIAttributeItem{PMIX_GRPID}
+
+\divider
 
 Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes:
 
