@@ -1934,6 +1934,25 @@ PMIX_APP_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
+\subsubsection{Create the \refstruct{pmix_info_t} array of application directives}
+\declaremacro{PMIX_APP_INFO_CREATE}
+
+Create an array of \refstruct{pmix_info_t} structures for passing application-level directives, updating the \refarg{ninfo} field of the \refstruct{pmix_app_t} structure.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_INFO_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the \refstruct{pmix_app_t} structure (handle)}
+\argin{n}{Number of directives to be allocated (\code{size_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%
 \subsection{Query Structure}
 \declarestruct{pmix_query_t}
 
@@ -2005,7 +2024,7 @@ PMIX_QUERY_CREATE(m, n)
 
 
 %%%%%%%%%%%
-\subsubsection{Free a\refstruct{pmix_query_t} array}
+\subsubsection{Free a \refstruct{pmix_query_t} array}
 \declaremacro{PMIX_QUERY_FREE}
 
 Release an array of \refstruct{pmix_query_t} structures
@@ -2021,6 +2040,25 @@ PMIX_QUERY_FREE(m, n)
 \argin{m}{Pointer to the array of \refstruct{pmix_query_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Create the\refstruct{pmix_info_t} array of query qualifiers}
+\declaremacro{PMIX_QUERY_QUALIFIERS_CREATE}
+
+Create an array of \refstruct{pmix_info_t} structures for passing query qualifiers, updating the \refarg{nqual} field of the \refstruct{pmix_query_t} structure.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_QUERY_QUALIFIERS_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the \refstruct{pmix_query_t} structure (handle)}
+\argin{n}{Number of qualifiers to be allocated (\code{size_t})}
+\end{arglist}
+
 
 %%%%%%%%%%%
 \section{Packing/Unpacking Types \& Structures}
