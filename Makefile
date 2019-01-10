@@ -1,7 +1,7 @@
-# Makefile for the PMIx Standard document in LaTex format. 
+# Makefile for the PMIx Standard document in LaTex format.
 # For more information, see the master document, pmix-standard.tex.
 
-version=2.0
+version=2.2
 default: pmix-standard.pdf
 
 CHAPTERS= \
@@ -23,7 +23,7 @@ SOURCES=
 # SOURCES=sources/*.c \
 # 	sources/*.cpp \
 # 	sources/*.f90 \
-# 	sources/*.f 
+# 	sources/*.f
 
 INTERMEDIATE_FILES=pmix-standard.pdf \
 		pmix-standard.toc \
