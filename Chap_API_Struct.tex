@@ -821,6 +821,98 @@ Retain data until the session/allocation terminates.
 \end{constantdesc}
 
 %%%%%%%%%%%
+\subsection{Data Array Structure}
+\declarestruct{pmix_data_array_t}
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_data_array {
+    pmix_data_type_t type;
+    size_t size;
+    void *array;
+} pmix_data_array_t;
+\end{codepar}
+\cspecificend
+
+The \refstruct{pmix_data_array_t} structure is used to pass arrays of related values. Any \ac{PMIx} data type (including complex structures) can be included in the array.
+
+%%%%%%%%%%%
+\subsection{Data array structure support macros}
+The following macros are provided to support the \refstruct{pmix_data_array_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_data_array_t} structure}
+\declaremacro{PMIX_DATA_ARRAY_CONSTRUCT}
+
+Initialize the \refstruct{pmix_data_array_t} fields, allocating memory for the array itself.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_ARRAY_CONSTRUCT(m, n, t)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_data_array_t})}
+\argin{n}{Number of elements in the array (\code{size_t})}
+\argin{t}{\ac{PMIx} data type for the array elements (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+\subsubsection{Destruct the \refstruct{pmix_data_array_t} structure}
+\declaremacro{PMIX_DATA_ARRAY_DESTRUCT}
+
+Destruct the \refstruct{pmix_data_array_t} fields, releasing the array's memory.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_ARRAY_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_data_array_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Create and initialize a \refstruct{pmix_data_array_t} object}
+\declaremacro{PMIX_DATA_ARRAY_CREATE}
+
+Allocate and initialize a \refstruct{pmix_data_array_t} structure and initialize it, allocating memory for the array itself as well.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_ARRAY_CREATE(m, n, t)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the \refstruct{pmix_data_array_t} structure shall be stored (handle)}
+\argin{n}{Number of elements in the array (\code{size_t})}
+\argin{t}{\ac{PMIx} data type for the array elements (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%
+\subsubsection{Free a\refstruct{pmix_data_array_t} object}
+\declaremacro{PMIX_DATA_ARRAY_FREE}
+
+Release a \refstruct{pmix_data_array_t} structure, including releasing the array's memory.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_ARRAY_FREE(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the \refstruct{pmix_data_array_t} structure (handle)}
+\end{arglist}
+
+%%%%%%%%%%%
 \subsection{Value Structure}
 \declarestruct{pmix_value_t}
 
@@ -1011,7 +1103,6 @@ The data will be copied into the destination \refstruct{pmix_value_t} - thus, an
 
 
 %%%%%%%%%%%
-\subsection{Info and Info Array Structures}
 \declarestruct{pmix_info_t}
 \declarestruct{pmix_info_array}
 
@@ -1554,6 +1645,25 @@ PMIX_APP_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
+\subsubsection{Create the \refstruct{pmix_info_t} array of application directives}
+\declaremacro{PMIX_APP_INFO_CREATE}
+
+Create an array of \refstruct{pmix_info_t} structures for passing application-level directives, updating the \refarg{ninfo} field of the \refstruct{pmix_app_t} structure.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_INFO_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the \refstruct{pmix_app_t} structure (handle)}
+\argin{n}{Number of directives to be allocated (\code{size_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%
 \subsection{Query Structure}
 \declarestruct{pmix_query_t}
 
@@ -1625,7 +1735,7 @@ PMIX_QUERY_CREATE(m, n)
 
 
 %%%%%%%%%%%
-\subsubsection{Free a\refstruct{pmix_query_t} array}
+\subsubsection{Free a \refstruct{pmix_query_t} array}
 \declaremacro{PMIX_QUERY_FREE}
 
 Release an array of \refstruct{pmix_query_t} structures
@@ -1641,6 +1751,25 @@ PMIX_QUERY_FREE(m, n)
 \argin{m}{Pointer to the array of \refstruct{pmix_query_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Create the\refstruct{pmix_info_t} array of query qualifiers}
+\declaremacro{PMIX_QUERY_QUALIFIERS_CREATE}
+
+Create an array of \refstruct{pmix_info_t} structures for passing query qualifiers, updating the \refarg{nqual} field of the \refstruct{pmix_query_t} structure.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_QUERY_QUALIFIERS_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the \refstruct{pmix_query_t} structure (handle)}
+\argin{n}{Number of qualifiers to be allocated (\code{size_t})}
+\end{arglist}
+
 
 %%%%%%%%%%%
 \subsection{Modex Structure}

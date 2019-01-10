@@ -307,7 +307,7 @@ In addition, the \code{PMIx_Notify_error}, \code{PMIx_Register_errhandler}, and 
 %%%%%%%%%% History: Version 2.1
 \section{Version 2.1: Dec. 2018}
 
-The v2.1 update includes clarifications and corrections, plus addition of examples:
+The v2.1 update includes clarifications and corrections from the v2.0 document, plus addition of examples:
 
 \begin{itemize}
     \item Clarify description of \refapi{PMIx_Connect} and \refapi{PMIx_Disconnect} \acp{API}.
@@ -327,10 +327,14 @@ The v2.1 update includes clarifications and corrections, plus addition of exampl
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% History: Version 2.2
-\section{Version 2.2: Mar. 2019}
+\section{Version 2.2: Jan 2019}
 
-The v2.2 update includes clarifications and corrections:
+The v2.2 update includes the following clarifications and corrections from the v2.1 document:
 
 \begin{itemize}
-    \item Errata: \refapi{pmix_server_dmodex_req_fn_t} cannot return \refconst{PMIX_OPERATION_SUCCEEDED} as the function signature does not support direct return of the requested data blob
+    \item Direct modex upcall function (\refapi{pmix_server_dmodex_req_fn_t}) cannot complete atomically as the \ac{API} cannot return the requested information except via the provided callback function
+    \item Add missing \refstruct{pmix_data_array_t} definition and support macros
+    \item Add a rule divider between implementer and host environment required attributes for clarity
+    \item Add \refmacro{PMIX_QUERY_QUALIFIERS_CREATE} macro to simplify creation of \refstruct{pmix_query_t} qualifiers
+    \item Add \refmacro{PMIX_APP_INFO_CREATE} macro to simplify creation of \refstruct{pmix_app_t} directives
 \end{itemize}

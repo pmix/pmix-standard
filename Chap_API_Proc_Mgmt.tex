@@ -106,6 +106,8 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \pastePRIAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
 \pastePRIAttributeItem{PMIX_REQUESTOR_IS_TOOL}
 
+\divider
+
 Host environments that implement support for \refapi{PMIx_Spawn} are required to pass the \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes to all \ac{PMIx} servers launching new child processes so those values can be returned to clients upon connection to the \ac{PMIx} server. In addition, they are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
 
 \pastePRRTEAttributeItem{PMIX_WDIR}
@@ -213,6 +215,8 @@ Returns one of the following:
 \pastePRIAttributeItem{PMIX_PARENT_ID}
 \pastePRIAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
 \pastePRIAttributeItem{PMIX_REQUESTOR_IS_TOOL}
+
+\divider
 
 Host environments that implement support for \refapi{PMIx_Spawn} are required to pass the \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes to all \ac{PMIx} servers launching new child processes so those values can be returned to clients upon connection to the \ac{PMIx} server. In addition, they are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
 
