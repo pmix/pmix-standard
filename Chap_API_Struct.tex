@@ -1366,6 +1366,28 @@ PMIX_INFO_IS_REQUIRED(info);
 
 This macro simplifies the testing of the required flag in \refstruct{pmix_info_t} structures.
 
+%%%%%%%%%%%
+\subsubsection{Test an info structure for unset \textit{required} directive}
+\declaremacro{PMIX_INFO_IS_OPTIONAL}
+
+%%%%
+\summary
+
+Test the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure, returning \code{true} if the flag is \textit{not} set.
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_IS_OPTIONAL(info);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This macro simplifies the testing of the required flag in \refstruct{pmix_info_t} structures.
+
 
 %%%%%%%%%%%
 \subsubsection{Test an info structure for \textit{end of array} directive}
