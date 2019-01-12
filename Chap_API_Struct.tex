@@ -1498,7 +1498,7 @@ This macro simplifies the testing of the required flag in \refstruct{pmix_info_t
 
 Test a \refstruct{pmix_info_t} structure, returning \code{true} if the structure is \textit{optional}.
 
-\versionMarker{3.0}
+\versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
 PMIX_INFO_IS_OPTIONAL(info);
@@ -1509,7 +1509,8 @@ PMIX_INFO_IS_OPTIONAL(info);
 \argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-This macro simplifies the testing of the required flag in \refstruct{pmix_info_t} structures.
+Test the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure, returning \code{true} if the flag is \textit{not} set.
+
 
 %%%%%%%%%%%
 \subsubsection{Test an info structure for \textit{end of array} directive}
