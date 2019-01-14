@@ -58,9 +58,11 @@ a space of size \refconst{PMIX_MAX_KEYLEN}+1 to allow room for the \code{NULL} t
 The \refstruct{pmix_status_t} structure is an \code{int} type for return status.
 
 The tables shown in this section define the possible values for \refstruct{pmix_status_t}.
-PMIx errors are required to always be negative, with 0 reserved for \refconst{PMIX_SUCCESS}.
+PMIx errors are required to always be negative, with 0 reserved for \refconst{PMIX_SUCCESS}. Values added to the list in this version of the standard are shown in \textbf{\color{magenta}magenta}.
 
+\adviceimplstart
 A PMIx implementation must define all of the constants defined in this section, even if they will never return the specific value to the caller.
+\adviceimplend
 
 \adviceuserstart
 Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the actual value of any \ac{PMIx} error constant is left to the \ac{PMIx} library implementer. Thus, users are advised to always refer to constant by name, and not a specific implementation's value, for portability between implementations and compatibility across library versions.
@@ -237,40 +239,40 @@ The following list contains constants added in the PMIx v2 standard.
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_ERR_LOST_CONNECTION_TO_SERVER}
+\declareconstitemNEW{PMIX_ERR_LOST_CONNECTION_TO_SERVER}
 Lost connection to server
 %
-\declareconstitem{PMIX_ERR_LOST_PEER_CONNECTION}
+\declareconstitemNEW{PMIX_ERR_LOST_PEER_CONNECTION}
 Lost connection to peer
 %
-\declareconstitem{PMIX_ERR_LOST_CONNECTION_TO_CLIENT}
+\declareconstitemNEW{PMIX_ERR_LOST_CONNECTION_TO_CLIENT}
 Lost connection to client
 %
-\declareconstitem{PMIX_QUERY_PARTIAL_SUCCESS}
+\declareconstitemNEW{PMIX_QUERY_PARTIAL_SUCCESS}
 Query partial success (used by query system)
 %
-\declareconstitem{PMIX_NOTIFY_ALLOC_COMPLETE}
+\declareconstitemNEW{PMIX_NOTIFY_ALLOC_COMPLETE}
 Notify that allocation is complete
 %
-\declareconstitem{PMIX_JCTRL_CHECKPOINT}
+\declareconstitemNEW{PMIX_JCTRL_CHECKPOINT}
 Job control: Monitored by PMIx client to trigger checkpoint operation
 %
-\declareconstitem{PMIX_JCTRL_CHECKPOINT_COMPLETE}
+\declareconstitemNEW{PMIX_JCTRL_CHECKPOINT_COMPLETE}
 Job control: Sent by PMIx client and monitored by PMIx server to notify that requested checkpoint operation has completed.
 %
-\declareconstitem{PMIX_JCTRL_PREEMPT_ALERT}
+\declareconstitemNEW{PMIX_JCTRL_PREEMPT_ALERT}
 Job control: Monitored by PMIx client to detect an \ac{RM} intending to preempt the job.
 %
-\declareconstitem{PMIX_MONITOR_HEARTBEAT_ALERT}
+\declareconstitemNEW{PMIX_MONITOR_HEARTBEAT_ALERT}
 Job monitoring: Heartbeat alert
 %
-\declareconstitem{PMIX_MONITOR_FILE_ALERT}
+\declareconstitemNEW{PMIX_MONITOR_FILE_ALERT}
 Job monitoring: File alert
 %
-\declareconstitem{PMIX_PROC_TERMINATED}
+\declareconstitemNEW{PMIX_PROC_TERMINATED}
 Process terminated - can be either normal or abnormal termination
 %
-\declareconstitem{PMIX_ERR_INVALID_TERMINATION}
+\declareconstitemNEW{PMIX_ERR_INVALID_TERMINATION}
 Process terminated without calling \refapi{PMIx_Finalize}, or was a member of an assemblage formed via \refapi{PMIx_Connect} and terminated or called \refapi{PMIx_Finalize} without first calling \refapi{PMIx_Disconnect} (or its non-blocking form) from that assemblage.
 %
 \end{constantdesc}
@@ -279,22 +281,25 @@ The following list contains operational error constants introduced in the v2 sta
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_ERR_EVENT_REGISTRATION}
+\declareconstitemNEW{PMIX_ERR_EVENT_REGISTRATION}
 Error in event registration
 %
-\declareconstitem{PMIX_ERR_JOB_TERMINATED}
+\declareconstitemNEW{PMIX_ERR_JOB_TERMINATED}
 Error job terminated
 %
-\declareconstitem{PMIX_ERR_UPDATE_ENDPOINTS}
+\declareconstitemNEW{PMIX_ERR_UPDATE_ENDPOINTS}
 Error updating endpoints
 %
-\declareconstitem{PMIX_MODEL_DECLARED}
+\declareconstitemNEW{PMIX_MODEL_DECLARED}
 Model declared
 %
-\declareconstitem{PMIX_GDS_ACTION_COMPLETE}
+\declareconstitemNEW{PMIX_GDS_ACTION_COMPLETE}
 The \ac{GDS} action has completed
 %
-\declareconstitem{PMIX_ERR_INVALID_OPERATION}
+\declareconstitemNEW{PMIX_OPERATION_SUCCEEDED}
+The requested operation was performed atomically - no callback function will be executed
+%
+\declareconstitemNEW{PMIX_ERR_INVALID_OPERATION}
 The requested operation is supported by the implementation and host environment, but fails to meet a requirement (e.g., requesting to \textit{disconnect} from processes without first \textit{connecting} to them).
 
 \end{constantdesc}
@@ -303,28 +308,31 @@ The following list contains system error constants introduced in the v2 standard
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_ERR_NODE_DOWN}
+\declareconstitemNEW{PMIX_ERR_NODE_DOWN}
 Node down
 %
-\declareconstitem{PMIX_ERR_NODE_OFFLINE}
+\declareconstitemNEW{PMIX_ERR_NODE_OFFLINE}
 Node is marked as offline
 %
+\declareconstitemNEW{PMIX_ERR_SYS_OTHER}
+Mark the beginning of a dedicated range of constants for system event reporting.
 \end{constantdesc}
+%
 
 The following list contains event handler error constants introduced in the v2 standard.
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_EVENT_NO_ACTION_TAKEN}
+\declareconstitemNEW{PMIX_EVENT_NO_ACTION_TAKEN}
 Event handler: No action taken
 %
-\declareconstitem{PMIX_EVENT_PARTIAL_ACTION_TAKEN}
+\declareconstitemNEW{PMIX_EVENT_PARTIAL_ACTION_TAKEN}
 Event handler: Partial action taken
 %
-\declareconstitem{PMIX_EVENT_ACTION_DEFERRED}
+\declareconstitemNEW{PMIX_EVENT_ACTION_DEFERRED}
 Event handler: Action deferred
 %
-\declareconstitem{PMIX_EVENT_ACTION_COMPLETE}
+\declareconstitemNEW{PMIX_EVENT_ACTION_COMPLETE}
 Event handler: Action complete
 %
 \end{constantdesc}
@@ -343,6 +351,26 @@ Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} cons
 %
 \end{constantdesc}
 
+%%%%%%%%%%%
+\subsection{Macros for use with \ac{PMIx} constants}
+
+\subsubsection{Detect system event constant}
+\declaremacro{pmix_system_event}
+
+Test a given error constant to see if it falls within the dedicated range of constants for system event reporting.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_SYSTEM_EVENT(a)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{a}{Error constant to be checked (\refstruct{pmix_status_t})}
+\end{arglist}
+
+Returns \code{true} if the provided values falls within the dedicated range of constants for system event reporting
 
 
 %%%%%%%%%%%
@@ -416,10 +444,19 @@ A value to request job-level data where the information itself is not associated
 \declareconstitem{PMIX_RANK_WILDCARD}
 A value to indicate that the user wants the data for the given key from every rank that posted that key.
 %
-\versionMarker{2.0}
-\declareconstitem{PMIX_RANK_LOCAL_NODE}
-Special rank value used to define groups of ranks for use in collectives.
+\declareconstitemNEW{PMIX_RANK_LOCAL_NODE}
+Special rank value used to define groups of ranks.
 This constant defines the group of all ranks on a local node.
+%
+\declareconstitemNEW{PMIX_RANK_LOCAL_PEERS}
+Special rank value used to define groups of rankss.
+This constant defines the group of all ranks on a local node within the same namespace as the current process.
+%
+\declareconstitemNEW{PMIX_RANK_INVALID}
+An invalid rank value.
+%
+\declareconstitemNEW{PMIX_RANK_VALID}
+Define an upper boundary for valid rank values.
 %
 \end{constantdesc}
 
@@ -547,69 +584,69 @@ The fine-grained nature of the following constants may exceed the ability of an 
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_PROC_STATE_UNDEF}
+\declareconstitemNEW{PMIX_PROC_STATE_UNDEF}
 Undefined process state
 %
-\declareconstitem{PMIX_PROC_STATE_PREPPED}
+\declareconstitemNEW{PMIX_PROC_STATE_PREPPED}
 Process is ready to be launched
 %
-\declareconstitem{PMIX_PROC_STATE_LAUNCH_UNDERWAY}
+\declareconstitemNEW{PMIX_PROC_STATE_LAUNCH_UNDERWAY}
 Process launch is underway
 %
-\declareconstitem{PMIX_PROC_STATE_RESTART}
+\declareconstitemNEW{PMIX_PROC_STATE_RESTART}
 Process is ready for restart
 %
-\declareconstitem{PMIX_PROC_STATE_TERMINATE}
+\declareconstitemNEW{PMIX_PROC_STATE_TERMINATE}
 Process is marked for termination
 %
-\declareconstitem{PMIX_PROC_STATE_RUNNING}
+\declareconstitemNEW{PMIX_PROC_STATE_RUNNING}
 Process has been locally \code{fork}'ed by the \ac{RM}
 %
-\declareconstitem{PMIX_PROC_STATE_CONNECTED}
+\declareconstitemNEW{PMIX_PROC_STATE_CONNECTED}
 Process has connected to PMIx server
 %
-\declareconstitem{PMIX_PROC_STATE_UNTERMINATED}
-Define a ``boundary'' between this constant and \refconst{PMIX_PROC_STATE_CONNECTED} so users can easily and quickly determine if a process is still running or not.
+\declareconstitemNEW{PMIX_PROC_STATE_UNTERMINATED}
+Define a ``boundary'' between the terminated states and \refconst{PMIX_PROC_STATE_CONNECTED} so users can easily and quickly determine if a process is still running or not.
 Any value less than this constant means that the process has not terminated.
 %
-\declareconstitem{PMIX_PROC_STATE_TERMINATED}
+\declareconstitemNEW{PMIX_PROC_STATE_TERMINATED}
 Process has terminated and is no longer running
 %
-\declareconstitem{PMIX_PROC_STATE_ERROR}
+\declareconstitemNEW{PMIX_PROC_STATE_ERROR}
 Define a boundary so users can easily and quickly determine if a process abnormally terminated.
 Any value above this constant means that the process has terminated abnormally.
 %
-\declareconstitem{PMIX_PROC_STATE_KILLED_BY_CMD}
+\declareconstitemNEW{PMIX_PROC_STATE_KILLED_BY_CMD}
 Process was killed by a command
 %
-\declareconstitem{PMIX_PROC_STATE_ABORTED}
+\declareconstitemNEW{PMIX_PROC_STATE_ABORTED}
 Process was aborted by a call to \refapi{PMIx_Abort}
 %
-\declareconstitem{PMIX_PROC_STATE_FAILED_TO_START}
+\declareconstitemNEW{PMIX_PROC_STATE_FAILED_TO_START}
 Process failed to start
 %
-\declareconstitem{PMIX_PROC_STATE_ABORTED_BY_SIG}
+\declareconstitemNEW{PMIX_PROC_STATE_ABORTED_BY_SIG}
 Process aborted by a signal
 %
-\declareconstitem{PMIX_PROC_STATE_TERM_WO_SYNC}
+\declareconstitemNEW{PMIX_PROC_STATE_TERM_WO_SYNC}
 Process exited without calling \refapi{PMIx_Finalize}
 %
-\declareconstitem{PMIX_PROC_STATE_COMM_FAILED}
+\declareconstitemNEW{PMIX_PROC_STATE_COMM_FAILED}
 Process communication has failed
 %
-\declareconstitem{PMIX_PROC_STATE_CALLED_ABORT}
+\declareconstitemNEW{PMIX_PROC_STATE_CALLED_ABORT}
 Process called \refapi{PMIx_Abort}
 %
-\declareconstitem{PMIX_PROC_STATE_MIGRATING}
+\declareconstitemNEW{PMIX_PROC_STATE_MIGRATING}
 Process failed and is waiting for resources before restarting
 %
-\declareconstitem{PMIX_PROC_STATE_CANNOT_RESTART}
+\declareconstitemNEW{PMIX_PROC_STATE_CANNOT_RESTART}
 Process failed and cannot be restarted
 %
-\declareconstitem{PMIX_PROC_STATE_TERM_NON_ZERO}
+\declareconstitemNEW{PMIX_PROC_STATE_TERM_NON_ZERO}
 Process exited with a non-zero status
 %
-\declareconstitem{PMIX_PROC_STATE_FAILED_TO_LAUNCH}
+\declareconstitemNEW{PMIX_PROC_STATE_FAILED_TO_LAUNCH}
 Unable to launch process
 %
 \end{constantdesc}
@@ -1069,6 +1106,38 @@ This macro simplifies the loading of data into a \refstruct{pmix_value_t} by cor
 The data will be copied into the \refstruct{pmix_value_t} - thus, any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
 \adviceuserend
 
+%%%%%%%%%%%
+\subsection{Unload a \refstruct{pmix_value_t} structure}
+\declaremacro{PMIX_VALUE_UNLOAD}
+
+%%%%
+\summary
+
+Unload data from a \refstruct{pmix_value_t} structure.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_VALUE_UNLOAD(r, v, d, t);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{r}{Status code indicating result of the operation {\refstruct{pmix_status_t}}}
+\argin{v}{The \refstruct{pmix_value_t} from which the data is to be unloaded (pointer to \refstruct{pmix_value_t})}
+\arginout{d}{Pointer to the location where the data value is to be returned (handle)}
+\arginout{t}{Pointer to return the data type of the unloaded value (handle)}
+\end{arglist}
+
+%%%%
+\descr
+
+This macro simplifies the unloading of data from a \refstruct{pmix_value_t}.
+
+\adviceuserstart
+Memory will be allocated and the data will be in the \refstruct{pmix_value_t} returned - the source \refstruct{pmix_value_t} will not be altered.
+\adviceuserend
+
 
 %%%%%%%%%%%
 \subsubsection{Transfer data between \refstruct{pmix_value_t} structures}
@@ -1103,6 +1172,7 @@ The data will be copied into the destination \refstruct{pmix_value_t} - thus, an
 
 
 %%%%%%%%%%%
+\subsection{Info Structure}
 \declarestruct{pmix_info_t}
 \declarestruct{pmix_info_array}
 
@@ -1305,7 +1375,7 @@ The following constants were introduced in version 2.0 (unless otherwise marked)
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_INFO_REQD}
+\declareconstitemNEW{PMIX_INFO_REQD}
 The behavior defined in the \refstruct{pmix_info_t} array is required, and not optional. This is a bit-mask value.
 %
 \declareconstitem{PMIX_INFO_ARRAY_END}
@@ -1343,6 +1413,27 @@ PMIX_INFO_REQUIRED(info);
 \end{arglist}
 
 This macro simplifies the setting of the \refconst{PMIX_INFO_REQD} flag in \refstruct{pmix_info_t} structures.
+
+%%%%
+\subsubsection{Mark an info structure as optional}
+\declaremacro{PMIX_INFO_OPTIONAL}
+
+%%%%
+\summary
+Unsets the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_OPTIONAL(info);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This macro simplifies marking a \refstruct{pmix_info_t} structure as \textit{optional}.
 
 %%%%%%%%%%%
 \subsubsection{Test an info structure for \textit{required} directive}
@@ -1388,7 +1479,6 @@ PMIX_INFO_IS_OPTIONAL(info);
 
 This macro simplifies the testing of the required flag in \refstruct{pmix_info_t} structures.
 
-
 %%%%%%%%%%%
 \subsubsection{Test an info structure for \textit{end of array} directive}
 \declaremacro{PMIX_INFO_IS_END}
@@ -1398,7 +1488,7 @@ This macro simplifies the testing of the required flag in \refstruct{pmix_info_t
 
 Test a \refstruct{pmix_info_t} structure, returning \code{true} if the structure is at the end of an array created by the \refmacro{PMIX_INFO_CREATE} macro.
 
-\versionMarker{3.0}
+\versionMarker{2.2}
 \cspecificstart
 \begin{codepar}
 PMIX_INFO_IS_END(info);
@@ -1410,7 +1500,6 @@ PMIX_INFO_IS_END(info);
 \end{arglist}
 
 This macro simplifies the testing of the end-of-array flag in \refstruct{pmix_info_t} structures.
-
 
 %%%%%%%%%%%
 \subsection{Job Allocation Directives}
@@ -2053,7 +2142,7 @@ typedef struct pmix_data_buffer \{
 The following macros support the \refstruct{pmix_data_buffer_t} structure.
 
 \subsubsection{Initialize the \refstruct{pmix_data_buffer_t} structure}
-\declaremacro{PMIX_PROC_CONSTRUCT}
+\declaremacro{PMIX_DATA_BUFFER_CONSTRUCT}
 
 Initialize the \refstruct{pmix_data_buffer_t} fields
 
@@ -2116,6 +2205,43 @@ PMIX_DATA_BUFFER_RELEASE(m)
 \argin{m}{Pointer to the \refstruct{pmix_data_buffer_t} structure to be released (handle)}
 \end{arglist}
 
+\subsubsection{Load a \refstruct{pmix_data_buffer_t}}
+\declaremacro{PMIX_DATA_BUFFER_LOAD}
+
+Load data into a \refstruct{pmix_data_buffer_t} structure
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_BUFFER_LOAD(b, d, s)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{b}{Pointer to the \refstruct{pmix_data_buffer_t} structure to be loaded (handle)}
+\argin{d}{Pointer to the data to be loaded into \refarg{b} (\code{void*})}
+\argin{s}{Number of bytes in \refarg{d} (\code{size_t})}
+\end{arglist}
+
+
+\subsubsection{Unload a \refstruct{pmix_data_buffer_t}}
+\declaremacro{PMIX_DATA_BUFFER_UNLOAD}
+
+Unload the data from a \refstruct{pmix_data_buffer_t} structure
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_BUFFER_UNLOAD(b, d, s)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{b}{Pointer to the \refstruct{pmix_data_buffer_t} structure to be unloaded (handle)}
+\arginout{d}{Pointer to be set to the data region after unloading (\code{void*})}
+\arginout{s}{Variable to be set to the number of bytes in the returned data region (\code{size_t})}
+\end{arglist}
+
 
 %%%%%%%%%%%
 \subsection{Data Array Structure}
@@ -2134,6 +2260,80 @@ typedef struct pmix_data_array \{
 \end{codepar}
 \cspecificend
 
+
+\subsection{Data array support macros}
+The following macros support the \refstruct{pmix_data_array_t} structure.
+
+\subsubsection{Initialize a \refstruct{pmix_data_array_t} structure}
+\declaremacro{PMIX_DATA_ARRAY_CONSTRUCT}
+
+Initialize the \refstruct{pmix_data_array_t} fields, allocating memory for the array of the indicated type.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_ARRAY_CONSTRUCT(m, n, t)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_data_array_t})}
+\argin{n}{Number of elements in the array (\code{size_t})}
+\argin{t}{\ac{PMIx} data type of the array elements (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+
+\subsubsection{Destruct a \refstruct{pmix_data_array_t} structure}
+\declaremacro{PMIX_DATA_ARRAY_DESTRUCT}
+
+Destruct the \refstruct{pmix_data_array_t}, releasing the memory in the array.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_ARRAY_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_data_array_t})}
+\end{arglist}
+
+
+\subsubsection{Create a \refstruct{pmix_data_array_t} structure}
+\declaremacro{PMIX_DATA_ARRAY_CREATE}
+
+Allocate memory for the \refstruct{pmix_data_array_t} object itself, and then allocate memory for the array of the indicated type.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_ARRAY_CREATE(m, n, t)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Variable to be set to the address of the structure (pointer to \refstruct{pmix_data_array_t})}
+\argin{n}{Number of elements in the array (\code{size_t})}
+\argin{t}{\ac{PMIx} data type of the array elements (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+
+\subsubsection{Free a \refstruct{pmix_data_array_t} structure}
+\declaremacro{PMIX_DATA_ARRAY_RELEASE}
+
+Release the memory in the array, and then release the \refstruct{pmix_data_array_t} object itself.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_ARRAY_FREE(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be released (pointer to \refstruct{pmix_data_array_t})}
+\end{arglist}
 
 
 %%%%%%%%%%
@@ -2898,11 +3098,6 @@ These attributes are used to describe topology information in the PMIx universe 
 }
 
 %
-\declareAttribute{PMIX_NODE_LIST}{"pmix.nlist"}{char*}{
-Comma-delimited list of nodes running processes for this job.
-}
-
-%
 \declareAttribute{PMIX_TOPOLOGY}{"pmix.topo"}{hwloc_topology_t}{
 Pointer to the PMIx client's internal hwloc topology object.
 }
@@ -3227,6 +3422,16 @@ Instruct the PMIx server not to cache the event.
 %
 \declareNewAttribute{PMIX_EVENT_SILENT_TERMINATION}{"pmix.evsilentterm"}{bool}{
 Do not generate an event when this job normally terminates.
+}
+
+%
+\declareNewAttribute{PMIX_EVENT_PROXY}{"pmix.evproxy"}{pmix_proc_t*}{
+\ac{PMIx} server that sourced the event
+}
+
+%
+\declareNewAttribute{PMIX_EVENT_TEXT_MESSAGE}{"pmix.evtext"}{char*}{
+Text message suitable for output by recipient - e.g., describing the cause of the event
 }
 
 
@@ -3602,7 +3807,6 @@ Message to be included in email.
 Attributes used to assist debuggers - these are values that can be passed to the \refapi{PMIx_Spawn} or \refapi{PMIx_Init} \acp{API}. Some may be accessed using the \refapi{PMIx_Get} \ac{API} with the \refconst{PMIX_RANK_WILDCARD} rank.
 
 %
-=======
 \declareNewAttribute{PMIX_DEBUG_STOP_ON_EXEC}{"pmix.dbg.exec"}{bool}{
 Passed to \refapi{PMIx_Spawn} to indicate that the specified application is being spawned under debugger, and that the launcher is to pause the resulting application processes on first instruction for debugger attach.
 }
@@ -4348,7 +4552,7 @@ typedef void (*pmix_dmodex_response_fn_t)(pmix_status_t status,
 Define a function to be called by the PMIx server library for return of information posted by a local application process (via \refapi{PMIx_Put} with subsequent \refapi{PMIx_Commit}) in response to a request from the host RM. The returned \refarg{data} blob is owned by the PMIx server library and will be free’d upon return from the function.
 
 %%%%%%%%%%%
-\subsection{\code{pmix_connection_cbfunc_t}}
+\subsection{PMIx Client Connection Callback Function}
 \declareapi{pmix_connection_cbfunc_t}
 
 %%%%
@@ -4379,7 +4583,7 @@ Callback function for incoming connection requests from local clients - only use
 
 
 %%%%%%%%%%%
-\subsection{\code{pmix_tool_connection_cbfunc_t}}
+\subsection{PMIx Tool Connection Callback Function}
 \declareapi{pmix_tool_connection_cbfunc_t}
 
 %%%%
