@@ -352,7 +352,7 @@ Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} cons
 \end{constantdesc}
 
 %%%%%%%%%%%
-\subsection{Macros for use with \ac{PMIx} constants}
+\subsection{Macros for use with PMIx constants}
 
 \subsubsection{Detect system event constant}
 \declaremacro{pmix_system_event}
@@ -3015,7 +3015,7 @@ These attributes are used to describe the size of various dimensions of the PMIx
 
 %
 \declareAttribute{PMIX_UNIV_SIZE}{"pmix.univ.size"}{uint32_t}{
-Number of allocated slots in a session - each slot may or may not be occupied by an executing process. Note that this attribute is the equivalent to the combination of \refattr{PMIX_SESSION_INFO_ARRAY} with the \refattr{PMIX_NUM_SLOTS} entry in the array - it is included in the Standard for historical reasons.
+Number of allocated slots in a session - each slot may or may not be occupied by an executing process. Note that this attribute is the equivalent to the combination of \refattr{PMIX_SESSION_INFO_ARRAY} with the \refattr{PMIX_MAX_PROCS} entry in the array - it is included in the Standard for historical reasons.
 }
 
 %
@@ -3052,12 +3052,6 @@ Maximum number of processes for this job.
 \declareNewAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
 Number of nodes in this session or namespace.
 }
-
-%
-\declareNewAttribute{PMIX_NUM_SLOTS}{"pmix.num.slots"}{uint32_t}{
-Number of slots allocated to the session, namespace, or application.
-}
-
 
 %%%%%%%%%%%
 \subsection{Memory information attributes}
