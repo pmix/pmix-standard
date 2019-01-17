@@ -414,7 +414,7 @@ Information regarding a node within the system can be obtained by the following 
 \begin{itemize}
 \item for node-level attributes (e.g., \refattr{PMIX_NODE_SIZE}), specifying the namespace and rank of a process executing on the target node;
 \item for node-level attributes (e.g., \refattr{PMIX_NODE_SIZE}), including the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute specifying the node whose information is being requested. In this case, the \refarg{proc} argument's values are ignored; or
-\item for non-specific attributes (e.g., \refattr{PMIX_NUM_SLOTS}), including the \refattr{PMIX_NODE_INFO} attribute to indicate that the node-level information for that attribute is being requested
+\item for non-specific attributes (e.g., \refattr{PMIX_MAX_PROCS}), including the \refattr{PMIX_NODE_INFO} attribute to indicate that the node-level information for that attribute is being requested
 \end{itemize}
 
 Example requests are shown below:
@@ -436,7 +436,7 @@ rc = PMIx_Get(&myproc, PMIX_NODE_SIZE, NULL, 0, &value);
 /* get the #slots on another node */
 PMIX_INFO_LOAD(&info[0], PMIX_NODE_INFO, NULL, PMIX_BOOL);
 PMIX_INFO_LOAD(&info[1], PMIX_HOSTNAME, "remotehost", PMIX_STRING);
-rc = PMIx_Get(&myproc, PMIX_NUM_SLOTS, info, 2, &value);
+rc = PMIx_Get(&myproc, PMIX_MAX_PROCS, info, 2, &value);
 
 \end{codepar}
 \cspecificend
