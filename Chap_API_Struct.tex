@@ -1076,7 +1076,7 @@ PMIX_VALUE_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsection{Load a \refstruct{pmix_value_t} structure}
+\subsubsection{Load a \refstruct{pmix_value_t} structure}
 \declaremacro{PMIX_VALUE_LOAD}
 
 %%%%
@@ -1107,7 +1107,7 @@ The data will be copied into the \refstruct{pmix_value_t} - thus, any data store
 \adviceuserend
 
 %%%%%%%%%%%
-\subsection{Unload a \refstruct{pmix_value_t} structure}
+\subsubsection{Unload a \refstruct{pmix_value_t} structure}
 \declaremacro{PMIX_VALUE_UNLOAD}
 
 %%%%
@@ -2994,18 +2994,30 @@ Provide an array of \refstruct{pmix_info_t} containing session-level information
 
 %
 \declareNewAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing job-level information. Information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}. Thus, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes, though either or both of them \emph{may} be included.
+Provide an array of \refstruct{pmix_info_t} containing job-level information. The \refattr{PMIX_SESSION_ID} attribute of the \refterm{session} containing the \refterm{job} is \emph{required} to be included in the array whenever the \ac{PMIx} server library may host multiple sessions (e.g., when executing with a host \ac{RM} daemon). As information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes when used in that context (though either or both of them \emph{may} be included). At least one of the job identifiers \emph{must} be provided in all other contexts where the job being referenced is ambiguous.
 }
 
 %
 \declareNewAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the appplication, plus its \refattr{PMIX_APPNUM} attribute, are \emph{required} to be included in the array.
+Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, are \emph{required} to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
 }
 
 %
 \declareNewAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is \emph{required} to be included in the array, though both \emph{may} be included.
 }
+
+Note that these assemblages can be used hierarchically:
+
+\begin{itemize}
+\item a \refattr{PMIX_JOB_INFO_ARRAY} might contain multiple \refattr{PMIX_APP_INFO_ARRAY} elements, each describing values for a specific application within the job
+\item a \refattr{PMIX_JOB_INFO_ARRAY} could contain a \refattr{PMIX_NODE_INFO_ARRAY} for each node hosting processes from that job, each array describing job-level values for that node
+\item a \refattr{PMIX_SESSION_INFO_ARRAY} might contain multiple \refattr{PMIX_JOB_INFO_ARRAY} elements, each describing a job executing within the session. Each job array could, in turn, contain both application and node arrays, thus providing a complete picture of the active operations within the allocation
+\end{itemize}
+
+\adviceimplstart
+\ac{PMIx} implementations \emph{must} be capable of properly parsing and storing any hierarchical depth of information arrays. The resulting stored values are \emph{required} to be accessible via both \refapi{PMIx_Get} and \refapi{PMIx_Query_info_nb} \acp{API}, assuming appropriate directives are provided by the caller.
+\adviceimplend
 
 %%%%%%%%%%%
 \subsection{Size information attributes}
@@ -3035,7 +3047,7 @@ Number of processes in this application.
 
 %
 \declareAttribute{PMIX_LOCAL_SIZE}{"pmix.local.size"}{uint32_t}{
-Number of processes in this job on this node.
+Number of processes in this job or application on this node.
 }
 
 %
@@ -3045,12 +3057,12 @@ Number of processes across all jobs on this node.
 
 %
 \declareAttribute{PMIX_MAX_PROCS}{"pmix.max.size"}{uint32_t}{
-Maximum number of processes for this job.
+Maximum number of processes that can be executed in this context (session, namespace, application, or node).
 }
 
 %
 \declareNewAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
-Number of nodes in this session or namespace.
+Number of nodes in this session, or currently executing processes from the associated namespace or application.
 }
 
 %%%%%%%%%%%
