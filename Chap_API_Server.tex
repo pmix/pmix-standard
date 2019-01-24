@@ -44,6 +44,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \descr
 
 Given a comma-separated list of \refarg{input} values, generate a regular expression that can be passed down to the \ac{PMIx} client for parsing.
+The order of the individual values in the \refarg{input} string is preserved in the resulting \refarg{regex} string.
 The caller is responsible for free'ing the resulting string.
 
 If values have leading zero's, then that is preserved, as are prefix and suffix strings. For example, an input string of ``\code{odin009.org,odin010.org,odin011.org,odin012.org,odin[102-107].org}'' will return a regular expression of ``\code{pmix:odin[009-012,102-107].org}''
