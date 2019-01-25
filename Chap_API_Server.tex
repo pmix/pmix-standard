@@ -792,6 +792,56 @@ Support for harvesting of environmental variables and providing of local configu
 \adviceimplend
 
 %%%%%%%%%%%
+\subsection{\code{PMIx_Register_attributes}}
+\declareapi{PMIx_Register_attributes}
+
+%%%%
+\summary
+
+Register host environment attribute support for a function.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Register_attributes(char *function,
+                         pmix_regattr_t attrs[],
+                         size_t nattrs)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{function}{String name of function (string)}
+\argin{attrs}{Array of \refstruct{pmix_regattr_t} describing the supported attributes (handle)}
+\argin{nattrs}{Number of elements in \refarg{attrs} (\code{size_t})}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+The \code{PMIx_Register_attributes} function is used by the host environment to register with its \ac{PMIx} server library the attributes it supports for each \refapi{pmix_server_module_t} function. The \refarg{function} is the string name of the server module function (e.g., "register_events", "validate_credential", or "allocate") whose attributes are being registered. See the \refstruct{pmix_regattr_t} entry for a description of the \refarg{attrs} array elements.
+
+Note that the host environment can also query the library (using the \refapi{PMIx_Query_info_nb} \ac{API}) for its attribute support both at the server, client, and tool levels once the host has executed \refapi{PMIx_server_init} since the server will internally register those values.
+
+\advicermstart
+Host environments are strongly encouraged to register all supported attributes immediately after initializing the library to ensure that user requests are correctly serviced.
+\advicermend
+
+\adviceimplstart
+\ac{PMIx} implementations are \emph{required} to register all internally supported attributes for each \ac{API} during initialization of the library (i.e., when the process calls their respective \ac{PMIx} init function). Specifically, the implementation \emph{must not} register supported attributes upon first call to a given \ac{API} as this would prevent users from discovering supported attributes prior to first use of an \ac{API}.
+
+It is the implementation's responsibility to associate registered attributes for a given \refapi{pmix_server_module_t} function with their corresponding user-facing \ac{API}. Supported attributes \emph{must} be reported to users in terms of their support for user-facing \acp{API}, broken down by the level (see \ref{api:struct:attributes:level}) at which the attribute is supported.
+
+Note that attributes can/will be registered on an \ac{API} for each level. It is \emph{required} that the implementation support user queries for supported attributes on a per-level basis. Duplicate registrations at the \emph{same} level for a function \emph{shall} return an error - however, duplicate registrations at \emph{different} levels \emph{shall} be independently tracked.
+\adviceimplend
+
+
+%%%%%%%%%%%
 \subsection{\code{PMIx_server_setup_local_support}}
 \declareapi{PMIx_server_setup_local_support}
 

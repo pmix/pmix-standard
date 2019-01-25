@@ -2151,9 +2151,142 @@ PMIX_QUERY_QUALIFIERS_CREATE(m, n)
 
 
 %%%%%%%%%%%
-\section{Packing/Unpacking Types \& Structures}
+\subsection{Attribute registration structure}
+\declarestruct{pmix_regattr_t}
 
-This section defines types and structures used to pack and unpack data passed through the PMIx API.
+The \refstruct{pmix_regattr_t} structure is used to register attribute support for a \ac{PMIx} function.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_regattr \{
+    char *name;
+    char *string;
+    pmix_data_type_t type;
+    pmix_info_t *info;
+    size_t ninfo;
+    char **description;
+\} pmix_regattr_t;;
+\end{codepar}
+\cspecificend
+
+ The \refarg{type}
+
+Note that in this structure:
+
+\begin{itemize}
+    \item the \refarg{name} is the actual name of the attribute - e.g., "PMIX_MAX_PROCS"; and
+    \item the \refarg{string} is the literal string value of the attribute - e.g., "pmix.max.size" for the \refattr{PMIX_MAX_PROCS} attribute
+    \item \refarg{type} must be a \ac{PMIx} data type identifying the type of data associated with this attribute.
+    \item the \refarg{info} array contains machine-usable information regarding the range of accepted values. This may include entries for \refattr{PMIX_MIN_VALUE}, \refattr{PMIX_MAX_VALUE}, \refattr{PMIX_ENUM_VALUE}, or a combination of them. For example, an attribute that supports all positive integers might delineate it by including a \refstruct{pmix_info_t} with a key of \refattr{PMIX_MIN_VALUE}, type of \refconst{PMIX_INT}, and value of zero. The lack of an entry for \refattr{PMIX_MAX_VALUE} indicates that there is no ceiling to the range of accepted values.
+    \item The \refarg{description} field consists of a \code{NULL}-terminated array of strings describing the attribute, optionally including a human-readable description of the range of accepted values - e.g., "ALL POSITIVE INTEGERS", or a comma-delimited list of enum value names.
+\end{itemize}
+
+The attribute \refarg{name} and \refarg{string} fields must be \code{NULL}-terminated strings composed of standard alphanumeric values supported by common utilities such as \textit{strcmp}.
+
+\adviceimplstart
+Although not strictly required, \ac{PMIx} library implementers are strongly encouraged to provide both human-readable and machine-parsable descriptions of supported attributes.
+\adviceimplend
+
+\advicermstart
+Although not strictly required, host environments are strongly encouraged to provide both human-readable and machine-parsable descriptions of supported attributes when registering them.
+\advicermend
+
+
+%%%%%%%%%%%
+\subsection{Attribute registration structure support macros}
+The following macros are provided to support the \refstruct{pmix_regattr_t} structure.
+
+%%%%%%%%%%%
+\subsubsection{Initialize the \refstruct{pmix_regattr_t} structure}
+\declaremacro{PMIX_REGATTR_CONSTRUCT}
+
+Initialize the \refstruct{pmix_regattr_t} fields
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_REGATTR_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_regattr_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Destruct the \refstruct{pmix_regattr_t} structure}
+\declaremacro{PMIX_REGATTR_DESTRUCT}
+
+Destruct the \refstruct{pmix_regattr_t} fields, releasing all strings.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_REGATTR_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_regattr_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Create a \refstruct{pmix_regattr_t} array}
+\declaremacro{PMIX_REGATTR_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_regattr_t} structures
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_REGATTR_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_regattr_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Free a \refstruct{pmix_regattr_t} array}
+\declaremacro{PMIX_REGATTR_FREE}
+
+Release an array of \refstruct{pmix_regattr_t} structures
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_REGATTR_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Pointer to the array of \refstruct{pmix_regattr_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Load a\refstruct{pmix_regattr_t} structure}
+\declaremacro{PMIX_REGATTR_LOAD}
+
+Load values into a \refstruct{pmix_regattr_t} structure. The macro can be called multiple times to add as many strings as desired to the same structure by passing the same address and a \code{NULL} key to the macro. Note that the \refarg{t} type value must be given each time.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_REGATTR_LOAD(a, k, t, v)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{a}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_proc_t})}
+\argin{k}{Key value to be loaded (string)}
+\argin{t}{Type of data associated with the provided key (\refstruct{pmix_data_type_t})}
+\argin{v}{Description to be loaded (string)}
+\end{arglist}
+
 
 %%%%%%%%%%%
 \subsection{Byte Object Type}
@@ -2489,7 +2622,7 @@ PMIX_DATA_ARRAY_FREE(m)
 
 
 %%%%%%%%%%
-\subsection{Generalized Data Types Used for Packing/Unpacking}
+\section{Generalized Data Types Used for Packing/Unpacking}
 \declarestruct{pmix_data_type_t}
 
 The \refstruct{pmix_data_type_t} structure is a \code{uint16_t} type for identifying the data type for packing/unpacking purposes. New data type values introduced in this version of the Standard are shown in \textbf{\color{magenta}magenta}.
@@ -2587,9 +2720,6 @@ Byte object (\refstruct{pmix_byte_object_t})
 \declareconstitem{PMIX_KVAL}
 Key/value pair
 %
-\declareconstitemDEP{PMIX_MODEX}{2.0}
-Modex
-%
 \declareconstitem{PMIX_PERSIST}
 Persistance (\refstruct{pmix_persistence_t})
 %
@@ -2637,6 +2767,9 @@ Input/output forwarding channel (\refstruct{pmix_iof_channel_t})
 %
 \declareconstitem{PMIX_ENVAR}
 Environmental variable structure (\refstruct{pmix_envar_t})
+%
+\declareconstitemNEW{PMIX_REGATTR}
+Structure supporting attribute registrations (\refstruct{pmix_regattr_t})
 %
 \end{constantdesc}
 
@@ -3947,6 +4080,13 @@ String identifier of the allocation whose status is being requested.
 Query number of seconds (\code{uint32_t}) remaining in allocation for the specified namespace.
 }
 
+%
+\declareNewAttribute{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
+Query list of supported attributes for specified \acp{API}
+}
+
+
+
 
 %%%%%%%%%%%
 \subsection{Log attributes}
@@ -4538,6 +4678,42 @@ Include all relevant data other than environmental variables
 %
 \declareAttribute{PMIX_SETUP_APP_ALL}{"pmix.setup.all"}{bool}{
 Include all relevant data
+}
+
+%%%%%%%%%%%
+\subsection{Attribute support level attributes}
+\label{api:struct:attributes:level}
+
+\declareNewAttribute{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
+Request attributes supported by the \ac{PMIx} client library
+}
+
+\declareNewAttribute{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
+Request attributes supported by the \ac{PMIx} server library
+}
+
+\declareNewAttribute{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
+Request attributes supported by the host environment
+}
+
+\declareNewAttribute{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
+Request attributes supported by the \ac{PMIx} tool library functions
+}
+
+%%%%%%%%%%%
+\subsection{Descriptive attributes}
+\label{api:struct:attributes:descr}
+
+\declareNewAttribute{PMIX_MAX_VALUE}{"pmix.descr.maxval"}{varies}{
+Used in \refstruct{pmix_regattr_t} to describe the maximum valid value for the associated attribute.
+}
+
+\declareNewAttribute{PMIX_MIN_VALUE}{"pmix.descr.minval"}{varies}{
+Used in \refstruct{pmix_regattr_t} to describe the minimum valid value for the associated attribute.
+}
+
+\declareNewAttribute{PMIX_ENUM_VALUE}{"pmix.descr.enum"}{char*}{
+Used in \refstruct{pmix_regattr_t} to describe accepted values for the associated attribute. Numerical values shall be presented in a form convertible to the attribute's declared data type. Named values (i.e., values defined by constant names via a typical C-language enum declaration) must be provided as their numerical equivalent.
 }
 
 %%%%%%%%%%%

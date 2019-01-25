@@ -155,6 +155,11 @@ If executed, the status returned in the provided callback function will be one o
 \pastePRIAttributeItemEnd
 \pastePRIAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute. Only required when the request is for information on a specific process.
 \pastePRIAttributeItemEnd
+\pastePRIAttributeItem{PMIX_QUERY_ATTRIBUTE_SUPPORT}
+\pastePRIAttributeItem{PMIX_CLIENT_ATTRIBUTES}
+\pastePRIAttributeItem{PMIX_SERVER_ATTRIBUTES}
+\pastePRIAttributeItem{PMIX_HOST_ATTRIBUTES}
+\pastePRIAttributeItem{PMIX_TOOL_ATTRIBUTES}
 
 Note that inclusion of the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.
 
@@ -211,10 +216,6 @@ NOTE: There is no blocking form of this API as the structures passed to query in
 The \refarg{status} argument to the callback function indicates if requested data was found or not.
 An array of \refstruct{pmix_info_t} will contain each key that was provided and the corresponding value that was found. Requests for keys that are not found will return the key paired with a value of type \refconst{PMIX_UNDEF}.
 
-\adviceuserstart
-The desire to query a list of attributes supported by the implementation and/or the host environment has been expressed and noted. The \ac{PMIx} community is exploring the possibility and it will likely become available in a future release
-\adviceuserend
-
 \adviceimplstart
 Information returned from \refapi{PMIx_Query_info_nb} shall be locally cached so that retrieval by subsequent calls to \refapi{PMIx_Get} or \refapi{PMIx_Query_info_nb} can succeed with minimal overhead. The local cache shall be checked prior to querying the \ac{PMIx} server and/or the host environment. Queries that include the \refattr{PMIX_QUERY_REFRESH_CACHE} attribute shall bypass the local cache and retrieve a new value for the query, refreshing the values in the cache upon return.
 \adviceimplend
@@ -243,6 +244,26 @@ In contrast, the \emph{query} option should be used to access:
 
 In theory, all information can be accessed via \refapi{PMIx_Query_info_nb} as the local cache is typically the same datastore searched by \refapi{PMIx_Get}. However, in practice, the overhead associated with the \emph{query} operation may (depending upon implementation) be higher than the simpler \emph{get} operation due to the need to construct and process the more complex \refstruct{pmix_query_t} structure. Thus, requests for a single key value are likely to be accomplished faster with \refapi{PMIx_Get} versus the \emph{query} operation.
 
+\subsubsection{Accessing attribute support information}
+\label{chap:api_job_mgmt:queryattrs}
+
+Information as to attributes supported by either the \ac{PMIx} implementation or its host environment can be obtained via the \refapi{PMIx_Query_info_nb} \ac{API}. The \refattr{PMIX_QUERY_ATTRIBUTE_SUPPORT} attribute must be listed as the first entry in the \refarg{keys} field of the \refstruct{pmix_query_t} structure, followed by the name of the function whose attribute support is being requested - support for multiple functions can be requested simultaneously by simply adding the function names to the array of \refarg{keys}. Function names \emph{must} be given as user-level \ac{API} names - e.g., ``PMIx_Get'', ``PMIx_server_setup_application'', or ``PMIx_tool_connect_to_server''.
+
+The desired levels (see \ref{api:struct:attributes:level}) of attribute support are provided as qualifiers. Multiple levels can be requested simultaneously by simply adding elements to the \refarg{qualifiers} array. Each qualifier should contain the desired level attribute with the boolean value set to indicate whether or not that level is to be included in the returned information. Failure to provide any levels is equivalent to a request for all levels.
+
+Unlike other queries, queries for attribute support can result in the number of returned \refstruct{pmix_info_t} structures being different from the number of queries. Each element in the returned array will correspond to a pair of specified attribute level and function in the query, where the \refarg{key} is the function and the \refarg{value} contains a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t}. Each element of the array is marked by a \refarg{key} indicating the requested attribute \emph{level} with a \refarg{value} composed of a \refstruct{pmix_data_array_t} of \refstruct{pmix_regattr_t}, each describing a supported attribute for that function, as illustrated in Fig. \ref{fig:attrquery} below where the requestor asked for supported attributes of \refapi{PMIx_Get} at the \refarg{client} and \refarg{server} levels, plus attributes of \refapi{PMIx_Allocation_request} at all levels:
+
+\begingroup
+\begin{figure*}[ht!]
+  \begin{center}
+    \includegraphics[clip,width=0.75\textwidth]{figs/attrquery.pdf}
+  \end{center}
+  \caption{Returned information hierarchy for attribute support request}
+  \label{fig:attrquery}
+\end{figure*}
+\endgroup
+
+The array of returned structures, and their child arrays, are subject to the return rules for the \refapi{PMIx_Query_info_nb} \ac{API}. For example, a request for supported attributes of the \refapi{PMIx_Get} function that includes the \refarg{host} level will return values for the \refarg{client} and \refarg{server} levels, plus an array element with a \refarg{key} of \refattr{PMIX_HOST_ATTRIBUTES} and a value type of \refconst{PMIX_UNDEF} indicating that no attributes are supported at that level.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
