@@ -3231,7 +3231,7 @@ Number of allocated slots in a session - each slot may or may not be occupied by
 
 %
 \declareAttribute{PMIX_JOB_SIZE}{"pmix.job.size"}{uint32_t}{
-Total number of processes in this job across all contained applications
+Total number of processes in this job across all contained applications. Note that this value \emph{can} be different from \refattr{PMIX_MAX_PROCS}. For example, users may choose to subdivide an allocation (running several jobs in parallel within it), and dynamic programming models may support adding and removing processes from a running \refterm{job} on-they-fly. In the latter case, \ac{PMIx} events must be used to notify processes within the job that the job size has changed.
 }
 
 %
@@ -3256,7 +3256,7 @@ Number of processes across all jobs on this node.
 
 %
 \declareAttribute{PMIX_MAX_PROCS}{"pmix.max.size"}{uint32_t}{
-Maximum number of processes that can be executed in this context (session, namespace, application, or node).
+Maximum number of processes that can be executed in this context (session, namespace, application, or node). Typically, this is a constraint imposed by a scheduler or by user settings in a hostfile or other resource description.
 }
 
 %
