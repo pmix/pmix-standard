@@ -719,7 +719,7 @@ While direct modex allows for faster launch times by eliminating the barrier ope
 %%%%
 \summary
 
-Provide a function by which the resource manager can request application-specific setup data prior to launch of an application.
+Provide a function by which the resource manager can request application-specific setup data prior to launch of a \refterm{job}.
 
 %%%%
 \format
@@ -779,13 +779,13 @@ Returns one of the following:
 %%%%
 \descr
 
-Provide a function by which the \ac{RM} can request application-specific setup data (e.g., environmental variables, fabric configuration and security credentials) from supporting \ac{PMIx} server library subsystems prior to initiating launch of an application.
+Provide a function by which the \ac{RM} can request application-specific setup data (e.g., environmental variables, fabric configuration and security credentials) from supporting \ac{PMIx} server library subsystems prior to initiating launch of a job.
 
 \advicermstart
-Host environments are \textit{required} to execute this operation prior to launching an application.
+Host environments are \textit{required} to execute this operation prior to launching a job. In addition to supported directives, the \refarg{info} array \emph{must} include a description of the \refterm{job} using the \refattr{PMIX_NODE_MAP} and \refattr{PMIX_PROC_MAP} attributes.
 \advicermend
 
-This is defined as a non-blocking operation in case contributing subsystems need to perform some potentially time consuming action (e.g., query a remote service) before responding. The returned data must be distributed by the \ac{RM} and subsequently delivered to the local \ac{PMIx} server on each node where application processes will execute, prior to initiating execution of those processes.
+This is defined as a non-blocking operation in case contributing subsystems need to perform some potentially time consuming action (e.g., query a remote service) before responding. The returned data \emph{must} be distributed by the \ac{RM} and subsequently delivered to the local \ac{PMIx} server on each node where application processes will execute, prior to initiating execution of those processes.
 
 \adviceimplstart
 Support for harvesting of environmental variables and providing of local configuration information by the \ac{PMIx} implementation is optional.
@@ -834,7 +834,7 @@ Returns one of the following:
 %%%%
 \descr
 
-Provide a function by which the local \ac{PMIx} server can perform any application-specific operations prior to spawning local clients of a given application. For example, a network library might need to setup the local driver for ``instant on'' addressing. The data provided in the \refarg{info} array is the data provided to there host \ac{RM} from the a call to \refapi{PMIx_server_setup_application}.
+Provide a function by which the local \ac{PMIx} server can perform any application-specific operations prior to spawning local clients of a given application. For example, a network library might need to setup the local driver for ``instant on'' addressing. The data provided in the \refarg{info} array is the data returned to the host \ac{RM} by the callback function executed as a result of a call to \refapi{PMIx_server_setup_application}.
 
 \advicermstart
 Host environments are \textit{required} to execute this operation prior to starting any local application processes from the specified namespace.
@@ -1300,7 +1300,21 @@ The \ac{PMIx} server library is required to aggregate participation by local cli
 \adviceimplend
 
 \advicermstart
-The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
+The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective. Data received from each node \emph{shall} be simply concatenated to form an aggregated unit, as shown in the following example:
+
+\cspecificstart
+\begin{codepar}
+uint8_t *blob1, *blob2, *total;
+size_t sz_blob1, sz_blob2, sz_total;
+
+sz_total = sz_blob1 + sz_blob2;
+total = (uint8_t*)malloc(sz_total);
+memcpy(total, blob1, sz_blob1);
+memcpy(\&total[sz_blob1], blob2, sz_blob2);
+\end{codepar}
+\cspecificend
+
+Note that the ordering of the data \emph{blobs} does not matter.
 \advicermend
 
 The provided data is to be collectively shared with all \ac{PMIx} servers involved in the fence operation, and returned in the modex \refarg{cbfunc}.
