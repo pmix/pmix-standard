@@ -785,7 +785,7 @@ Provide a function by which the \ac{RM} can request application-specific setup d
 Host environments are required to execute this operation prior to launching a job. In addition to supported directives, the \refarg{info} array must include a description of the \refterm{job} using the \refattr{PMIX_NODE_MAP} and \refattr{PMIX_PROC_MAP} attributes.
 \advicermend
 
-This is defined as a non-blocking operation in case contributing subsystems need to perform some potentially time consuming action (e.g., query a remote service) before responding. The returned data \emph{must} be distributed by the \ac{RM} and subsequently delivered to the local \ac{PMIx} server on each node where application processes will execute, prior to initiating execution of those processes.
+This is defined as a non-blocking operation in case contributing subsystems need to perform some potentially time consuming action (e.g., query a remote service) before responding. The returned data must be distributed by the \ac{RM} and subsequently delivered to the local \ac{PMIx} server on each node where application processes will execute, prior to initiating execution of those processes.
 
 \adviceimplstart
 Support for harvesting of environmental variables and providing of local configuration information by the \ac{PMIx} implementation is optional.
