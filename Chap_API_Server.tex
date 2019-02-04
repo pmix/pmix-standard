@@ -124,19 +124,19 @@ PMIx_server_register_nspace(const pmix_nspace_t nspace,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
-The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries:
+The following attributes are required to be supported by all \ac{PMIx} libraries:
 
 \pastePRIAttributeItem{PMIX_REGISTER_NODATA}
 
 \divider
 
-Host environments are \textit{required} to provide the following attributes:
+Host environments are required to provide the following attributes:
 
 \begin{itemize}
     \item for the session containing the given namespace:
@@ -166,7 +166,7 @@ Host environments are \textit{required} to provide the following attributes:
         \end{itemize}
 \end{itemize}
 
-If more than one application is included in the namespace, then the host environment is also \textit{required} to provide the following attributes:
+If more than one application is included in the namespace, then the host environment is also required to provide the following attributes:
 
 \begin{itemize}
     \item for each application:
@@ -187,7 +187,7 @@ If more than one application is included in the namespace, then the host environ
 
 \optattrstart
 
-The following attributes \textit{may} be provided by host environments:
+The following attributes may be provided by host environments:
 
 \begin{itemize}
     \item for the session containing the given namespace:
@@ -222,7 +222,7 @@ The following attributes \textit{may} be provided by host environments:
         \end{itemize}
 \end{itemize}
 
-Attributes not directly provided by the host environment \textit{may} be derived by the \ac{PMIx} server library from other required information and included in the data made available to the server library's clients.
+Attributes not directly provided by the host environment may be derived by the \ac{PMIx} server library from other required information and included in the data made available to the server library's clients.
 
 \optattrend
 
@@ -232,10 +232,10 @@ Attributes not directly provided by the host environment \textit{may} be derived
 Pass job-related information to the \ac{PMIx} server library for distribution to local client processes.
 
 \advicermstart
-Host environments are \textit{required} to execute this operation prior to starting any local application process within the given namespace.
+Host environments are required to execute this operation prior to starting any local application process within the given namespace.
 
-The \ac{PMIx} server must register \emph{all} namespaces that will participate in collective operations with local processes.
-This means that the server must register a namespace even if it will not host any local processes from within that namespace \emph{if} any local process of another namespace might at some point perform an operation involving one or more processes from the new namespace.
+The \ac{PMIx} server must register all namespaces that will participate in collective operations with local processes.
+This means that the server must register a namespace even if it will not host any local processes from within that namespace if any local process of another namespace might at some point perform an operation involving one or more processes from the new namespace.
 This is necessary so that the collective operation can identify the participants and know when it is locally complete.
 
 The caller must also provide the number of local processes that will be launched within this namespace.
@@ -243,7 +243,7 @@ This is required for the \ac{PMIx} server library to correctly handle collective
 \advicermend
 
 \adviceuserstart
-The number of local processes for any given namespace is generally fixed at the time of application launch. Calls to \refapi{PMIx_Spawn} result in processes launched in their own namespace, not that of their parent. However, it is possible for processes to \textit{migrate} to another node via a call to \refapi{PMIx_Job_control_nb}, thus resulting in a change to the number of local processes on both the initial node and the node to which the process moved. It is therefore \textit{critical} that applications not migrate processes without first ensuring that \ac{PMIx}-based collective operations are not in progress, and that no such operations be initiated until process migration has completed.
+The number of local processes for any given namespace is generally fixed at the time of application launch. Calls to \refapi{PMIx_Spawn} result in processes launched in their own namespace, not that of their parent. However, it is possible for processes to \textit{migrate} to another node via a call to \refapi{PMIx_Job_control_nb}, thus resulting in a change to the number of local processes on both the initial node and the node to which the process moved. It is therefore critical that applications not migrate processes without first ensuring that \ac{PMIx}-based collective operations are not in progress, and that no such operations be initiated until process migration has completed.
 \adviceuserend
 
 
@@ -358,7 +358,7 @@ free(regex);
 Note that the \refattr{PMIX_NODE_MAP} and \refattr{PMIX_PROC_MAP} attributes are linked in that the order of entries in the process map must match the ordering of nodes in the node map - i.e., there is no provision in the \ac{PMIx} process map regular expression generator/parser pair supporting an out-of-order node or a node that has no corresponding process map entry (e.g., a node with no processes on it). Armed with these tools, the registration \refarg{info} array can be constructed as follows:
 
 \begin{itemize}
-\item Session-level information includes all session-specific values. In many cases, only two values (\refattr{PMIX_SESSION_ID} and \refattr{PMIX_UNIV_SIZE}) are included in the registration array. Since both of these values are session-specific, they can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute and identifed by including the \refattr{PMIX_SESSION_ID} attribute in the array - this is \emph{required} in cases where non-specific attributes (e.g., \refattr{PMIX_NUM_NODES} or \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the session. Note that the node map can include nodes not used by the job being registered as no corresponding process map is specified.
+\item Session-level information includes all session-specific values. In many cases, only two values (\refattr{PMIX_SESSION_ID} and \refattr{PMIX_UNIV_SIZE}) are included in the registration array. Since both of these values are session-specific, they can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute and identifed by including the \refattr{PMIX_SESSION_ID} attribute in the array - this is must in cases where non-specific attributes (e.g., \refattr{PMIX_NUM_NODES} or \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the session. Note that the node map can include nodes not used by the job being registered as no corresponding process map is specified.
 
 The \refarg{info} array at this point might look like (where the labels identify the corresponding attribute - e.g., ``Session ID'' corresponds to the \refattr{PMIX_SESSION_ID} attribute):
 
@@ -373,7 +373,7 @@ The \refarg{info} array at this point might look like (where the labels identify
 \endgroup
 
 
-\item Job-level information includes all job-specific values such as \refattr{PMIX_JOB_SIZE}, \refattr{PMIX_JOB_NUM_APPS}, and \refattr{PMIX_JOBID}. Since each invocation of \refapi{PMIx_server_register_nspace} describes a single \refterm{job}, job-specific values can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} identified by the \refattr{PMIX_JOB_INFO_ARRAY} attribute - this is \emph{required} in cases where non-specific attributes (e.g., \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the job. Note that since the invocation only involves a single namespace, there is no need to include the \refattr{PMIX_NSPACE} attribute in the array.
+\item Job-level information includes all job-specific values such as \refattr{PMIX_JOB_SIZE}, \refattr{PMIX_JOB_NUM_APPS}, and \refattr{PMIX_JOBID}. Since each invocation of \refapi{PMIx_server_register_nspace} describes a single \refterm{job}, job-specific values can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} identified by the \refattr{PMIX_JOB_INFO_ARRAY} attribute - this is must in cases where non-specific attributes (e.g., \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the job. Note that since the invocation only involves a single namespace, there is no need to include the \refattr{PMIX_NSPACE} attribute in the array.
 
 Upon conclusion of this step, the \refarg{info} array might look like:
 
@@ -391,9 +391,9 @@ Note that in this example, \refattr{PMIX_NUM_NODES} is not required as that info
 
 The example also illustrates the hierarchical use of the \refattr{PMIX_NODE_INFO_ARRAY} attribute. In this case, we have chosen to pass several job-related values for each node - since those values are non-unique across the job, they must be passed in a node-info container. Note that the choice of what information to pass into the \ac{PMIx} server library versus what information to derive from other values at time of request is left to the host environment. \ac{PMIx} implementors in turn may, if they choose, pre-parse registration data to create expanded views (thus enabling faster response to requests at the expense of memory footprint) or to compress views into tighter representations (thus trading minimized footprint for longer response times).
 
-\item Application-level information includes all application-specific values such as \refattr{PMIX_APP_SIZE} and \refattr{PMIX_APPLDR}. If the \refterm{job} contains only a single \refterm{application}, then the application-specific values can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array - or as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_APP_INFO_ARRAY} attribute and identifed by including the \refattr{PMIX_APPNUM} attribute in the array. Use of the array format is  \emph{required} in cases where non-specific attributes (e.g., \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the application.
+\item Application-level information includes all application-specific values such as \refattr{PMIX_APP_SIZE} and \refattr{PMIX_APPLDR}. If the \refterm{job} contains only a single \refterm{application}, then the application-specific values can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array - or as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_APP_INFO_ARRAY} attribute and identifed by including the \refattr{PMIX_APPNUM} attribute in the array. Use of the array format is  must in cases where non-specific attributes (e.g., \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the application.
 
-However, in the case of a job consisting of multiple applications, all application-specific values for each application \emph{must} be provided using the \refattr{PMIX_APP_INFO_ARRAY} format, each identified by its \refattr{PMIX_APPNUM} value.
+However, in the case of a job consisting of multiple applications, all application-specific values for each application must be provided using the \refattr{PMIX_APP_INFO_ARRAY} format, each identified by its \refattr{PMIX_APPNUM} value.
 
 Upon conclusion of this step, the \refarg{info} array might look like that shown in \ref{fig:appinfo}, assuming there are two applications in the job being registered:
 
@@ -407,7 +407,7 @@ Upon conclusion of this step, the \refarg{info} array might look like that shown
 \end{figure*}
 \endgroup
 
-\item Process-level information includes an entry for each process in the job being registered, each entry marked with the \refattr{PMIX_PROC_DATA} attribute. The \refterm{rank} of the process \emph{must} be the first entry in the array - this provides efficiency when storing the data. Upon conclusion of this step, the \refarg{info} array might look like the diagram in \ref{fig:procinfo}:
+\item Process-level information includes an entry for each process in the job being registered, each entry marked with the \refattr{PMIX_PROC_DATA} attribute. The \refterm{rank} of the process must be the first entry in the array - this provides efficiency when storing the data. Upon conclusion of this step, the \refarg{info} array might look like the diagram in \ref{fig:procinfo}:
 
 \begingroup
 \begin{figure*}[ht!]
@@ -419,7 +419,7 @@ Upon conclusion of this step, the \refarg{info} array might look like that shown
 \end{figure*}
 \endgroup
 
-\item For purposes of this example, node-level information only includes values describing the local node - i.e., it does not include information about other nodes in the job or session. In many cases, the values included in this level are unique to it and can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_NODE_INFO_ARRAY} attribute - this is \emph{required} in cases where non-specific attributes are passed to describe aspects of the node, or where values for multiple nodes are being provided.
+\item For purposes of this example, node-level information only includes values describing the local node - i.e., it does not include information about other nodes in the job or session. In many cases, the values included in this level are unique to it and can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_NODE_INFO_ARRAY} attribute - this is must in cases where non-specific attributes are passed to describe aspects of the node, or where values for multiple nodes are being provided.
 
 The node-level information requires two elements that must be constructed in a manner similar to that used for the node map. The \refattr{PMIX_LOCAL_PEERS} value is computed based on the processes on the local node, filtered to select those from the job being registered, as shown below using the tools provided by \ac{PMIx}:
 
@@ -528,7 +528,7 @@ void PMIx_server_deregister_nspace(const pmix_nspace_t nspace,
 \descr
 
 Deregister the specified \refarg{nspace} and purge all objects relating to it, including any client information from that namespace.
-This is intended to support persistent \ac{PMIx} servers by providing an opportunity for the host \ac{RM} to tell the \ac{PMIx} server library to release all memory for a completed job. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+This is intended to support persistent \ac{PMIx} servers by providing an opportunity for the host \ac{RM} to tell the \ac{PMIx} server library to release all memory for a completed job. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
 
 
 %%%%%%%%%%%
@@ -566,9 +566,9 @@ PMIx_server_register_client(const pmix_proc_t *proc,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 
@@ -582,7 +582,7 @@ For example, the host server may have an object that tracks the specific client.
 Passing the object to the library allows the library to provide that object to the host server during subsequent calls related to that client, such as a \refapi{pmix_server_client_connected_fn_t} function.  This allows the host server to access the object without performing a lookup based on the client's namespace and rank.
 
 \advicermstart
-Host environments are \textit{required} to execute this operation prior to starting the client process.
+Host environments are required to execute this operation prior to starting the client process.
 The expected user ID and group ID of the child process allows the server library to properly authenticate clients as they connect by requiring the two values to match. Accordingly, the detected user and group ID's of the connecting process are not included in the \refapi{pmix_server_client_connected_fn_t} server module function.
 \advicermend
 
@@ -622,7 +622,7 @@ PMIx_server_deregister_client(const pmix_proc_t *proc,
 \descr
 
 The \refapi{PMIx_server_deregister_nspace} \ac{API} will delete all client information for that namespace. The \ac{PMIx} server library will automatically perform that operation upon disconnect of all local clients.
-This \ac{API} is therefore intended primarily for use in exception cases, but can be called in non-exception cases if desired. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+This \ac{API} is therefore intended primarily for use in exception cases, but can be called in non-exception cases if desired. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
 
 
 %%%%%%%%%%%
@@ -659,7 +659,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 Setup the environment of a child process to be forked by the host so it can correctly interact with the PMIx server.
 
 \advicermstart
-Host environments are \textit{required} to execute this operation prior to starting the client process.
+Host environments are required to execute this operation prior to starting the client process.
 \advicermend
 
 The \ac{PMIx} client needs some setup information so it can properly connect back to the server.
@@ -696,8 +696,8 @@ pmix_status_t PMIx_server_dmodex_request(const pmix_proc_t *proc,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item a PMIx error constant indicating an error in the input - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+    \item a PMIx error constant indicating an error in the input - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 
@@ -746,8 +746,8 @@ PMIx_server_setup_application(const pmix_nspace_t nspace,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item a PMIx error constant indicating either an error in the input - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+    \item a PMIx error constant indicating either an error in the input - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 
@@ -782,10 +782,10 @@ Returns one of the following:
 Provide a function by which the \ac{RM} can request application-specific setup data (e.g., environmental variables, fabric configuration and security credentials) from supporting \ac{PMIx} server library subsystems prior to initiating launch of a job.
 
 \advicermstart
-Host environments are \textit{required} to execute this operation prior to launching a job. In addition to supported directives, the \refarg{info} array \emph{must} include a description of the \refterm{job} using the \refattr{PMIX_NODE_MAP} and \refattr{PMIX_PROC_MAP} attributes.
+Host environments are required to execute this operation prior to launching a job. In addition to supported directives, the \refarg{info} array must include a description of the \refterm{job} using the \refattr{PMIX_NODE_MAP} and \refattr{PMIX_PROC_MAP} attributes.
 \advicermend
 
-This is defined as a non-blocking operation in case contributing subsystems need to perform some potentially time consuming action (e.g., query a remote service) before responding. The returned data \emph{must} be distributed by the \ac{RM} and subsequently delivered to the local \ac{PMIx} server on each node where application processes will execute, prior to initiating execution of those processes.
+This is defined as a non-blocking operation in case contributing subsystems need to perform some potentially time consuming action (e.g., query a remote service) before responding. The returned data must be distributed by the \ac{RM} and subsequently delivered to the local \ac{PMIx} server on each node where application processes will execute, prior to initiating execution of those processes.
 
 \adviceimplstart
 Support for harvesting of environmental variables and providing of local configuration information by the \ac{PMIx} implementation is optional.
@@ -825,9 +825,9 @@ PMIx_server_setup_local_support(const pmix_nspace_t nspace,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 
@@ -837,7 +837,7 @@ Returns one of the following:
 Provide a function by which the local \ac{PMIx} server can perform any application-specific operations prior to spawning local clients of a given application. For example, a network library might need to setup the local driver for ``instant on'' addressing. The data provided in the \refarg{info} array is the data returned to the host \ac{RM} by the callback function executed as a result of a call to \refapi{PMIx_server_setup_application}.
 
 \advicermstart
-Host environments are \textit{required} to execute this operation prior to starting any local application processes from the specified namespace.
+Host environments are required to execute this operation prior to starting any local application processes from the specified namespace.
 \advicermend
 
 %%%%%%%%%%%
@@ -877,9 +877,9 @@ PMIx_server_IOF_deliver(const pmix_proc_t *source,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 %%%%
@@ -917,7 +917,7 @@ PMIx_server_collect_inventory(const pmix_info_t directives[],
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called.
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will not be called.
 
 %%%%
 \descr
@@ -965,9 +965,9 @@ PMIx_server_deliver_inventory(const pmix_info_t info[],
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 
@@ -991,8 +991,8 @@ For performance purposes, the host server is required to return as quickly as po
 the function is thus to be done asynchronously so as to allow the \ac{PMIx} server support library to handle multiple client requests
 as quickly and scalably as possible.
 
-\textit{All} data passed to the host server functions is ``owned'' by the
-PMIX server support library and \textit{MUST NOT} be free'd. Data returned
+All data passed to the host server functions is ``owned'' by the
+PMIX server support library and must not be free'd. Data returned
 by the host server via callback function is owned by the host
 server, which is free to release it upon return from the callback
 \advicermend
@@ -1078,9 +1078,9 @@ typedef pmix_status_t (*pmix_server_client_connected_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 %%%%
@@ -1138,9 +1138,9 @@ typedef pmix_status_t (*pmix_server_client_finalized_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 %%%%
@@ -1204,9 +1204,9 @@ typedef pmix_status_t (*pmix_server_abort_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 %%%%
@@ -1258,9 +1258,9 @@ typedef pmix_status_t (*pmix_server_fencenb_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -1284,7 +1284,7 @@ The following attributes are optional for host environments:
 \optattrend
 
 \advicermstart
-Host environment are \textit{required} to return \refconst{PMIX_ERR_NOT_SUPPORTED} if passed an attributed marked as \refconst{PMIX_INFO_REQD} that they do not support, even if support for that attribute is optional.
+Host environment are required to return \refconst{PMIX_ERR_NOT_SUPPORTED} if passed an attributed marked as \refconst{PMIX_INFO_REQD} that they do not support, even if support for that attribute is optional.
 \advicermend
 
 %%%%
@@ -1300,7 +1300,7 @@ The \ac{PMIx} server library is required to aggregate participation by local cli
 \adviceimplend
 
 \advicermstart
-The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective. Data received from each node \emph{shall} be simply concatenated to form an aggregated unit, as shown in the following example:
+The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective. Data received from each node must be simply concatenated to form an aggregated unit, as shown in the following example:
 
 \cspecificstart
 \begin{codepar}
@@ -1314,7 +1314,7 @@ memcpy(\&total[sz_blob1], blob2, sz_blob2);
 \end{codepar}
 \cspecificend
 
-Note that the ordering of the data \emph{blobs} does not matter.
+Note that the ordering of the data blobs does not matter.
 \advicermend
 
 The provided data is to be collectively shared with all \ac{PMIx} servers involved in the fence operation, and returned in the modex \refarg{cbfunc}.
@@ -1322,7 +1322,7 @@ A \code{NULL} data value indicates that the local processes had no data to contr
 
 The array of \refarg{info} structs is used to pass user-requested options to the server.
 This can include directives as to the algorithm to be used to execute the fence operation.
-The directives are optional \emph{unless} the \refconst{PMIX_INFO_REQD} flag has been set - in such cases, the host \ac{RM} is required to return an error if the directive cannot be met.
+The directives are optional unless the \refconst{PMIX_INFO_REQD} flag has been set - in such cases, the host \ac{RM} is required to return an error if the directive cannot be met.
 
 
 %%%%%%%%%%%
@@ -1360,8 +1360,8 @@ typedef pmix_status_t (*pmix_server_dmodex_req_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -1382,7 +1382,7 @@ Used by the \ac{PMIx} server to request its local host contact the \ac{PMIx} ser
 
 The array of \refarg{info} structs is used to pass user-requested options to the server.
 This can include a timeout to preclude an indefinite wait for data that may never become available.
-The directives are optional \emph{unless} the \emph{mandatory} flag has been set - in such cases, the host \ac{RM} is required to return an error if the directive cannot be met.
+The directives are optional unless the \emph{mandatory} flag has been set - in such cases, the host \ac{RM} is required to return an error if the directive cannot be met.
 
 
 %%%%%%%%%%%
@@ -1420,9 +1420,9 @@ typedef pmix_status_t (*pmix_server_publish_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -1501,9 +1501,9 @@ typedef pmix_status_t (*pmix_server_lookup_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -1580,9 +1580,9 @@ typedef pmix_status_t (*pmix_server_unpublish_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -1657,9 +1657,9 @@ typedef pmix_status_t (*pmix_server_spawn_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -1766,9 +1766,9 @@ typedef pmix_status_t (*pmix_server_connect_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -1787,7 +1787,7 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Record the processes specified by the \refarg{procs} array as \textit{connected} as per the \ac{PMIx} definition\refsection{chap:api_proc_mgmt:connect}. The callback is to be executed once every daemon hosting at least one participant has called the host server's \refapi{pmix_server_connect_fn_t} function, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes.
+Record the processes specified by the \refarg{procs} array as \textit{connected} as per the \ac{PMIx} definition\refsection{chap:api_proc_mgmt:connect}. The callback is to be executed once every daemon hosting at least one participant has called the host server's \refapi{pmix_server_connect_fn_t} function, and the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes.
 
 \adviceimplstart
 The \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
@@ -1835,9 +1835,9 @@ typedef pmix_status_t (*pmix_server_disconnect_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -1854,7 +1854,7 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Disconnect a previously connected set of processes. The callback is to be executed once every daemon hosting at least one participant has called the host server's has called the \refapi{pmix_server_disconnect_fn_t} function, \textit{and} the host environment has completed any required supporting operations.
+Disconnect a previously connected set of processes. The callback is to be executed once every daemon hosting at least one participant has called the host server's has called the \refapi{pmix_server_disconnect_fn_t} function, and the host environment has completed any required supporting operations.
 
 \adviceimplstart
 The \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
@@ -1904,9 +1904,9 @@ Register to receive notifications for the specified events.
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -1934,7 +1934,7 @@ The \ac{PMIx} server library must track all client registrations for subsequent 
 \adviceimplend
 
 \advicermstart
-The host environment is \emph{required} to pass to its \ac{PMIx} server library all non-environmental events that directly relate to a registered namespace without the \ac{PMIx} server library explicitly requesting them. Environmental events are to be translated to their nearest \ac{PMIx} equivalent code as defined in the range between \refconst{PMIX_ERR_SYS_BASE} and \refconst{PMIX_ERR_SYS_OTHER} (inclusive).
+The host environment is must to pass to its \ac{PMIx} server library all non-environmental events that directly relate to a registered namespace without the \ac{PMIx} server library explicitly requesting them. Environmental events are to be translated to their nearest \ac{PMIx} equivalent code as defined in the range between \refconst{PMIX_ERR_SYS_BASE} and \refconst{PMIX_ERR_SYS_OTHER} (inclusive).
 \advicermend
 
 
@@ -1971,9 +1971,9 @@ Deregister to receive notifications for the specified events.
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 %%%%
@@ -2030,9 +2030,9 @@ typedef pmix_status_t (*pmix_server_notify_event_fn_t)(pmix_status_t code,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -2054,7 +2054,7 @@ The process generating the event is provided in the \refarg{source} parameter, a
 included in the \refarg{info} array.
 
 \advicermstart
-The callback function is to be executed once the host environment no longer requires that the \ac{PMIx} server library maintain the provided data structures. It does \emph{not} necessarily indicate that the event has been delivered to any process, nor that the event has been distributed for delivery
+The callback function is to be executed once the host environment no longer requires that the \ac{PMIx} server library maintain the provided data structures. It does not necessarily indicate that the event has been delivered to any process, nor that the event has been distributed for delivery
 \advicermend
 
 
@@ -2131,9 +2131,9 @@ typedef pmix_status_t (*pmix_server_query_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -2230,7 +2230,7 @@ Register that a tool has connected to the server, and request that the tool be a
 The \refstruct{pmix_info_t} array is used to pass qualifiers for the connection request, including the effective uid and gid of the calling tool for authentication purposes.
 
 \advicermstart
-The host environment is solely responsible for authenticating and authorizing the connection, and for authorizing all subsequent tool requests. The host \emph{must not} execute the callback function prior to returning from the \ac{API}.
+The host environment is solely responsible for authenticating and authorizing the connection, and for authorizing all subsequent tool requests. The host must not execute the callback function prior to returning from the \ac{API}.
 
 \advicermend
 
@@ -2299,7 +2299,7 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Log data on behalf of a client. This function is \textit{not} intended for output of computational results, but rather for reporting status and error messages. The host \emph{must not} execute the callback function prior to returning from the \ac{API}.
+Log data on behalf of a client. This function is not intended for output of computational results, but rather for reporting status and error messages. The host must not execute the callback function prior to returning from the \ac{API}.
 
 
 %%%%%%%%%%%
@@ -2337,9 +2337,9 @@ typedef pmix_status_t (*pmix_server_alloc_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -2429,9 +2429,9 @@ typedef pmix_status_t (*pmix_server_job_control_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -2516,9 +2516,9 @@ typedef pmix_status_t (*pmix_server_monitor_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 This entry point is only called for monitoring requests that are not directly supported by the \ac{PMIx} server library itself.
@@ -2596,7 +2596,7 @@ typedef pmix_status_t (*pmix_server_get_cred_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will \textit{not} be called.
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will not be called.
 
 \reqattrstart
 If the \ac{PMIx} library does not itself provide the requested credential, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
@@ -2666,8 +2666,8 @@ Returns one of the following:
 
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
@@ -2735,9 +2735,9 @@ typedef pmix_status_t (*pmix_server_iof_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 
@@ -2768,7 +2768,7 @@ The following attributes may be supported by a host environment.
 %%%%
 \descr
 
-Request the specified IO channels be forwarded from the given array of processes. An error shall be returned in the callback function if the requested service from \textit{any} of the requested processes cannot be provided.
+Request the specified IO channels be forwarded from the given array of processes. An error shall be returned in the callback function if the requested service from any of the requested processes cannot be provided.
 
 \adviceimplstart
 The forwarding of stdin is a \textit{push} process - processes cannot request that it be \textit{pulled} from some other source. Requests including the \refconst{PMIX_FWD_STDIN_CHANNEL} channel will return a \refconst{PMIX_ERR_NOT_SUPPORTED} error.
@@ -2815,9 +2815,9 @@ typedef pmix_status_t (*pmix_server_stdin_fn_t)(
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
 \reqattrstart
