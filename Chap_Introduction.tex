@@ -389,7 +389,7 @@ The v3.1 update includes clarifications and corrections from the v3.0 document:
     \item Add new attributes to specify the level of information being requested where ambiguity may exist (see \ref{api:struct:attributes:retrieval})
     \item Add new attributes to assemble information by its level for storage where ambiguity may exist (see \ref{api:struct:attributes:storage})
     \item Add flag and \refmacro{PMIX_INFO_IS_END} macro for marking and detecting the end of a \refstruct{pmix_info_t} array
-    \item Remove \code{PMIX_NUM_SLOTS} as it is duplicative of (a) \refattr{PMIX_UNIV_SIZE} when used at the \refterm{session} level and (b) \refattr{PMIX_MAX_PROCS} when used at the \refterm{job} and \refterm{application} levels
+    \item Clarify that \code{PMIX_NUM_SLOTS} is duplicative of (a) \refattr{PMIX_UNIV_SIZE} when used at the \refterm{session} level and (b) \refattr{PMIX_MAX_PROCS} when used at the \refterm{job} and \refterm{application} levels, but leave it in for backward compatibility.
     \item Clarify difference between \refattr{PMIX_JOB_SIZE} and \refattr{PMIX_MAX_PROCS}
     \item Clarify that \refapi{PMIx_server_setup_application} must be called per-\refterm{job} instead of per-\refterm{application} as the name implies. Unfortunately, this is a historical artifact. Note that both \refattr{PMIX_NODE_MAP} and \refattr{PMIX_PROC_MAP} must be included as input in the \refarg{info} array provided to that function. Further descriptive explanation of the ``instant on'' procedure will be provided in the next version of the \ac{PMIx} Standard.
     \item Clarify how the \ac{PMIx} server expects data passed to the host by \refapi{pmix_server_fencenb_fn_t} should be aggregated across nodes, and provide a code snippet example
