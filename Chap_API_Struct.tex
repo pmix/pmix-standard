@@ -3262,10 +3262,8 @@ Maximum number of processes that can be executed in this context (session, names
 %
 \declareAttribute{PMIX_NUM_SLOTS}{"pmix.num.slots"}{uint32_t}{
 Number of slots allocated in this context (session, namespace, application, or node). Note that this attribute is the equivalent to \refattr{PMIX_MAX_PROCS} used in the corresponding context - it is included in the Standard for historical reasons.
-Maximum number of processes that can be executed in this context (session, namespace, application, or node). Typically, this is a constraint imposed by a scheduler or by user settings in a hostfile or other resource description.
 }
 
-%
 \declareNewAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
 Number of nodes in this session, or that are currently executing processes from the associated namespace or application.
 }
