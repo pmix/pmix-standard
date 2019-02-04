@@ -38,7 +38,7 @@ define PMIX_INFO_LOAD(m, k, v, t)                      \textbackslash
   \} while (0)
 \end{codepar}
 
-since the index is cited more than once in the macro. The \ac{PMIx} standard only governs the existence and syntax of macros - it \emph{does not} specify their implementation. Given the freedom of implementation, a safer call sequence might be as follows:
+since the index is cited more than once in the macro. The \ac{PMIx} standard only governs the existence and syntax of macros - it does not specify their implementation. Given the freedom of implementation, a safer call sequence might be as follows:
 
 \begin{codepar}
 PMIX_INFO_LOAD(&array[n], "mykey", &mystring, PMIX_STRING);
@@ -390,7 +390,7 @@ PMIx establishes an error code boundary for constants defined in the PMIx standa
 \declareconstitem{PMIX_EXTERNAL_ERR_BASE}
 A starting point for user-level defined error constants.
 Negative values lower than this are guaranteed not to conflict with PMIx values.
-Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} constant and \emph{not} a specific value as the value of the constant may change.
+Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} constant and not a specific value as the value of the constant may change.
 %
 \end{constantdesc}
 
@@ -581,7 +581,7 @@ PMIX_PROC_CONSTRUCT(m)
 \subsubsection{Destruct the \refstruct{pmix_proc_t} structure}
 \declaremacro{PMIX_PROC_DESTRUCT}
 
-There is nothing to release here as the fields in \refstruct{pmix_proc_t} are all declared \emph{static}. However, the macro is provided for symmetry in the code \emph{and} for future-proofing should some allocated field be included some day.
+There is nothing to release here as the fields in \refstruct{pmix_proc_t} are all declared \emph{static}. However, the macro is provided for symmetry in the code and for future-proofing should some allocated field be included some day.
 
 \subsubsection{Create a \refstruct{pmix_proc_t} array}
 \declaremacro{PMIX_PROC_CREATE}
@@ -2688,12 +2688,12 @@ The host \ac{RM} wants to declare itself as being the local system server for PM
 
 %
 \declareAttribute{PMIX_SERVER_TMPDIR}{"pmix.srvr.tmpdir"}{char*}{
-Top-level temporary directory for all \emph{client} processes connected to this server, and where the PMIx server will place its \emph{tool} rendezvous point and contact information.
+Top-level temporary directory for all client processes connected to this server, and where the PMIx server will place its tool rendezvous point and contact information.
 }
 
 %
 \declareAttribute{PMIX_SYSTEM_TMPDIR}{"pmix.sys.tmpdir"}{char*}{
-Temporary directory for this system, and where a PMIx server that declares itself to be a system-level server will place a \emph{tool} rendezvous point and contact information.
+Temporary directory for this system, and where a PMIx server that declares itself to be a system-level server will place a tool rendezvous point and contact information.
 }
 
 %
@@ -3188,22 +3188,22 @@ The following attributes are used to assemble information by its level (e.g., \r
 
 %
 \declareNewAttribute{PMIX_SESSION_INFO_ARRAY}{"pmix.ssn.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing session-level information. The \refattr{PMIX_SESSION_ID} attribute is \emph{required} to be included in the array.
+Provide an array of \refstruct{pmix_info_t} containing session-level information. The \refattr{PMIX_SESSION_ID} attribute is must to be included in the array.
 }
 
 %
 \declareNewAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing job-level information. The \refattr{PMIX_SESSION_ID} attribute of the \refterm{session} containing the \refterm{job} is \emph{required} to be included in the array whenever the \ac{PMIx} server library may host multiple sessions (e.g., when executing with a host \ac{RM} daemon). As information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes when used in that context (though either or both of them \emph{may} be included). At least one of the job identifiers \emph{must} be provided in all other contexts where the job being referenced is ambiguous.
+Provide an array of \refstruct{pmix_info_t} containing job-level information. The \refattr{PMIX_SESSION_ID} attribute of the \refterm{session} containing the \refterm{job} is must to be included in the array whenever the \ac{PMIx} server library may host multiple sessions (e.g., when executing with a host \ac{RM} daemon). As information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes when used in that context (though either or both of them may be included). At least one of the job identifiers must be provided in all other contexts where the job being referenced is ambiguous.
 }
 
 %
 \declareNewAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, are \emph{required} to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
+Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, are must to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
 }
 
 %
 \declareNewAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is \emph{required} to be included in the array, though both \emph{may} be included.
+Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is must to be included in the array, though both may be included.
 }
 
 Note that these assemblages can be used hierarchically:
@@ -3215,7 +3215,7 @@ Note that these assemblages can be used hierarchically:
 \end{itemize}
 
 \adviceimplstart
-\ac{PMIx} implementations \emph{must} be capable of properly parsing and storing any hierarchical depth of information arrays. The resulting stored values are \emph{required} to be accessible via both \refapi{PMIx_Get} and \refapi{PMIx_Query_info_nb} \acp{API}, assuming appropriate directives are provided by the caller.
+\ac{PMIx} implementations must be capable of properly parsing and storing any hierarchical depth of information arrays. The resulting stored values are must to be accessible via both \refapi{PMIx_Get} and \refapi{PMIx_Query_info_nb} \acp{API}, assuming appropriate directives are provided by the caller.
 \adviceimplend
 
 %%%%%%%%%%%
@@ -3231,7 +3231,7 @@ Number of allocated slots in a session - each slot may or may not be occupied by
 
 %
 \declareAttribute{PMIX_JOB_SIZE}{"pmix.job.size"}{uint32_t}{
-Total number of processes in this job across all contained applications. Note that this value \emph{can} be different from \refattr{PMIX_MAX_PROCS}. For example, users may choose to subdivide an allocation (running several jobs in parallel within it), and dynamic programming models may support adding and removing processes from a running \refterm{job} on-they-fly. In the latter case, \ac{PMIx} events must be used to notify processes within the job that the job size has changed.
+Total number of processes in this job across all contained applications. Note that this value can be different from \refattr{PMIX_MAX_PROCS}. For example, users may choose to subdivide an allocation (running several jobs in parallel within it), and dynamic programming models may support adding and removing processes from a running \refterm{job} on-they-fly. In the latter case, \ac{PMIx} events must be used to notify processes within the job that the job size has changed.
 }
 
 %
@@ -3592,7 +3592,7 @@ Event is not to be delivered to default event handlers.
 %
 \declareAttribute{PMIX_EVENT_RETURN_OBJECT}{"pmix.evobject"}{void *}{
 Object to be returned whenever the registered callback function \code{cbfunc} is invoked.
-The object will \emph{only} be returned to the process that registered it.
+The object will only be returned to the process that registered it.
 }
 
 %

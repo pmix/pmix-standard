@@ -175,7 +175,7 @@ PMIx_Get_nb(const pmix_proc_t *proc, const char key[],
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
@@ -543,7 +543,7 @@ Each provided \refstruct{pmix_proc_t} struct can pass \refconst{PMIX_RANK_WILDCA
 
 The \refarg{info} array is used to pass user requests regarding the fence operation.
 
-Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence} is to \emph{not} collect the data.
+Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence} is to not collect the data.
 
 \adviceimplstart
 \refapi{PMIx_Fence} and its non-blocking form are both \emph{collective} operations. Accordingly, the \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
@@ -587,7 +587,7 @@ PMIx_Fence_nb(const pmix_proc_t procs[], size_t nprocs,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called. This can occur if the collective involved only processes on the local node.
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
@@ -619,7 +619,7 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 Nonblocking \refapi{PMIx_Fence} routine.
 Note that the function will return an error if a \code{NULL} callback function is given.
 
-Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence_nb} is to \emph{not} collect the data.
+Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence_nb} is to not collect the data.
 
 See the \refapi{PMIx_Fence} description for further details.
 
@@ -738,7 +738,7 @@ PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
@@ -830,12 +830,12 @@ There currently is no option to override this behavior - such an option may beco
 The \argref{data} parameter consists of an array of \refstruct{pmix_pdata_t} struct with the keys specifying the requested information.
 Data will be returned for each key in the associated \refarg{value} struct.
 Any key that cannot be found will return with a data type of \refconst{PMIX_UNDEF}.
-The function will return \refconst{PMIX_SUCCESS} if \emph{any} values can be found, so the caller must check each data element to ensure it was returned.
+The function will return \refconst{PMIX_SUCCESS} if any values can be found, so the caller must check each data element to ensure it was returned.
 
 The proc field in each \refstruct{pmix_pdata_t} struct will contain the namespace/rank of the process that published the data.
 
 \adviceuserstart
-Although this is a blocking function, it will \emph{not} wait by default for the requested data to be published.
+Although this is a blocking function, it will not wait by default for the requested data to be published.
 Instead, it will block for the time required by the server to lookup its current data and return any found items.
 Thus, the caller is responsible for ensuring that data is published prior to executing a lookup, using \refattr{PMIX_WAIT} to instruct the server to wait for the data to be published, or for retrying until the requested data is found.
 \adviceuserend
@@ -873,7 +873,7 @@ PMIx_Lookup_nb(char **keys,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item a PMIx error constant indicating an error in the input - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
 
@@ -902,7 +902,7 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 
 Non-blocking form of the \refapi{PMIx_Lookup} function.
 Data for the provided NULL-terminated \refarg{keys} array will be returned in the provided callback function.
-As with \refapi{PMIx_Lookup}, the default behavior is to \emph{not} wait for data to be published.
+As with \refapi{PMIx_Lookup}, the default behavior is to not wait for data to be published.
 The \refarg{info} array can be used to modify the behavior as previously described by \refapi{PMIx_Lookup}. Both the \refarg{info} and \refarg{keys} arrays must be maintained until the callback is provided.
 
 
@@ -958,7 +958,7 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 
 Unpublish data posted by this process using the given \refarg{keys}.
 The function will block until the data has been removed by the server (i.e., it is safe to publish that key again).
-A value of \code{NULL} for the \refarg{keys} parameter instructs the server to remove \emph{all} data published by this process.
+A value of \code{NULL} for the \refarg{keys} parameter instructs the server to remove all data published by this process.
 
 By default, the range is assumed to be \refconst{PMIX_SESSION}.
 Changes to the range, and any additional directives, can be provided in the \refarg{info} array.
@@ -997,7 +997,7 @@ PMIx_Unpublish_nb(char **keys,
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
