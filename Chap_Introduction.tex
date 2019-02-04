@@ -340,4 +340,5 @@ The v2.2 update includes the following clarifications and corrections from the v
     \item Add missing \refmacro{PMIX_INFO_IS_OPTIONAL} macro
     \item Add flag and \refmacro{PMIX_INFO_IS_END} macro for marking and detecting the end of a \refstruct{pmix_info_t} array
     \item Clarify the allowed hierarchical nesting of the \refattr{PMIX_SESSION_INFO_ARRAY}, \refattr{PMIX_JOB_INFO_ARRAY}, and associated attributes
+    \item Clarify that \code{PMIX_NUM_SLOTS} is duplicative of (a) \refattr{PMIX_UNIV_SIZE} when used at the \refterm{session} level and (b) \refattr{PMIX_MAX_PROCS} when used at the \refterm{job} and \refterm{application} levels, but leave it in for backward compatibility.
 \end{itemize}
