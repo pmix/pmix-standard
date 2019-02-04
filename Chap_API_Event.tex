@@ -96,7 +96,7 @@ Upon completion, the callback will receive a status based on the following table
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification, or the host \ac{SMS} does not support notification of the specified event code.
 \end{constantdesc}
 
-The callback function \emph{must not} be executed prior to returning from the \ac{API}.
+The callback function must not be executed prior to returning from the \ac{API}.
 
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
@@ -179,7 +179,7 @@ PMIx_Deregister_event_handler(size_t evhdlr_ref,
 
 Returns one of the following:
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS}, indicating that the request is being processed - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
+\item \refconst{PMIX_SUCCESS}, indicating that the request is being processed - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
 \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
 \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
@@ -234,7 +234,7 @@ PMIx_Notify_event(pmix_status_t status,
 
 Returns one of the following:
 \begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The notification request is valid and is being processed. The callback function will be called when the process-local operation is complete and will provide the resulting status of that operation. Note that this does \textit{not} reflect the success or failure of delivering the event to any recipients. The callback function \emph{must not} be executed prior to returning from the \ac{API}.
+\item \refconst{PMIX_SUCCESS} The notification request is valid and is being processed. The callback function will be called when the process-local operation is complete and will provide the resulting status of that operation. Note that this does \textit{not} reflect the success or failure of delivering the event to any recipients. The callback function must not be executed prior to returning from the \ac{API}.
 \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
 \item \refconst{PMIX_ERR_BAD_PARAM} The request contains at least one incorrect entry that prevents it from being processed. The callback function will \textit{not} be called.
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification, or in the case of a \ac{PMIx} server calling the API, the range extended beyond the local node and the host \ac{SMS} environment does not support event notification. The callback function will \textit{not} be called.
