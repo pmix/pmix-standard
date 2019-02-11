@@ -395,3 +395,18 @@ The v3.1 update includes clarifications and corrections from the v3.0 document:
     \item Clarify how the \ac{PMIx} server expects data passed to the host by \refapi{pmix_server_fencenb_fn_t} should be aggregated across nodes, and provide a code snippet example
 \end{itemize}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% History: Version 4.0
+\section{Version 4.0: June 2019}
+
+The following changes were introduced in v4.0 of the PMIx Standard:
+
+\begin{itemize}
+    \item Added the \refapi{PMIx_Register_attributes} \ac{API} by which a host environment can register the attributes it supports for each server-to-host operation
+    \item Added the ability to query supported attributes from the \ac{PMIx} tool, client and server libraries, as well as the host environment via the new \refstruct{pmix_regattr_t} structure. Both human-readable and machine-parsable output is supported. New attributes to support this operation include:
+    \begin{itemize}
+        \item \refattr{PMIX_CLIENT_ATTRIBUTES}, \refattr{PMIX_SERVER_ATTRIBUTES}, \refattr{PMIX_TOOL_ATTRIBUTES}, and \refattr{PMIX_HOST_ATTRIBUTES} to identify which library supports the attribute; and
+        \item \refattr{PMIX_MAX_VALUE}, \refattr{PMIX_MIN_VALUE}, and \refattr{PMIX_ENUM_VALUE} to provide machine-parsable description of accepted values
+    \end{itemize}
+\end{itemize}
