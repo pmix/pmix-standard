@@ -403,6 +403,7 @@ The v3.1 update includes clarifications and corrections from the v3.0 document:
 The following changes were introduced in v4.0 of the PMIx Standard:
 
 \begin{itemize}
+    \item Clarified that the \refapi{PMIx_Fence_nb} operation can immediately return \refconst{PMIX_OPERATION_SUCCEEDED} in lieu of passing the request to a \ac{PMIx} server if only the calling process is involved in the operation
     \item Added the \refapi{PMIx_Register_attributes} \ac{API} by which a host environment can register the attributes it supports for each server-to-host operation
     \item Added the ability to query supported attributes from the \ac{PMIx} tool, client and server libraries, as well as the host environment via the new \refstruct{pmix_regattr_t} structure. Both human-readable and machine-parsable output is supported. New attributes to support this operation include:
     \begin{itemize}
