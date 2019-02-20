@@ -612,7 +612,9 @@ The following attributes are optional for host environments that support this op
 \adviceimplstart
 We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
 
-Note that \ac{PMIx} libraries may choose to implement an optimization for the case where only the calling process is involved in the fence operation by immediately returning \refconst{PMIX_OPERATION_SUCCEEDED} from the client's call in lieu of passing the fence operation to a \ac{PMIx} server.
+Note that \ac{PMIx} libraries may choose to implement an optimization for the case where only the calling process is involved in the fence operation by immediately returning \refconst{PMIX_OPERATION_SUCCEEDED} from the client's call in lieu of passing the fence operation to a \ac{PMIx} server. Fence operations involving more than just the calling process must be communicated to the \ac{PMIx} server for proper execution of the included barrier behavior.
+
+Similarly, fence operations that involve only processes that are clients of the same \ac{PMIx} server may be resolved by that server without referral to its host environment as no inter-node coordination is required.
 \adviceimplend
 
 %%%%
