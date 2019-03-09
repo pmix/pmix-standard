@@ -4705,16 +4705,32 @@ Include all relevant data
 \subsection{Attribute support level attributes}
 \label{api:struct:attributes:level}
 
+\declareNewAttribute{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
+Request a list of functions supported by the \ac{PMIx} client library
+}
+
 \declareNewAttribute{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
 Request attributes supported by the \ac{PMIx} client library
+}
+
+\declareNewAttribute{PMIX_SERVER_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
+Request a list of functions supported by the \ac{PMIx} server library
 }
 
 \declareNewAttribute{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
 Request attributes supported by the \ac{PMIx} server library
 }
 
+\declareNewAttribute{PMIX_HOST_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
+Request a list of functions supported by the host environment
+}
+
 \declareNewAttribute{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
 Request attributes supported by the host environment
+}
+
+\declareNewAttribute{PMIX_TOOL_FUNCTIONS}{"pmix.tool.fns"}{bool}{
+Request a list of functions supported by the \ac{PMIx} tool library
 }
 
 \declareNewAttribute{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
