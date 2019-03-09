@@ -2161,7 +2161,7 @@ The \refstruct{pmix_regattr_t} structure is used to register attribute support f
 \begin{codepar}
 typedef struct pmix_regattr \{
     char *name;
-    char *string;
+    pmix_key_t *string;
     pmix_data_type_t type;
     pmix_info_t *info;
     size_t ninfo;
@@ -2277,15 +2277,35 @@ Load values into a \refstruct{pmix_regattr_t} structure. The macro can be called
 \versionMarker{4.0}
 \cspecificstart
 \begin{codepar}
-PMIX_REGATTR_LOAD(a, k, t, v)
+PMIX_REGATTR_LOAD(a, n, k, t, ni, v)
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{a}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_proc_t})}
-\argin{k}{Key value to be loaded (string)}
+\argin{n}{String name of the attribute (string)}
+\argin{k}{Key value to be loaded (\refstruct{pmix_key_t})}
 \argin{t}{Type of data associated with the provided key (\refstruct{pmix_data_type_t})}
-\argin{v}{Description to be loaded (string)}
+\argin{ni}{Number of \refstruct{pmix_info_t} elements to be allocated in \refarg{info} (\code{size_t})}
+\argin{v}{One-line description to be loaded (more can be added separately) (string)}
+\end{arglist}
+
+%%%%%%%%%%%
+\subsubsection{Transfer a \refstruct{pmix_regattr_t} to another \refstruct{pmix_regattr_t}}
+\declaremacro{PMIX_REGATTR_XFER}
+
+Non-destructively transfer the contents of a \refstruct{pmix_regattr_t} structure to another one.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_REGATTR_XFER(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Pointer to the destination \refstruct{pmix_regattr_t} structure (handle)}
+\argin{m}{Pointer to the source \refstruct{pmix_regattr_t} structure (handle)}
 \end{arglist}
 
 
@@ -4685,16 +4705,32 @@ Include all relevant data
 \subsection{Attribute support level attributes}
 \label{api:struct:attributes:level}
 
+\declareNewAttribute{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
+Request a list of functions supported by the \ac{PMIx} client library
+}
+
 \declareNewAttribute{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
 Request attributes supported by the \ac{PMIx} client library
+}
+
+\declareNewAttribute{PMIX_SERVER_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
+Request a list of functions supported by the \ac{PMIx} server library
 }
 
 \declareNewAttribute{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
 Request attributes supported by the \ac{PMIx} server library
 }
 
+\declareNewAttribute{PMIX_HOST_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
+Request a list of functions supported by the host environment
+}
+
 \declareNewAttribute{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
 Request attributes supported by the host environment
+}
+
+\declareNewAttribute{PMIX_TOOL_FUNCTIONS}{"pmix.tool.fns"}{bool}{
+Request a list of functions supported by the \ac{PMIx} tool library
 }
 
 \declareNewAttribute{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
