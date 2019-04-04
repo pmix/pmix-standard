@@ -96,7 +96,7 @@ Upon completion, the callback will receive a status based on the following table
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification, or the host \ac{SMS} does not support notification of the specified event code.
 \end{constantdesc}
 
-The callback function must not be executed prior to returning from the \ac{API}, and no events corresponding to this registration may be delivered prior to the registration callback function (\refarg{cbfunc}) being executed.
+The callback function must not be executed prior to returning from the \ac{API}, and no events corresponding to this registration may be delivered prior to the completion of the registration callback function (\refarg{cbfunc}).
 
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
