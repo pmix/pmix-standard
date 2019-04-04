@@ -340,10 +340,13 @@ Launcher directives have been received from a PMIx-enabled tool
 Application launcher (e.g., mpiexec) is ready to receive directives from a PMIx-enabled tool
 %
 \declareconstitemNEW{PMIX_OPERATION_IN_PROGRESS}
-A requested operation is already in proigress
+A requested operation is already in progress
 %
 \declareconstitem{PMIX_OPERATION_SUCCEEDED}
 The requested operation was performed atomically - no callback function will be executed
+%
+\declareconstitemNEW{PMIX_ERR_DUPLICATE_KEY}
+The provided key has already been published on a different data range
 
 \end{constantdesc}
 

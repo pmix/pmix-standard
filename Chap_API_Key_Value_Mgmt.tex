@@ -697,18 +697,12 @@ Changes to those values, and any additional directives, can be included in the \
 The blocking form will block until the server confirms that the data has been sent to the \ac{PMIx} server and that it has obtained confirmation from its host \ac{SMS} daemon that the data is ready to be looked up. Data is copied into the backing key-value data store, and therefore the \refarg{info} array can be released upon return from the blocking function call.
 
 \adviceuserstart
-Duplicate keys within the specified data range may lead to unexpected behavior depending
-on host RM implementation of the backing key-value store.
+Publishing duplicate keys is permitted provided they are published to different ranges.
 \adviceuserend
 
 \adviceimplstart
-Implementations should, to the best of their ability, detect duplicate keys and protect the
-user from unexpected behavior - preferably returning an error. This version of the
-standard does not define a specific error code to be returned, so the implementation must
-make it clear to the user what to expect in this scenario. One suggestion is to define an RM
-specific error code beyond the \refconst{PMIX_EXTERNAL_ERR_BASE} boundary. Future versions of the standard
-will clarify that a specific \ac{PMIx} error be returned when conflicting values are published for a given
-key, and will provide attributes to allow modified behaviors such as overwrite.
+Implementations should, to the best of their ability, detect duplicate keys being posted on the same data range and protect the
+user from unexpected behavior by returning the \refconst{PMIX_ERR_DUPLICATE_KEY} error.
 \adviceimplend
 
 %%%%%%%%%%%
@@ -826,10 +820,13 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 
 Lookup information published by this or another process.
 By default, the search will be conducted across the \refconst{PMIX_SESSION} range.
-Changes to the range, and any additional directives, can be provided in the \refstruct{pmix_info_t} array.
+Changes to the range, and any additional directives, can be provided in the \refstruct{pmix_info_t} array. Data is returned provided the following conditions are met:
 
-Note that the search is also constrained to only data published by the current user (i.e., the search will not return data published by an application being executed by another user).
-There currently is no option to override this behavior - such an option may become available later via an appropriate \refstruct{pmix_info_t} directive.
+\begin{itemize}
+    \item the requesting process resides within the range specified by the publisher. For example, data published to \refconst{PMIX_RANGE_LOCAL} can only be discovered by a process executing on the same node
+    \item the provided key matches the published key within that data range
+    \item the data was published by a process with corresponding user and/or group IDs as the one looking up the data. There currently is no option to override this behavior - such an option may become available later via an appropriate \refstruct{pmix_info_t} directive.
+\end{itemize}
 
 The \argref{data} parameter consists of an array of \refstruct{pmix_pdata_t} struct with the keys specifying the requested information.
 Data will be returned for each key in the associated \refarg{value} struct.
