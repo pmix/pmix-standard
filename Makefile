@@ -20,6 +20,7 @@ CHAPTERS= \
 	Chap_API_Sets_Groups.tex \
 	Chap_API_Coord.tex \
 	App_Support.tex \
+	App_Python.tex \
 	Acknowledgements.tex
 
 SOURCES=
