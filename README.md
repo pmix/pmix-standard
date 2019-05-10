@@ -28,15 +28,15 @@ The PMIx standardization process considers contributions by using the general wo
     * Reference the corresponding Issue(s). Keep the PR marked as [Draft PR](https://github.blog/2019-02-14-introducing-draft-pull-requests/) until an implementation is available and the PR is ready for broader discussion.
     * Send an email to the [PMIx Forum mailing list](https://groups.google.com/forum/#!forum/pmix-forum) once the PR is ready for discussion.
     * Once the discussion has resolved (i.e., dissenting opinions and questions have been addressed) then it can move to an official "Reading" in the next teleconference. Email the mailing list once it is ready for "Reading" to have it added to the teleconference agenda.
- 3. Official "**Reading**" of the PR during a teleconference
+ 3. Official "**Reading**" of the PR during a teleconference.
     * If no revisions are required or objections raised (either on the PR or in the teleconference) then the PR can be considered for "Acceptance" in the next teleconference.
- 4. Official "**Acceptance**" of the PR during a following teleconference
+ 4. Official "**Acceptance**" of the PR during a following teleconference.
     * If no objection is raised (either on the PR or in the teleconference) then the PR is merged into the document and, if also resolved, the corresponding Issue is closed.
 
 **General Statements:**
 
  * Any individual or organization may participate in the discussion on a topic.
- * Regular teleconferences are announced on the PMIx Forum mailing list
+ * Regular teleconferences are announced on the PMIx Forum mailing list.
    - Teleconferences provide a high bandwidth discussion format for various topics
      surrounding the PMIx Standard, and a synchronization mechanism to guide progress.
    - Notes from the teleconferences will be archived on the PMIx Forum [wiki](https://github.com/pmix/pmix-standard/wiki#meeting-information).
@@ -55,7 +55,7 @@ The PMIx standardization process considers contributions by using the general wo
      existing behavior.
  * The Issue provides a discussion forum for the contribution without the requirement
    of specific changes to the PMIx Standard document.
- * Once an Issue is ready for discussion it is helpful, though not required, to send a message to the PMIx Forum mailing list to raise awareness.
+ * Once an Issue is ready for discussion, it is helpful, though not required, to send a message to the PMIx Forum mailing list to raise awareness.
  * If a PMIx Standard change is required then a Pull Request must be created (See Phase 2).
     - Multiple Pull Requests may reference a single Issue.
  * The Issue will be closed once it has been resolved by the "**Acceptance**" of the
