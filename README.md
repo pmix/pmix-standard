@@ -31,7 +31,7 @@ The PMIx standardization process considers contributions by using the general wo
  3. Official "**Reading**" of the PR during a teleconference
     * If no revisions are required or objections raised (either on the PR or in the teleconference) then the PR can be considered for "Acceptance" in the next teleconference.
  4. Official "**Acceptance**" of the PR during a following teleconference
-    * If no objection is raised (either on the PR on in the teleconference) then the PR is merged into the document and, if also resolved, the corresponding Issue is closed.
+    * If no objection is raised (either on the PR or in the teleconference) then the PR is merged into the document and, if also resolved, the corresponding Issue is closed.
 
 **General Statements:**
 
@@ -39,7 +39,7 @@ The PMIx standardization process considers contributions by using the general wo
  * Regular teleconferences are announced on the PMIx Forum mailing list
    - Teleconferences provide a high bandwidth discussion format for various topics
      surrounding the PMIx Standard, and a synchronization mechanism to guide progress.
-   - Notes from the teleconferences will be archived on the PMIx Forum wiki.
+   - Notes from the teleconferences will be archived on the PMIx Forum [wiki](https://github.com/pmix/pmix-standard/wiki#meeting-information).
    - Specific notes regarding an Issue or PR from the teleconference will be made
      on that Issue or PR directly immediately following the teleconference.
  * The PMIx Forum mailing list may be used for questions about the PMIx Standard.
