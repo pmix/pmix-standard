@@ -40,15 +40,12 @@ Two versions (PMI-1 and PMI-2) have been released as part of the MPICH effort, w
 \end{itemize}
 
 \deleted{ \ac{PMIx} represents an attempt to resolve these questions by providing an extended version of the \ac{PMI} definitions specifically designed to support clusters up to exascale and larger sizes.} 
-\replaced{\ac{PMIx} was intended to expand on the PMI effort,
-and was not designed to be a radical shift away from the basic concepts introduced by
-its predecessors.  \ac{PMIx} API's were designed to easily allow a \ac{PMIx} implementation to
-be capable of easily supporting both of the existing PMI-1 and PMI-2 \acp{API} with
-minimal effort.  Since its introduction, \ac{PMIx} has expanded 
+\replaced{ PMI-1 and PMI-2 can be implemented using \ac{PMIx} though it is not a strict superset of either.
+Since its introduction, \ac{PMIx} has expanded 
 on earlier \ac{PMI} efforts in the following ways:}{ The overall objective of the project is not to branch the existing definitions -- in fact, \ac{PMIx} fully supports both of the existing PMI-1 and PMI-2 \acp{API} -- but rather to:}
 
 \begin{compactalphaenum}
-\item \added{\ac{PMIx} provides an extended version of the \ac{PMI} definitions specifically designed for better scalability.}
+\item \added{\ac{PMIx} provides an extended version of the \ac{PMI} API's which provide necessary functionality for launching and managing parallel applications at exascale.}
 \item \added{The target user of \ac{PMIx} has grown from MPI libraries to other libraries and languages for HPC.}
 \item \deleted{add flexibility to the existing \acp{API} by adding an array of key-value ``attribute'' pairs to each \ac{API} signature that allows implementers to customize the behavior of the \ac{API} as future needs emerge without having to alter or create new variants of it;}
 \item \deleted{add new APIs that provide extended capabilities such as asynchronous event notification plus dynamic resource allocation and management;}
@@ -182,7 +179,20 @@ This section presents a brief overview of the \ac{PMIx} Architecture~\cite{2017-
 Note that this is a conceptual model solely used to help guide the standards process --- it does not represent
 a design requirement on any \ac{PMIx} implementation. Instead, the model is used by the
 \ac{PMIx} community as a sounding board for evaluating proposed interfaces and avoid unintentionally imposing
-constraints on implementers. Built into the model are two guiding principles also reflected in the standard. First,
+constraints on implementers. }
+
+\replaced{
+A concept that is fundamental to \ac{PMIx} is that a \ac{PMIx} implentation may 
+operate primarily as a \textit{messenger}, and not a \textit{doer} --- i.e., a \ac{PMIx} 
+implementation may rely heavily or fully on other software components to provide functionality.
+Since a \ac{PMIx} implementation may only deliver requests and responses to other 
+software components, the API calls include ways to provide arbitrary information to the 
+backend components that actually 
+implement the functionality.  Also, because the \ac{PMIx} implementations may rely heavily 
+on other system software, a PMIx implementation may not be able to guarantee that a feature 
+is available on all platforms the implementation supports.  These aspects are discussed in 
+detail in the remainder of this chapter.
+}{Built into the model are two guiding principles also reflected in the standard. First,
 \ac{PMIx} operates in the mode of a \textit{messenger}, and not a \textit{doer} --- i.e., the role
 of \ac{PMIx} is to provide communication between the various participants, relaying requests and returning
 responses. The intent of the standard is not to suggest that \ac{PMIx} itself actually perform any of
@@ -199,16 +209,22 @@ the defined operations --- this is left to the various \ac{SMS} elements and/or 
 \endgroup
 
 
-Thus, as the diagram in Fig.~\ref{fig:roles} shows, the application is built against a \ac{PMIx} client library that contains the client-side \acp{API},
+\deleted{Thus, as the diagram in} Fig.~\ref{fig:roles} shows \replaced{a typical \ac{PMIx} implemention in which}{,} the application is built against a \ac{PMIx} client library that contains the client-side \acp{API},
 attribute definitions, and communication support for interacting with the local \ac{PMIx} server. Intra-process cross-library interactions
 are supported at the client level to avoid unnecessary burdens on the server. Orchestration requests are sent to the
 local \ac{PMIx} server, which subsequently passes them to the host \ac{SMS} (here represented by an \ac{RM} daemon) using the \ac{PMIx} server callback functions the host \ac{SMS} registered during PMIx\_server\_init. The host \ac{SMS} can indicate its lack of support for any operation by simply providing a \textit{NULL} for the associated callback function, or can create a function entry that returns \textit{not supported} when called.
 
-The conceptual model places the burden of fulfilling the request on the host \ac{SMS}. This includes performing any
+\added{ Maybe make the next paragraph an "advice to implementors" or "a quality PMIx implementation will attempt to consolidate requests from local PMIx clients into a single request to \ac{SMS} ecomponents when possible}
+
+\deleted{The conceptual model places the burden of fulfilling the request on the host \ac{SMS}. This includes performing any
 inter-node communications, or interacting with other \ac{SMS} elements. Thus, a client request for a network traffic report
 does not go directly from the client to the \ac{FM}, but instead is relayed to the \ac{PMIx} server, and then passed to the host \ac{SMS}
-for execution. This architecture reflects the second principle underlying the standard --- namely, that connectivity is to be minimized by channeling all application interactions with the \ac{SMS} through the local \ac{PMIx} server.
+for execution. This architecture reflects the second principle underlying the standard --- namely, that connectivity is to be minimized by channeling all application interactions with the \ac{SMS} through the local \ac{PMIx} server.}
 
+%
+% ISSUE175: Ralph C.:  What should we be taking away from this paragraph.  Wasn't clear to WG.
+% Are there specific API's you can point us to to that would give us some context to understand?
+%
 Recognizing the burden this places on SMS vendors, the PMIx community has included interfaces by
 which the host can request support from local SMS elements. Once the SMS has transferred the request to
 an appropriate location, a PMIx server interface can be used to pass the request between SMS subsystems.
@@ -221,16 +237,33 @@ to work with those providers to develop the necessary support.
 % ISSUE175: Does the notes on how tools differ need to be brought up here?  It's not really critical t
 % to the overall architecture, but it does break the notion of a client interacting with a local server
 
-Tools, whether standalone or embedded in job scripts, are an exception to the communication rule and can connect to
+\replaced{\ac{PMIx} clients are processes which are started through the \ac{PMIx} infrastructure, 
+either by the PMIx implementation directly or through an \ac{SMS} component, and have registered 
+as clients using the \refapi{PMIx_Init} API.  A \ac{PMIx} client 
+is created in such a way that when the process calls \refapi{PMIx_Init}, the \ac{PMIx} 
+implementation will be have sufficient information available to
+authenticate the caller.  The PMIx implementation will have sufficient knowledge about the  
+process which it created, either directly or through other SMS, to be able to provide 
+information the process requests such information about any peers it might have.   
+
+Tools, whether standalone or embedded in job scripts, are an exception to 
+the normal client registration process.   A process can register as a tool by 
+providing adequate rendezvous information via \refapi{PMIx_tool_init}.  This allows processes
+which were not created by the PMIx infrastructure to request access to PMIx functionality. 
+Processes which register as tools do not have peers.  
+}{Tools, whether standalone or embedded in job scripts, are an exception to 
+the communication rule and can connect to
 any PMIx server providing they are given adequate rendezvous information. The PMIx conceptual model views the
 collection of PMIx servers as a cloud-like conglomerate --- i.e., orchestration and information requests can be
 given to any server regardless of location. However, tools frequently execute on locations that may not house an
 operating PMIx server --- e.g., a users notebook computer. Thus, tools need the ability to remotely connect to
-the PMIx server ``cloud''.
+the PMIx server ``cloud''.  }
 
+\replaced{NEED A SUMMARY OF THIS SECTION}{
 The scope of the PMIx standard therefore spans the range of these interactions, between client-and-SMS and between SMS
 subsystems. Note again that this does not impose a requirement on any given PMIx implementation to cover the entire
 range --- implementers are free to return \textit{not supported} from any PMIx function.
+}
 
 \section{\added{Some section about the use of ``Not Supported''}}
 \label{chap:intro:not_supported}
