@@ -182,14 +182,14 @@ a design requirement on any \ac{PMIx} implementation. Instead, the model is used
 constraints on implementers. }
 
 \replaced{
-A concept that is fundamental to \ac{PMIx} is that a \ac{PMIx} implentation may 
+A concept that is fundamental to \ac{PMIx} is that a \ac{PMIx} implentation might
 operate primarily as a \textit{messenger}, and not a \textit{doer} --- i.e., a \ac{PMIx} 
-implementation may rely heavily or fully on other software components to provide functionality.
-Since a \ac{PMIx} implementation may only deliver requests and responses to other 
+implementation might rely heavily or fully on other software components to provide functionality.
+Since a \ac{PMIx} implementation might only deliver requests and responses to other 
 software components, the API calls include ways to provide arbitrary information to the 
 backend components that actually 
-implement the functionality.  Also, because the \ac{PMIx} implementations may rely heavily 
-on other system software, a PMIx implementation may not be able to guarantee that a feature 
+implement the functionality.  Also, because the \ac{PMIx} implementations might rely heavily 
+on other system software, a PMIx implementation might not be able to guarantee that a feature 
 is available on all platforms the implementation supports.  These aspects are discussed in 
 detail in the remainder of this chapter.
 }{Built into the model are two guiding principles also reflected in the standard. First,
@@ -265,7 +265,7 @@ subsystems. Note again that this does not impose a requirement on any given PMIx
 range --- implementers are free to return \textit{not supported} from any PMIx function.
 }
 
-\section{\added{Some section about the use of ``Not Supported''}}
+\section{\added{Portability of \ac{PMIx} Functionality}}
 \label{chap:intro:not_supported}
 
 \added{
@@ -287,9 +287,11 @@ could be so burdensome as to discourage \ac{PMIx} implementations.}
 
 % ISSUE175: Define Resource managers earlier, SMS
 
-This also applies to the host environments. Resource managers and other system management stack components retain the right to decide on support of a particular function. The \ac{PMIx} community continues to look at ways to assist \ac{SMS} implementers in their decisions by highlighting functions that are critical to basic application execution (e.g., \refapi{PMIx_Get}), while leaving flexibility for tailoring a vendor's software for their target market segment.
+\deleted{This also applies to the host environments.} Resource managers and other system management stack components retain the right to decide on support of a particular function. The \ac{PMIx} community continues to look at ways to assist \ac{SMS} implementers in their decisions by highlighting functions \added{and attributes} that are critical to basic application execution (e.g., \refapi{PMIx_Get}) \deleted {, while leaving flexibility for tailoring a vendor's software for their target market segment.}
 
-One area where this can become more complicated is regarding the attributes that provide information to the client process and/or control the behavior of a \ac{PMIx} standard \ac{API}. For example, the \refattr{PMIX_TIMEOUT} attribute can be used to specify the time (in seconds) before the requested operation should time out. The intent of this attribute is to allow the client to avoid ``hanging'' in a request that takes longer than the client wishes to wait, or may never return (e.g., a \refapi{PMIx_Fence} that a blocked participant never enters).
+\subsection{\added{Optional Nature of Attriburtes}}
+
+One area where \replaced{this}{the variation in functionality available on various systems} can become more complicated is regarding the attributes that provide information to the client process and/or control the behavior of a \ac{PMIx} \deleted{standard} \ac{API}. For example, the \refattr{PMIX_TIMEOUT} attribute can be used to specify the time (in seconds) before the requested operation should time out. The intent of this attribute is to allow the client to avoid ``hanging'' in a request that takes longer than the client wishes to wait, or may never return (e.g., a \refapi{PMIx_Fence} that a blocked participant never enters).
 
 % ISSUE175: Either change things like "library and its SMS host" to “PMIx implementation” or we need a real overview of the architecture so these things make more sense.
 
