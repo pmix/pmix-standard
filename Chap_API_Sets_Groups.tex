@@ -743,7 +743,7 @@ There are no identified required attributes for implementers.
 %%%%
 \descr
 
-Leave a PMIx Group. Calls to \refapi{PMIx_Group_leave} (or its non-blocking form) will cause a \refconst{PMIX_GROUP_LEFT} event to be generated notifying all members of the group of the caller’s departure. The function will return (or the non-blocking function will execute the specified callback function) once the event has been locally generated and is not indicative of remote receipt. All \ac{PMIx}-based collectives such as \refapi{PMIx_Fence} in action across the group will automatically be adjusted if the collective was called with the \refattr{PMIX_GROUP_FT_COLLECTIVE} attribute (default is false) – otherwise, the standard error return behavior for that collective will be executed.
+Leave a PMIx Group. Calls to \refapi{PMIx_Group_leave} (or its non-blocking form) will cause a \refconst{PMIX_GROUP_LEFT} event to be generated notifying all members of the group of the caller’s departure. The function will return (or the non-blocking function will execute the specified callback function) once the event has been locally generated and is not indicative of remote receipt.
 
 \adviceuserstart
 The PMIx_Group_leave API is intended solely for asynchronous departures of individual processes from a group as it is not a scalable operation – i.e., when a process determines it should no longer be a part of a defined group, but the remainder of the group retains a valid reason to continue in existence. Developers are advised to use PMIx_Group_destruct (or its non-blocking form) for all other scenarios as it represents a more scalable operation.
