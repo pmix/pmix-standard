@@ -4819,23 +4819,18 @@ Notify the inviting process that this process does not wish to participate in th
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_FT_COLLECTIVE}{"pmix.grp.ftcoll"}{bool}{
-Adjust internal tracking for terminated processes. Default is false
-}
-
-%
 \declareNewAttribute{PMIX_GROUP_MEMBERSHIP}{"pmix.grp.mbrs"}{pmix_data_array_t*}{
 Array of group member ID's
 }
 
 %
 \declareNewAttribute{PMIX_GROUP_ASSIGN_CONTEXT_ID}{"pmix.grp.actxid"}{bool}{
-Notify remaining members when another member terminates without first leaving the group. The default is false
+Requests that the \ac{RM} assign a new context identifier to the newly created group. The identifier is an unsigned, \code{size_t} value that the \ac{RM} guarantees to be unique across the range specified in the request. Thus, the value serves as a means of identifying the group within that range. If no range is specified, then the request defaults to \refconst{PMIX_RANGE_SESSION}.
 }
 
 %
 \declareNewAttribute{PMIX_GROUP_CONTEXT_ID}{"pmix.grp.ctxid"}{size_t}{
-Context ID assigned to group
+Context identifier assigned to the group by the host \ac{RM}.
 }
 
 %
