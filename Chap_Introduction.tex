@@ -239,18 +239,21 @@ to work with those providers to develop the necessary support.
 
 \replaced{\ac{PMIx} clients are processes which are started through the \ac{PMIx} infrastructure, 
 either by the PMIx implementation directly or through an \ac{SMS} component, and have registered 
-as clients using the \refapi{PMIx_Init} API.  A \ac{PMIx} client 
-is created in such a way that when the process calls \refapi{PMIx_Init}, the \ac{PMIx} 
-implementation will be have sufficient information available to
-authenticate the caller.  The PMIx implementation will have sufficient knowledge about the  
-process which it created, either directly or through other SMS, to be able to provide 
-information the process requests such information about any peers it might have.   
+as clients.  A \ac{PMIx} client 
+is created in such a way that the \ac{PMIx} client library
+will be have sufficient information available to
+authenticate with the \ac{PMIx} server.  
+The \ac{PMIx} server will have sufficient knowledge about the  
+process which it created, either directly or through other \ac{SMS}, to authenticate the 
+process and provide information the process requests such as its identity and the 
+identity of its peers.  
 
 Tools, whether standalone or embedded in job scripts, are an exception to 
-the normal client registration process.   A process can register as a tool by 
-providing adequate rendezvous information via \refapi{PMIx_tool_init}.  This allows processes
+the normal client registration process.   A process can register as a tool, provided 
+the \ac{PMIx} client library has adequate rendezvous information to connect to the appropriate
+\ac{PMIc} server.  This allows processes
 which were not created by the PMIx infrastructure to request access to PMIx functionality. 
-Processes which register as tools do not have peers.  
+Processes registered as tools do not have peers.  
 }{Tools, whether standalone or embedded in job scripts, are an exception to 
 the communication rule and can connect to
 any PMIx server providing they are given adequate rendezvous information. The PMIx conceptual model views the
@@ -289,7 +292,7 @@ could be so burdensome as to discourage \ac{PMIx} implementations.}
 
 \deleted{This also applies to the host environments.} Resource managers and other system management stack components retain the right to decide on support of a particular function. The \ac{PMIx} community continues to look at ways to assist \ac{SMS} implementers in their decisions by highlighting functions \added{and attributes} that are critical to basic application execution (e.g., \refapi{PMIx_Get}) \deleted {, while leaving flexibility for tailoring a vendor's software for their target market segment.}
 
-\subsection{\added{Optional Nature of Attriburtes}}
+\subsection{\added{Optional Nature of Attributes}}
 
 One area where \replaced{this}{the variation in functionality available on various systems} can become more complicated is regarding the attributes that provide information to the client process and/or control the behavior of a \ac{PMIx} \deleted{standard} \ac{API}. For example, the \refattr{PMIX_TIMEOUT} attribute can be used to specify the time (in seconds) before the requested operation should time out. The intent of this attribute is to allow the client to avoid ``hanging'' in a request that takes longer than the client wishes to wait, or may never return (e.g., a \refapi{PMIx_Fence} that a blocked participant never enters).
 
