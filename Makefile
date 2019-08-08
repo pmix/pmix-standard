@@ -18,6 +18,7 @@ CHAPTERS= \
 	Chap_API_Security.tex \
 	Chap_API_Server.tex \
 	Chap_API_Sets_Groups.tex \
+	Chap_API_Coord.tex \
 	App_Support.tex \
 	Acknowledgements.tex
 
