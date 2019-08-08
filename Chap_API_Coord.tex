@@ -1,0 +1,134 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: Network Coordinates
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Network Coordinates}
+\label{chap:network_coords}
+
+As the drive for performance continues, interest has grown in optimizing collective communication patterns by structuring them to follow network topology. For example, one might aggregate the contribution from all processes on a node, then again across all nodes on a common switch, and finally across all switches. Creating such optimized patterns therefore relies on detailed knowledge of the network location of each participant.
+
+\ac{PMIx} supports these efforts by defining datatypes and attributes by which network coordinates for processes and devices can be obtained from the host \ac{SMS}. When used in conjunction with the \ac{PMIx} \emph{instant on} methods, this results in the ability of a process to obtain the network coordinate of all other processes without incurring additional overhead associated with the publish/exchange of that information.
+
+%%%%%%%%%%%
+\section{Network Coordinate Datatypes}
+
+Several datatype definitions have been created to support network coordinates.
+
+%%%%%%%%%%
+\subsection{Network Coordinate Structure}
+\declarestruct{pmix_coord_t}
+
+The \refstruct{pmix_coord_t} structure describes the network coordinates of a specified process in a given view
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_coord \{
+    pmix_coord_view_t view;
+    uint32_t *coord;
+    size_t dims;
+\} pmix_coord_t;
+\end{codepar}
+\cspecificend
+
+All coordinate values shall be expressed as unsigned integers due to their units being defined in network devices and not physical distances. The coordinate is therefore an indicator of connectivity and not relative communication distance.
+
+\adviceimplstart
+Note that the \refstruct{pmix_coord_t} structure does not imply nor mandate any requirement on how the coordinate data is to be stored within the \ac{PMIx} library. Implementers are free to store the coordinate in whatever format they choose.
+\adviceimplend
+
+A network coordinate is usually associated with a given network device - e.g., a particular \ac{NIC} on a node. Thus, while the network coordinate of a device must be unique in a given view, the coordinate may be shared by multiple processes on a node. If the node contains multiple network devices, then either the device closest to the binding location of a process shall be used as its coordinate, or (if the process is unbound or its binding is not known) all devices on the node shall be reported as a \refstruct{pmix_data_array_t} of \refstruct{pmix_coord_t} structures.
+
+Nodes with multiple network devices can also have those devices configured as multiple \refterm{network planes}. In such cases, a given process (even if bound to a specific location) may be associated with a coordinate on each plane. The resulting set of network coordinates shall be reported as a \refstruct{pmix_data_array_t} of \refstruct{pmix_coord_t} structures. The caller may request a coordinate from a specific network plane by passing the \refattr{PMIX_NETWORK_PLANE} attribute as a directive/qualifier to the \refapi{PMIx_Get} or \refapi{PMIx_Query_info_nb} call.
+
+\subsection{Network Coordinate Views}
+\declarestruct{pmix_coord_view_t}
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef uint8_t pmix_coord_view_t;
+#define PMIX_COORD_VIEW_UNDEF       0x00
+#define PMIX_COORD_LOGICAL_VIEW     0x01
+#define PMIX_COORD_PHYSICAL_VIEW    0x02
+\end{codepar}
+\cspecificend
+
+Network coordinates can be reported based on different \emph{views} according to user preference at the time of request. The following views have been defined:
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_COORD_VIEW_UNDEF}
+The coordinate view has not been defined.
+%
+\declareconstitemNEW{PMIX_COORD_LOGICAL_VIEW}
+The coordinates are provided in a \emph{logical} view, typically given in Cartesian (x,y,z) dimensions, that describes the data flow in the network as defined by the arrangement of the hierarchical addressing scheme, network segmentation, routing domains, and other similar factors employed by that network.
+%
+\declareconstitemNEW{PMIX_COORD_PHYSICAL_VIEW}
+The coordinates are provided in a \emph{physical} view based on the actual wiring diagram of the network - i.e., values along each axis reflect the relative position of that interface on the specific network cabling.
+%
+\end{constantdesc}
+
+\adviceimplstart
+\ac{PMIx} library implementers are advised to avoid declaring the above constants as actual \code{enum} values in order to allow host environments to add support for possibly proprietary coordinate views.
+\adviceimplend
+
+If the requester does not specify a view, coordinates shall default to the \emph{logical} view.
+
+
+\subsection{Network Coordinate Error Constants}
+\label{api:netcoord:errors}
+
+The following error constants are used by \ac{PMIx} to notify registered processes of events that affect network coordinates.
+
+\begin{constantdesc}
+
+%
+\declareconstitemNEW{PMIX_NETWORK_COORDS_UPDATED}
+Network coordinates have been updated - the affected networks/planes are identified in the notification. Coordinates of processes and devices on those affected components should be refreshed prior to next use.
+
+\end{constantdesc}
+
+
+%%%%%%%%%%%
+\subsection{Network Descriptive Attributes}
+\label{api:struct:attributes:netinfo}
+
+These attributes are used to describe information about network resources as assigned by the \ac{RM}, and thus are referenced using the process rank except where noted.
+
+%
+\declareNewAttribute{PMIX_NETWORK_COORDINATE}{"pmix.net.coord"}{pmix_data_array_t}{
+Network coordinate(s) of the specified process in the view and/or plane provided by the requester. If only one \ac{NIC} has been assigned to the specified process, then the array will contain only one address. Otherwise, the array will contain the coordinates of all \acp{NIC} available to the process in order of least to greatest distance from the process (\acp{NIC} equally distant from the process will be listed in arbitrary order).
+}
+
+%
+\declareNewAttribute{PMIX_NETWORK_VIEW}{"pmix.net.view"}{pmix_coord_view_t}{
+Network coordinate view to be used for the requested data - see \refstruct{pmix_coord_view_t} for the list of accepted values.
+}
+
+%
+\declareNewAttribute{PMIX_NETWORK_DIMS}{"pmix.net.dims"}{uint32_t}{
+Request number of dimensions in the specified network plane/view. If no plane is specified, then the dimensions of all planes in the system will be returned as a \refstruct{pmix_data_array_t} containing an array of \code{uint32_t} values. Default is to provide dimensions in \emph{logical} view.
+}
+
+%
+\declareNewAttribute{PMIX_NETWORK_PLANE}{"pmix.net.plane"}{char*}{
+ID string of a network plane (e.g., CIDR for Ethernet). When used as a modifier in a request for information, specifies the plane whose information is to be returned. When used directly in a request, returns a \refstruct{pmix_data_array_t} of string identifiers for all network planes in the system.
+}
+
+%
+\declareNewAttribute{PMIX_NETWORK_NIC}{"pmix.net.nic"}{char*}{
+ID string of a network interface card (NIC). When used as a modifier in a request for information, specifies the \ac{NIC} whose information is to be returned. When used directly in a request, returns a \refstruct{pmix_data_array_t} of string identifiers for all \acp{NIC} in the specified network plane. If no plane is specified, then the \ac{NIC} identifiers of each plane in the system will be returned in an array where each element is in turn an array of strings containing the network plane ID followed by the identifiers of the \acp{NIC} attached to that plane.
+}
+
+%
+\declareNewAttribute{PMIX_NETWORK_ENDPT}{"pmix.net.endpt"}{pmix_data_array_t}{
+Network endpoints for a specified process. As multiple endpoints may be assigned to a given process (e.g., in the case where multiple \acp{NIC} are associated with a socket to which the process is bound), the returned values will be provided in a \refstruct{pmix_data_array_t} - the returned data type of the individual values in the array varies by fabric provider.
+}
+
+%
+\declareNewAttribute{PMIX_NETWORK_SHAPE}{"pmix.net.shape"}{pmix_data_array_t*}{
+The size of each dimension in the specified network plane/view, returned in a \refstruct{pmix_data_array_t} containing an array of \code{uint32_t} values. The size is defined as the number of elements present in that dimension - e.g., the number of \acp{NIC} in one dimension of a physical view of a network plane. If no plane is specified, then the shape of each plane in the system will be returned in an array of network shapes. Default is to provide the shape in \emph{logical} view.
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
