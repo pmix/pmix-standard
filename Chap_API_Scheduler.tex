@@ -4,7 +4,9 @@
 \chapter{Scheduler-Specific Interfaces}
 \label{chap:api_scheduler}
 
-The \ac{PMIx} server library includes several interfaces specifically intended to support \acp{WLM} (also known as \emph{schedulers}) by providing access to information of potential use to scheduling algorithms - e.g., information on communication costs between different points on the fabric. These interfaces are restricted in availability to the \ac{WLM} due to their high cost, both in terms of execution and memory consumption.
+The \ac{PMIx} server library includes several interfaces specifically intended to support \acp{WLM} (also known as \emph{schedulers}) by providing access to information of potential use to scheduling algorithms - e.g., information on communication costs between different points on the fabric. Due to their high cost in terms of execution, memory consumption, and interactions with other \ac{SMS} components (e.g., a fabric manager), it is strongly advised that use be restricted to a single \ac{PMIx} server in a system that is supporting the \ac{SMS} component responsible for the scheduling of allocations (i.e., the system \refterm{scheduler})
+
+Accordingly, access to the functions described in this chapter requires that the \ac{PMIx} server library be initialized with the \refattr{PMIX_SERVER_SCHEDULER} attribute.
 
 %%%%%%%%%%%
 \section{Scheduler Support Datatypes}
@@ -55,6 +57,14 @@ The \ac{PMIx} server library has completed updating the entries of all affected 
 
 \end{constantdesc}
 
+
+\subsection{Scheduler Support Attributes}
+\label{api:sched:attrs}
+
+%
+\declareNewAttribute{PMIX_SERVER_SCHEDULER}{"pmix.srv.sched"}{bool}{
+Server requests access to \ac{WLM}-supporting features
+}
 
 %%%%%%%%%%%
 \section{Scheduler Support Functions}

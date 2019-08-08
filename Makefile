@@ -19,7 +19,8 @@ CHAPTERS= \
 	Chap_API_Server.tex \
 	Chap_API_Sets_Groups.tex \
 	App_Support.tex \
-	Acknowledgements.tex
+	Acknowledgements.tex \
+	Chap_API_Scheduler.tex
 
 SOURCES=
 # SOURCES=sources/*.c \
