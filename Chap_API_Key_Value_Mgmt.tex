@@ -691,7 +691,7 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 \descr
 
 Publish the data in the \refarg{info} array for subsequent lookup.
-By default, the data will be published into the \refconst{PMIX_SESSION} range and with \refconst{PMIX_PERSIST_APP} persistence.
+By default, the data will be published into the \refconst{PMIX_RANGE_SESSION} range and with \refconst{PMIX_PERSIST_APP} persistence.
 Changes to those values, and any additional directives, can be included in the \refstruct{pmix_info_t} array. Attempts to access the data by processes outside of the provided data range will be rejected. The persistence parameter instructs the server as to how long the data is to be retained.
 
 The blocking form will block until the server confirms that the data has been sent to the \ac{PMIx} server and that it has obtained confirmation from its host \ac{SMS} daemon that the data is ready to be looked up. Data is copied into the backing key-value data store, and therefore the \refarg{info} array can be released upon return from the blocking function call.
@@ -819,7 +819,7 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 \descr
 
 Lookup information published by this or another process.
-By default, the search will be conducted across the \refconst{PMIX_SESSION} range.
+By default, the search will be conducted across the \refconst{PMIX_RANGE_SESSION} range.
 Changes to the range, and any additional directives, can be provided in the \refstruct{pmix_info_t} array. Data is returned provided the following conditions are met:
 
 \begin{itemize}
@@ -961,7 +961,7 @@ Unpublish data posted by this process using the given \refarg{keys}.
 The function will block until the data has been removed by the server (i.e., it is safe to publish that key again).
 A value of \code{NULL} for the \refarg{keys} parameter instructs the server to remove all data published by this process.
 
-By default, the range is assumed to be \refconst{PMIX_SESSION}.
+By default, the range is assumed to be \refconst{PMIX_RANGE_SESSION}.
 Changes to the range, and any additional directives, can be provided in the \refarg{info} array.
 
 

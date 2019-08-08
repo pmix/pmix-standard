@@ -338,6 +338,11 @@ Launcher directives have been received from a PMIx-enabled tool
 %
 \declareconstitemNEW{PMIX_LAUNCHER_READY}
 Application launcher (e.g., mpiexec) is ready to receive directives from a PMIx-enabled tool
+
+%
+\declareconstitemNEW{PMIX_LAUNCH_COMPLETE}
+A job has been launched - the nspace of the launched job will be included in the notification
+
 %
 \declareconstitemNEW{PMIX_OPERATION_IN_PROGRESS}
 A requested operation is already in progress
@@ -345,8 +350,76 @@ A requested operation is already in progress
 \declareconstitem{PMIX_OPERATION_SUCCEEDED}
 The requested operation was performed atomically - no callback function will be executed
 %
+\declareconstitemNEW{PMIX_ERR_PARTIAL_SUCCESS}
+The operation is considered successful but not all elements of the operation were concluded (e.g., some members of a group construct operation chose not to participate)
+
+%
 \declareconstitemNEW{PMIX_ERR_DUPLICATE_KEY}
 The provided key has already been published on a different data range
+
+%
+\declareconstitemNEW{PMIX_ERR_INVALID_OPERATION}
+The requested operation is not valid - this can possibly indicate the inclusion of conflicting directives or a request to perform an operation that conflicts with an ongoing one.
+
+%
+\declareconstitemNEW{PMIX_GROUP_INVITED}
+The process has been invited to join a \ac{PMIx} Group - the identifier of the group and the ID's of other invited (or already joined) members will be included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_LEFT}
+A process has asynchronously left a \ac{PMIx} Group - the process identifier of the departing process will in included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_MEMBER_FAILED}
+A member of a \ac{PMIx} Group has abnormally terminated (i.e., without formally leaving the group prior to termination) - the process identifier of the failed process will in included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_INVITE_ACCEPTED}
+A process has accepted an invitation to join a \ac{PMIx} Group - the identifier of the group being joined will be included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_INVITE_DECLINED}
+A process has declined an invitation to join a \ac{PMIx} Group - the identifier of the declined group will be included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_INVITE_FAILED}
+An invited process failed or terminated prior to responding to the invitation - the identifier of the failed process will be included in the notification.
+
+%
+\declareconstitemNEW{PMIX_GROUP_MEMBERSHIP_UPDATE}
+The membership of a \ac{PMIx} group has changed - the identifiers of the revised membership will be included in the notification.
+
+%
+\declareconstitemNEW{PMIX_GROUP_CONSTRUCT_ABORT}
+Any participant in a \ac{PMIx} group construct operation that returns \refconst{PMIX_GROUP_CONSTRUCT_ABORT} from the \emph{leader failed} event handler will cause all participants to receive an event notifying them of that status. Similarly, the leader may elect to abort the procedure by either returning this error code from the handler assigned to the \refconst{PMIX_GROUP_INVITE_ACCEPTED} or \refconst{PMIX_GROUP_INVITE_DECLINED} codes, or by generating an event for the abort code. Abort events will be sent to all invited or existing members of the group.
+
+%
+\declareconstitemNEW{PMIX_GROUP_CONSTRUCT_COMPLETE}
+The group construct operation has completed - the final membership will be included in the notification.
+
+%
+\declareconstitemNEW{PMIX_GROUP_LEADER_FAILED}
+The current \emph{leader} of a group including this process has abnormally terminated - the group identifier will be included in the notification.
+
+%
+\declareconstitemNEW{PMIX_GROUP_LEADER_SELECTED}
+A new \emph{leader} of a group including this process has been selected - the identifier of the new leader will be included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_CONTEXT_ID_ASSIGNED}
+A new \ac{PGCID} has been assigned by the host environment to a group that includes this process - the group identifier will be included in the notification.
+
+%
+\declareconstitemNEW{PMIX_ERR_REPEAT_ATTR_REGISTRATION}
+The attributes for an identical function have already been registered at the specified level (host, server, or client)
+
+%
+\declareconstitemNEW{PMIX_ERR_IOF_FAILURE}
+An \ac{IO} forwarding operation failed - the affected channel will be included in the notification
+
+%
+\declareconstitemNEW{PMIX_ERR_IOF_COMPLETE}
+\ac{IO} forwarding of the standard input for this process has completed - i.e., the stdin file descriptor has closed
 
 \end{constantdesc}
 
@@ -354,14 +427,17 @@ The provided key has already been published on a different data range
 
 \begin{constantdesc}
 %
+\declareconstitem{PMIX_ERR_SYS_BASE}
+Mark the beginning of a dedicated range of constants for system event reporting.
+%
 \declareconstitem{PMIX_ERR_NODE_DOWN}
-Node down
+A node has gone down - the identifier of the affected node will be included in the notification
 %
 \declareconstitem{PMIX_ERR_NODE_OFFLINE}
-Node is marked as offline
+A node has been marked as \emph{offline} - the identifier of the affected node will be included in the notification
 %
 \declareconstitem{PMIX_ERR_SYS_OTHER}
-Mark the beginning of a dedicated range of constants for system event reporting.
+Mark the end of a dedicated range of constants for system event reporting.
 \end{constantdesc}
 %
 
@@ -386,13 +462,13 @@ Event handler: Action complete
 %%%%%%%%%%%
 \subsubsection{User-Defined Error Constants}
 
-PMIx establishes an error code boundary for constants defined in the PMIx standard. Negative values larger than this (and any positive values greater than zero) are guaranteed not to conflict with PMIx values.
+\ac{PMIx} establishes an error code boundary for constants defined in the \ac{PMIx} standard. Negative values larger than this (and any positive values greater than zero) are guaranteed not to conflict with \ac{PMIx} values.
 
 \begin{constantdesc}
 %
 \declareconstitem{PMIX_EXTERNAL_ERR_BASE}
 A starting point for user-level defined error constants.
-Negative values lower than this are guaranteed not to conflict with PMIx values.
+Negative values lower than this are guaranteed not to conflict with \ac{PMIx} values.
 Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} constant and not a specific value as the value of the constant may change.
 %
 \end{constantdesc}
@@ -3435,12 +3511,7 @@ The size of each dimension in the specified network plane/view, returned in a \r
 }
 
 %
-\declareNewAttribute{PMIX_NETWORK_IS_PERIODIC}{"pmix.net.period"}{pmix_data_array_t*}{
-Return a \refstruct{pmix_data_array_t} containing an array of \code{boolean} values indicating whether or not the network topology is periodic in that dimension within the specified view. Default is to provide the periodicity flags in \emph{logical} view.
-}
-
-%
-\declareNewAttribute{PMIX_NETWORK_SHAPE_STRING_ENDPT}{"pmix.net.shapestr"}{char*}{
+\declareNewAttribute{PMIX_NETWORK_SHAPE_STRING}{"pmix.net.shapestr"}{char*}{
 Network shape of the specified plane/view expressed as a string (e.g., "10x12x2"). In the absence of a specified plane, then the shape of each plane in the system will be returned in an array of network shape strings. Default is to provide the shape in \emph{logical} view.
 }
 
@@ -5267,7 +5338,7 @@ typedef void (*pmix_event_notification_cbfunc_fn_t)
 %%%%
 \descr
 
-Define a callback by which an event handler can notify the \ac{PMIx} library that it has completed its response to the notification. The handler is \textit{required} to execute this callback so the library can determine if additional handlers need to be called. The handler shall return \refconst{PMIX_ERR_EVENT_COMPLETE} if no further action is required. The return status of each event handler and any returned \refstruct{pmix_info_t} structures will be added to the \textit{results} array of \refstruct{pmix_info_t} passed to any subsequent event handlers to help guide their operation.
+Define a callback by which an event handler can notify the \ac{PMIx} library that it has completed its response to the notification. The handler is \textit{required} to execute this callback so the library can determine if additional handlers need to be called. The handler shall return \refconst{PMIX_EVENT_ACTION_COMPLETE} if no further action is required. The return status of each event handler and any returned \refstruct{pmix_info_t} structures will be added to the \textit{results} array of \refstruct{pmix_info_t} passed to any subsequent event handlers to help guide their operation.
 
 If non-NULL, the provided callback function will be called to allow the event handler to release the provided info array and execute any other required cleanup operations.
 
@@ -5588,7 +5659,7 @@ typedef void (*pmix_iof_cbfunc_t)(
 \argin{channel}{bitmask identifying the channel the data arrived on (\refstruct{pmix_iof_channel_t})}
 \argin{source}{Pointer to a \refstruct{pmix_proc_t} identifying the namespace/rank of the process that generated the data (\code{char*})}
 \argin{payload}{Pointer to character array containing the data.}
-\argin{info}{Array of \refstruct{pmix_info_t} provided by the source containing metadata about the payload. This could include \refconst{PMIX_IOF_COMPLETE} (handle)}
+\argin{info}{Array of \refstruct{pmix_info_t} provided by the source containing metadata about the payload. This could include \refattr{PMIX_IOF_COMPLETE} (handle)}
 \argin{ninfo}{Number of elements in \refarg{info} (\code{size_t})}
 \end{arglist}
 
