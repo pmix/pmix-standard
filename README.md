@@ -20,7 +20,7 @@ publications](https://pmix.org/publications/), and information
 about [joining our mailing lists, meetings,
 and working groups](https://pmix.org/contribute/).
 Additionally, you will find our governance document,
-[The PMIx Standard Governance Rules](https://pmix.org/contribute/pmix-governance.pdf), which describes
+[The PMIx Standard Governance Rules](https://pmix.org/wp-content/uploads/2019/08/pmix-governance.pdf), which describes
 rules for participation and making changes to the PMIx Standard.
 The governance document includes instructions for how to raise questions
 about the standard as well as how to propose changes to the standard.
