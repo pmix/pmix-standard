@@ -473,7 +473,7 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 
 Initialize the \ac{PMIx} server support library, and provide a pointer to a \refapi{pmix_server_module_t} structure containing the caller's callback functions.
 The array of \refstruct{pmix_info_t} structs is used to pass additional info that may be required by the server when initializing.
-For example, it may include the \refconst{PMIX_SERVER_TOOL_SUPPORT} key, thereby indicating that the daemon is willing to accept connection requests from tools.
+For example, it may include the \refattr{PMIX_SERVER_TOOL_SUPPORT} attribute, thereby indicating that the daemon is willing to accept connection requests from tools.
 
 \advicermstart
 Providing a value of \code{NULL} for the \refarg{module} argument is permitted, as is passing an empty \refarg{module} structure. Doing so indicates that the host environment will not provide support for multi-node operations such as \refapi{PMIx_Fence}, but does intend to support local clients access to information.
