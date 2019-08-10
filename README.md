@@ -24,10 +24,3 @@ Additionally, you will find our governance document,
 rules for participation and making changes to the PMIx Standard.
 The governance document includes instructions for how to raise questions
 about the standard as well as how to propose changes to the standard.
-
-
-## Building the PMIx Standard document
-
-You will need a LaTeX installation on your system.
-To build simply type `make` and it will generate the standard PDF.
-See documentation in header comment of `pmix-standard.tex`, and the macros provided by `pmix.sty`.
