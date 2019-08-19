@@ -421,6 +421,10 @@ An \ac{IO} forwarding operation failed - the affected channel will be included i
 \declareconstitemNEW{PMIX_ERR_IOF_COMPLETE}
 \ac{IO} forwarding of the standard input for this process has completed - i.e., the stdin file descriptor has closed
 
+%
+\declareconstitemNEW{PMIX_ERR_GET_MALLOC_REQD}
+The data returned by \refapi{PMIx_Get} contains values that required dynamic memory allocations (i.e., "malloc"), despite a request for static pointers to the values in the key-value store. User is responsible for releasing the memory when done with the information.
+
 \end{constantdesc}
 
 \subsubsection{System error constants}
@@ -3689,6 +3693,10 @@ Scope of the data to be found in a \refapi{PMIx_Get} call.
 \declareAttribute{PMIX_OPTIONAL}{"pmix.optional"}{bool}{
 Look only in the client's local data store for the requested value - do not request data from the PMIx server if not found.
 }
+
+%
+\declareNewAttribute{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
+Request that any pointers in the returned value point directly to values in the key-value store}
 
 %
 \declareAttribute{PMIX_EMBED_BARRIER}{"pmix.embed.barrier"}{bool}{
