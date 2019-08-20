@@ -1,0 +1,236 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: API Scheduler
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Scheduler-Specific Interfaces}
+\label{chap:api_scheduler}
+
+The \ac{PMIx} server library includes several interfaces specifically intended to support \acp{WLM} (also known as \emph{schedulers}) by providing access to information of potential use to scheduling algorithms - e.g., information on communication costs between different points on the fabric. Due to their high cost in terms of execution, memory consumption, and interactions with other \ac{SMS} components (e.g., a fabric manager), it is strongly advised that use be restricted to a single \ac{PMIx} server in a system that is supporting the \ac{SMS} component responsible for the scheduling of allocations (i.e., the system \refterm{scheduler})
+
+Accordingly, access to the functions described in this chapter requires that the \ac{PMIx} server library be initialized with the \refattr{PMIX_SERVER_SCHEDULER} attribute.
+
+%%%%%%%%%%%
+\section{Scheduler Support Datatypes}
+
+\subsection{Fabric registration structure}
+\declarestruct{pmix_fabric_t}
+
+The \refstruct{pmix_fabric_t} structure is used by a \ac{WLM} to interact with fabric-related \ac{PMIx} interfaces.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_fabric_s \{
+    char *name;
+    size_t index;
+    uint16_t **commcost;
+    uint32_t nverts;
+    void *module;
+\} pmix_fabric_t;;
+\end{codepar}
+\cspecificend
+
+Note that in this structure:
+
+\begin{itemize}
+    \item the \refarg{name} is an optional user-supplied string name identifying the fabric being referenced by this struct;
+    \item a \ac{PMIx}-provided index identifying this object;
+    \item the \refarg{commcost} element is a square, two-dimensional array of \code{uint16_t} values representing the relative communication cost between the two (row,col) vertices. Note that \ac{PMIx} makes no assumption as to the symmetry of the matrix - while the communication cost of many fabrics is independent of direction (and hence, the \refarg{commcost} matrix is symmetric), others may be direction sensitive;
+    \item \refarg{nverts} indicates the number of rows and columns in the \refarg{commcost} array; and
+    \item \refarg{module} points to an opaque object reserved for use by the \ac{PMIx} server library.
+\end{itemize}
+
+The \refarg{name} field must be a \code{NULL}-terminated string composed of standard alphanumeric values supported by common utilities such as \textit{strcmp}.
+
+
+\subsection{Scheduler Support Error Constants}
+\label{api:sched:errors}
+
+\begin{constantdesc}
+
+%
+\declareconstitemNEW{PMIX_FABRIC_UPDATE_PENDING}
+The \ac{PMIx} server library has been alerted to a change in the fabric that requires updating of one or more registered \refstruct{pmix_fabric_t} objects.
+
+%
+\declareconstitemNEW{PMIX_FABRIC_UPDATED}
+The \ac{PMIx} server library has completed updating the entries of all affected \refstruct{pmix_fabric_t} objects registered with the library. Access to the entries of those objects may now resume.
+
+\end{constantdesc}
+
+
+\subsection{Scheduler Support Attributes}
+\label{api:sched:attrs}
+
+%
+\declareNewAttribute{PMIX_SERVER_SCHEDULER}{"pmix.srv.sched"}{bool}{
+Server requests access to \ac{WLM}-supporting features
+}
+
+%%%%%%%%%%%
+\section{Scheduler Support Functions}
+
+The following \acp{API} allow the scheduler that hosts the \ac{PMIx} server library to request specific services from the \ac{PMIx} library.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_register_fabric}}
+\declareapi{PMIx_server_register_fabric}
+
+%%%%
+\summary
+
+Register for access to fabric-related information
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_register_fabric(pmix_fabric_t *fabric,
+                            const pmix_info_t directives[],
+                            size_t ndirs)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{fabric}{address of a \refstruct{pmix_fabric_t} (backed by storage). User may populate the "name" field at will - \ac{PMIx} does not utilize this field (handle)}
+\argin{directives}{an optional array of values indicating desired behaviors and/or fabric to be accessed. If \code{NULL}, then the highest priority available fabric will be used (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+
+\reqattrstart
+The following attributes are required to be supported by all \ac{PMIx} libraries:
+
+\pastePRIAttributeItem{PMIX_NETWORK_PLANE}
+
+\reqattrend
+
+%%%%
+\descr
+
+Register for access to fabric-related information, including communication cost matrix. This call must be made prior to requesting information from a fabric. The caller may request access to a particular \refterm{network plane} via the \refattr{PMIX_NETWORK_PLANE} attribute - otherwise, the default fabric will be returned.
+
+If available, the \refarg{fabric} struct shall contain the address and size of the communication cost matrix associated with the specified network plane. For performance reasons, the \ac{PMIx} server library does \emph{not} provide thread protection for cost matrix access. Instead, users are required to register for \refconst{PMIX_FABRIC_UPDATE_PENDING} events indicating that an update to the cost matrix is pending. When received, users are required to terminate any actions involving access to the cost matrix before returning from the event.
+
+Completion of the \refconst{PMIX_FABRIC_UPDATE_PENDING} event handler indicates to the \ac{PMIx} server library that the fabric object's entries are available for updating. This may include releasing and re-allocating memory as the number of vertices may have changed (e.g., due to addition or removal of one or more \acp{NIC}). When the update has been completed, the \ac{PMIX} server library will generate a \refconst{PMIX_FABRIC_UPDATED} event indicating that it is safe to begin using the updated fabric object(s).
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_deregister_fabric}}
+\declareapi{PMIx_server_deregister_fabric}
+
+%%%%
+\summary
+
+Deregister a fabric object
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_server_deregister_fabric(pmix_fabric_t *fabric)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{input}{address of a \refstruct{pmix_fabric_t} (handle)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+
+%%%%
+\descr
+
+Deregister a fabric object, providing an opportunity for the \ac{PMIx} server library to cleanup any information (e.g., cost matrix) associated with it.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_get_vertex_info}}
+\declareapi{PMIx_server_get_vertex_info}
+
+%%%%
+\summary
+
+Given a communication cost matrix index for a specified fabric, return the corresponding vertex info and the name of the node upon which it resides.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_get_vertex_info(pmix_fabric_t *fabric,
+                            uint32_t index, pmix_value_t *vertex,
+                            char **nodename)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
+\argin{index}{communication cost matrix index (integer)}
+\argin{vertex}{pointer to the \refstruct{pmix_value_t} where the vertex info is to be returned (backed by storage) (handle)}
+\argout{nodename}{pointer to the location where the string name of the host is to be returned. The caller is responsible for releasing the string when done (handle)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating return of a valid value.
+    \item \refconst{PMIX_ERR_BAD_PARAM}, indicating that the provided index is out of bounds
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request failed
+\end{itemize}
+
+%%%%
+\descr
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_get_index}}
+\declareapi{PMIx_server_get_index}
+
+%%%%
+\summary
+
+Given vertex info, return the corresponding communication cost matrix index
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_get_index(pmix_fabric_t *fabric,
+                      pmix_value_t *vertex,
+                      uint32_t *index)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
+\argin{vertex}{pointer to the \refstruct{pmix_value_t} containing the vertex info (handle)}
+\argout{index}{pointer to the location where the index is to be returned (memory reference (handle))}
+\end{arglist}
+
+%%%%
+\descr
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating return of a valid value.
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request failed
+\end{itemize}
+
+
+%%%%
+\descr
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
