@@ -70,6 +70,44 @@ Table~\ref{app:python:ctopy} lists the correspondence between datatypes in the t
 \end{small}
 \end{landscape}
 
+\subsection{Example}
+Converting a C-based program to its Python equivalent requires translation of the relevant datatypes as well as use of the appropriate \ac{API} form. An example small program may help illustrate the changes. Consider the following C-based program snippet:
+
+\begin{codepar}
+
+#include <pmix.h>
+...
+
+pmix_info_t info[2];
+
+PMIX_INFO_LOAD(&info[0], PMIX_PROGRAMMING_MODEL, "TEST", PMIX_STRING)
+PMIX_INFO_LOAD(&info[1], PMIX_MODEL_LIBRARY_NAME, "PMIX", PMIX_STRING)
+
+rc = PMIx_Init(&myproc, info, 2);
+
+PMIX_INFO_DESTRUCT(&info[0]);  // free the copied string
+PMIX_INFO_DESTRUCT(&info[1]);  // free the copied string
+
+\end{codepar}
+
+Moving to the Python version requires that the \refstruct{pmix_info_t} be translated to the Python \refpy{info} equivalent, and that the returned information be captured in the return parameters as opposed to a pointer parameter in the function call, as shown below:
+
+\begin{codepar}
+
+import pmix
+...
+
+myclient = PMIxClient()
+info = [\{'key':PMIX_PROGRAMMING_MODEL,
+          'value':'TEST', 'val_type':PMIX_STRING\},
+        \{'key':PMIX_MODEL_LIBRARY_NAME,
+          'value':'PMIX', 'val_type':PMIX_STRING\}]
+rc,myproc = myclient.init(info)
+
+\end{codepar}
+
+Note the use of the \refconst{PMIX_STRING} identifier to ensure the Python bindings interpret the provided string value as a \ac{PMIx} "string" and not an array of bytes.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Function Definitions}
 \label{app:python:fns}
