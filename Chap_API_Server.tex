@@ -20,7 +20,7 @@ The following \acp{API} allow the \ac{RM} daemon that hosts the \ac{PMIx} server
 %%%%
 \summary
 
-Generate a regular expression representation of the input string.
+Generate a compressed representation of the input string.
 
 %%%%
 \format
@@ -29,13 +29,13 @@ Generate a regular expression representation of the input string.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_generate_regex(const char *input, char **regex)
+PMIx_generate_regex(const char *input, char **output)
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{input}{String to process (string)}
-\argout{regex}{Regular expression representation of \refarg{input} (string)}
+\argout{output}{Compressed representation of \refarg{input} (array of bytes)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
@@ -43,14 +43,10 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Given a comma-separated list of \refarg{input} values, generate a regular expression that can be passed down to the \ac{PMIx} client for parsing.
-The order of the individual values in the \refarg{input} string is preserved in the resulting \refarg{regex} string.
-The caller is responsible for free'ing the resulting string.
-
-If values have leading zero's, then that is preserved, as are prefix and suffix strings. For example, an input string of ``\code{odin009.org,odin010.org,odin011.org,odin012.org,odin[102-107].org}'' will return a regular expression of ``\code{pmix:odin[009-012,102-107].org}''
+Given a comma-separated list of \refarg{input} values, generate a reduced size representation of the input that can be passed down to the \ac{PMIx} server library's \refapi{PMIx_server_register_nspace} \ac{API} for parsing. The order of the individual values in the \refarg{input} string is preserved across the operation. The caller is responsible for releasing the returned data.
 
 \adviceuserstart
-The returned regular expression will have a ``\code{pmix:}'' at the beginning of the string. This informs the \ac{PMIx} parser that the string was produced using the \ac{PRI}'s regular expression generator, and thus that same plugin should be used for parsing the string
+The returned representation may be an arbitrary array of bytes as opposed to a valid NULL-terminated string. However, the method used to generate the representation shall be identified with a colon-delimited string at the beginning of the output. For example, an output starting with \code{"pmix:"} indicates that the representation is a \ac{PMIx}-defined regular expression. In contrast, an output starting with \code{"blob:"} is a compressed binary array.
 \adviceuserend
 
 
@@ -61,7 +57,7 @@ The returned regular expression will have a ``\code{pmix:}'' at the beginning of
 %%%%
 \summary
 
-Generate a regular expression representation of the input string.
+Generate a compressed representation of the input identifying the processes on each node.
 
 %%%%
 \format
@@ -75,7 +71,7 @@ pmix_status_t PMIx_generate_ppn(const char *input, char **ppn)
 
 \begin{arglist}
 \argin{input}{String to process (string)}
-\argout{regex}{Regular expression representation of \refarg{input} (string)}
+\argout{ppn}{Compressed representation of \refarg{input} (array of bytes)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
@@ -83,10 +79,10 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-The input is expected to consist of a semicolon-separated list of ranges representing the ranks of processes on each node of the job. Thus, an input of "1-4;2-5;8,10,11,12;6,7,9" would generate a regex of "pmix:2x(3);8,10-12;6-7,9"
+The input shall consist of a semicolon-separated list of ranges representing the ranks of processes on each node of the job - e.g.,  "1-4;2-5;8,10,11,12;6,7,9". Each field of the input must correspond to the node name provided at that position in the input to \refapi{PMIx_generate_regex}. Thus, in the example, ranks 1-4 would be located on the first node of the comma-separated list of names provided to \refapi{PMIx_generate_regex}, and ranks 2-5 would be on the second name in the list.
 
 \adviceuserstart
-The returned regular expression will have a ``pmix:'' at the beginning of the string. This informs the \ac{PMIx} parser that the string was produced using the \ac{PRI}'s regular expression generator, and thus that same plugin should be used for parsing the string
+The returned representation may be an arbitrary array of bytes as opposed to a valid NULL-terminated string. However, the method used to generate the representation shall be identified with a colon-delimited string at the beginning of the output. For example, an output starting with \code{"pmix:"} indicates that the representation is a \ac{PMIx}-defined regular expression. In contrast, an output starting with \code{"blob:"} is a compressed binary array.
 \adviceuserend
 
 %%%%%%%%%%%
