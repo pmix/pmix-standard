@@ -2259,143 +2259,7 @@ PMIX_BYTE_OBJECT_LOAD(b, d, s)
 \end{arglist}
 
 
-%%%%%%%%%%%
-\subsection{Data Buffer Type}
-\declarestruct{pmix_data_buffer_t}
-
-The \refstruct{pmix_data_buffer_t} structure describes a data buffer used for packing and unpacking.
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_data_buffer \{
-    /** Start of my memory */
-    char *base_ptr;
-    /** Where the next data will be packed to
-        (within the allocated memory starting
-        at base_ptr) */
-    char *pack_ptr;
-    /** Where the next data will be unpacked
-        from (within the allocated memory
-        starting as base_ptr) */
-    char *unpack_ptr;
-    /** Number of bytes allocated (starting
-        at base_ptr) */
-    size_t bytes_allocated;
-    /** Number of bytes used by the buffer
-        (i.e., amount of data -- including
-        overhead -- packed in the buffer) */
-    size_t bytes_used;
-\} pmix_data_buffer_t;
-\end{codepar}
-\cspecificend
-
-\subsection{Data buffer support macros}
-The following macros support the \refstruct{pmix_data_buffer_t} structure.
-
-\subsubsection{Initialize the \refstruct{pmix_data_buffer_t} structure}
-\declaremacro{PMIX_DATA_BUFFER_CONSTRUCT}
-
-Initialize the \refstruct{pmix_data_buffer_t} fields
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_data_buffer_t})}
-\end{arglist}
-
-\subsubsection{Destruct the \refstruct{pmix_data_buffer_t} structure}
-\declaremacro{PMIX_DATA_BUFFER_DESTRUCT}
-
-Clear the \refstruct{pmix_data_buffer_t} fields
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_DESTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_data_buffer_t})}
-\end{arglist}
-
-\subsubsection{Create a \refstruct{pmix_data_buffer_t} structure}
-\declaremacro{PMIX_DATA_BUFFER_CREATE}
-
-Allocate and intitialize a \refstruct{pmix_data_buffer_t} structure
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_CREATE(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{m}{Address where the pointer to the \refstruct{pmix_data_buffer_t} structure shall be stored (handle)}
-\end{arglist}
-
-\subsubsection{Free a \refstruct{pmix_data_buffer_t}}
-\declaremacro{PMIX_DATA_BUFFER_RELEASE}
-
-Release a \refstruct{pmix_data_buffer_t} structure
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_RELEASE(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the \refstruct{pmix_data_buffer_t} structure to be released (handle)}
-\end{arglist}
-
-\subsubsection{Load a \refstruct{pmix_data_buffer_t}}
-\declaremacro{PMIX_DATA_BUFFER_LOAD}
-
-Load data into a \refstruct{pmix_data_buffer_t} structure
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_LOAD(b, d, s)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{b}{Pointer to the \refstruct{pmix_data_buffer_t} structure to be loaded (handle)}
-\argin{d}{Pointer to the data to be loaded into \refarg{b} (\code{void*})}
-\argin{s}{Number of bytes in \refarg{d} (\code{size_t})}
-\end{arglist}
-
-
-\subsubsection{Unload a \refstruct{pmix_data_buffer_t}}
-\declaremacro{PMIX_DATA_BUFFER_UNLOAD}
-
-Unload the data from a \refstruct{pmix_data_buffer_t} structure
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_UNLOAD(b, d, s)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{b}{Pointer to the \refstruct{pmix_data_buffer_t} structure to be unloaded (handle)}
-\arginout{d}{Pointer to be set to the data region after unloading (\code{void*})}
-\arginout{s}{Variable to be set to the number of bytes in the returned data region (\code{size_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%
+%%%%%%%%%%
 \subsection{Data Array Structure}
 \declarestruct{pmix_data_array_t}
 
@@ -2638,6 +2502,10 @@ Input/output forwarding channel (\refstruct{pmix_iof_channel_t})
 \declareconstitemNEW{PMIX_ENVAR}
 Environmental variable structure (\refstruct{pmix_envar_t})
 %
+\declareconstitemNEW{PMIX_REGEX}
+Regular expressions - can be a valid NULL-terminated string or an arbitrary array of bytes
+%
+
 \end{constantdesc}
 
 %%%%%%%%%%%
