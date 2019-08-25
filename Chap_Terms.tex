@@ -122,6 +122,12 @@ The call may update the argument but does not use its input value
 The call may both use and update the argument.
 \end{itemize}
 
+Many \ac{PMIx} interfaces, particularly nonblocking interfaces, use a \code{void*}cbdata object passed to the function that is then passed to the associated callback. In a client-side \ac{API}, the cbdata is a client-provided context (opaque object) that the client can pass to the nonblocking call (e.g., \refapi{PMIx_Get_nb}). When the nonblocking call (e.g., \refapi{pmix_value_cbfunc_t}) completes, the cbdata is passed back to the client without modification by the \ac{PMIx} library, thus allowing the client to associate a context with that callback. This is useful if there are many outstanding nonblocking calls.
+
+A similar model is used for the server module functions (see \ref{server:module_fns}). In this case, the \ac{PMIx} library is making an upcall into its host via the \ac{PMIx} server module function and passing a specific cbfunc and cbdata. The \ac{PMIx} library expects the host to call the cbfunc with the necessary arguments and pass back the original cbdata upon completing the operation. This gives the server-side \ac{PMIx} library the ability to associate a context with the call back (since multiple operations may be outstanding). The host has no visibility into the contents of the cbdata object, nor is permitted to alter it in any way.
+
+\ac{PMIx} callback functions typically return \code{void} - i.e., they do not return a value and therefore cannot indicate the result of an operation. Errors encountered by \ac{PMIx} callback functions are to be communicated via the \refapi{PMIx_Notify_event} \ac{API} using a status code appropriate to the error. Implementers and users wishing to receive such notifications must register a corresponding event handler via the \refapi{PMIx_Register_event_handler} \ac{API}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Standard vs Reference Implementation}
 
