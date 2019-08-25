@@ -4526,7 +4526,7 @@ Attributes used to request control operations on an executing application - thes
 
 %
 \declareAttribute{PMIX_JOB_CTRL_ID}{"pmix.jctrl.id"}{char*}{
-Provide a string identifier for this request.
+Provide a string identifier for this request. The user can provide an identifier for the requested operation, thus allowing them to later request status of the operation or to terminate it. The host, therefore, shall track it with the request for future reference.
 }
 
 %
