@@ -3699,12 +3699,12 @@ This attribute would direct \refapi{PMIx_Finalize} to execute a barrier as part 
 
 %
 \declareAttribute{PMIX_JOB_TERM_STATUS}{"pmix.job.term.status"}{pmix_status_t}{
-Status to be returned upon job termination.
+Status returned by job upon its termination.
 }
 
 %
 \declareAttribute{PMIX_PROC_STATE_STATUS}{"pmix.proc.state"}{pmix_proc_state_t}{
-Process state
+State of the specified process as of the last report - may not be the actual current state based on update rate.
 }
 
 
