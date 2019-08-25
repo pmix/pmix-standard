@@ -280,24 +280,20 @@ Behavior of individual resource managers may differ, but it is expected that fai
 \section{Connecting and Disconnecting Processes}
 \label{chap:api_proc_mgmt:connect}
 
-This section defines functions to connect and disconnect processes in two or more separate \ac{PMIx} namespaces. The \ac{PMIx} definition of \textit{connected} solely implies the following:
-
-\begin{itemize}
-    \item job-level information for each namespace involved in the operation is to be made available to all processes in the connected assemblage
-    \item any data posted by a process in the connected assemblage (via calls to \refapi{PMIx_Put} committed via \refapi{PMIx_Commit}) prior to execution of the \refapi{PMIx_Connect} operation is to be made accessible to all processes in the assemblage - any data posted after execution of the \textit{connect} operation must be exchanged via a separate \refapi{PMIx_Fence} operation spanning the connected processes
-    \item the host environment should treat the failure of any process in the assemblage as a reportable event, taking action on the assemblage as if it were a single application. For example, if the environment defaults (in the absence of any application directives) to terminating an application upon failure of any process in that application, then the environment should terminate all processes in the connected assemblage upon failure of any member.
-\end{itemize}
+This section defines functions to connect and disconnect processes in two or more separate \ac{PMIx} namespaces. The \ac{PMIx} definition of \textit{connected} solely implies that the host environment should treat the failure of any process in the assemblage as a reportable event, taking action on the assemblage as if it were a single application. For example, if the environment defaults (in the absence of any application directives) to terminating an application upon failure of any process in that application, then the environment should terminate all processes in the connected assemblage upon failure of any member.
 
 \advicermstart
 The host environment may choose to assign a new namespace to the connected assemblage and/or assign new ranks for its members for its own internal tracking purposes. However, it is not required to communicate such assignments to the participants (e.g., in response to an appropriate call to \refapi{PMIx_Query_info_nb}). The host environment is required to generate a \refconst{PMIX_ERR_INVALID_TERMINATION} event should any process in the assemblage terminate or call \refapi{PMIx_Finalize} without first \textit{disconnecting} from the assemblage.
+
+The \textit{connect} operation does not require the exchange of job-level information nor the inclusion of information posted by  participating processes via \refapi{PMIx_Put}. Indeed, the callback function utilized in \refapi{pmix_server_connect_fn_t} cannot pass information back into the \ac{PMIx} server library. However, host environments are advised that collecting such information at the participating daemons represents an optimization opportunity as participating processes are likely to request such information after the connect operation completes.
 \advicermend
 
 \adviceuserstart
 Attempting to \textit{connect} processes solely within the same namespace is essentially a \textit{no-op} operation. While not explicitly prohibited, users are advised that a \ac{PMIx} implementation or host environment may return an error in such cases.
 
 Neither the \ac{PMIx} implementation nor host environment are required to provide any tracking support for the assemblage. Thus, the application is responsible for maintaining the membership list of the assemblage.
-
 \adviceuserend
+
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Connect}}
