@@ -42,18 +42,15 @@ Two versions (PMI-1 and PMI-2) have been released as part of the MPICH effort, w
 \deleted{ \ac{PMIx} represents an attempt to resolve these questions by providing an extended version of the \ac{PMI} definitions specifically designed to support clusters up to exascale and larger sizes.} 
 \replaced{ PMI-1 and PMI-2 can be implemented using \ac{PMIx} though it is not a strict superset of either.
 Since its introduction, \ac{PMIx} has expanded 
-on earlier \ac{PMI} efforts in the following ways:}{ The overall objective of the project is not to branch the existing definitions -- in fact, \ac{PMIx} fully supports both of the existing PMI-1 and PMI-2 \acp{API} -- but rather to:}
+on earlier \ac{PMI} efforts by 
+providing an extended version of the \ac{PMI} API's which provide necessary functionality for launching and managing parallel applications and tools at scale.}{ The overall objective of the project is not to branch the existing definitions -- in fact, \ac{PMIx} fully supports both of the existing PMI-1 and PMI-2 \acp{API} -- but rather to:}
 
 \begin{compactalphaenum}
-\item \added{\ac{PMIx} provides an extended version of the \ac{PMI} API's which provide necessary functionality for launching and managing parallel applications at exascale.}
-\item \added{The target user of \ac{PMIx} has grown from MPI libraries to other libraries, tools, and languages.}
 \item \deleted{add flexibility to the existing \acp{API} by adding an array of key-value ``attribute'' pairs to each \ac{API} signature that allows implementers to customize the behavior of the \ac{API} as future needs emerge without having to alter or create new variants of it;}
 \item \deleted{add new APIs that provide extended capabilities such as asynchronous event notification plus dynamic resource allocation and management;}
 \item \deleted{establish a collaboration between \ac{SMS} subsystem providers including resource manager, fabric, file system, and programming library developers to define integration points between the various subsystems as well as agreed upon definitions for associated \acp{API}, attribute names, and data types;}
 \item \deleted{form a standards-like body for the definitions; and}
-\item \replaced{ A reference implementation (\ac{PRI}) of \ac{PMIx} has vastly increased adoption}
-{provide a reference implementation of the \ac{PMIx} standard.}
-\item \added{With the aid of the \ac{PRI}, several implementations of \ac{PMIx} API's have become available leading to further adoption.}
+\item \deleted{provide a reference implementation of the \ac{PMIx} standard.}
 \end{compactalphaenum}
 
 \added{The increase in adoption has motivated the creation of this document to formally specify the intended behavior of the \ac{PMIx} API's.}
