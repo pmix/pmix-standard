@@ -4,7 +4,7 @@
 \chapter{Python Bindings}
 \label{app:python}
 
-While the \ac{PMIx} Standard is defined in terms of C-based \acp{API}, there is no intent to limit the use of \ac{PMIx} to that specific language. Support for other languages is captured in the Standard by describing their equivalent syntax for the \ac{PMIx} \acp{API} and native forms for the \ac{PMIx} datatypes. This Appendix specifically deals with Python interfaces, beginning with a review of the \ac{PMIx} datatypes.
+While the \ac{PMIx} Standard is defined in terms of C-based \acp{API}, there is no intent to limit the use of \ac{PMIx} to that specific language. Support for other languages is captured in the Standard by describing their equivalent syntax for the \ac{PMIx} \acp{API} and native forms for the \ac{PMIx} datatypes. This Appendix specifically deals with Python interfaces, beginning with a review of the \ac{PMIx} datatypes. Support is restricted to Python 3 and above - i.e., the Python bindings do not support Python 2.
 
 Note: the \ac{PMIx} \acp{API} have been loosely collected into three Python classes based on their \ac{PMIx} “class” (i.e., client, server, and tool). All processes have access to a basic set of the \acp{API}, and therefore those have been included in the “client” class. Servers can utilize any of those functions plus a set focused on operations not commonly executed by an application process. Finally, tools can also act as servers but have their own initialization function.
 
@@ -38,7 +38,7 @@ Table~\ref{app:python:ctopy} lists the correspondence between datatypes in the t
         \code{size_t} & PMIX_SIZE & integer & \\ \hline
         \code{pid_t} & PMIX_PID & integer & value shall be limited to the \code{uint32_t} range \\ \hline
         \code{int, int8_t, int16_t, int32_t, int64_t} & PMIX_INT, PMIX_INT8, PMIX_INT16, PMIX_INT32, PMIX_INT64 & integer & value shall be limited to its corresponding range \\ \hline
-        \code{uint, uint8_t, uint16_t, uint32_t} & PMIX_UINT, PMIX_UINT8, PMIX_UINT16, PMIX_UINT32, PMIX_UINT64 & integer & value shall be limited to its corresponding range \\ \hline
+        \code{uint, uint8_t, uint16_t, uint32_t, uint64_t} & PMIX_UINT, PMIX_UINT8, PMIX_UINT16, PMIX_UINT32, PMIX_UINT64 & integer & value shall be limited to its corresponding range \\ \hline
         \code{float, double} & PMIX_FLOAT, PMIX_DOUBLE & float & value shall be limited to its corresponding range \\ \hline
         \code{struct timeval} & PMIX_TIMEVAL & \{'sec': sec, 'usec': microsec\} & each field is an integer value \\ \hline
         \code{time_t} & PMIX_TIME & integer & limited to positive values \\ \hline
@@ -2436,7 +2436,7 @@ Returns:
 
 \begin{itemize}
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{regex} - Python string containing regular expression representation of the input list (str)
+    \item \refarg{regex} - Python \code{bytearray} containing regular expression representation of the input list (\code{bytearray})
 \end{itemize}
 
 
@@ -2468,7 +2468,7 @@ Returns:
 
 \begin{itemize}
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{regex} - Python string containing regular expression representation of the input list (str)
+    \item \refarg{regex} - Python \code{bytearray} containing regular expression representation of the input list (\code{bytearray})
 \end{itemize}
 
 
