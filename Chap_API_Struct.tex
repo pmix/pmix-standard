@@ -2735,7 +2735,236 @@ PMIX_DATA_ARRAY_FREE(m)
 \argin{m}{Pointer to the structure to be released (pointer to \refstruct{pmix_data_array_t})}
 \end{arglist}
 
-%%%%%%%%%%
+%%%%%%%%%%%
+\subsection{Argument Array Macros}
+
+The following macros support the construction and release of \code{NULL}-terminated argv arrays of strings.
+
+\subsubsection{Argument array extension}
+\declaremacro{PMIX_ARGV_APPEND}
+
+%%%%
+\summary
+
+Append a string to a NULL-terminated, argv-style array of strings.
+
+\cspecificstart
+\begin{codepar}
+PMIX_ARGV_APPEND(r, a, b);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{r}{Status code indicating success or failure of the operation (\refstruct{pmix_status_t})}
+\arginout{a}{Argument list (pointer to NULL-terminated array of strings)}
+\argin{b}{Argument to append to the list (string)}
+\end{arglist}
+
+%%%%
+\descr
+
+This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required in the way that the \ac{PRI} expects it to be constructed.
+
+\adviceuserstart
+The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsubsection{Argument array extension - unique}
+\declaremacro{PMIX_ARGV_APPEND_UNIQUE}
+
+%%%%
+\summary
+
+Append a string to a NULL-terminated, argv-style array of strings, but only if the provided argument doesn't already exist somewhere in the array.
+
+\cspecificstart
+\begin{codepar}
+PMIX_ARGV_APPEND_UNIQUE(r, a, b);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{r}{Status code indicating success or failure of the operation (\refstruct{pmix_status_t})}
+\arginout{a}{Argument list (pointer to NULL-terminated array of strings)}
+\argin{b}{Argument to append to the list (string)}
+\end{arglist}
+
+%%%%
+\descr
+
+This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required in the way that the \ac{PRI} expects it to be constructed.
+
+\adviceuserstart
+The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsubsection{Argument array release}
+\declaremacro{PMIX_ARGV_FREE}
+
+%%%%
+\summary
+
+Free an argv-style array and all of the strings that it contains
+
+\cspecificstart
+\begin{codepar}
+PMIX_ARGV_FREE(a);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{a}{Argument list (pointer to NULL-terminated array of strings)}
+\end{arglist}
+
+%%%%
+\descr
+
+This function releases the array and all of the strings it contains.
+
+%%%%%%%%%%%
+\subsubsection{Argument array split}
+\declaremacro{PMIX_ARGV_SPLIT}
+
+%%%%
+\summary
+
+Split a string into a NULL-terminated argv array.
+
+\cspecificstart
+\begin{codepar}
+PMIX_ARGV_SPLIT(a, b, c);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{a}{Resulting argv-style array (\code{char**})}
+\argin{b}{String to be split (\code{char*})}
+\argin{c}{Delimiter character (\code{char})}
+\end{arglist}
+
+%%%%
+\descr
+
+Split an input string into a NULL-terminated argv array. Do not include empty strings in the resulting array.
+
+\adviceuserstart
+All strings are inserted into the argv array by value; the newly-allocated array makes no references to the src_string argument (i.e., it can be freed after calling this function without invalidating the output argv array)
+\adviceuserend
+
+%%%%%%%%%%%
+\subsubsection{Argument array join}
+\declaremacro{PMIX_ARGV_JOIN}
+
+%%%%
+\summary
+
+Join all the elements of an argv array into a single newly-allocated string.
+
+\cspecificstart
+\begin{codepar}
+PMIX_ARGV_JOIN(a, b, c);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{a}{Resulting string (\code{char*})}
+\argin{b}{Argv-style array to be joined (\code{char**})}
+\argin{c}{Delimiter character (\code{char})}
+\end{arglist}
+
+%%%%
+\descr
+
+Join all the elements of an argv array into a single newly-allocated string.
+
+%%%%%%%%%%%
+\subsubsection{Argument array count}
+\declaremacro{PMIX_ARGV_COUNT}
+
+%%%%
+\summary
+
+Return the length of a NULL-terminated argv array.
+
+\cspecificstart
+\begin{codepar}
+PMIX_ARGV_COUNT(r, a);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{r}{Number of strings in the array (integer)}
+\argin{a}{Argv-style array (\code{char**})}
+\end{arglist}
+
+%%%%
+\descr
+
+Count the number of elements in an argv array
+
+
+%%%%%%%%%%%
+\subsubsection{Argument array copy}
+\declaremacro{PMIX_ARGV_COPY}
+
+%%%%
+\summary
+
+Copy an argv array, including copying all off its strings.
+
+\cspecificstart
+\begin{codepar}
+PMIX_ARGV_COPY(a, b);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{a}{New argv-style array (\code{char**})}
+\argin{b}{Argv-style array (\code{char**})}
+\end{arglist}
+
+%%%%
+\descr
+
+Copy an argv array, including copying all off its strings.
+
+
+%%%%%%%%%%%
+\subsection{Set Environment Variable}
+\declaremacro{PMIX_SETENV}
+
+%%%%
+\summary
+
+Set an environment variable in a \code{NULL}-terminated, env-style array
+
+\cspecificstart
+\begin{codepar}
+PMIX_SETENV(r, name, value, env);
+\end{codepar}
+\cspecificend
+
+
+\begin{arglist}
+\argout{r}{Status code indicating success or failure of the operation (\refstruct{pmix_status_t})}
+\argin{name}{Argument name (string)}
+\argin{value}{Argument value (string)}
+\arginout{env}{Environment array to update (pointer to array of strings)}
+\end{arglist}
+
+%%%%
+\descr
+
+Similar to \code{setenv} from the C API, this allows the caller to set an environment variable in the specified \code{env} array, which could then be passed to the \refstruct{pmix_app_t} structure or any other destination.
+
+\adviceuserstart
+The provided name and value are copied into the destination environment array - thus, the source strings can be free'd without affecting the array once the macro has completed.
+\adviceuserend
+
+
+%%%%%%%%%%%
 \section{Generalized Data Types Used for Packing/Unpacking}
 \declarestruct{pmix_data_type_t}
 
