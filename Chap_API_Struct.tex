@@ -3699,7 +3699,7 @@ This attribute would direct \refapi{PMIx_Finalize} to execute a barrier as part 
 
 %
 \declareAttribute{PMIX_JOB_TERM_STATUS}{"pmix.job.term.status"}{pmix_status_t}{
-Status returned by job upon its termination.
+Status returned by job upon its termination. The status will be communicated as part of a \ac{PMIx} event payload provided by the host environment upon termination of a job. Note that generation of the \refconst{PMIX_ERR_JOB_TERMINATED} event is optional and host environments may choose to provide it only upon request.
 }
 
 %
@@ -3707,6 +3707,9 @@ Status returned by job upon its termination.
 State of the specified process as of the last report - may not be the actual current state based on update rate.
 }
 
+\declareAttribute{PMIX_PROC_TERM_STATUS}{"pmix.proc.term.status"}{pmix_status_t}{
+Status returned by a process upon its termination. The status will be communicated as part of a \ac{PMIx} event payload provided by the host environment upon termination of a process. Note that generation of the \refconst{PMIX_PROC_TERMINATED} event is optional and host environments may choose to provide it only upon request.
+}
 
 %%%%%%%%%%%
 \subsection{Server-to-PMIx library attributes}
@@ -4541,7 +4544,7 @@ Resume (``un-pause'') the specified processes.
 
 %
 \declareAttribute{PMIX_JOB_CTRL_CANCEL}{"pmix.jctrl.cancel"}{char*}{
-Cancel the specified request (\code{NULL} implies cancel all requests from this requestor).
+Cancel the specified request - the provided request ID must match the \refattr{PMIX_JOB_CTRL_ID} provided to a previous call to \refapi{PMIx_Job_control}. An ID of \code{NULL} implies cancel all requests from this requestor.
 }
 
 %
