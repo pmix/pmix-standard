@@ -4,10 +4,7 @@
 \chapter{Key/Value Management}
 \label{chap:api_kv_mgmt}
 
-Management of key-value pairs in \ac{PMIx} is a distributed responsibility. While the stated objective of the \ac{PMIx} community is to eliminate collective operations, it is recognized that the traditional method of publishing/exchanging data must be supported until that objective can be met. This method relies on processes to discover and publish their local information which is collected by the local PMIx server library.
-Global exchange of the published information is then executed via a collective operation performed by the host \ac{SMS} servers.
-
-Keys are required to be unique within a specific level of informarion as defined in \ref{api:struct:attributes:retrieval}. For example, a value for \refattr{PMIX_NUM_NODES} can be specified for each of the \refterm{session}, \refterm{job}, and \refterm{application} levels. However, subsequently specifying another value for that attribute in the \refterm{session} level will overwrite the prior value.
+Management of key-value pairs in \ac{PMIx} is a distributed responsibility. While the stated objective of the \ac{PMIx} community is to eliminate collective operations, it is recognized that the traditional method of posting/exchanging data must be supported until that objective can be met. This method relies on processes to discover and post their local information which is collected by the local PMIx server library. Global exchange of the posted information is then executed via a collective operation performed by the host \ac{SMS} servers. The \refapi{PMIx_Put} and \refapi{PMIx_Commit} \acp{API}, plus an attribute directing \refapi{PMIx_Fence} to globally collect the data posted by processes, are provided for this purpose.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
