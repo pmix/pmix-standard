@@ -1,0 +1,3064 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendix: Python bindings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Python Bindings}
+\label{app:python}
+
+While the \ac{PMIx} Standard is defined in terms of C-based \acp{API}, there is no intent to limit the use of \ac{PMIx} to that specific language. Support for other languages is captured in the Standard by describing their equivalent syntax for the \ac{PMIx} \acp{API} and native forms for the \ac{PMIx} datatypes. This Appendix specifically deals with Python interfaces, beginning with a review of the \ac{PMIx} datatypes. Support is restricted to Python 3 and above - i.e., the Python bindings do not support Python 2.
+
+Note: the \ac{PMIx} \acp{API} have been loosely collected into three Python classes based on their \ac{PMIx} “class” (i.e., client, server, and tool). All processes have access to a basic set of the \acp{API}, and therefore those have been included in the “client” class. Servers can utilize any of those functions plus a set focused on operations not commonly executed by an application process. Finally, tools can also act as servers but have their own initialization function.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Datatype Definitions}
+
+\ac{PMIx} defines a number of datatypes comprised of fixed-size character arrays, restricted range integers (e.g., uint32_t), and structures. Each datatype is represented by a named unsigned 16-bit integer (\code{uint16_t}) constant. Users are advised to use the named \ac{PMIx} constants for indicating datatypes instead of integer values to ensure compatibility with future PMIx versions.
+
+With only a few exceptions, the C-based \ac{PMIx} datatypes defined in \chapterref{chap:struct} directly translate to Python. However, Python lacks the size-specific value definitions of C (e.g., \code{uint8_t}) and thus some care must be taken to protect against overflow/underflow situations when moving between the languages. Python bindings that accept values including \ac{PMIx} datatypes shall therefore have the datatype and associated value checked for compatibility with their \ac{PMIx}-defined equivalents, returning an error if:
+
+\begin{itemize}
+    \item datatypes not defined by \ac{PMIx} are encountered
+    \item provided values fall outside the range of the C-equivalent definition - e.g., if a value identified as \refconst{PMIX_UINT8} lies outside the \code{uint8_t}range
+\end{itemize}
+
+Note that explicit labeling of \ac{PMIx} datatype, even when Python itself doesn’t care, is often required for the Python bindings to know how to properly interpret and label the provided value when passing it to the \ac{PMIx} library.
+
+Table~\ref{app:python:ctopy} lists the correspondence between datatypes in the two languages.
+
+\begin{landscape}
+\begin{small}
+    \begin{longtable}{ | p{4.5cm} | p{4cm} | p{3cm} | p{5.5cm} |}
+        \caption{C-to-Python Datatype Correspondence} \label{app:python:ctopy} \\
+        \hline
+        C-Definition & PMIx Name & Python Definition & Notes \\ \hline
+        \endhead
+        \code{bool} & PMIX_BOOL & boolean & \\ \hline
+        \code{byte} & PMIX_BYTE & A single element byte array (i.e., a byte array of length one) & \\ \hline
+        \code{char*} & PMIX_STRING & string & \\ \hline
+        \code{size_t} & PMIX_SIZE & integer & \\ \hline
+        \code{pid_t} & PMIX_PID & integer & value shall be limited to the \code{uint32_t} range \\ \hline
+        \code{int, int8_t, int16_t, int32_t, int64_t} & PMIX_INT, PMIX_INT8, PMIX_INT16, PMIX_INT32, PMIX_INT64 & integer & value shall be limited to its corresponding range \\ \hline
+        \code{uint, uint8_t, uint16_t, uint32_t, uint64_t} & PMIX_UINT, PMIX_UINT8, PMIX_UINT16, PMIX_UINT32, PMIX_UINT64 & integer & value shall be limited to its corresponding range \\ \hline
+        \code{float, double} & PMIX_FLOAT, PMIX_DOUBLE & float & value shall be limited to its corresponding range \\ \hline
+        \code{struct timeval} & PMIX_TIMEVAL & \{'sec': sec, 'usec': microsec\} & each field is an integer value \\ \hline
+        \code{time_t} & PMIX_TIME & integer & limited to positive values \\ \hline
+        \refstruct{pmix_data_type_t} & PMIX_DATA_TYPE & integer & value shall be limited to the \code{uint16_t} range \\ \hline
+        \refstruct{pmix_status_t} & PMIX_STATUS & integer & \\ \hline
+        \refstruct{pmix_key_t} & N/A & \pylabel{key}string & The string's length shall be limited to one less than the size of the \refstruct{pmix_key_t} array (to reserve space for the terminating \code{NULL})  \\ \hline
+        \refstruct{pmix_nspace_t} & N/A & \pylabel{nspace}string & The string's length shall be limited to one less than the size of the \refstruct{pmix_nspace_t} array (to reserve space for the terminating \code{NULL})  \\ \hline
+        \refstruct{pmix_rank_t} & PMIX_PROC_RANK & \pylabel{rank}integer & value shall be limited to the \code{uint32_t} range excepting the reserved values near \code{UINT32_MAX} \\ \hline
+        \refstruct{pmix_proc_t} & PMIX_PROC & \pylabel{proc}\{'nspace': nspace, 'rank': rank\} & \refarg{nspace} is a Python string and \refarg{rank} is an integer value. The \refarg{nspace} string's length shall be limited to one less than the size of the \refstruct{pmix_nspace_t} array (to reserve space for the terminating \code{NULL}), and the \refarg{rank} value shall conform to the constraints associated with \refstruct{pmix_rank_t} \\ \hline
+        \refstruct{pmix_byte_object_t} & PMIX_BYTE_OBJECT & \pylabel{byteobject}\{'bytes': bytes, 'size': size\} & \refarg{bytes} is a Python byte array and \refarg{size} is the integer number of bytes in that array. \\ \hline
+        \refstruct{pmix_persistence_t} & PMIX_PERSISTENCE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_scope_t} & PMIX_SCOPE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_data_range_t} & PMIX_RANGE & \pylabel{range}integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_proc_state_t} & PMIX_PROC_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_proc_info_t} & PMIX_PROC_INFO & \{'proc': \{'nspace': nspace, 'rank': rank\}, 'hostname': hostname, 'executable': executable, 'pid': pid, 'exitcode': exitcode, 'state': state\} & \refarg{proc} is a Python \refpy{proc} dictionary; \refarg{hostname} and \refarg{executable} are Python strings; and \refarg{pid}, \refarg{exitcode}, and \refarg{state} are Python integers \\ \hline
+        \refstruct{pmix_data_array_t} & PMIX_DATA_ARRAY & \pylabel{array}\{'type': type, 'array': array\} & \refarg{type} is the \ac{PMIx} type of object in the array and \refarg{array} is a Python \emph{list} containing the individual array elements. Note that \refarg{array} can consist of \emph{any} \ac{PMIx} types, including (for example) a Python \refpy{info} object that itself contains an \refpy{array} value \\ \hline
+        \refstruct{pmix_info_directives_t}  & PMIX_INFO_DIRECTIVES & \pylabel{info directives}integer & value shall be limited to the \code{uint32_t} range \\ \hline
+        \refstruct{pmix_alloc_directive_t} & PMIX_ALLOC_DIRECTIVE & \pylabel{allocdir}integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_iof_channel_t} & PMIX_IOF_CHANNEL & \pylabel{channel}integer & value shall be limited to the \code{uint16_t} range \\ \hline
+        \refstruct{pmix_envar_t} & PMIX_ENVAR & \{'envar': envar, 'value': value, 'separator': separator\} & \refarg{envar} and \refarg{value} are Python strings, and \refarg{separator} a single-character Python string \\ \hline
+        \refstruct{pmix_value_t} & PMIX_VALUE & \pylabel{value}\{'value': value, 'val_type': type\} & \refarg{type} is the \ac{PMIx} datatype of \refarg{value}, and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype  \\ \hline
+        \refstruct{pmix_info_t} & PMIX_INFO & \pylabel{info}\{'key': key, 'flags': flags, value': value, 'val_type': type\} & \refarg{key} is a Python string \refpy{key}, \refarg{flags} is a bitmask of \refpy{info directives}, \refarg{type} is the \ac{PMIx} datatype of \refarg{value}, and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype \\ \hline
+        \refstruct{pmix_pdata_t} & PMIX_PDATA & \pylabel{pdata}\{'proc': \{'nspace': nspace, 'rank': rank\}, 'key': key, 'value': value, 'val_type': type\} & \refarg{proc} is a Python \refpy{proc} dictionary; \refarg{key} is a Python string \refpy{key}; \refarg{type} is the \ac{PMIx} datatype of \refarg{value}; and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype  \\ \hline
+        \refstruct{pmix_app_t} & PMIX_APP & \pylabel{app}\{'cmd': cmd, 'argv': [argv], 'env': [env], 'maxprocs': maxprocs, 'info': [info]\} & \refarg{cmd} is a Python string; \refarg{argv} and \refarg{env} are Python \emph{lists} containing Python strings; \refarg{maxprocs} is an integer; and \refarg{info} is a Python \emph{list} of \refpy{info} values   \\ \hline
+        \refstruct{pmix_query_t} & PMIX_QUERY & \pylabel{query}\{'keys': [keys], 'qualifiers': [info]\} & \refarg{keys} is a Python \emph{list} of Python strings, and \refarg{qualifiers} is a Python \emph{list} of \refpy{info} values \\ \hline
+        \refstruct{pmix_regattr_t} & PMIX_REGATTR & \pylabel{regattr}\{'name': name, 'key': key, 'type': type, info': [info], 'description': [desc]\} & \refarg{name} and \refarg{string} are Python strings; \refarg{type} is the \ac{PMIx} datatype for the attribute's value; \refarg{info} is a Python \emph{list} of \refpy{info} values; and \refarg{description} is a list of Python strings describing the attribute  \\ \hline
+        \hline
+    \end{longtable}
+\end{small}
+\end{landscape}
+
+\subsection{Example}
+Converting a C-based program to its Python equivalent requires translation of the relevant datatypes as well as use of the appropriate \ac{API} form. An example small program may help illustrate the changes. Consider the following C-based program snippet:
+
+\begin{codepar}
+
+#include <pmix.h>
+...
+
+pmix_info_t info[2];
+
+PMIX_INFO_LOAD(&info[0], PMIX_PROGRAMMING_MODEL, "TEST", PMIX_STRING)
+PMIX_INFO_LOAD(&info[1], PMIX_MODEL_LIBRARY_NAME, "PMIX", PMIX_STRING)
+
+rc = PMIx_Init(&myproc, info, 2);
+
+PMIX_INFO_DESTRUCT(&info[0]);  // free the copied string
+PMIX_INFO_DESTRUCT(&info[1]);  // free the copied string
+
+\end{codepar}
+
+Moving to the Python version requires that the \refstruct{pmix_info_t} be translated to the Python \refpy{info} equivalent, and that the returned information be captured in the return parameters as opposed to a pointer parameter in the function call, as shown below:
+
+\begin{codepar}
+
+import pmix
+...
+
+myclient = PMIxClient()
+info = [\{'key':PMIX_PROGRAMMING_MODEL,
+          'value':'TEST', 'val_type':PMIX_STRING\},
+        \{'key':PMIX_MODEL_LIBRARY_NAME,
+          'value':'PMIX', 'val_type':PMIX_STRING\}]
+rc,myproc = myclient.init(info)
+
+\end{codepar}
+
+Note the use of the \refconst{PMIX_STRING} identifier to ensure the Python bindings interpret the provided string value as a \ac{PMIx} "string" and not an array of bytes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Function Definitions}
+\label{app:python:fns}
+
+%%%%%%%%%%%
+\subsection{IOF Delivery Function}
+\pylabel{iofcbfunc}
+
+%%%%
+\summary
+
+Callback function for delivering forwarded \ac{IO} to a process
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def iofcbfunc(iofhdlr:integer, channel:integer,
+              source:dict, payload:dict, info:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{iofhdlr}{Registration number of the handler being invoked (integer)}
+\argin{channel}{Python \refpy{channel} bitmask identifying the channel the data arrived on (integer)}
+\argin{source}{Python \refpy{proc} identifying the namespace/rank of the process that generated the data (dict)}
+\argin{payload}{Python \refpy{byteobject} containing the data (dict)}
+\argin{info}{List of Python \refpy{info} provided by the source containing metadata about the payload. This could include \refattr{PMIX_IOF_COMPLETE} (list)}
+\end{arglist}
+
+Returns: nothing
+
+See \refapi{pmix_iof_cbfunc_t} for details
+
+
+%%%%%%%%%%%
+\subsection{Event Handler}
+\pylabel{evhandler}
+
+%%%%
+\summary
+
+Callback function for event handlers
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def evhandler(evhdlr:integer, status:integer,
+              source:dict, info:list, results:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{iofhdlr}{Registration number of the handler being invoked (integer)}
+\argin{status}{Status associated with the operation (integer)}
+\argin{source}{Python \refpy{proc} identifying the namespace/rank of the process that generated the event (dict)}
+\argin{info}{List of Python \refpy{info} provided by the source containing metadata about the event (list)}
+\argin{results}{List of Python \refpy{info} containing the aggregated results of all prior evhandlers (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - Status returned by the event handler's operation (integer)
+    \item \refarg{results} - List of Python \refpy{info} containing results from this event handler's operation on the event (list)
+\end{itemize}
+
+See \refapi{pmix_notification_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsection{Server Module Functions}
+\pylabel{server module}
+
+The following definitions represent functions that may be provided to the \ac{PMIx} server library at time of initialization for servicing of client requests. Module functions that are not provided default to returning "not supported" to the caller.
+
+%%%%%%%%%%%
+\subsubsection{Client Connected}
+
+%%%%
+\summary
+
+Notify the host server that a client connected to this server.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def clientconnected(proc:dict is not None)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} identifying the namespace/rank of the process that connected (dict)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the connection should be rejected (integer)
+\end{itemize}
+
+See \refapi{pmix_server_client_connected_fn_t} for details
+
+%%%%%%%%%%%
+\subsubsection{Client Finalized}
+
+%%%%
+\summary
+
+Notify the host environment that a client called \refapi{PMIx_Finalize}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def clientfinalized(proc:dict is not None):
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} identifying the namespace/rank of the process that finalized (dict)}
+\end{arglist}
+
+Returns: nothing
+
+See \refapi{pmix_server_client_finalized_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Client Aborted}
+
+%%%%
+\summary
+
+Notify the host environment that a local client called \refapi{PMIx_Abort}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def clientaborted(proc:dict is not None, status:integer,
+                  msg:str, targets:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} identifying the namespace/rank of the process that called abort (dict)}
+\argin{status}{PMIx status to be returned on exit (integer)}
+\argin{msg}{String message to be printed (string)}
+\argin{targets}{List of Python \refpy{proc} dictionaries (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_abort_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Fence}
+
+%%%%
+\summary
+
+At least one client called either \refapi{PMIx_Fence} or \refapi{PMIx_Fence_nb}
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def fence(procs:list, directives:list, data:bytearray)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{procs}{List of Python \refpy{proc} dictionaries (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\argin{data}{Python bytearray of data to be circulated during fence operation (bytearray)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item \refarg{data} - Python bytearray containing the aggregated data from all participants (bytearray)
+\end{itemize}
+
+See \refapi{pmix_server_fencenb_fn_t} for details
+
+%%%%%%%%%%%
+\subsubsection{Direct Modex}
+
+%%%%
+\summary
+
+Used by the PMIx server to request its local host contact the \ac{PMIx} server on the remote node that hosts the specified proc to obtain and return a direct modex blob for that proc.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def dmodex(proc:dict, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} dictionary of process whose data is being requested (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item \refarg{data} - Python bytearray containing the data for the specified process (bytearray)
+\end{itemize}
+
+See \refapi{pmix_server_dmodex_req_fn_t} for details
+
+%%%%%%%%%%%
+\subsubsection{Publish}
+
+%%%%
+\summary
+
+Publish data per the PMIx API specification.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def publish(proc:dict, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} dictionary of process publishing the data (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries containing data and directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_publish_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Lookup}
+
+%%%%
+\summary
+
+Lookup published data.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def lookup(proc:dict, keys:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} dictionary of process seeking the data (list)}
+\argin{keys}{List of Python strings (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item \refarg{pdata} - List of \refpy{pdata} containing the returned results (list)
+\end{itemize}
+
+See \refapi{pmix_server_lookup_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Unpublish}
+
+%%%%
+\summary
+
+Delete data from the data store.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def unpublish(proc:dict, keys:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} dictionary of process making the request (list)}
+\argin{keys}{List of Python strings (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_unpublish_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Spawn}
+
+%%%%
+\summary
+
+Spawn a set of applications/processes as per the \refapi{PMIx_Spawn} API.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def spawn(proc:dict, jobInfo:list, apps:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} dictionary of process making the request (list)}
+\argin{jobInfo}{List of Python \refpy{info} job-level directives and information (list)}
+\argin{apps}{List of Python \refpy{app} dictionaries describing applications to be spawned (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item \refarg{nspace} - Python string containing namespace of the spawned job (str)
+\end{itemize}
+
+See \refapi{pmix_server_spawn_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Connect}
+
+%%%%
+\summary
+
+Record the specified processes as \textit{connected}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def connect(procs:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{procs}{List of Python \refpy{proc} dictionaries identifying participants (list)}
+\argin{directives}{List of Python \refpy{info} directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_connect_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Disconnect}
+
+%%%%
+\summary
+
+Disconnect a previously connected set of processes.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def disconnect(procs:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{procs}{List of Python \refpy{proc} dictionaries identifying participants (list)}
+\argin{directives}{List of Python \refpy{info} directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_disconnect_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Register Events}
+
+%%%%
+\summary
+
+Register to receive notifications for the specified events.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def register_events(codes:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{codes}{List of Python integers (list)}
+\argin{directives}{List of Python \refpy{info} directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_register_events_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Deregister Events}
+
+%%%%
+\summary
+
+Deregister to receive notifications for the specified events.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def deregister_events(codes:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{codes}{List of Python integers (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_deregister_events_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Notify Event}
+
+%%%%
+\summary
+
+Notify the specified range of processes of an event.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def notify_event(code:integer, source:dict, range:integer, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{code}{Python integer \refstruct{pmix_status_t}  (list)}
+\argin{source}{Python \refpy{proc} of process that generated the event (dict)}
+\argin{range}{Python \refpy{range} in which the event is to be reported (integer)}
+\argin{directives}{List of Python \refpy{info} directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_notify_event_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Query}
+
+%%%%
+\summary
+
+Query information from the resource manager.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def query(proc:dict, queries:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} of requesting process (dict)}
+\argin{queries}{List of Python \refpy{query} directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item \refarg{info} - List of Python \refpy{info} containing the returned results (list)
+\end{itemize}
+
+See \refapi{pmix_server_query_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Tool Connected}
+
+%%%%
+\summary
+
+Register that a tool has connected to the server.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def tool_connected(info:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{info}{List of Python \refpy{info} containing info on the connecting tool (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item \refarg{proc} - Python \refpy{proc} containing the assigned namespace:rank for the tool (dict)
+\end{itemize}
+
+See \refapi{pmix_server_tool_connection_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Log}
+
+%%%%
+\summary
+
+Log data on behalf of a client.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def log(proc:dict, data:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} of requesting process (dict)}
+\argin{data}{List of Python \refpy{info} containing data to be logged (list)}
+\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_log_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Allocate Resources}
+
+%%%%
+\summary
+
+Request allocation operations on behalf of a client.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def allocate(proc:dict, action:integer, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} of requesting process (dict)}
+\argin{action}{Python \refpy{allocdir} specifying requested action (integer)}
+\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item refarg{info} - List of Python \refpy{info} containing results of requested operation (list)
+\end{itemize}
+
+See \refapi{pmix_server_alloc_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Job Control}
+
+%%%%
+\summary
+
+Execute a job control action on behalf of a client.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def job_control(proc:dict, targets:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} of requesting process (dict)}
+\argin{targets}{List of Python \refpy{proc} specifying target processes (list)}
+\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_job_control_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Monitor}
+
+%%%%
+\summary
+
+Request that a client be monitored for activity.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def monitor(proc:dict, request:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} of requesting process (dict)}
+\argin{request}{List of Python \refpy{info} specifying requested monitoring operations (list)}
+\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_monitor_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Get Credential}
+
+%%%%
+\summary
+
+Request a credential from the host environment
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def get_credential(proc:dict, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} of requesting process (dict)}
+\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item \refarg{cred} - Python \refpy{byteobject} containing returned credential (dict)
+    \item \refarg{info} - List of Python \refpy{info} containing any additional info about the credential (list)
+\end{itemize}
+
+See \refapi{pmix_server_get_cred_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{Validate Credential}
+
+%%%%
+\summary
+
+Request validation of a credential
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def validate_credential(proc:dict, cred:dict, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} of requesting process (dict)}
+\argin{cred}{Python \refpy{byteobject} containing credential (dict)}
+\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item \refarg{info} - List of Python \refpy{info} containing any additional info from the credential (list)
+\end{itemize}
+
+See \refapi{pmix_server_validate_cred_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{IO Forward}
+
+%%%%
+\summary
+
+Request the specified IO channels be forwarded from the given array of processes.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def iof_pull(sources:list, channels:integer, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{sources}{List of Python \refpy{proc} whose IO is being requested (list)}
+\argin{channels}{Bitmask of Python \refpy{channel} identifying IO channels to be forwarded (integer)}
+\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_iof_fn_t} for details
+
+
+%%%%%%%%%%%
+\subsubsection{IO Push}
+
+%%%%
+\summary
+
+Pass standard input data to the host environment for transmission to specified recipients.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def iof_push(source:dict, targets:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{source}{Python \refpy{proc} whose stdin data is being provided (dict)}
+\argin{targets}{List of Python \refpy{proc} identifying targets to receive the provided data (list)}
+\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+\end{itemize}
+
+See \refapi{pmix_server_stdin_fn_t} for details
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{PMIxClient}
+\label{app:python:client}
+
+The client Python class is by far the richest in terms of \acp{API} as it houses all the \acp{API} that an application might utilize. Due to the datatype translation requirements of the C-Python interface, only the blocking form of each \ac{API} is supported – providing a Python callback function directly to the C interface underlying the bindings was not a supportable option.
+
+%%%%%%%%%%%
+\subsection{Client.init}
+\declareapi{PMIxClient.init}
+
+\summary Initialize the \ac{PMIx} client library after obtaining a new PMIxClient object
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc, proc = myclient.init(info:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{info}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{proc} - a Python \refpy{proc} dictionary (dict)
+\end{itemize}
+
+
+See \refapi{PMIx_Init} for description of all relevant attributes and behaviors
+
+%%%%%%%%%%%
+\subsection{Client.initialized}
+\declareapi{PMIxClient.initialized}
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.initialized()
+\end{codepar}
+\pyspecificend
+
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - a value of \code{1} (true) will be returned if the \ac{PMIx} library has been initialized, and \code{0} (false) otherwise (integer)
+
+\end{itemize}
+
+
+See \refapi{PMIx_Initialized} for description of all relevant attributes and behaviors
+
+%%%%%%%%%%%
+\subsection{Client.get_version}
+\declareapi{PMIxClient.get_version}
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+vers = myclient.get_version()
+\end{codepar}
+\pyspecificend
+
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{vers} - Python string containing the version of the \ac{PMIx} library (e.g., "3.1.4") (integer)
+
+\end{itemize}
+
+
+See \refapi{PMIx_Get_version} for description of all relevant attributes and behaviors
+
+%%%%%%%%%%%
+\subsection{Client.finalize}
+\declareapi{PMIxClient.finalize}
+
+%%%%
+\summary
+
+Finalize the PMIx client library.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.finalize(info:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{info}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Finalize} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.abort}
+\declareapi{PMIxClient.abort}
+
+%%%%
+\summary
+
+Request that the provided list of procs be aborted
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.abort(status:integer, msg:str, targets:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{status}{PMIx status to be returned on exit (integer)}
+\argin{msg}{String message to be printed (string)}
+\argin{targets}{List of Python \refpy{proc} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Abort} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.store_internal}
+\declareapi{PMIxClient.store_internal}
+
+%%%%
+\summary
+
+Store some data locally for retrieval by other areas of the process
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.store_internal(proc:dict, key:str, value:dict)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} dictionary of the process being referenced (dict)}
+\argin{key}{String key of the data (string)}
+\argin{value}{Python \refpy{value} dictionary (dict)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Store_internal} for details
+
+
+%%%%%%%%%%%
+\subsection{Client.put}
+\declareapi{PMIxClient.put}
+
+%%%%
+\summary
+
+Push a key/value pair into the client's namespace.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.put(scope:integer, key:str, value:dict)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{scope}{Scope of the data being posted (integer)}
+\argin{key}{String key of the data (string)}
+\argin{value}{Python \refpy{value} dictionary (dict)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Put} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.commit}
+\declareapi{PMIxClient.commit}
+
+%%%%
+\summary
+
+Push all previously \refapi{PMIxClient.put} values to the local PMIx server.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.commit()
+\end{codepar}
+\pyspecificend
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Commit} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.fence}
+\declareapi{PMIxClient.fence}
+
+%%%%
+\summary
+
+Execute a blocking barrier across the processes identified in the specified list
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.fence(peers:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{peers}{List of Python \refpy{proc} dictionaries (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Fence} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.get}
+\declareapi{PMIxClient.get}
+
+%%%%
+\summary
+
+Retrieve a key/value pair
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc, val = myclient.get(proc:dict, key:str, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} whose data is being requested (dict)}
+\argin{key}{Python string key of the data to be returned (str)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{val} - Python \refpy{value} containing the returned data (dict)
+\end{itemize}
+
+
+See \refapi{PMIx_Get} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.publish}
+\declareapi{PMIxClient.publish}
+
+%%%%
+\summary
+
+Publish data for later access via \refapi{PMIx_Lookup}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.publish(directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{directives}{List of Python \refpy{info} dictionaries containing data to be published and directives (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Publish} for description of all relevant attributes and behaviors
+
+
+
+%%%%%%%%%%%
+\subsection{Client.lookup}
+\declareapi{PMIxClient.lookup}
+
+%%%%
+\summary
+
+Lookup information published by this or another process with \refapi{PMIx_Publish}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myclient.lookup(pdata:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{pdata}{List of Python \refpy{pdata} dictionaries identifying data to be retrieved (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - Python list of \refpy{info} containing the returned data (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Lookup} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.unpublish}
+\declareapi{PMIxClient.unpublish}
+
+%%%%
+\summary
+
+Delete data published by this process with \refapi{PMIx_Publish}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.unpublish(keys:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{keys}{List of Python string keys identifying data to be deleted (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Unpublish} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.spawn}
+\declareapi{PMIxClient.spawn}
+
+%%%%
+\summary
+
+Spawn a new job.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,nspace = myclient.spawn(jobinfo:list, apps:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{jobinfo}{List of Python \refpy{info} dictionaries (list)}
+\argin{apps}{List of Python \refpy{app} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{nspace} - Python \refpy{nspace} of the new job (dict)
+\end{itemize}
+
+
+See \refapi{PMIx_Spawn} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.connect}
+\declareapi{PMIxClient.connect}
+
+%%%%
+\summary
+
+Connect namespaces.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.connect(peers:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{peers}{List of Python \refpy{proc} dictionaries (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Connect} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.disconnect}
+\declareapi{PMIxClient.disconnect}
+
+%%%%
+\summary
+
+Disconnect namespaces.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.disconnect(peers:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{peers}{List of Python \refpy{proc} dictionaries (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Disconnect} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.resolve_peers}
+\declareapi{PMIxClient.resolve_peers}
+
+%%%%
+\summary
+
+Return list of processes within the specified \refpy{nspace} on the given node.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,procs = myclient.resolve_peers(node:str, nspace:str)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{node}{Name of node whose processes are being requested (str)}
+\argin{nspace}{Python \refpy{nspace} whose processes are to be returned (str)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{procs} - List of Python \refpy{proc} dictionaries (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Resolve_peers} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.resolve_nodes}
+\declareapi{PMIxClient.resolve_nodes}
+
+%%%%
+\summary
+
+Return list of nodes hosting processes within the specified \refpy{nspace}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,nodes = myclient.resolve_nodes(nspace:str)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{nspace}{Python \refpy{nspace} (str)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{nodes} - List of Python string node names (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Resolve_nodes} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.query}
+\declareapi{PMIxClient.query}
+
+%%%%
+\summary
+
+Query information about the system in general
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myclient.query(queries:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{queries}{List of Python \refpy{query} dictionaries (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - List of Python \refpy{info} containing results of the query (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Query_info_nb} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.log}
+\declareapi{PMIxClient.log}
+
+%%%%
+\summary
+
+Log data to a central data service/store
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.log(data:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{data}{List of Python \refpy{info} dictionaries (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Log} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.allocate}
+\declareapi{PMIxClient.allocate}
+
+%%%%
+\summary
+
+Request an allocation operation from the host resource manager.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myclient.allocate(request:integer, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{request}{Python \refpy{allocdir} specifying requested operation (integer)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Allocation_request_nb} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.job_ctrl}
+\declareapi{PMIxClient.job_ctrl}
+
+%%%%
+\summary
+
+Request a job control action
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myclient.job_ctrl(targets:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{targets}{List of Python \refpy{proc} specifying targets of requested operation (integer)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Job_control_nb} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.monitor}
+\declareapi{PMIxClient.monitor}
+
+%%%%
+\summary
+
+Request that something be monitored
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myclient.monitor(targets:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{targets}{List of Python \refpy{proc} specifying targets of requested operation (integer)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Process_monitor_nb} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.get_credential}
+\declareapi{PMIxClient.get_credential}
+
+%%%%
+\summary
+
+Request a credential from the PMIx server/SMS
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,cred,info = myclient.get_credential(directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{cred} - Python \refpy{byteobject} containing returned credential (dict)
+    \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Get_credential} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.validate_credential}
+\declareapi{PMIxClient.validate_credential}
+
+%%%%
+\summary
+
+Request validation of a credential by the PMIx server/SMS
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myclient.validate_credential(cred:dict, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{cred}{Python \refpy{byteobject} containing credential (dict)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - List of Python \refpy{info} containing additional results of the request (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Validate_credential} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.group_construct}
+\declareapi{PMIxClient.group_construct}
+
+%%%%
+\summary
+
+Construct a new group composed of the specified processes and identified with
+the provided group identifier
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myclient.construct_group(grp:string, members:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{grp}{Python string identifier for the group (str)}
+\argin{members}{List of Python \refpy{proc} dictionaries identifying group members (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Group_construct} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.group_invite}
+\declareapi{PMIxClient.group_invite}
+
+%%%%
+\summary
+
+Explicitly invite specified processes to join a group
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myclient.group_invite(grp:string, members:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{grp}{Python string identifier for the group (str)}
+\argin{members}{List of Python \refpy{proc} dictionaries identifying processes to be invited (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Group_invite} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.group_join}
+\declareapi{PMIxClient.group_join}
+
+%%%%
+\summary
+
+Respond to an invitation to join a group that is being asynchronously constructed
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myclient.group_join(grp:string, leader:dict, opt:integer, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{grp}{Python string identifier for the group (str)}
+\argin{leader}{Python \refpy{proc} dictionary identifying process leading the group (dict)}
+\argin{opt}{One of the \refstruct{pmix_group_opt_t} values indicating decline/accept (integer)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Group_join} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.group_leave}
+\declareapi{PMIxClient.group_leave}
+
+%%%%
+\summary
+
+Leave a PMIx Group
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.group_leave(grp:string, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{grp}{Python string identifier for the group (str)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Group_leave} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.group_destruct}
+\declareapi{PMIxClient.group_destruct}
+
+%%%%
+\summary
+
+Destruct a PMIx Group
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.group_destruct(grp:string, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{grp}{Python string identifier for the group (str)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Group_destruct} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.register_event_handler}
+\declareapi{PMIxClient.register_event_handler}
+
+%%%%
+\summary
+
+Register an event handler to report events.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,id = myclient.register_event_handler(codes:list, directives:list, cbfunc)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{codes}{List of Python integer status codes that should be reported to this handler (llist)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{cbfunc}{Python \refpy{evhandler} to be called when event is received (func)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{id} - \ac{PMIx} reference identifier for handler (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Register_event_handler} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.deregister_event_handler}
+\declareapi{PMIxClient.deregister_event_handler}
+
+%%%%
+\summary
+
+Deregister an event handler
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+myclient.deregister_event_handler(id:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{id}{\ac{PMIx} reference identifier for handler (integer)}
+\end{arglist}
+
+Returns: None
+
+See \refapi{PMIx_Deregister_event_handler} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.notify_event}
+\declareapi{PMIxClient.notify_event}
+
+%%%%
+\summary
+
+Report an event for notification via any registered handler.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.notify_event(status:integer, source:dict,
+                           range:integer, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{status}{\ac{PMIx} status code indicating the event being reported (integer)}
+\argin{source}{Python \refpy{proc} of the process that generated the event (dict)}
+\argin{range}{Python \refpy{range} in which the event is to be reported (integer)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+See \refapi{PMIx_Notify_event} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.error_string}
+\declareapi{PMIxClient.error_string}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_status_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.error_string(status:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{status}{\ac{PMIx} status code (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided status code (str)
+\end{itemize}
+
+See \refapi{PMIx_Error_string} for further details
+
+
+%%%%%%%%%%%
+\subsection{Client.proc_state_string}
+\declareapi{PMIxClient.proc_state_string}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_proc_state_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.proc_state_string(state:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{state}{\ac{PMIx} process state code (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided process state (str)
+\end{itemize}
+
+See \refapi{PMIx_Proc_state_string} for further details
+
+
+%%%%%%%%%%%
+\subsection{Client.scope_string}
+\declareapi{PMIxClient.scope_string}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_scope_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.scope_string(scope:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{scope}{\ac{PMIx} scope value (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided scope (str)
+\end{itemize}
+
+See \refapi{PMIx_Scope_string} for further details
+
+
+%%%%%%%%%%%
+\subsection{Client.persistence_string}
+\declareapi{PMIxClient.persistence_string}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_persistence_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.persistence_string(persistence:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{persistence}{\ac{PMIx} persistence value (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided persistence (str)
+\end{itemize}
+
+See \refapi{PMIx_Persistence_string} for further details
+
+
+%%%%%%%%%%%
+\subsection{Client.data_range_string}
+\declareapi{PMIxClient.data_range_string}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_data_range_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.data_range_string(range:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{range}{\ac{PMIx} data range value (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided data range (str)
+\end{itemize}
+
+See \refapi{PMIx_Data_range_string} for further details
+
+
+%%%%%%%%%%%
+\subsection{Client.info_directives_string}
+\declareapi{PMIxClient.info_directives_string}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_info_directives_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.info_directives_string(directives:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{directives}{\ac{PMIx} info directives value (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided info directives (str)
+\end{itemize}
+
+See \refapi{PMIx_Info_directives_string} for further details
+
+
+%%%%%%%%%%%
+\subsection{Client.data_type_string}
+\declareapi{PMIxClient.data_type_string}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_data_type_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.data_type_string(dtype:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{dtype}{\ac{PMIx} datatype value (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided datatype (str)
+\end{itemize}
+
+See \refapi{PMIx_Data_type_string} for further details
+
+
+%%%%%%%%%%%
+\subsection{Client.alloc_directive_string}
+\declareapi{PMIxClient.alloc_directive_string}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_alloc_directive_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.alloc_directive_string(adir:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{adir}{\ac{PMIx} allocation directive value (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided allocation directive (str)
+\end{itemize}
+
+See \refapi{PMIx_Alloc_directive_string} for further details
+
+
+%%%%%%%%%%%
+\subsection{Client.iof_channel_string}
+\declareapi{PMIxClient.iof_channel_string}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_iof_channel_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.iof_channel_string(channel:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{channel}{\ac{PMIx} IOF channel value (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided IOF channel (str)
+\end{itemize}
+
+See \refapi{PMIx_IOF_channel_string} for further details
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{PMIxServer}
+\label{app:python:server}
+
+The server Python class inherits the Python "client" class as its parent. Thus, it includes all client functions in addition to the ones defined in this section.
+
+%%%%%%%%%%%
+\subsection{Server.init}
+\declareapi{PMIxServer.init}
+
+\summary Initialize the \ac{PMIx} server library after obtaining a new PMIxServer object
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.init(directives:list, map:dict)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\argin{map}{Python dictionary key-function pairs that map \refpy{server module} callback functions to provided implementations (dict)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_server_init} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Server.finalize}
+\declareapi{PMIxServer.finalize}
+
+\summary Finalize the \ac{PMIx} server library
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.finalize()
+\end{codepar}
+\pyspecificend
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_server_finalize} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.generate_regex}
+\declareapi{PMIxServer.generate_regex}
+
+\summary
+Generate a regular expression representation of the input strings.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,regex = myserver.generate_regex(input:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{input}{List of Python strings (e.g., node names)  (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{regex} - Python \code{bytearray} containing regular expression representation of the input list (\code{bytearray})
+\end{itemize}
+
+
+See \refapi{PMIx_generate_regex} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.generate_ppn}
+\declareapi{PMIxServer.generate_ppn}
+
+\summary
+Generate a regular expression representation of the input strings.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,regex = myserver.generate_ppn(input:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{input}{List of Python strings describing the ranks on each node (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{regex} - Python \code{bytearray} containing regular expression representation of the input list (\code{bytearray})
+\end{itemize}
+
+
+See \refapi{PMIx_generate_ppn} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.register_nspace}
+\declareapi{PMIxServer.register_nspace}
+
+\summary Setup the data about a particular namespace.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.register_nspace(nspace:str,
+                              nlocalprocs:integer,
+                              directives:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{nspace}{Python string containing the namespace (str)}
+\argin{nlocalprocs}{Number of local processes (integer)}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_server_register_nspace} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Server.deregister_nspace}
+\declareapi{PMIxServer.deregister_nspace}
+
+\summary Deregister a namespace.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+myserver.deregister_nspace(nspace:str)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{nspace}{Python string containing the namespace (str)}
+\end{arglist}
+
+Returns: None
+
+
+See \refapi{PMIx_server_deregister_nspace} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.register_client}
+\declareapi{PMIxServer.register_client}
+
+\summary
+Register a client process with the PMIx server library.
+
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.register_client(proc:dict, uid:integer, gid:integer)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} dictionary identifying the client process (dict)}
+\argin{uid}{Linux uid value for user executing client process (integer)}
+\argin{gid}{Linux gid value for user executing client process (integer)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_server_register_client} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.deregister_client}
+\declareapi{PMIxServer.deregister_client}
+
+\summary
+Dergister a client process and purge all data relating to it
+
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+myserver.deregister_client(proc:dict)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} dictionary identifying the client process (dict)}
+\end{arglist}
+
+Returns: None
+
+
+See \refapi{PMIx_server_deregister_client} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.setup_fork}
+\declareapi{PMIxServer.setup_fork}
+
+\summary
+Setup the environment of a child process that is to be forked
+by the host
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.setup_fork(proc:dict, envin:dict)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} dictionary identifying the client process (dict)}
+\arginout{envin}{Python dictionary containing the environment to be passed to the client (dict)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_server_setup_fork} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.dmodex_request}
+\declareapi{PMIxServer.dmodex_request}
+
+\summary
+Function by which the host server can request modex data from the local PMIx server.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,data = myserver.dmodex_request(proc:dict)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} dictionary identifying the process whose data is requested (dict)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{data} - Python \refpy{byteobject} containing the returned data (dict)
+\end{itemize}
+
+
+See \refapi{PMIx_server_dmodex_request} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.setup_application}
+\declareapi{PMIxServer.setup_application}
+
+\summary
+Function by which the resource manager can request application-specific setup data prior to launch of a \refterm{job}.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myserver.setup_application(nspace:str, directives:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{nspace}{Namespace whose setup information is being requested (str)}
+\argin{directives}{Python list of \refpy{info} directives}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - Python list of \refpy{info} dictionaries containing the returned data (list)
+\end{itemize}
+
+
+See \refapi{PMIx_server_setup_application} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.register_attributes}
+\declareapi{PMIxServer.register_attributes}
+
+\summary
+Register host environment attribute support for a function.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.register_attributes(function:str, attrs:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{function}{Name of the function (str)}
+\argin{attrs}{Python list of \refpy{regattr} dictionaries describing the supported attributes}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Register_attributes} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.setup_local_support}
+\declareapi{PMIxServer.setup_local_support}
+
+\summary
+Function by which the local \ac{PMIx} server can perform any application-specific operations prior to spawning local clients of a given application
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.setup_local_support(nspace:str, info:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{nspace}{Namespace whose setup information is being requested (str)}
+\argin{info}{Python list of \refpy{info} dictionaries containing the setup data (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_server_setup_local_support} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.iof_deliver}
+\declareapi{PMIxServer.iof_deliver}
+
+\summary
+Function by which the host environment can pass forwarded \ac{IO} to the \ac{PMIx} server library for distribution to its clients.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.iof_deliver(source:dict, channel:integer,
+                          data:dict, directives:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{source}{Python \refpy{proc} dictionary identifying the process who generated the data (dict)}
+\argin{channel}{Python \refpy{channel} bitmask identifying IO channel of the provided data (integer)}
+\argin{data}{Python \refpy{byteobject} containing the data (dict)}
+\argin{directives}{Python list of \refpy{info} dictionaries containing directives (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_server_IOF_deliver} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.collect_inventory}
+\declareapi{PMIxServer.collect_inventory}
+
+\summary
+Collect inventory of resources on a node
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,info = myserver.collect_inventory(directives:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{directives}{Python list of \refpy{info} dictionaries containing directives (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{info} - Python list of \refpy{info} dictionaries containing the returned data (list)
+\end{itemize}
+
+
+See \refapi{PMIx_server_collect_inventory} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.deliver_inventory}
+\declareapi{PMIxServer.deliver_inventory}
+
+\summary
+Pass collected inventory to the \ac{PMIx} server library for storage
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.deliver_inventory(info:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{info} - Python list of \refpy{info} dictionaries containing the inventory data (list)
+\argin{directives}{Python list of \refpy{info} dictionaries containing directives (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_server_deliver_inventory} for details
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{PMIxTool}
+\label{app:python:tool}
+
+The tool Python class inherits the Python "server" class as its parent. Thus, it includes all client and server functions in addition to the ones defined in this section.
+
+%%%%%%%%%%%
+\subsection{Tool.init}
+\declareapi{PMIxTool.init}
+
+\summary Initialize the \ac{PMIx} tool library after obtaining a new PMIxTool object
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,proc = mytool.init(info:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{info}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{proc} - a Python \refpy{proc} dictionary (dict)
+\end{itemize}
+
+
+See \refapi{PMIx_tool_init} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Tool.finalize}
+\declareapi{PMIxTool.finalize}
+
+\summary Finalize the PMIx tool library, closing the connection to the server.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = mytool.finalize()
+\end{codepar}
+\pyspecificend
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_tool_finalize} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Tool.connect_to_server}
+\declareapi{PMIxTool.connect_to_server}
+
+\summary
+Switch connection from the current \ac{PMIx} server to another one, or initialize a connection to a specified server.
+
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,proc = mytool.connect_to_server(info:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{info}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{proc} - a Python \refpy{proc} dictionary (dict)
+\end{itemize}
+
+
+See \refapi{PMIx_tool_connect_to_server} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Tool.iof_pull}
+\declareapi{PMIxTool.iof_pull}
+
+%%%%
+\summary
+
+Register to receive output forwarded from a remote process.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,id = mytool.iof_pull(sources:list, channel:integer, directives:list, cbfunc)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{sources}{List of Python \refpy{proc} dictionaries of processes whose IO is being requested (list)}
+\argin{channel}{Python \refpy{channel} bitmask identifying IO channels to be forwarded (integer)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{cbfunc}{Python \refpy{iofcbfunc} to receive IO payloads (func)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{id} - \ac{PMIx} reference identifier for request (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_IOF_pull} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Tool.iof_deregister}
+\declareapi{PMIxTool.iof_deregister}
+
+%%%%
+\summary
+
+Deregister from output forwarded from a remote process.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = mytool.iof_deregister(id:integer, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{id}{\ac{PMIx} reference identifier returned by pull request (list)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_IOF_deregister} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Tool.iof_push}
+\declareapi{PMIxTool.iof_push}
+
+%%%%
+\summary
+
+Push data collected locally (typically from stdin) to
+stdin of target recipients
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = mytool.iof_push(targets:list, data:dict, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{sources}{List of Python \refpy{proc} dictionaries of target processes (list)}
+\argin{data}{Python \refpy{byteobject} dictionary containing data to be delivered (dict)}
+\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_IOF_push} for description of all relevant attributes and behaviors
+
+

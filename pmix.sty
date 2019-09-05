@@ -225,7 +225,8 @@
 % This allows tables to flow across page breaks, headers on each new page, etc.
 \usepackage{supertabular}
 \usepackage{caption}
-
+\usepackage{longtable}
+\usepackage{pdflscape} % for 'landscape' environment
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Line numbering
@@ -594,6 +595,10 @@
 \newcommand{\fortranspecificstart}{\VSPb\linewitharrows{-1}{solid}{Fortran}{6em}\VSPa}
 \newcommand{\fortranspecificend}{\VSPb\linewitharrows{1}{solid}{Fortran}{6em}\VSPa}
 
+% Python
+\newcommand{\pyspecificstart}{\needspace{\sbns}\linewitharrows{-1}{solid}{Python}{6em}}
+\newcommand{\pyspecificend}{\linewitharrows{1}{solid}{Python}{6em}\VSPa}
+
 % Note
 \newcommand{\notestart}{\VSPb\notelinewitharrows{-1}{solid}\VSPa}
 \newcommand{\noteend}{\VSPb\notelinewitharrows{1}{solid}\VSPa}
@@ -712,3 +717,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define a divider for splitting implementer vs host attribute requirements/options
 \newcommand{\divider}{\noindent\makebox[\linewidth]{\rule{\linewidth}{0.8pt}}}
+
+
+\newcounter{pycounter}
+\newcommand{\pylabel}[1]{\refstepcounter{pycounter} \label{appB:#1}}
+\newcommand{\refpy}[1]{\hyperref[appB:#1]{\code{#1} }}
