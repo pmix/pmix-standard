@@ -23,6 +23,8 @@ The \refstruct{pmix_coord_t} structure describes the network coordinates of a sp
 \cspecificstart
 \begin{codepar}
 typedef struct pmix_coord \{
+    char *fabric;
+    char *plane;
     pmix_coord_view_t view;
     uint32_t *coord;
     size_t dims;
@@ -32,6 +34,8 @@ typedef struct pmix_coord \{
 
 All coordinate values shall be expressed as unsigned integers due to their units being defined in network devices and not physical distances. The coordinate is therefore an indicator of connectivity and not relative communication distance.
 
+The fabric and plane fields are assigned by the fabric provider to help the user identify the network to which the coordinates refer. Note that providers are not required to assign any particular value to the fields and may choose to leave the fields blank. Example entries include \{"Ethernet", "mgmt"\} or \{"infiniband", "data1"\}.
+
 \adviceimplstart
 Note that the \refstruct{pmix_coord_t} structure does not imply nor mandate any requirement on how the coordinate data is to be stored within the \ac{PMIx} library. Implementers are free to store the coordinate in whatever format they choose.
 \adviceimplend
@@ -40,6 +44,83 @@ A network coordinate is usually associated with a given network device - e.g., a
 
 Nodes with multiple network devices can also have those devices configured as multiple \refterm{network planes}. In such cases, a given process (even if bound to a specific location) may be associated with a coordinate on each plane. The resulting set of network coordinates shall be reported as a \refstruct{pmix_data_array_t} of \refstruct{pmix_coord_t} structures. The caller may request a coordinate from a specific network plane by passing the \refattr{PMIX_NETWORK_PLANE} attribute as a directive/qualifier to the \refapi{PMIx_Get} or \refapi{PMIx_Query_info_nb} call.
 
+\subsection{Network Coordinate Support Macros}
+\label{api:netcoord:macros}
+
+The following macros are provided to support the \refstruct{pmix_coord_t} structure.
+
+%%%%
+\subsubsection{Initialize the \refstruct{pmix_coord_t} structure}
+\declaremacro{PMIX_COORD_CONSTRUCT}
+
+Initialize the \refstruct{pmix_coord_t} fields
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_COORD_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_coord_t})}
+\end{arglist}
+
+%%%%
+\subsubsection{Destruct the \refstruct{pmix_coord_t} structure}
+\declaremacro{PMIX_COORD_DESTRUCT}
+
+Destruct the \refstruct{pmix_coord_t} fields
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_COORD_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_coord_t})}
+\end{arglist}
+
+%%%%
+\subsubsection{Create a \refstruct{pmix_coord_t} array}
+\declaremacro{PMIX_COORD_CREATE}
+
+Allocate and initialize a \refstruct{pmix_coord_t} array
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_COORD_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_coord_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+%%%%
+\subsubsection{Release a \refstruct{pmix_coord_t} array}
+\declaremacro{PMIX_COORD_FREE}
+
+Release an array of \refstruct{pmix_coord_t} structures
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_COORD_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_coord_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%%
 \subsection{Network Coordinate Views}
 \declarestruct{pmix_coord_view_t}
 
