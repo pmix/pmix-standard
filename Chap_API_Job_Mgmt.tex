@@ -276,7 +276,8 @@ Request an allocation operation from the host resource manager.
 \begin{codepar}
 pmix_status_t
 PMIx_Allocation_request(pmix_alloc_directive_t directive,
-                        pmix_info_t info[], size_t ninfo);
+                        pmix_info_t info[], size_t ninfo,
+                        pmix_info_t *results[], size_t *nresults);
 \end{codepar}
 \cspecificend
 
@@ -284,6 +285,8 @@ PMIx_Allocation_request(pmix_alloc_directive_t directive,
 \argin{directive}{Allocation directive (handle)}
 \argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\arginout{results}{Address where a pointer to an array of \refstruct{pmix_info_t} containing the results of the request can be returned (memory reference)}
+\arginout{nresults}{Address where the number of elements in \refarg{results} can be returned (handle)}
 \end{arglist}
 
 Returns one of the following:
@@ -345,6 +348,8 @@ Any additional allocated resources will be considered as part of the current all
 \item Return no-longer-required resources to the scheduler.
 This includes the ``loan'' of resources back to the scheduler with a promise to return them upon subsequent request.
 \end{compactitem}
+
+If successful, the returned results for a request for additional resources must include the host resource manager's identifier (\refattr{PMIX_ALLOC_REFERENCE}) that the requester can use to specify the resources in, for example, a call to \refapi{PMIx_Spawn}.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Allocation_request_nb}}
