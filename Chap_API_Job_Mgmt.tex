@@ -428,7 +428,7 @@ Returns one of the following:
 
 Host environments that implement support for this operation are required to support the following attributes:
 
-\pasteAttributeItem{PMIX_ALLOC_ID}
+\pasteAttributeItem{PMIX_ALLOC_REQ_ID}
 \pasteAttributeItem{PMIX_ALLOC_NUM_NODES}
 \pasteAttributeItem{PMIX_ALLOC_NUM_CPUS}
 \pasteAttributeItem{PMIX_ALLOC_TIME}
@@ -474,7 +474,7 @@ Any additional allocated resources will be considered as part of the current all
 This includes the ``loan'' of resources back to the scheduler with a promise to return them upon subsequent request.
 \end{compactitem}
 
-If successful, the returned results for a request for additional resources must include the host resource manager's identifier (\refattr{PMIX_ALLOC_REFERENCE}) that the requester can use to specify the resources in, for example, a call to \refapi{PMIx_Spawn}.
+If successful, the returned results for a request for additional resources must include the host resource manager's identifier (\refattr{PMIX_ALLOC_ID}) that the requester can use to specify the resources in, for example, a call to \refapi{PMIx_Spawn}.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Allocation_request_nb}}
@@ -521,7 +521,7 @@ Returns one of the following:
 
 Host environments that implement support for this operation are required to support the following attributes:
 
-\pasteAttributeItem{PMIX_ALLOC_ID}
+\pasteAttributeItem{PMIX_ALLOC_REQ_ID}
 \pasteAttributeItem{PMIX_ALLOC_NUM_NODES}
 \pasteAttributeItem{PMIX_ALLOC_NUM_CPUS}
 \pasteAttributeItem{PMIX_ALLOC_TIME}
