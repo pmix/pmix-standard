@@ -4167,11 +4167,16 @@ Append the given value to the specified environmental value using the given sepa
 \subsection{Job Allocation attributes}
 \label{api:struct:attributes:joballoc}
 
-Attributes used to describe the job allocation - these are values passed to the \refapi{PMIx_Allocation_request_nb} \ac{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}
+Attributes used to describe the job allocation - these are values passed to and/or returned by the \refapi{PMIx_Allocation_request_nb} and \refapi{PMIx_Allocation_request} \acp{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}
 
 %
-\declareAttribute{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
-Provide a string identifier for this allocation request which can later be used to query status of the request.
+\declareAttribute{PMIX_ALLOC_REQ_ID}{"pmix.alloc.reqid"}{char*}{
+User-provided string identifier for this allocation request which can later be used to query status of the request.
+}
+
+%
+\declareNewAttribute{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
+A string identifier (provided by the host environment) for the resulting allocation which can later be used to reference the allocated resources in, for example, a call to \refapi{PMIx_Spawn}.
 }
 
 %
