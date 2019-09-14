@@ -584,7 +584,8 @@ Request a job control action.
 \begin{codepar}
 pmix_status_t
 PMIx_Job_control(const pmix_proc_t targets[], size_t ntargets,
-                 const pmix_info_t directives[], size_t ndirs)
+                 const pmix_info_t directives[], size_t ndirs,
+                 pmix_info_t *results[], size_t *nresults)
 \end{codepar}
 \cspecificend
 
@@ -593,14 +594,14 @@ PMIx_Job_control(const pmix_proc_t targets[], size_t ntargets,
 \argin{ntargets}{Number of element in the \refarg{targets} array (integer)}
 \argin{directives}{Array of info structures (array of handles)}
 \argin{ndirs}{Number of element in the \refarg{directives} array (integer)}
-\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
-\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\arginout{results}{Address where a pointer to an array of \refstruct{pmix_info_t} containing the results of the request can be returned (memory reference)}
+\arginout{nresults}{Address where the number of elements in \refarg{results} can be returned (handle)}
 \end{arglist}
 
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request was processed by the host environment and returned \textit{success}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request was processed by the host environment and returned \textit{success}. Details of the result will be returned in the \refarg{results} array
     \item a \ac{PMIx} error constant indicating either an error in the input or that the request was refused
 \end{itemize}
 
@@ -773,7 +774,8 @@ Request that application processes be monitored.
 \begin{codepar}
 pmix_status_t
 PMIx_Process_monitor(const pmix_info_t *monitor, pmix_status_t error,
-                     const pmix_info_t directives[], size_t ndirs)
+                     const pmix_info_t directives[], size_t ndirs,
+                     pmix_info_t *results[], size_t *nresults)
 \end{codepar}
 \cspecificend
 
@@ -782,12 +784,14 @@ PMIx_Process_monitor(const pmix_info_t *monitor, pmix_status_t error,
 \argin{error}{status (integer)}
 \argin{directives}{Array of info structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\arginout{results}{Address where a pointer to an array of \refstruct{pmix_info_t} containing the results of the request can be returned (memory reference)}
+\arginout{nresults}{Address where the number of elements in \refarg{results} can be returned (handle)}
 \end{arglist}
 
 Returns one of the following:
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request was processed and returned \textit{success}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request was processed and returned \textit{success}. Details of the result will be returned in the \refarg{results} array
     \item a PMIx error constant indicating either an error in the input or that the request was refused
 \end{itemize}
 
