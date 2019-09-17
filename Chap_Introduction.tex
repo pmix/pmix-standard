@@ -8,34 +8,33 @@
 \ac{PMIx} is an application programming interface standard to provide
 libraries and programming models with a portable and well-defined access to commonly
 needed services in distributed and parallel computing systems.
-A typical example of such a service is the exchange of information to start a parallel 
-application or service in a portable and scalable manner.
-As such, \ac{PMIx} also gives distributed system software providers a better understanding of how
+A typical example of such a service is the portable and scalable exchange of network 
+addresses to establish communication channels between the processes of a parallel 
+application or service.
+As such, \ac{PMIx} gives distributed system software providers a better understanding of how
 programming models and libraries can interface with and use system-level services.
-As a standard, \ac{PMIx} also promotes the use and implementation of APIs that allow for
+As a standard, \ac{PMIx} provides \acp{API} that allow for
 portable access to these varied system software services and the
-functionalities they offer.  Although these APIs can be defined and implemented directly by the
+functionalities they offer.  Although these services can be defined and implemented directly by the
 system software components providing them, the 
 community represented by the \ac{ASC}
 feels that the development of a shared standard better serves the
-community.  Such implementations can interface
-with existing system software that are already compliant with \ac{PMIx} or, 
-when not already available, directly implement PMIx APIs.
+community.  
 As a result, \ac{PMIx} enables programming languages and libraries to focus on their core
 competencies without having to provide their own system-level services.
 
 \subsection{Background}
 \label{chap:introduction:background}
 
-\ac{PMI} has been used for quite some time as a means of exchanging wireup information needed for inter-process communication.  
+The \ac{PMI} has been used for quite some time as a means of exchanging wireup information needed for inter-process communication.  
 Two versions (PMI-1 and PMI-2) have been released as part of the MPICH effort, with PMI-2 demonstrating better scaling properties than its PMI-1 predecessor.
 
-PMI-1 and PMI-2 can be implemented using \ac{PMIx} though it is not a strict superset of either.
+PMI-1 and PMI-2 can be implemented using \ac{PMIx} though \ac{PMIx} is not a strict superset of either.
 Since its introduction, \ac{PMIx} has expanded 
 on earlier \ac{PMI} efforts by 
-providing an extended version of the \ac{PMI} API's which provide necessary functionality for launching and managing parallel applications and tools at scale.
+providing an extended version of the \ac{PMI} \acp{API} which provide necessary functionality for launching and managing parallel applications and tools at scale.
 
-The increase in adoption has motivated the creation of this document to formally specify the intended behavior of the \ac{PMIx} API's.
+The increase in adoption has motivated the creation of this document to formally specify the intended behavior of the \ac{PMIx} \acp{API}.
 
 More information about the \ac{PMIx} standard and affiliated projects can be found at the \ac{PMIx} web site: \url{https://pmix.org}
 
@@ -45,21 +44,21 @@ More information about the \ac{PMIx} standard and affiliated projects can be fou
 \section{PMIx Architecture Overview}
 \label{chap:intro:arch_overview}
 
-The presentation of the \ac{PMIx} APIs within this document makes some 
-basic assumptions about how these APIs
+The presentation of the \ac{PMIx} \acp{API} within this document makes some 
+basic assumptions about how these \acp{API}
 are used and implemented.  These assumptions are generally made only to simplify
 the presentation and explain \ac{PMIx} with the expectation that most readers
 have similar concepts on how computing systems are organized today.  However, ultimately
-this document should only be assumed to define a set of APIs.
+this document should only be assumed to define a set of \acp{API}.
 
-A concept that is fundamental to \ac{PMIx} is that a \ac{PMIx} implentation might
+A concept that is fundamental to \ac{PMIx} is that a \ac{PMIx} implementation might
 operate primarily as a \textit{messenger}, and not a \textit{doer} --- i.e., a \ac{PMIx} 
 implementation might rely heavily or fully on other software components to provide 
 functionality~\cite{2017-Castain-EuroMPI}.
 Since a \ac{PMIx} implementation might only deliver requests and responses to other 
-software components, the API calls include ways to provide arbitrary information to the 
+software components, the \ac{API} calls include ways to provide arbitrary information to the 
 backend components that actually 
-implement the functionality.  Also, because the \ac{PMIx} implementations might rely heavily 
+implement the functionality.  Also, because \ac{PMIx} implementations generally rely heavily 
 on other system software, a PMIx implementation might not be able to guarantee that a feature 
 is available on all platforms the implementation supports.  These aspects are discussed in 
 detail in the remainder of this chapter.
@@ -75,22 +74,9 @@ detail in the remainder of this chapter.
 \endgroup
 
 
-Fig.~\ref{fig:roles} shows a typical \ac{PMIx} implemention in which the application is built against a \ac{PMIx} client library that contains the client-side \acp{API},
-attribute definitions, and communication support for interacting with the local \ac{PMIx} server. Intra-process cross-library interactions
-are supported at the client level to avoid unnecessary burdens on the server. Orchestration requests are sent to the
-local \ac{PMIx} server, which subsequently passes them to the host \ac{SMS} (here represented by an \ac{RM} daemon).  The interaction between the \ac{PMIx} server and \ac{SMS} might be 
-achieved using callback functions registered during server initialiation.  
-The host \ac{SMS} can indicate its lack of support for any operation by simply providing a \textit{NULL} for the associated callback function, or can create a function entry that returns \textit{not supported} when called.
-
-Recognizing the burden this places on SMS vendors, the PMIx community has included interfaces by
-which the host can request support from local SMS elements. Once the SMS has transferred the request to
-an appropriate location, a PMIx server interface can be used to pass the request between SMS subsystems.
-For example, a request for network traffic statistics can utilize the
-PMIx networking abstractions to retrieve the information from the FM. This reduces the portability and
-interoperability issues between the individual subsystems by transferring the burden of defining the
-interoperable interfaces from the SMS subsystems to the PMIx community, which continues
-to work with those providers to develop the necessary support.
-
+Fig.~\ref{fig:roles} shows a typical \ac{PMIx} implementation in which the application is 
+built against a \ac{PMIx} client library that contains the client-side \acp{API},
+attribute definitions, and communication support for interacting with the local \ac{PMIx} server. 
 \ac{PMIx} clients are processes which are started through the \ac{PMIx} infrastructure, 
 either by the PMIx implementation directly or through an \ac{SMS} component, and have registered 
 as clients.  A \ac{PMIx} client 
@@ -102,6 +88,25 @@ process which it created, either directly or through other \ac{SMS}, to authenti
 process and provide information the process requests such as its identity and the 
 identity of its peers.  
 
+As clients invoke \ac{PMIx} \acp{API}, is possible that some client requests can 
+be handled at the client level.  Other requests might require communication with the 
+local \ac{PMIx} server, which subsequently might request services from the host \ac{SMS} 
+(represented here by an \ac{RM} daemon).  The interaction between the \ac{PMIx} server and \ac{SMS} might be 
+achieved using callback functions registered during server initialization.  
+The host \ac{SMS} can indicate its lack of support for any operation by simply providing a \textit{NULL} for the associated callback function, or can create a function entry that returns \textit{not supported} when called.
+
+Recognizing the burden this places on SMS vendors, the PMIx community has included interfaces by
+which the host can request support from local SMS elements. Once the SMS has transferred the request to
+an appropriate location, a \ac{PMIx} server interface can be used to pass the request 
+between \ac{SMS} subsystems.
+For example, a request for network traffic statistics can utilize the
+PMIx networking abstractions to retrieve the information from the Fabric Manager. 
+This reduces the portability and
+interoperability issues between the individual subsystems by transferring the burden of defining the
+interoperable interfaces from the \ac{SMS} subsystems to the \ac{PMIx} community, which continues
+to work with those providers to develop the necessary support.
+
+Fig.~\ref{fig:roles} shows how tools can interact with the \ac{PMIx} architecture.
 Tools, whether standalone or embedded in job scripts, are an exception to 
 the normal client registration process.   A process can register as a tool, provided 
 the \ac{PMIx} client library has adequate rendezvous information to connect to the appropriate
@@ -112,21 +117,26 @@ Processes registered as tools do not have peers.
 \section{Portability of Functionality}
 \label{chap:intro:not_supported}
 
-It is difficult to define a portable API that will provice access to the many             
+It is difficult to define a portable \ac{API} that will provice access to the many             
 and varied features underlying the operations for which \ac{PMIx} provides access.
 For example, the options and features provided to request the creation·
 of new processes varied dramatically between different systems existing
-at the time \ac{PMIx} was introduced.  Many \acp{WLM} provide rich interfaces·
-to specify the resources assigned to new processes and how the new processes·
-are mapped to those resources.  As a result, \ac{PMIx} is faced with the challenge·
-of attempting to meet the seamingly conflicting goals of creating an API which allows·
-access to these diverse features while being portable across a wide range of·
+at the time \ac{PMIx} was introduced.  Many \acp{WLM} provide rich interfaces
+to specify the resources assigned to processes.
+As a result, \ac{PMIx} is faced with the challenge
+of attempting to meet the seamingly conflicting goals of creating an \ac{API} which allows
+access to these diverse features while being portable across a wide range of
 existing software environments. In addition, the functionalities required by different 
 clients vary greatly.  Producing a \ac{PMIx} implementation
 which can provide the needs of all possible clients on all of its target systems
 could be so burdensome as to discourage \ac{PMIx} implementations.
 
-Resource managers and other system management stack components retain the right to decide on support of a particular function. The \ac{PMIx} community continues to look at ways to assist \ac{SMS} implementers in their decisions by highlighting functions and attributes that are critical to basic application execution (e.g., \refapi{PMIx_Get}).
+To help address this issue, the \ac{PMIx} \acp{API} are designed to allow resource managers 
+and other system management stack components to decide on support of a 
+particular function and allow client applications to query and adjust to the level of support available. 
+The \ac{PMIx} community continues to look at ways to assist \ac{SMS} implementers in their decisions 
+on what functionality to support by highlighting functions and attributes that are 
+critical to basic application execution (e.g., \refapi{PMIx_Get}) for certain classes of applications.
 
 \subsection{Optional Nature of Attributes}
 
@@ -197,7 +207,7 @@ Below are a summary listing of the interfaces defined in the 1.0 headers.
 \item \refapi{PMIx_Disconnect}, \refapi{PMIx_Disconnect_nb}
 \item \refapi{PMIx_Resolve_nodes}, \refapi{PMIx_Resolve_peers}
 \end{itemize}
-\item Server APIs
+\item Server \acp{API}
 \begin{itemize}
 \item \refapi{PMIx_server_init}, \refapi{PMIx_server_finalize}
 \item \refapi{PMIx_generate_regex}, \refapi{PMIx_generate_ppn}
@@ -205,7 +215,7 @@ Below are a summary listing of the interfaces defined in the 1.0 headers.
 \item \refapi{PMIx_server_register_client}, \refapi{PMIx_server_deregister_client}
 \item \refapi{PMIx_server_setup_fork}, \refapi{PMIx_server_dmodex_request}
 \end{itemize}
-\item Common APIs
+\item Common \acp{API}
 \begin{itemize}
 \item \refapi{PMIx_Get_version}, \refapi{PMIx_Store_internal}, \refapi{PMIx_Error_string}
 \item PMIx_Register_errhandler, PMIx_Deregister_errhandler, PMIx_Notify_error
@@ -226,15 +236,15 @@ The following \acp{API} were introduced in v2.0 of the PMIx Standard:
 \item \refapi{PMIx_Query_info_nb}, \refapi{PMIx_Log_nb}
 \item \refapi{PMIx_Allocation_request_nb}, \refapi{PMIx_Job_control_nb}, \refapi{PMIx_Process_monitor_nb}, \refmacro{PMIx_Heartbeat}
 \end{itemize}
-\item Server APIs
+\item Server \acp{API}
 \begin{itemize}
 \item \refapi{PMIx_server_setup_application}, \refapi{PMIx_server_setup_local_support}
 \end{itemize}
-\item Tool APIs
+\item Tool \acp{API}
 \begin{itemize}
 \item \refapi{PMIx_tool_init}, \refapi{PMIx_tool_finalize}
 \end{itemize}
-\item Common APIs
+\item Common \acp{API}
 \begin{itemize}
 \item \refapi{PMIx_Register_event_handler}, \refapi{PMIx_Deregister_event_handler}
 \item \refapi{PMIx_Notify_event}
@@ -301,17 +311,17 @@ The following \acp{API} were introduced in v3.0 of the PMIx Standard:
 \item \refapi{PMIx_Allocation_request}, \refapi{PMIx_Process_monitor}
 \item \refapi{PMIx_Get_credential}, \refapi{PMIx_Validate_credential}
 \end{itemize}
-\item Server APIs
+\item Server \acp{API}
 \begin{itemize}
 \item \refapi{PMIx_server_IOF_deliver}
 \item \refapi{PMIx_server_collect_inventory}, \refapi{PMIx_server_deliver_inventory}
 \end{itemize}
-\item Tool APIs
+\item Tool \acp{API}
 \begin{itemize}
 \item \refapi{PMIx_IOF_pull}, \refapi{PMIx_IOF_push}, \refapi{PMIx_IOF_deregister}
 \item \refapi{PMIx_tool_connect_to_server}
 \end{itemize}
-\item Common APIs
+\item Common \acp{API}
 \begin{itemize}
 \item \refapi{PMIx_IOF_channel_string}
 \end{itemize}
