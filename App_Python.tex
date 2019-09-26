@@ -10,7 +10,24 @@ Note: the \ac{PMIx} \acp{API} have been loosely collected into three Python clas
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Design Considerations}
+\label{app:python:design}
+
+Several issues arose during design of the Python bindings:
+
+\subsection{Error Codes vs Python Exceptions}
+\label{app:python:exceptions}
+
+The C programming language reports errors through the return of the corresponding integer status codes. \ac{PMIx} has defined a range of negative values for this purpose. However, Python has the option of raising \emph{exceptions} that effectively operate as interrupts that can be trapped if the program appropriately tests for them. The \ac{PMIx} Python bindings opted to follow the C-based standard and return \ac{PMIx} status codes in lieu of raising exceptions as this method was considered more consistent for those working in both domains.
+
+\subsection{Representation of Structured Data}
+\label{app:python:rep}
+
+\ac{PMIx} utilizes a number of C-language structures to efficiently bundle related information. For example, the \ac{PMIx} process identifier is represented as a struct containing a character array for the namespace and a 32-bit unsigned integer for the process rank. There are several options for translating such objects to Python – e.g., the \ac{PMIx} process identifier could be represented as a two-element tuple (nspace, rank) or as a dictionary {‘nspace’: name, ‘rank’: 0}. Exploration found no discernible benefit to either representation, nor was any clearly identifiable rationale developed that would lead a user to expect one versus the other for a given \ac{PMIx} data type. Consistency in the translation (i.e., exclusively using tuple or dictionary) appeared to be the most important criterion. Hence, the decision was made to express all complex datatypes as Python dictionaries.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Datatype Definitions}
+\label{app:python:types}
 
 \ac{PMIx} defines a number of datatypes comprised of fixed-size character arrays, restricted range integers (e.g., uint32_t), and structures. Each datatype is represented by a named unsigned 16-bit integer (\code{uint16_t}) constant. Users are advised to use the named \ac{PMIx} constants for indicating datatypes instead of integer values to ensure compatibility with future PMIx versions.
 
@@ -3062,3 +3079,231 @@ Returns:
 See \refapi{PMIx_IOF_push} for description of all relevant attributes and behaviors
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Example Usage}
+\label{app:python:examples}
+
+The following examples are provided to illustrate the use of the Python bindings.
+
+\subsection{Python Client}
+
+The following example contains a client program that illustrates a fairly common usage pattern. The program instantiates and initializes the PMIxClient class, posts some data that is to be shared across all processes in the job, executes a “fence” that circulates the data, and then retrieves a value posted by one of its peers. Note that the example has been formatted to fit the document layout.
+
+
+\pyspecificstart
+\begin{codepar}
+from pmix import *
+
+def main():
+    # Instantiate a client object
+    myclient = PMIxClient()
+    print("Testing PMIx ", myclient.get_version())
+
+    # Initialize the PMIx client library, declaring the programming model
+    # as “TEST” and the library name as “PMIX”, just for the example
+    info = [{'key':PMIX_PROGRAMMING_MODEL,
+             'value':'TEST', 'val_type':PMIX_STRING},
+            {'key':PMIX_MODEL_LIBRARY_NAME,
+             'value':'PMIX', 'val_type':PMIX_STRING}]
+    rc,myname = myclient.init(info)
+    if PMIX_SUCCESS != rc:
+        print("FAILED TO INIT WITH ERROR", myclient.error_string(rc))
+        exit(1)
+
+    # try posting a value
+    rc = myclient.put(PMIX_GLOBAL, "mykey",
+                      {'value':1, 'val_type':PMIX_INT32})
+    if PMIX_SUCCESS != rc:
+        print("PMIx_Put FAILED WITH ERROR", myclient.error_string(rc))
+        # cleanly finalize
+        myclient.finalize()
+        exit(1)
+
+    # commit it
+    rc = myclient.commit()
+    if PMIX_SUCCESS != rc:
+        print("PMIx_Commit FAILED WITH ERROR",
+              myclient.error_string(rc))
+        # cleanly finalize
+        myclient.finalize()
+        exit(1)
+
+    # execute fence across all processes in my job
+    procs = []
+    info = []
+    rc = myclient.fence(procs, info)
+    if PMIX_SUCCESS != rc:
+        print("PMIx_Fence FAILED WITH ERROR", myclient.error_string(rc))
+        # cleanly finalize
+        myclient.finalize()
+        exit(1)
+
+    # Get a value from a peer
+    if 0 != myname['rank']:
+        info = []
+        rc, get_val = myclient.get({'nspace':"testnspace", 'rank': 0},
+                                   "mykey", info)
+        if PMIX_SUCCESS != rc:
+            print("PMIx_Commit FAILED WITH ERROR",
+                  myclient.error_string(rc))
+            # cleanly finalize
+            myclient.finalize()
+            exit(1)
+        print("Get value returned: ", get_val)
+
+    # test a fence that should return not_supported because
+    # we pass a required attribute that the server is known
+    # not to support
+    procs = []
+    info = [{'key': 'ARBIT', 'flags': PMIX_INFO_REQD,
+             'value':10, 'val_type':PMIX_INT}]
+    rc = myclient.fence(procs, info)
+    if PMIX_SUCCESS == rc:
+        print("PMIx_Fence SUCCEEDED BUT SHOULD HAVE FAILED")
+        # cleanly finalize
+        myclient.finalize()
+        exit(1)
+
+    # Publish something
+    info = [{'key': 'ARBITRARY', 'value':10, 'val_type':PMIX_INT}]
+    rc = myclient.publish(info)
+    if PMIX_SUCCESS != rc:
+        print("PMIx_Publish FAILED WITH ERROR",
+              myclient.error_string(rc))
+        # cleanly finalize
+        myclient.finalize()
+        exit(1)
+
+    # finalize
+    info = []
+    myclient.finalize(info)
+    print("Client finalize complete")
+
+# Python main program entry point
+if __name__ == '__main__':
+    main()
+\end{codepar}
+\pyspecificend
+
+\subsection{Python Server}
+
+The following example contains a minimum-level server host program that instantiates and initializes the PMIxServer class. The program illustrates passing several server module functions to the bindings and includes code to setup and spawn a simple client application, waiting until the spawned client terminates before finalizing and exiting itself. Note that the example has been formatted to fit the document layout.
+
+\pyspecificstart
+\begin{codepar}
+from pmix import *
+import signal, time
+import os
+import select
+import subprocess
+
+def clientconnected(proc:tuple is not None):
+    print("CLIENT CONNECTED", proc)
+    return PMIX_OPERATION_SUCCEEDED
+
+def clientfinalized(proc:tuple is not None):
+    print("CLIENT FINALIZED", proc)
+    return PMIX_OPERATION_SUCCEEDED
+
+def clientfence(procs:list, directives:list, data:bytearray):
+    # check directives
+    if directives is not None:
+        for d in directives:
+            # these are each an info dict
+            if "pmix" not in d['key']:
+                # we do not support such directives - see if
+                # it is required
+                try:
+                    if d['flags'] & PMIX_INFO_REQD:
+                        # return an error
+                        return PMIX_ERR_NOT_SUPPORTED
+                except:
+                    #it can be ignored
+                    pass
+    return PMIX_OPERATION_SUCCEEDED
+
+def main():
+    try:
+        myserver = PMIxServer()
+    except:
+        print("FAILED TO CREATE SERVER")
+        exit(1)
+    print("Testing server version ", myserver.get_version())
+
+    args = [{'key':PMIX_SERVER_SCHEDULER,
+             'value':'T', 'val_type':PMIX_BOOL}]
+    map = {'clientconnected': clientconnected,
+           'clientfinalized': clientfinalized,
+           'fencenb': clientfence}
+    my_result = myserver.init(args, map)
+
+    # get our environment as a base
+    env = os.environ.copy()
+
+    # register an nspace for the client app
+    (rc, regex) = myserver.generate_regex("test000,test001,test002")
+    (rc, ppn) = myserver.generate_ppn("0")
+    kvals = [{'key':PMIX_NODE_MAP,
+              'value':regex, 'val_type':PMIX_STRING},
+             {'key':PMIX_PROC_MAP,
+              'value':ppn, 'val_type':PMIX_STRING},
+             {'key':PMIX_UNIV_SIZE,
+              'value':1, 'val_type':PMIX_UINT32},
+             {'key':PMIX_JOB_SIZE,
+              'value':1, 'val_type':PMIX_UINT32}]
+    rc = foo.register_nspace("testnspace", 1, kvals)
+    print("RegNspace ", rc)
+
+    # register a client
+    uid = os.getuid()
+    gid = os.getgid()
+    rc = myserver.register_client({'nspace':"testnspace", 'rank':0},
+                                  uid, gid)
+    print("RegClient ", rc)
+    # setup the fork
+    rc = myserver.setup_fork({'nspace':"testnspace", 'rank':0}, env)
+    print("SetupFrk", rc)
+
+    # setup the client argv
+    args = ["./client.py"]
+    # open a subprocess with stdout and stderr
+    # as distinct pipes so we can capture their
+    # output as the process runs
+    p = subprocess.Popen(args, env=env,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # define storage to catch the output
+    stdout = []
+    stderr = []
+    # loop until the pipes close
+    while True:
+        reads = [p.stdout.fileno(), p.stderr.fileno()]
+        ret = select.select(reads, [], [])
+
+        stdout_done = True
+        stderr_done = True
+
+        for fd in ret[0]:
+            # if the data
+            if fd == p.stdout.fileno():
+                read = p.stdout.readline()
+                if read:
+                    read = read.decode('utf-8').rstrip()
+                    print('stdout: ' + read)
+                    stdout_done = False
+            elif fd == p.stderr.fileno():
+                read = p.stderr.readline()
+                if read:
+                    read = read.decode('utf-8').rstrip()
+                    print('stderr: ' + read)
+                    stderr_done = False
+
+        if stdout_done and stderr_done:
+            break
+    print("FINALIZING")
+    myserver.finalize()
+
+
+if __name__ == '__main__':
+    main()
+\end{codepar}
+\pyspecificend
