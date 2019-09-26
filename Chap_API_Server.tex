@@ -227,6 +227,14 @@ The following attributes may be provided by host environments:
 
 Attributes not directly provided by the host environment may be derived by the \ac{PMIx} server library from other required information and included in the data made available to the server library's clients.
 
+The following optional attributes may be provided by the host environment to identify the programming model (as specified by the user) being executed within the namespace. The \ac{PMIx} server library may utilize this information to customize the environment to fit that model (e.g., adding environmental variables specified by the corresponding standard for that model):
+
+\begin{itemize}
+    \item \pastePRIAttributeItem{PMIX_PROGRAMMING_MODEL}
+    \item \pastePRIAttributeItem{PMIX_MODEL_LIBRARY_NAME}
+    \item \pastePRIAttributeItem{PMIX_MODEL_LIBRARY_VERSION}
+\end{itemize}
+
 \optattrend
 
 %%%%
@@ -776,6 +784,14 @@ Returns one of the following:
 \pastePRIAttributeItem{PMIX_ALLOC_BANDWIDTH}
 \pastePRIAttributeItem{PMIX_ALLOC_NETWORK_QOS}
 \pastePRIAttributeItem{PMIX_ALLOC_TIME}
+
+The following optional attributes may be provided by the host environment to identify the programming model (as specified by the user) being executed within the application. The \ac{PMIx} server library may utilize this information to harvest/forward model-specific environmental variables, record the programming model associated with the application, etc.
+
+\begin{itemize}
+    \item \pastePRIAttributeItem{PMIX_PROGRAMMING_MODEL}
+    \item \pastePRIAttributeItem{PMIX_MODEL_LIBRARY_NAME}
+    \item \pastePRIAttributeItem{PMIX_MODEL_LIBRARY_VERSION}
+\end{itemize}
 
 \optattrend
 
