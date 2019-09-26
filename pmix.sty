@@ -337,7 +337,7 @@
 %
 \newcommand{\declareAttribute}[4]{%
     \code{#1} ~~\code{#2}~~(\code{#3})%
-    \index{#1!Defintion|textbf} \label{attr:#1}%
+    \index{#1!Definition|textbf} \label{attr:#1}%
     \StdCopy{str:#1}{\code{#2}}%
     \StdCopy{attr:#1}{\code{#3}}%
     \vspace{-1.3ex}%
@@ -349,7 +349,7 @@
 
 \newcommand{\declareNewAttribute}[4]{%
    {\color{magenta}\code{#1}} ~~\code{#2}~~(\code{#3})%
-    \index{#1!Defintion|textbf} \label{attr:#1}%
+    \index{#1!Definition|textbf} \label{attr:#1}%
     \StdCopy{str:#1}{\code{#2}}%
     \StdCopy{attr:#1}{\code{#3}}%
     \vspace{-1.3ex}%
@@ -361,7 +361,7 @@
 
 \newcommand{\declareDepAttribute}[4]{%
    {\color{green!80!black}\code{#1}} ~~\code{#2}~~(\code{#3})%
-    \index{#1!Defintion|textbf} \label{attr:#1}%
+    \index{#1!Definition|textbf} \label{attr:#1}%
     \StdCopy{str:#1}{\code{#2}}%
     \StdCopy{attr:#1}{\code{#3}}%
     \vspace{-1.3ex}%
@@ -685,26 +685,26 @@
 
 \newcommand{\refsection}[2]{\hyperref[#1]{#2}}
 
-\newcommand{\declarestruct}[1]{\index{#1!Defintion|textbf} \label{struct:#1}}
+\newcommand{\declarestruct}[1]{\index{#1!Definition|textbf} \label{struct:#1}}
 \newcommand{\refstruct}[1]{\index{#1} \hyperref[struct:#1]{\code{#1} }}
 \newcommand{\structref}[1] {\refstruct{#1}}
 \newcommand{\specrefstruct}[1]{Section~\ref{struct:#1} on page~\pageref{struct:#1}}
 
-\newcommand{\declareapi}[1]{\index{#1!Defintion|textbf} \label{api:#1}}
+\newcommand{\declareapi}[1]{\index{#1!Definition|textbf} \label{api:#1}}
 \newcommand{\refapi}[1]{\index{#1} \hyperref[api:#1]{\code{#1} }}
 \newcommand{\argapi}[1] {\refapi{#1}}
 
 \newcommand{\refconst}[1]{\hyperref[const:#1]{\code{#1} }}
 
-\newcommand{\declareattr}[1]{\index{#1!Defintion|textbf} \label{attr:#1}}
+\newcommand{\declareattr}[1]{\index{#1!Definition|textbf} \label{attr:#1}}
 
 \newcommand{\refarg}[1] {{\textrm{\textmd{\itshape{#1}}}}}
 \newcommand{\argref}[1] {\refarg{#1}}
 
-\newcommand{\declaremacro}[1]{\index{#1!Defintion|textbf} \label{macro:#1}}
+\newcommand{\declaremacro}[1]{\index{#1!Definition|textbf} \label{macro:#1}}
 \newcommand{\refmacro}[1]{\index{#1} \hyperref[macro:#1]{\code{#1} }}
 
-\newcommand{\declareterm}[1]{\index{#1!Defintion|textbf} \label{macro:#1}}
+\newcommand{\declareterm}[1]{\index{#1!Definition|textbf} \label{macro:#1}}
 \newcommand{\refterm}[1]{\index{#1} \hyperref[macro:#1]{\code{#1} }}
 
 % Place in text for in-text questions during review
