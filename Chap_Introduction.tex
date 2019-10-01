@@ -140,9 +140,31 @@ critical to basic application execution (e.g., \refapi{PMIx_Get}) for certain cl
 
 \subsection{Optional Nature of Attributes}
 
-One area where this can become more complicated is regarding the attributes that provide information to the client process and/or control the behavior of a \ac{PMIx} \ac{API}. For example, the \refattr{PMIX_TIMEOUT} attribute can be used to specify the time (in seconds) before the requested operation should time out. The intent of this attribute is to allow the client to avoid ``hanging'' in a request that takes longer than the client wishes to wait, or may never return (e.g., a \refapi{PMIx_Fence} that a blocked participant never enters).
+An area where differences between support on different systems can be challenging is regarding the attributes that provide information to the client process and/or control the behavior of a \ac{PMIx} \ac{API}.  Most
+\ac{PMIx} \ac{API} calls can accept additional information or attributes specified in the form of 
+key/value pairs. These attributes provide information to the \ac{PMIx} implementation which influence the 
+behavior of the \ac{API} call.  In addition to \ac{API} calls being optional, support for the 
+individual attributes of an \ac{API} call can vary between systems or implementations.   
 
-If an application (for example) truly relies on the \refattr{PMIX_TIMEOUT} attribute in a call to \refapi{PMIx_Fence}, it should set the required flag in the \refstruct{pmix_info_t} for that attribute. This informs the library and its \ac{SMS} host that it must return an immediate error if this attribute is not supported. By not setting the flag, the library and \ac{SMS} host are allowed to treat the attribute as optional, ignoring it if support is not available.
+An application can adapt to the attribute support on a particular system in one of two ways.  
+\ac{PMIx} provides an \ac{API} to enable an application to query the attributes 
+supported by a particular \ac{API} (See \ref{chap:api_job_mgmt:queryattrs}).  
+Through this \ac{API}, the \ac{PMIx} implementation can provide detailed information 
+about the attributes supported on a system for each \ac{API} call queried.
+Alternatively, the application can mark attributes as 
+required using a flag within the \refstruct{pmix_info_t} (See \ref{chap:struct:info}). 
+If the required attribute is 
+not available on the system or the desired value for the attribute is not available, the call will 
+return the error code for \textit{not supported}.
+
+For example, the \refattr{PMIX_TIMEOUT} attribute can be used to specify the time (in seconds) before the requested operation should time out. The intent of this attribute is to allow the client to avoid ``hanging'' in a request that takes longer than the client wishes to wait, or may never return (e.g., a \refapi{PMIx_Fence} that a blocked participant never enters).
+
+The application can query the attribute support for \refapi{PMIx_Fence} 
+and search whether \refattr{PMIX_TIMEOUT} is listed as a supported attribute.  The application can also   
+set the required flag in the \refstruct{pmix_info_t} for that attribute when making the \refapi{PMIx_Fence} 
+call. This will return an error if this attribute is not supported. If the required flag is not set, 
+the library and \ac{SMS} host are allowed to treat the attribute as optional, ignoring it if support 
+is not available.
 
 It is therefore critical that users and application implementers:
 
