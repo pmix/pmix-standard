@@ -178,9 +178,12 @@ It is therefore critical that users and application implementers:
 \ac{PMIx} clients are strongly advised to define a document itemizing the \ac{PMIx} interfaces and associated attributes that are required for correct operation, and are optional but recommended for full functionality.
 The \ac{PMIx} standard cannot define this list for all given \ac{PMIx} clients, but such a list is valuable to \acp{RM} desiring to support these clients.
 
-\ac{PMIx}-enabled \acp{RM} may choose to implement a subset of the \ac{PMIx} standard and/or define attributes beyond those defined herein.
-\ac{PMIx}-enabled \acp{RM} are strongly advised to define a document itemizing the \ac{PMIx} interfaces and associated attributes they support, with any annotations about behavior limitations.
-The \ac{PMIx} standard cannot define this list for all given \ac{PMIx}-enabled \acp{RM}, but such a list is valuable to \ac{PMIx} clients desiring to support a broad range of \ac{PMIx}-enabled \acp{RM}. 
+A \ac{PMIx} implementation may be able to support only a subset of the \ac{PMIx} \acs{API} and attributes on
+a particular system due to either its own limitations or limitations of the \ac{SMS} with which it interfaces.
+A \ac{PMIx} implemenation may also provide additional attributes beyond those defined herein in order to allow
+applications to access the full features of the underlying \ac{SMS}.
+\ac{PMIx} implementations are strongly advised to document the \ac{PMIx} interfaces and associated attributes they support, with any annotations about behavior limitations.
+The \ac{PMIx} standard cannot define this support for implementations, but such documentation is valuable to \ac{PMIx} clients desiring to support a broad range of systems.
 
 While a \ac{PMIx} library implementer, or an \ac{SMS} component server, may choose to support a particular \ac{PMIx} \ac{API}, they are not required to support every attribute that might apply to it. This would pose a significant barrier to entry for an implementer as there can be a broad range of applicable attributes to a given \ac{API}, at least some of which may rarely be used. The \ac{PMIx} community is attempting to help differentiate the attributes by indicating those that are generally used (and therefore, of higher importance to support) vs those that a ``complete implementation'' would support.
 
