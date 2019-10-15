@@ -519,7 +519,7 @@ typedef char pmix_key_t[PMIX_MAX_KEYLEN+1];
 Characters in the key must be standard alphanumeric values supported by common utilities such as \textit{strcmp}.
 
 \adviceuserstart
-References to keys in \ac{PMIx} v1 rwere defined simply as an array of characters of size \code{PMIX_MAX_KEYLEN+1}. The \refstruct{pmix_key_t} type definition was introduced in version 2 of the standard. The two definitions are code-compatible and thus do not represent a break in backward compatibility.
+References to keys in \ac{PMIx} v1 were defined simply as an array of characters of size \code{PMIX_MAX_KEYLEN+1}. The \refstruct{pmix_key_t} type definition was introduced in version 2 of the standard. The two definitions are code-compatible and thus do not represent a break in backward compatibility.
 
 Passing a \refstruct{pmix_key_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_key_t)} and instead rely on the \refconst{PMIX_MAX_KEYLEN} constant.
 \adviceuserend
@@ -559,7 +559,7 @@ typedef char pmix_nspace_t[PMIX_MAX_NSLEN+1];
 Characters in the namespace must be standard alphanumeric values supported by common utilities such as \textit{strcmp}.
 
 \adviceuserstart
-References to namespace values in \ac{PMIx} v1 rwere defined simply as an array of characters of size \code{PMIX_MAX_NSLEN+1}. The \refstruct{pmix_nspace_t} type definition was introduced in version 2 of the standard. The two definitions are code-compatible and thus do not represent a break in backward compatibility.
+References to namespace values in \ac{PMIx} v1 were defined simply as an array of characters of size \code{PMIX_MAX_NSLEN+1}. The \refstruct{pmix_nspace_t} type definition was introduced in version 2 of the standard. The two definitions are code-compatible and thus do not represent a break in backward compatibility.
 
 Passing a \refstruct{pmix_nspace_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_nspace_t)} and instead rely on the \refconst{PMIX_MAX_NSLEN} constant.
 \adviceuserend
