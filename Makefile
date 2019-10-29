@@ -1,7 +1,7 @@
 # Makefile for the PMIx Standard document in LaTex format.
 # For more information, see the master document, pmix-standard.tex.
 
-version=3.1
+version=4.0
 default: pmix-standard.pdf
 
 CHAPTERS= \
@@ -35,7 +35,9 @@ INTERMEDIATE_FILES=pmix-standard.pdf \
 		pmix-standard.out \
 		pmix-standard.log \
 		pmix-standard.bbl \
-		pmix-standard.blg
+		pmix-standard.blg \
+		pmix-standard.synctex.gz \
+		pmix-standard.xwm
 
 all: pmix-standard.pdf
 
