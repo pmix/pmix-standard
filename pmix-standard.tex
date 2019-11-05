@@ -44,14 +44,37 @@
 % The following says letter size, but the style sheet may change the size
 \documentclass[10pt,letterpaper,twoside,makeidx,hidelinks]{scrreprt}
 
+%%%%%%%%%%%%%%%%%%%
+% Release Managers:
+% - Set is_unofficial_draft = false to remove the watermark
+% - Set VER to the correct version number
+% - Set VERDATE to the Month+Year of the release
+%%%%%%%%%%%%%%%%%%%
+\usepackage[us,24hr]{datetime}
+\usepackage{ifthen}
+\newboolean{is_unofficial_draft}
+\setboolean{is_unofficial_draft}{true}
+
 % Text to appear in the footer on even-numbered pages:
-\newcommand{\VER}{4.0 (Draft)}
-\newcommand{\VERDATE}{1H2019}
+\ifthenelse{\boolean{is_unofficial_draft}}
+  {\newcommand{\VER}{4.0 (Draft)}
+   \newcommand{\VERDATE}{\emph{Created on \today}}
+  }
+  {\newcommand{\VER}{4.0}
+   \newcommand{\VERDATE}{Month Year}
+  }
 \newcommand{\footerText}{PMIx Standard -- Version \VER{} -- \VERDATE}
 
 % Unified style sheet for PMIx documents:
 \input{pmix.sty}
 \makeindex[intoc,columns=2]
+
+% Watermark for the Unofficial Drafts
+% Note: "allpages","evenpages","oddpages" do not work. Likely because of the index.
+\ifthenelse{\boolean{is_unofficial_draft}}
+  {\usepackage[printwatermark]{xwatermark}
+   \newwatermark[firstpage,color=gray!30,angle=45,scale=3,xpos=-5,ypos=0]{Unofficial Draft}
+  }{}
 
 %%%%%%%%%%%%%%%%%%%
 \usepackage{acronym}
