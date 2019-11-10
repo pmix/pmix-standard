@@ -11,3 +11,5 @@
 *.synctex.gz
 *.DS_Store
 *.xwm
+datetime-defaults.sty
+datetime.sty
