@@ -108,6 +108,9 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \pastePRIAttributeItem{PMIX_JOB_INFO}
 \pastePRIAttributeItem{PMIX_APP_INFO}
 \pastePRIAttributeItem{PMIX_NODE_INFO}
+\pastePRIAttributeItemBegin{PMIX_GET_STATIC_VALUES}
+and indicate that the address provided for the return value points to a statically defined memory location. Returned non-pointer values should therefore be copied directly into the provided memory. Pointers in the returned value should point directly to values in the key-value store. User is responsible for \emph{not} releasing memory on any returned pointer value. Note that a return status of \refconst{PMIX_ERR_GET_MALLOC_REQD} indicates that direct pointers could not be supported - thus, the returned data contains allocated memory that the user must release.
+\pastePRIAttributeItemEnd
 
 \reqattrend
 
@@ -195,6 +198,9 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \pastePRIAttributeItem{PMIX_JOB_INFO}
 \pastePRIAttributeItem{PMIX_APP_INFO}
 \pastePRIAttributeItem{PMIX_NODE_INFO}
+\pastePRIAttributeItemBegin{PMIX_GET_STATIC_VALUES}
+and indicate that user takes responsibility for properly releasing memory on the returned value (i.e., free'ing the value structure but not the pointer fields). Note that a return status of \refconst{PMIX_ERR_GET_MALLOC_REQD} indicates that direct pointers could not be supported - thus, the returned data contains allocated memory that the user must release.
+\pastePRIAttributeItemEnd
 
 \reqattrend
 
