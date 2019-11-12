@@ -78,6 +78,31 @@ In other words, members of \ac{PMIx} Groups are \emph{loosely coupled} as oppose
 The reliance on \ac{PMIx} events in the \ac{PMIx} Group concept dictates that processes utilizing these \acp{API} must register for the corresponding events. Failure to do so will likely lead to operational failures. Users are recommended to utilize the \refattr{PMIX_TIMEOUT} directive (or retain an internal timer) on calls to \ac{PMIx} Group \acp{API} (especially the blocking form of those functions) as processes that have not registered for required events will never respond.
 \adviceuserend
 
+
+%%%%%%%%%%%
+\subsection{Group Operation Constants}
+\declarestruct{pmix_group_operation_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_group_operation_t} structure is an enumerated type for specifying group operations. All values were originally defined in version 4 of the standard unless otherwise marked.
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_GROUP_DECLINE}
+Decline an invitation to join a \ac{PMIx} group - provided for readability of user code
+%
+\declareconstitemNEW{PMIX_GROUP_ACCEPT}
+Accept an invitation to join a \ac{PMIx} group - provided for readability of user code
+%
+\declareconstitemNEW{PMIX_GROUP_CONSTRUCT}
+Construct a group composed of the specified processes - used by a \ac{PMIx} server library to direct host operation
+%
+\declareconstitemNEW{PMIX_GROUP_DESTRUCT}
+Destruct the specified group - used by a \ac{PMIx} server library to direct host operation
+%
+\end{constantdesc}
+
+
 %%%%%%%%%%%
 \subsection{\code{PMIx_Group_construct}}
 \declareapi{PMIx_Group_construct}
@@ -569,7 +594,7 @@ Accept an invitation to join a \ac{PMIx} process group
 pmix_status_t
 PMIx_Group_join(const char grp[],
                 const pmix_proc_t *leader,
-                pmix_group_opt_t opt,
+                pmix_group_operation_t opt,
                 const pmix_info_t directives[], size_t ndirs,
                 pmix_info_t **results, size_t *nresult)
 \end{codepar}
@@ -578,7 +603,7 @@ PMIx_Group_join(const char grp[],
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
 \argin{leader}{Process that generated the invitation (handle)}
-\argin{opt}{Accept or decline flag (\refstruct{pmix_group_opt_t})}
+\argin{opt}{Accept or decline flag (\refstruct{pmix_group_operation_t})}
 \argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
 \arginout{results}{Pointer to a location where the array of \refstruct{pmix_info_t} describing the results of the operation is to be returned (pointer to handle)}
@@ -644,7 +669,7 @@ Non-blocking form of \refapi{PMIx_Group_join}
 pmix_status_t
 PMIx_Group_join_nb(const char grp[],
                    const pmix_proc_t *leader,
-                   pmix_group_opt_t opt,
+                   pmix_group_operation_t opt,
                    const pmix_info_t directives[], size_t ndirs,
                    pmix_info_cbfunc_t cbfunc, void *cbdata)
 \end{codepar}
@@ -653,7 +678,7 @@ PMIx_Group_join_nb(const char grp[],
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
 \argin{leader}{Process that generated the invitation (handle)}
-\argin{opt}{Accept or decline flag (\refstruct{pmix_group_opt_t})}
+\argin{opt}{Accept or decline flag (\refstruct{pmix_group_operation_t})}
 \argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
 \argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}

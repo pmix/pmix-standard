@@ -1109,6 +1109,8 @@ typedef struct pmix_server_module_3_0_0_t {
     pmix_server_validate_cred_fn_t      validate_credential;
     pmix_server_iof_fn_t                iof_pull;
     pmix_server_stdin_fn_t              push_stdin;
+    /* v4x interfaces */
+    pmix_server_grp_fn_t                group;
 } pmix_server_module_t;
 \end{codepar}
 \cspecificend
@@ -2906,4 +2908,78 @@ Passes stdin to the host environment for transmission to specified recipients. T
 If this module entry is provided and called by the \ac{PMIx} server library, then the host environment must either provide the requested services or return \refconst{PMIX_ERR_NOT_SUPPORTED} to the provided \refarg{cbfunc}.
 \advicermend
 
+
+
+%%%%%%%%%%%
+\subsection{\code{pmix_server_grp_fn_t}}
+\declareapi{pmix_server_grp_fn_t}
+
+%%%%
+\summary
+
+Request group operations (construct, destruct, etc.) on behalf of a set of processes.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef pmix_status_t (*pmix_server_grp_fn_t)(
+                           pmix_group_operation_t op, char grp[],
+                           const pmix_proc_t procs[], size_t nprocs,
+                           const pmix_info_t directives[],
+                           size_t ndirs,
+                           pmix_info_cbfunc_t cbfunc, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{op}{\refstruct{pmix_group_operation_t} value indicating operation the host is requested to perform (integer)}
+\argin{grp}{Character string identifying the group (string)}
+\argin{procs}{Array of \refstruct{pmix_proc_t} identifiers of participants (handle)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\argin{directives}{Array of info structures (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
+\end{itemize}
+
+\optattrstart
+The following attributes may be supported by a host environment.
+
+\pastePRIAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pasteAttributeItem{PMIX_GROUP_LOCAL_ONLY}
+\pasteAttributeItem{PMIX_GROUP_ENDPT_DATA}
+\pasteAttributeItem{PMIX_GROUP_OPTIONAL}
+\pasteAttributeItem{PMIX_RANGE}
+
+
+The following attributes may be included in the host's response:
+
+\pasteAttributeItem{PMIX_GROUP_ID}
+\pasteAttributeItem{PMIX_GROUP_MEMBERSHIP}
+\pasteAttributeItem{PMIX_GROUP_CONTEXT_ID}
+\pasteAttributeItem{PMIX_GROUP_ENDPT_DATA}
+
+\optattrend
+
+\reqattrend
+
+%%%%
+\descr
+
+Perform the specified operation across the identified processes, plus any special actions included in the directives. Return the result of any special action requests in the callback function when the operation is completed. Actions may include a request (\refattr{PMIX_GROUP_ASSIGN_CONTEXT_ID}) that the host assign a unique numerical (size_t) ID to this group - if given, the \refattr{PMIX_RANGE} attribute will specify the range across which the ID must be unique (default to \refconst{PMIX_RANGE_SESSION}).
+
+\advicermstart
+If this module entry is provided and called by the \ac{PMIx} server library, then the host environment must either provide the requested services or return \refconst{PMIX_ERR_NOT_SUPPORTED} to the provided \refarg{cbfunc}.
+\advicermend
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
