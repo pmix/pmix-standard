@@ -965,6 +965,40 @@ Returns:
 See \refapi{pmix_server_stdin_fn_t} for details
 
 
+%%%%%%%%%%%
+\subsubsection{Group Operations}
+
+%%%%
+\summary
+
+Request group operations (construct, destruct, etc.) on behalf of a set of processes.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def group(op:integer, grp:str, procs:list, directives:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{op}{Operation host is to perform on the specified group (integer)}
+\argin{grp}{String identifier of target group (str)}
+\argin{procs}{List of Python \refpy{proc} of participating processes (dict)}
+\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item refarg{info} - List of Python \refpy{info} containing results of requested operation (list)
+\end{itemize}
+
+See \refapi{pmix_server_grp_fn_t} for details
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{PMIxClient}
