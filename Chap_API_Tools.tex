@@ -17,16 +17,14 @@ The advent of \ac{PMIx} offers the possibility for creating portable tools capab
 
 Enabling these capabilities requires some extensions to the \ac{PMIx} Standard (both in terms of \acp{API} and attributes), and utilization of client-side \acp{API} for more tool-oriented purposes.
 
-The APIs and attributes are captured elsewhere.
-
-This chapter focuses instead on providing tool developers with an overview of the support provided by \ac{PMIx} and to guide \ac{RM} vendors regarding roles and responsibilities of the \ac{RM} to support tools.
+This chapter defines specific \acp{API} related to tools, provides tool developers with an overview of the support provided by \ac{PMIx}, and serves to guide \ac{RM} vendors regarding roles and responsibilities of the \ac{RM} to support tools.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connection Mechanisms}
 \label{chap:api_tools:cnct}
 
-The key to supporting such uses lies in providing a mechanism by which a tool can connect to a \ac{PMIx} server. Application processes are able to connect because their local \ac{RM} daemon provides them with the necessary contact information upon execution. A command-line tool, however, isn't spawned by an \ac{RM} daemon, and therefore lacks the information required for rendezvous with a \ac{PMIx} server.
+The key to supporting tools lies in providing a mechanism by which a tool can connect to a \ac{PMIx} server. Application processes are able to connect because their local \ac{RM} daemon provides them with the necessary contact information upon execution. A command-line tool, however, isn't spawned by an \ac{RM} daemon, and therefore lacks the information required for rendezvous with a \ac{PMIx} server.
 
 \subsection{Rendezvousing with a local server}
 
@@ -53,6 +51,184 @@ Only mechanism is to provide the specific URI to connect to - perhaps add abilit
 \subsection{Attaching to running jobs}
 
 Connect to any daemon within the application's scope, or to a system-level daemon with access to that scope. Can discover that information by connecting first to a system-level daemon and querying about active applications, then connect to appropriate point. Once attached to the appropriate PMIx server, can interact with the application using any PMIx mechanism. Includes querying application and process status, query application internal counters and state that has been exposed via PMIx events, etc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Tool Initialization and Finalization}
+\label{chap:tools:init}
+
+Initialization and finalization routines for \ac{PMIx} tools.
+
+%%%%%%%%%%%
+\subsubsection{\code{PMIx_tool_init}}
+\declareapi{PMIx_tool_init}
+
+%%%%
+\summary
+
+Initialize the \ac{PMIx} library for operating as a tool.
+
+%%%%
+\format
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_tool_init(pmix_proc_t *proc,
+               pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{proc}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ninfo}{Number of element in the \refarg{info} array (\code{size_t})}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\reqattrstart
+The following attributes are required to be supported by all \ac{PMIx} libraries:
+
+\pastePRIAttributeItem{PMIX_TOOL_NSPACE}
+\pastePRIAttributeItem{PMIX_TOOL_RANK}
+\pastePRIAttributeItem{PMIX_TOOL_DO_NOT_CONNECT}
+\pastePRIAttributeItem{PMIX_SERVER_URI}
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for implementers of \ac{PMIx} libraries:
+
+\pastePRIAttributeItem{PMIX_CONNECT_TO_SYSTEM}
+\pastePRIAttributeItem{PMIX_CONNECT_SYSTEM_FIRST}
+\pastePRIAttributeItem{PMIX_SERVER_PIDINFO}
+\pastePRIAttributeItem{PMIX_TCP_URI}
+\pastePRIAttributeItem{PMIX_CONNECT_RETRY_DELAY}
+\pastePRIAttributeItem{PMIX_CONNECT_MAX_RETRIES}
+\pasteAttributeItemBegin{PMIX_SOCKET_MODE} If the library supports socket connections, this attribute may be supported for setting the socket mode.
+\pasteAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_REPORT_URI} If the library supports TCP socket connections, this attribute may be supported for reporting the URI.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IF_INCLUDE} If the library supports TCP socket connections, this attribute may be supported for specifying the interfaces to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IF_EXCLUDE} If the library supports TCP socket connections, this attribute may be supported for specifying the interfaces that are \textit{not} to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IPV4_PORT} If the library supports IPV4 connections, this attribute may be supported for specifying the port to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IPV6_PORT} If the library supports IPV6 connections, this attribute may be supported for specifying the port to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_DISABLE_IPV4} If the library supports IPV4 connections, this attribute may be supported for disabling it.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItem{PMIX_EVENT_BASE}
+\pastePRIAttributeItemBegin{PMIX_GDS_MODULE} This attribute is specific to the \ac{PRI} and controls only the selection of \ac{GDS} module for internal use by the process. Module selection for interacting with the server is performed dynamically during the connection process.
+\pastePRIAttributeItemEnd{}
+
+\optattrend
+
+%%%%
+\descr
+
+Initialize the \ac{PMIx} tool, returning the process identifier assigned to this tool in the provided \refstruct{pmix_proc_t} struct. The \refarg{info} array is used to pass user requests pertaining to the init and subsequent operations. Passing a \code{NULL} value for the array pointer is supported if no directives are desired.
+
+If called with the \refattr{PMIX_TOOL_DO_NOT_CONNECT} attribute, the \ac{PMIx} tool library will fully initialize but not attempt to connect to a \ac{PMIx} server. The tool can connect to a server at a later point in time, if desired. In all other cases, the \ac{PMIx} tool library will attempt to connect to according to the following precedence chain:
+
+\begin{itemize}
+    \item if \refattr{PMIX_SERVER_URI} or \refattr{PMIX_TCP_URI} is given, then connection will be attempted to the server at the specified \ac{URI}. Note that it is an error for both of these attributes to be specified. \refattr{PMIX_SERVER_URI} is the preferred method as it is more generalized --- \refattr{PMIX_TCP_URI} is provided for those cases where the user specifically wants to use a TCP transport for the connection and wants to error out if it isn't available or cannot succeed. The \ac{PMIx} library will return an error if connection fails --- it will not proceed to check for other connection options as the user specified a particular one to use
+    \item if \refattr{PMIX_SERVER_PIDINFO} was provided, then the tool will search under the directory provided by the PMIX\_SERVER\_TMPDIR environmental variable for a rendezvous file created by the process corresponding to that \ac{PID}. The \ac{PMIx} library will return an error if the rendezvous file cannot be found, or the connection is refused by the server
+    \item if \refattr{PMIX_CONNECT_TO_SYSTEM} is given, then the tool will search for a system-level rendezvous file created by a \ac{PMIx} server in the directory specified by the PMIX\_SYSTEM\_TMPDIR environmental variable. If found, then the tool will attempt to connect to it. An error is returned if the rendezvous file cannot be found or the connection is refused.
+    \item if \refattr{PMIX_CONNECT_SYSTEM_FIRST} is given, then the tool will search for a system-level rendezvous file created by a \ac{PMIx} server in the directory specified by the PMIX\_SYSTEM\_TMPDIR environmental variable. If found, then the tool will attempt to connect to it. In this case, no error will be returned if the rendezvous file is not found or connection is refused --- the \ac{PMIx} library will silently continue to the next option
+    \item by default, the tool will search the directory tree under the directory provided by the PMIX\_SERVER\_TMPDIR environmental variable for rendezvous files of \ac{PMIx} servers, attempting to connect to each it finds until one accepts the connection. If no rendezvous files are found, or all contacted servers refuse connection, then the \ac{PMIx} library will return an error.
+\end{itemize}
+
+If successful, the function will return \refconst{PMIX_SUCCESS} and will fill the provided structure (if provided) with the server-assigned namespace and rank of the tool. Note that each connection attempt in the above precedence chain will retry (with delay between each retry) a number of times according to the values of the corresponding attributes. Default is no retries.
+
+Note that the \ac{PMIx} tool library is referenced counted, and so multiple calls to \refapi{PMIx_tool_init} are allowed.
+Thus, one way to obtain the namespace and rank of the process is to simply call \refapi{PMIx_tool_init} with a non-NULL parameter.
+
+
+%%%%%%%%%%%
+\subsubsection{\code{PMIx_tool_finalize}}
+\declareapi{PMIx_tool_finalize}
+
+%%%%
+\summary
+
+Finalize the \ac{PMIx} library for a tool connection.
+
+%%%%
+\format
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_tool_finalize(void)
+\end{codepar}
+\cspecificend
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Finalize the PMIx tool library, closing the connection to the server.
+An error code will be returned if, for some reason, the connection cannot be cleanly terminated --- in this case, the connection is dropped.
+
+
+%%%%%%%%%%%
+\subsubsection{\code{PMIx_tool_connect_to_server}}
+\declareapi{PMIx_tool_connect_to_server}
+
+%%%%
+\summary
+
+Switch connection from the current \ac{PMIx} server to another one, or initialize a connection to a specified server.
+
+%%%%
+\format
+
+\versionMarker{3.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_tool_connect_to_server(pmix_proc_t *proc,
+                            pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\reqattrstart
+The following attributes are required to be supported by all \ac{PMIx} libraries:
+
+\pastePRIAttributeItem{PMIX_CONNECT_TO_SYSTEM}
+\pastePRIAttributeItem{PMIX_CONNECT_SYSTEM_FIRST}
+\pastePRIAttributeItem{PMIX_SERVER_URI}
+\pastePRIAttributeItem{PMIX_SERVER_NSPACE}
+\pastePRIAttributeItem{PMIX_SERVER_PIDINFO}
+
+\reqattrend
+
+%%%%
+\descr
+
+Switch connection from the current \ac{PMIx} server to another one, or initialize a connection to a specified server. Closes the connection, if existing, to a server and establishes a connection to the specified server. This function can be called at any time by a \ac{PMIx} tool to shift connections between servers.
+The process identifier assigned to this tool is returned in the provided \refstruct{pmix_proc_t} struct. Passing a value of \code{NULL} for this parameter is allowed if the user wishes solely to connect to the \ac{PMIx} server and does not require return of the identifier at that time.
+
+\adviceimplstart
+\ac{PMIx} tools and clients are prohibited from being connected to more than one server at a time to avoid confusion in subsystems such as event notification.
+
+When a tool connects to a server that is under a different namespace manager (e.g., host \ac{RM}) as the prior server, the identifier of the tool must remain unique in the namespaces. This may require the identifier of the tool to be changed on-the-fly, that is, the \refarg{proc} parameter would be filled (if non-NULL) with a different nspace/rank from the current tool identifier.
+\adviceimplend
+
+\adviceuserstart
+Passing a \code{NULL} value for the \refarg{info} pointer is not allowed and will result in returning an error.
+
+Some \ac{PMIx} implementations (for example, the current \ac{PRI}) may not support connecting to a server that is not under the same namespace manager (e.g., host \ac{RM}) as the tool.
+\adviceuserend
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -194,6 +370,65 @@ When registering to receive output, the tool can specify several formatting opti
     PMIX_IOF_XML_OUTPUT – output is to be formatted in XML
 
 The PMIx client in the tool will format the output stream. Note that output from multiple processes will often be interleaved due to variations in arrival time - ordering of output is \emph{not} guaranteed across processes and/or nodes.
+
+%%%%%%%%%%%
+\subsubsection{IO Forwarding attributes}
+\label{api:struct:attributes:security}
+
+\versionMarker{3.0}
+Attributes used to control IO forwarding behavior
+
+%
+\declareAttribute{PMIX_IOF_CACHE_SIZE}{"pmix.iof.csize"}{uint32_t}{
+The requested size of the server cache in bytes for each specified channel. By default, the server is allowed (but not required) to drop all bytes received beyond the max size.
+}
+
+%
+\declareAttribute{PMIX_IOF_DROP_OLDEST}{"pmix.iof.old"}{bool}{
+In an overflow situation, drop the oldest bytes to make room in the cache.
+}
+
+%
+\declareAttribute{PMIX_IOF_DROP_NEWEST}{"pmix.iof.new"}{bool}{
+In an overflow situation, drop any new bytes received until room becomes available in the cache (default).
+}
+
+%
+\declareAttribute{PMIX_IOF_BUFFERING_SIZE}{"pmix.iof.bsize"}{uint32_t}{
+Controls grouping of IO on the specified channel(s) to avoid being called every time a bit of IO arrives. The library will execute the callback whenever the specified number of bytes becomes available. Any remaining buffered data will be ``flushed'' upon call to deregister the respective channel.
+}
+
+%
+\declareAttribute{PMIX_IOF_BUFFERING_TIME}{"pmix.iof.btime"}{uint32_t}{
+Max time in seconds to buffer IO before delivering it. Used in conjunction with buffering size, this
+prevents IO from being held indefinitely while waiting for another payload to arrive.
+}
+
+%
+\declareAttribute{PMIX_IOF_COMPLETE}{"pmix.iof.cmp"}{bool}{
+Indicates whether or not the specified IO channel has been closed by the source.
+}
+
+%
+\declareAttribute{PMIX_IOF_TAG_OUTPUT}{"pmix.iof.tag"}{bool}{
+Tag output with the channel it comes from.
+}
+
+%
+\declareAttribute{PMIX_IOF_TIMESTAMP_OUTPUT}{"pmix.iof.ts"}{bool}{
+Timestamp output
+}
+
+%
+\declareAttribute{PMIX_IOF_XML_OUTPUT}{"pmix.iof.xml"}{bool}{
+Format output in \ac{XML}
+}
+
+%
+\declareAttribute{PMIX_IOF_PUSH_STDIN}{"pmix.iof.stdin"}(bool){
+Used by a tool to request that the \ac{PMIx} library collect the tool's stdin
+and forward it to the processes specified in the \refapi{PMIx_IOF_push} call
+}
 
 %%%%%%%%%%%
 \subsubsection{\code{PMIx_IOF_pull}}

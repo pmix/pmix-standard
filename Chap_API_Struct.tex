@@ -5464,6 +5464,12 @@ Timestamp output
 Format output in \ac{XML}
 }
 
+%
+\declareAttribute{PMIX_IOF_PUSH_STDIN}{"pmix.iof.stdin"}(bool){
+Used by a tool to request that the \ac{PMIx} library collect the tool's stdin
+and forward it to the processes specified in the \refapi{PMIx_IOF_push} call
+}
+
 %%%%%%%%%%%
 \subsection{Application setup attributes}
 \label{api:struct:attributes:security}
