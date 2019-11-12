@@ -69,7 +69,7 @@ Register an event handler
 \versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
-void
+pmix_status_t
 PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes,
                             pmix_info_t info[], size_t ninfo,
                             pmix_notification_fn_t evhdlr,
@@ -88,12 +88,14 @@ PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes,
 \argin{cbdata}{Data to be passed to the cbfunc callback function (memory reference)}
 \end{arglist}
 
-Upon completion, the callback will receive a status based on the following table:
+
+If \refarg{cbfunc} is \code{NULL}, the function call will be treated as a \emph{blocking} call. In this case, the returned status will be either (a) the event handler reference identifier if the value is greater than or equal to zero, or (b) a negative error code indicative of the reason for the failure.
+
+If the \refarg{cbfunc} is non-\code{NULL}, the function call will be treated as a \emph{non-blocking} call and will return the following:
 
 \begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The event handler was successfully registered - the event handler identifier is returned in the callback.
-\item \refconst{PMIX_ERR_BAD_PARAM} One or more of the directives provided in the \textit{info} array was unrecognized.
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification, or the host \ac{SMS} does not support notification of the specified event code.
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}. The event handler identifier will be returned in the callback
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed.
 \end{constantdesc}
 
 The callback function must not be executed prior to returning from the \ac{API}, and no events corresponding to this registration may be delivered prior to the completion of the registration callback function (\refarg{cbfunc}).
@@ -164,7 +166,7 @@ Deregister an event handler.
 \versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
-void
+pmix_status_t
 PMIx_Deregister_event_handler(size_t evhdlr_ref,
                               pmix_op_cbfunc_t cbfunc,
                               void *cbdata);
@@ -177,14 +179,17 @@ PMIx_Deregister_event_handler(size_t evhdlr_ref,
 \argin{cbdata}{Data to be passed to the cbfunc callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+If \refarg{cbfunc} is \code{NULL}, the function will be treated as a \emph{blocking} call and the result of the operation returned in the status code.
+
+If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{non-blocking} call and return one of the following:
+
 \begin{itemize}
 \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
 \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
 \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
 
-If the provided cbfunc is called to confirm removal of the designated handler, the returned status code will be one of the following:
+The returned status code will be one of the following:
 
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The event handler was successfully deregistered.
@@ -232,7 +237,10 @@ PMIx_Notify_event(pmix_status_t status,
 \argin{cbdata}{Data to be passed to the cbfunc callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+If \refarg{cbfunc} is \code{NULL}, the function will be treated as a \emph{blocking} call and the result of the operation returned in the status code.
+
+If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{non-blocking} call and return one of the following:
+
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The notification request is valid and is being processed. The callback function will be called when the process-local operation is complete and will provide the resulting status of that operation. Note that this does \textit{not} reflect the success or failure of delivering the event to any recipients. The callback function must not be executed prior to returning from the \ac{API}.
 \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
