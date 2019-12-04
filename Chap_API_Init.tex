@@ -4,27 +4,44 @@
 \chapter{Initialization and Finalization}
 \label{chap:api_init}
 
-The \ac{PMIx} library is required to be initialized and finalized around the usage of most of the \acp{API}.
-The \acp{API} that may be used outside of the initialized and finalized region are noted.
-All other \acp{API} must be used inside this region.
+The \ac{PMIx} \acp{API} may only be used between the completion of the initialization function and the start of the finalization function, unless otherwise noted.
+The initialization and finalization functions are paired, and the initialized regions defined by them must not overlap.
 
-There are three sets of initialization and finalization functions depending upon the role of the process in the \ac{PMIx} universe.
-Each of these functional sets are described in this chapter.
-Note that a process can only call \textit{one} of the init/finalize functional pairs - e.g., a process that calls the client initialization function cannot also call the tool or server initialization functions, and must call the corresponding client finalize.
+Consumers of the \ac{PMIx} \acp{API} are grouped into three categories based on the role they wish to play in the \ac{PMIx} environment: \emph{clients}, \emph{servers}, and \emph{tools}.
+As a result, there are three corresponding sets of initialization and finalization functions.
+If a process initializes as either a \emph{server} or a \emph{tool} that process may also access all of the \emph{client} \acp{API}.
 
-\adviceuserstart
-Processes that initialize as a server or tool automatically are given access to all client \acp{API}.
-Server initialization includes setting up the infrastructure to support local clients - thus, it necessarily includes overhead and an increased memory footprint.
-Tool initialization automatically searches for a server to which it can connect --- if declared as a \textit{launcher}, the \ac{PMIx} library sets up the required ``hooks'' for other tools (e.g., debuggers) to attach to it.
-\adviceuserend
+A process operating as a \emph{client} is started (directly or indirectly, for example, by an intermediate script) by a \ac{PMIx} server and is connected to that server when the client calls the client initialization routine.
+A process operating as a \emph{server} is responsible for starting client processes and coordinating with other server and tool processes in the same \ac{PMIx} universe.
+Often processes operating as a \emph{server} are part of the \acf{RM} infrastructure.
+A process operating as a \emph{tool} will connect to a \ac{PMIx} \emph{server} to interact with the processes in the \ac{PMIx} universe.
+An example of a \emph{tool} process is a parallel debugger that will connect to the server to assist with attaching to a set of client processes.
+
+\ac{PMIx} serves as a conduit between processes acting in these three different roles.
+As such, an \ac{API} is often described in how it interacts with processes operating in other roles in the \ac{PMIx} universe.
+
+\adviceimplstart
+A \ac{PMIx} implementation may support all or a subset of the \ac{API} role groupings defined in the standard.
+A common nomenclature is defined here to aid in identifying levels of conformance of an implementation.
+
+A \ac{PMIx} implementation that supports all three sets of the \ac{API} role groupings is said to be \emph{fully \ac{PMIx} standard compliant}.
+These \emph{fully \ac{PMIx} standard compliant} implementations have the advantage of being able to support a broad set of \ac{PMIx} consumers in the different roles.
+
+Alternatively, a \ac{PMIx} implementation may choose to support fewer than all three sets of the \ac{API} role groupings.
+\ac{PMIx} implementations that support only the \emph{client} \acp{API} are said to be \emph{client-only \ac{PMIx} standard compliant}.
+Similarly, an implementation that only supports the \emph{client} and \emph{tool} \acp{API} are said to be \emph{client-and-tool-only \ac{PMIx} standard compliant}.
+Finally, an implementation that only supports the \emph{client} and \emph{server} \acp{API} are said to be \emph{client-and-server-only \ac{PMIx} standard compliant}.
+Note that it would not make sense for an implementation to exclude the \emph{client} interfaces from their implementation since they are also used by the \emph{server} and \emph{tool} roles.
+\adviceimplend
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Query}
+\section{General Library Information}
 \label{chap:api_init:general}
 
-The \ac{API} defined in this section can be used by any \ac{PMIx} process, regardless of their role in the \ac{PMIx} universe.
+The \acp{API} defined in this section can be used by any \ac{PMIx} process, regardless of their role in the \ac{PMIx} universe.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Initialized}}
@@ -49,8 +66,9 @@ The return value is an integer for historical reasons as that was the signature 
 %%%%
 \descr
 
-Check to see if the \ac{PMIx} library has been initialized using any of the init functions:
+Check to see if the \ac{PMIx} library has been initialized using any of the initialization functions:
 \refapi{PMIx_Init}, \refapi{PMIx_server_init}, or \refapi{PMIx_tool_init}.
+It is valid to call this \ac{API} outside of a region of initialization.
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Get_version}}
@@ -77,16 +95,13 @@ const char* PMIx_Get_version(void)
 Get the \ac{PMIx} version string.
 Note that the provided string is statically defined and must \textit{not} be free'd.
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Client Initialization and Finalization}
 \label{chap:api_init:client}
 
 Initialization and finalization routines for \ac{PMIx} clients.
-
-\adviceuserstart
-The \ac{PMIx} \textit{ad hoc} v1.0 Standard defined the \refapi{PMIx_Init} function, but modified the function signature in the v1.2 version. The \textit{ad hoc} v1.0 version is not included in this document to avoid confusion.
-\adviceuserend
 
 
 %%%%%%%%%%%
@@ -111,7 +126,7 @@ PMIx_Init(pmix_proc_t *proc,
 \cspecificend
 
 \begin{arglist}
-\arginout{proc}{proc structure (handle)}
+\arginout{proc}{\refstruct{pmix_proc_t} structure (handle)}
 \argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ninfo}{Number of element in the \refarg{info} array (\code{size_t})}
 \end{arglist}
@@ -152,7 +167,7 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 Initialize the \ac{PMIx} client, returning the process identifier assigned to this client's application in the provided \refstruct{pmix_proc_t} struct.
 Passing a value of \code{NULL} for this parameter is allowed if the user wishes solely to initialize the \ac{PMIx} system and does not require return of the identifier at that time.
 
-When called, the \ac{PMIx} client shall check for the required connection information of the local \ac{PMIx} server and establish the connection.
+When called, the \ac{PMIx} client shall check for the required connection information of the associated \ac{PMIx} server and establish the connection.
 If the information is not found, or the server connection fails, then an appropriate error constant shall be returned.
 
 If successful, the function shall return \refconst{PMIX_SUCCESS} and fill the \refarg{proc} structure (if provided) with the server-assigned namespace and rank of the process within the application.
@@ -163,9 +178,12 @@ Thus, one way for an application process to obtain its namespace and rank is to 
 Note that each call to \refapi{PMIx_Init} must be balanced with a call to \refapi{PMIx_Finalize} to maintain the reference count.
 
 Each call to \refapi{PMIx_Init} may contain an array of \refstruct{pmix_info_t} structures passing directives to the \ac{PMIx} client library as per the above attributes.
-
 Multiple calls to \refapi{PMIx_Init} shall not include conflicting directives.
-The \refapi{PMIx_Init} function will return an error when directives that conflict with prior directives are encountered.
+The \refapi{PMIx_Init} function will return an error when directives that conflict with prior directives are detected.
+
+\adviceuserstart
+The \ac{PMIx} \textit{ad hoc} v1.0 Standard defined the \refapi{PMIx_Init} function, but modified the function signature in the v1.2 version. The \textit{ad hoc} v1.0 version of \refapi{PMIx_Init} is not included in this document to avoid confusion.
+\adviceuserend
 
 
 %%%%%%%%%%%
@@ -175,7 +193,7 @@ The \refapi{PMIx_Init} function will return an error when directives that confli
 %%%%
 \summary
 
-Finalize the PMIx client library.
+Finalize the \ac{PMIx} client library.
 
 %%%%
 \format
@@ -205,7 +223,7 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \descr
 
 Decrement the \ac{PMIx} client library reference count.
-When the reference count reaches zero, the library will finalize the \ac{PMIx} client, closing the connection with the local \ac{PMIx} server and releasing all internally allocated memory.
+When the reference count reaches zero, the library will finalize the \ac{PMIx} client, closing the connection with the local \ac{PMIx} server and releasing internally allocated resources.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -214,6 +232,11 @@ When the reference count reaches zero, the library will finalize the \ac{PMIx} c
 \label{chap:api_init:tool}
 
 Initialization and finalization routines for \ac{PMIx} tools.
+
+\adviceuserstart
+Tool initialization automatically searches for a server to which it can connect.
+If the tool is declared as a \textit{launcher} (via \refattr{PMIX_LAUNCHER}), the \ac{PMIx} library sets up the required ``hooks'' for other tools (e.g., debuggers) to attach to it.
+\adviceuserend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_tool_init}}
@@ -288,19 +311,19 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 %%%%
 \descr
 
-Initialize the \ac{PMIx} tool, returning the process identifier assigned to this tool in the provided \refstruct{pmix_proc_t} struct. The \refarg{info} array is used to pass user requests pertaining to the init and subsequent operations. Passing a \code{NULL} value for the array pointer is supported if no directives are desired.
+Initialize the \ac{PMIx} tool, returning the process identifier assigned to this tool in the provided \refstruct{pmix_proc_t} struct. The \refarg{info} array is used to pass user requests pertaining to the initialization and subsequent operations. Passing a \code{NULL} value for the array pointer is supported if no directives are desired.
 
-If called with the \refattr{PMIX_TOOL_DO_NOT_CONNECT} attribute, the \ac{PMIx} tool library will fully initialize but not attempt to connect to a \ac{PMIx} server. The tool can connect to a server at a later point in time, if desired. In all other cases, the \ac{PMIx} tool library will attempt to connect to according to the following precedence chain:
+If called with the \refattr{PMIX_TOOL_DO_NOT_CONNECT} attribute, the \ac{PMIx} tool library will fully initialize but not attempt to connect to a \ac{PMIx} server. The tool can connect to a server at a later point in time, if desired, by calling the \refapi{PMIx_tool_connect_to_server} function. In all other cases, the \ac{PMIx} tool library will attempt to connect to a \ac{PMIx} server according to the following precedence chain:
 
 \begin{itemize}
-    \item if \refattr{PMIX_SERVER_URI} or \refattr{PMIX_TCP_URI} is given, then connection will be attempted to the server at the specified \ac{URI}. Note that it is an error for both of these attributes to be specified. \refattr{PMIX_SERVER_URI} is the preferred method as it is more generalized --- \refattr{PMIX_TCP_URI} is provided for those cases where the user specifically wants to use a TCP transport for the connection and wants to error out if it isn't available or cannot succeed. The \ac{PMIx} library will return an error if connection fails --- it will not proceed to check for other connection options as the user specified a particular one to use
-    \item if \refattr{PMIX_SERVER_PIDINFO} was provided, then the tool will search under the directory provided by the PMIX\_SERVER\_TMPDIR environmental variable for a rendezvous file created by the process corresponding to that \ac{PID}. The \ac{PMIx} library will return an error if the rendezvous file cannot be found, or the connection is refused by the server
-    \item if \refattr{PMIX_CONNECT_TO_SYSTEM} is given, then the tool will search for a system-level rendezvous file created by a \ac{PMIx} server in the directory specified by the PMIX\_SYSTEM\_TMPDIR environmental variable. If found, then the tool will attempt to connect to it. An error is returned if the rendezvous file cannot be found or the connection is refused.
-    \item if \refattr{PMIX_CONNECT_SYSTEM_FIRST} is given, then the tool will search for a system-level rendezvous file created by a \ac{PMIx} server in the directory specified by the PMIX\_SYSTEM\_TMPDIR environmental variable. If found, then the tool will attempt to connect to it. In this case, no error will be returned if the rendezvous file is not found or connection is refused --- the \ac{PMIx} library will silently continue to the next option
-    \item by default, the tool will search the directory tree under the directory provided by the PMIX\_SERVER\_TMPDIR environmental variable for rendezvous files of \ac{PMIx} servers, attempting to connect to each it finds until one accepts the connection. If no rendezvous files are found, or all contacted servers refuse connection, then the \ac{PMIx} library will return an error.
+    \item if \refattr{PMIX_SERVER_URI} or \refattr{PMIX_TCP_URI} is given, then connection will be attempted to the server at the specified \ac{URI}. Note that it is an error for both of these attributes to be specified. \refattr{PMIX_SERVER_URI} is the preferred method as it is more generalized --- \refattr{PMIX_TCP_URI} is provided for those cases where the user specifically wants to use a TCP transport for the connection and wants to error out if it is not available or cannot succeed. The \ac{PMIx} library will return an error if connection fails --- it will not proceed to check for other connection options as the user specified a particular one to use
+    \item if \refattr{PMIX_SERVER_PIDINFO} was provided, then the tool will search under the directory provided by the \refattr{PMIX_SERVER_TMPDIR} environmental variable for a rendezvous file created by the process corresponding to that \ac{PID}. The \ac{PMIx} library will return an error if the rendezvous file cannot be found, or the connection is refused by the server
+    \item if \refattr{PMIX_CONNECT_TO_SYSTEM} is given, then the tool will search for a system-level rendezvous file created by a \ac{PMIx} server in the directory specified by the \refattr{PMIX_SYSTEM_TMPDIR} environmental variable. If found, then the tool will attempt to connect to it. An error is returned if the rendezvous file cannot be found or the connection is refused.
+    \item if \refattr{PMIX_CONNECT_SYSTEM_FIRST} is given, then the tool will search for a system-level rendezvous file created by a \ac{PMIx} server in the directory specified by the \refattr{PMIX_SYSTEM_TMPDIR} environmental variable. If found, then the tool will attempt to connect to it. In this case, no error will be returned if the rendezvous file is not found or connection is refused --- the \ac{PMIx} library will silently continue to the next option
+    \item lastly and by default, the tool will search the directory tree under the directory provided by the \refattr{PMIX_SERVER_TMPDIR} environmental variable for rendezvous files of \ac{PMIx} servers, attempting to connect to each it finds until one accepts the connection. If no rendezvous files are found, or all contacted servers refuse connection, then the \ac{PMIx} library will return an error.
 \end{itemize}
 
-If successful, the function will return \refconst{PMIX_SUCCESS} and will fill the provided structure (if provided) with the server-assigned namespace and rank of the tool. Note that each connection attempt in the above precedence chain will retry (with delay between each retry) a number of times according to the values of the corresponding attributes. Default is no retries.
+If successful, the function will return \refconst{PMIX_SUCCESS} and will fill the provided process structure (if provided) with the server-assigned namespace and rank of the tool. Note that each connection attempt in the above precedence chain will retry (with delay between each retry) a number of times according to the values of the corresponding attributes. Default is no retries.
 
 Note that the \ac{PMIx} tool library is referenced counted, and so multiple calls to \refapi{PMIx_tool_init} are allowed.
 Thus, one way to obtain the namespace and rank of the process is to simply call \refapi{PMIx_tool_init} with a non-NULL parameter.
@@ -372,8 +395,12 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 %%%%
 \descr
 
-Switch connection from the current \ac{PMIx} server to another one, or initialize a connection to a specified server. Closes the connection, if existing, to a server and establishes a connection to the specified server. This function can be called at any time by a \ac{PMIx} tool to shift connections between servers.
-The process identifier assigned to this tool is returned in the provided \refstruct{pmix_proc_t} struct. Passing a value of \code{NULL} for this parameter is allowed if the user wishes solely to connect to the \ac{PMIx} server and does not require return of the identifier at that time.
+A tool may call \refapi{PMIx_tool_init} with the \refattr{PMIX_TOOL_DO_NOT_CONNECT} attribute in which case they can use this function to connect to a specific server.
+Additionally, a tool may use this function to switch connection from the current \ac{PMIx} server to another one
+Closes the connection, if existing, to a server and establishes a connection to the specified server.
+This function can be called at any time by a \ac{PMIx} tool to shift connections between servers.
+The process identifier assigned to this tool is returned in the provided \refstruct{pmix_proc_t} struct.
+Passing a value of \code{NULL} for this parameter is allowed if the user wishes solely to connect to the \ac{PMIx} server and does not require return of the identifier at that time.
 
 \adviceimplstart
 \ac{PMIx} tools and clients are prohibited from being connected to more than one server at a time to avoid confusion in subsystems such as event notification.
@@ -384,9 +411,8 @@ When a tool connects to a server that is under a different namespace manager (e.
 \adviceuserstart
 Passing a \code{NULL} value for the \refarg{info} pointer is not allowed and will result in returning an error.
 
-Some \ac{PMIx} implementations (for example, the current \ac{PRI}) may not support connecting to a server that is not under the same namespace manager (e.g., host \ac{RM}) as the tool.
+Some \ac{PMIx} implementations may not support connecting to a server that is not under the same namespace manager (e.g., host \ac{RM}) as the tool.
 \adviceuserend
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -395,6 +421,17 @@ Some \ac{PMIx} implementations (for example, the current \ac{PRI}) may not suppo
 \label{chap:api_init:server}
 
 Initialization and finalization routines for \ac{PMIx} servers.
+
+\adviceuserstart
+Server initialization includes setting up the infrastructure to support local clients,
+Therefore, server initialization will likely result in additional overhead and an increased memory footprint than client initialization alone.
+\adviceuserend
+
+The \ac{PMIx} server specific \acp{API} are in the following areas of the standard:
+\begin{itemize}
+\item \chapterref{chap:api_server}
+\end{itemize}
+
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_init}}
@@ -473,7 +510,7 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 
 Initialize the \ac{PMIx} server support library, and provide a pointer to a \refapi{pmix_server_module_t} structure containing the caller's callback functions.
 The array of \refstruct{pmix_info_t} structs is used to pass additional info that may be required by the server when initializing.
-For example, it may include the \refattr{PMIX_SERVER_TOOL_SUPPORT} attribute, thereby indicating that the daemon is willing to accept connection requests from tools.
+For example, it may include the \refattr{PMIX_SERVER_TOOL_SUPPORT} attribute, thereby indicating that the daemon is willing to accept connection requests from \ac{PMIx} tools.
 
 \advicermstart
 Providing a value of \code{NULL} for the \refarg{module} argument is permitted, as is passing an empty \refarg{module} structure. Doing so indicates that the host environment will not provide support for multi-node operations such as \refapi{PMIx_Fence}, but does intend to support local clients access to information.
@@ -486,7 +523,7 @@ Providing a value of \code{NULL} for the \refarg{module} argument is permitted, 
 %%%%
 \summary
 
-Finalize the PMIx server library.
+Finalize the \ac{PMIx} server library.
 
 %%%%
 \format
@@ -504,7 +541,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Finalize the \ac{PMIx} server support library, terminating all connections to attached tools and any local clients.
-All memory usage is released.
+Finalize the \ac{PMIx} server support library, terminating all connections to the attached tools and any local clients.
+All allocated resources are released.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
