@@ -91,12 +91,12 @@ identity of its peers.
 As clients invoke \ac{PMIx} \acp{API}, is possible that some client requests can 
 be handled at the client level.  Other requests might require communication with the 
 local \ac{PMIx} server, which subsequently might request services from the host \ac{SMS} 
-(represented here by an \ac{RM} daemon).  The interaction between the \ac{PMIx} server and \ac{SMS} might be 
+(represented here by an \ac{RM} daemon).  The interaction between the \ac{PMIx} server and \ac{SMS} are 
 achieved using callback functions registered during server initialization.  
 The host \ac{SMS} can indicate its lack of support for any operation by simply providing a \textit{NULL} for the associated callback function, or can create a function entry that returns \textit{not supported} when called.
 
 Recognizing the burden this places on SMS vendors, the PMIx community has included interfaces by
-which the host can request support from local SMS elements. Once the SMS has transferred the request to
+which the host can request support from local SMS elements. Once the \ac{SMS} has transferred the request to
 an appropriate location, a \ac{PMIx} server interface can be used to pass the request 
 between \ac{SMS} subsystems.
 For example, a request for network traffic statistics can utilize the
