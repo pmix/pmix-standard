@@ -91,7 +91,8 @@ identity of its peers.
 As clients invoke \ac{PMIx} \acp{API}, is possible that some client requests can 
 be handled at the client level.  Other requests might require communication with the 
 local \ac{PMIx} server, which subsequently might request services from the host \ac{SMS} 
-(represented here by an \ac{RM} daemon).  The interaction between the \ac{PMIx} server and \ac{SMS} are 
+(represented here by an \ac{RM} daemon).  
+The interaction between the \ac{PMIx} server and \ac{SMS} are 
 achieved using callback functions registered during server initialization.  
 The host \ac{SMS} can indicate its lack of support for any operation by simply providing a \textit{NULL} for the associated callback function, or can create a function entry that returns \textit{not supported} when called.
 
@@ -133,7 +134,7 @@ could be so burdensome as to discourage \ac{PMIx} implementations.
 
 To help address this issue, the \ac{PMIx} \acp{API} are designed to allow resource managers 
 and other system management stack components to decide on support of a 
-particular function and allow client applications to query and adjust to the level of support available. 
+particular function and allow client applications to query and adjust to the level of support available.  \ac{PMIx} clients should be written to account for the possibility that a \ac{PMIx} \ac{API} might return an error code indicating that the call is not supported.
 The \ac{PMIx} community continues to look at ways to assist \ac{SMS} implementers in their decisions 
 on what functionality to support by highlighting functions and attributes that are 
 critical to basic application execution (e.g., \refapi{PMIx_Get}) for certain classes of applications.
