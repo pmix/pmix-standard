@@ -3535,6 +3535,11 @@ The tool wants to use internal PMIx support, but does not want to connect to a P
 }
 
 %
+\declareNewAttribute{PMIX_TOOL_CONNECT_OPTIONAL}{"pmix.tool.conopt"}{bool}{
+The tool shall connect to a server if available, but otherwise continue to operate unconnected
+}
+
+%
 \declareAttribute{PMIX_RECONNECT_SERVER}{"pmix.tool.recon"}{bool}{
 Tool is requesting to change server connections
 }
@@ -4216,6 +4221,11 @@ Comma-delimited list of algorithms to use for the collective operation. \ac{PMIx
 %
 \declareDepAttribute{PMIX_COLLECTIVE_ALGO_REQD}{"pmix.calreqd"}{bool}{
 If \code{true}, indicates that the requested choice of algorithm is mandatory.
+}
+
+%
+\declareNewAttribute{PMIX_NOTIFY_LAUNCH}{"pmix.note.lnch"}{bool}{
+Notify the requestor upon launch of the child job and return its namespace in the event
 }
 
 %
