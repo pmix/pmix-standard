@@ -11,13 +11,25 @@ The advent of \ac{PMIx} offers the possibility for creating portable tools capab
 \begin{itemize}
 \item querying the status of scheduling queues and estimated allocation time for various resource options
 \item job submission and allocation requests
-\item querying of job status for executing applications
+\item querying job status for executing applications
 \item launching and monitoring applications
 \end{itemize}
 
 Enabling these capabilities requires some extensions to the \ac{PMIx} Standard (both in terms of \acp{API} and attributes), and utilization of client-side \acp{API} for more tool-oriented purposes.
 
 This chapter defines specific \acp{API} related to tools, provides tool developers with an overview of the support provided by \ac{PMIx}, and serves to guide \ac{RM} vendors regarding roles and responsibilities of the \ac{RM} to support tools.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Initialization}
+\label{chap:api_tools:init}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Finalizing}
+\label{chap:api_tools:fini}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -300,6 +312,57 @@ The following example illustrates how a debugger tool would execute an indirect 
     the debugger tool command-line parser does not need to identify the application to be executed. It can parse only its own options, taking everything else as being an opaque array of argv to be passed along
     the job-level information provided by mpiexec to the debugger daemons must include the mechanism by which the daemon can release the target application processes. This could include release via PMIx event notification (the precise notification code must be given), use of a specific signal, or some other mechanism. The debugger is free to terminate the job if it cannot support the given mechanism
 
+
+%%%%%%%%%%%
+\section{Debugger attributes}
+\label{api:struct:attributes:debugger}
+
+Attributes used to assist debuggers - these are values that can be passed to the \refapi{PMIx_Spawn} or \refapi{PMIx_Init} \acp{API}. Some may be accessed using the \refapi{PMIx_Get} \ac{API} with the \refconst{PMIX_RANK_WILDCARD} rank.
+
+%
+\declareAttribute{PMIX_DEBUG_STOP_ON_EXEC}{"pmix.dbg.exec"}{bool}{
+Passed to \refapi{PMIx_Spawn} to indicate that the specified application is being spawned under debugger, and that the launcher is to pause the resulting application processes on first instruction for debugger attach.
+}
+
+%
+\declareAttribute{PMIX_DEBUG_STOP_IN_INIT}{"pmix.dbg.init"}{bool}{
+Passed to \refapi{PMIx_Spawn} to indicate that the specified application is being spawned under debugger, and that the \ac{PMIx} client library is to pause the resulting application processes during \refapi{PMIx_Init} until debugger attach and release.
+}
+
+%
+\declareAttribute{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
+Passed to \refapi{PMIx_Spawn} to indicate that the specified application is being spawned under debugger, and that the resulting application processes are to pause at some application-determined location until debugger attach and release.
+}
+
+%
+\declareDepAttribute{PMIX_DEBUG_JOB}{"pmix.dbg.job"}{char*}{
+Namespace of the job to be debugged - provided to the debugger upon launch (replaced by \refattr{PMIX_DEBUG_TARGET})
+}
+
+%
+\declareAttribute{PMIX_DEBUG_WAITING_FOR_NOTIFY}{"pmix.dbg.waiting"}{bool}{
+Job to be debugged is waiting for a release - this is not a value accessed using the \refapi{PMIx_Get} \ac{API}.
+}
+
+%
+\declareAttribute{PMIX_DEBUG_JOB_DIRECTIVES}{"pmix.dbg.jdirs"}{pmix_data_array_t*}{
+Array of job-level directives
+}
+
+%
+\declareAttribute{PMIX_DEBUG_APP_DIRECTIVES}{"pmix.dbg.adirs"}{pmix_data_array_t*}{
+Array of app-level directives
+}
+
+%
+\declareNewAttribute{PMIX_DEBUG_TARGET}{"pmix.dbg.tgt"}{pmix_proc_t*}{
+Identifier of process(es) to be debugged - a rank of \refconst{PMIX_RANK_WILDCARD} indicates that all processes in the specified namespace are to be included
+}
+
+%
+\declareNewAttribute{PMIX_NOHUP}{"pmix.nohup"}{bool}{
+Any descendants of the calling tool (or the specified namespace, if such specification is included in the list of attributes) should continue after disconnect}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
