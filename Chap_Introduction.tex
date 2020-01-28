@@ -78,7 +78,7 @@ Fig.~\ref{fig:roles} shows a typical \ac{PMIx} implementation in which the appli
 built against a \ac{PMIx} client library that contains the client-side \acp{API},
 attribute definitions, and communication support for interacting with the local \ac{PMIx} server. 
 \ac{PMIx} clients are processes which are started through the \ac{PMIx} infrastructure, 
-either by the PMIx implementation directly or through an \ac{SMS} component, and have registered 
+either by the PMIx implementation directly or through a \ac{SMS} component, and have registered 
 as clients.  A \ac{PMIx} client 
 is created in such a way that the \ac{PMIx} client library
 will be have sufficient information available to
@@ -88,16 +88,16 @@ process which it created, either directly or through other \ac{SMS}, to authenti
 process and provide information the process requests such as its identity and the 
 identity of its peers.  
 
-As clients invoke \ac{PMIx} \acp{API}, is possible that some client requests can 
+As clients invoke \ac{PMIx} \acp{API}, it is possible that some client requests can 
 be handled at the client level.  Other requests might require communication with the 
 local \ac{PMIx} server, which subsequently might request services from the host \ac{SMS} 
-(represented here by an \ac{RM} daemon).  
+(represented here by a \ac{RM} daemon).  
 The interaction between the \ac{PMIx} server and \ac{SMS} are 
 achieved using callback functions registered during server initialization.  
 The host \ac{SMS} can indicate its lack of support for any operation by simply providing a \textit{NULL} for the associated callback function, or can create a function entry that returns \textit{not supported} when called.
 
 Recognizing the burden this places on SMS vendors, the PMIx community has included interfaces by
-which the host can request support from local SMS elements. Once the \ac{SMS} has transferred the request to
+which the host \ac{SMS} (containing the local PMIx service instance) can request support from local \ac{SMS} elements via the PMIx API.  Once the \ac{SMS} has transferred the request to
 an appropriate location, a \ac{PMIx} server interface can be used to pass the request 
 between \ac{SMS} subsystems.
 For example, a request for network traffic statistics can utilize the
@@ -111,9 +111,8 @@ Fig.~\ref{fig:roles} shows how tools can interact with the \ac{PMIx} architectur
 Tools, whether standalone or embedded in job scripts, are an exception to 
 the normal client registration process.   A process can register as a tool, provided 
 the \ac{PMIx} client library has adequate rendezvous information to connect to the appropriate
-\ac{PMIx} server.  This allows processes
+\ac{PMIx} server (either hosted on the local machine or on a remote machine).  This allows processes
 which were not created by the PMIx infrastructure to request access to PMIx functionality. 
-Processes registered as tools do not have peers.  
 
 \section{Portability of Functionality}
 \label{chap:intro:not_supported}
@@ -122,7 +121,7 @@ It is difficult to define a portable \ac{API} that will provide access to the ma
 and varied features underlying the operations for which \ac{PMIx} provides access.
 For example, the options and features provided to request the creation
 of new processes varied dramatically between different systems existing
-at the time \ac{PMIx} was introduced.  Many \acp{WLM} provide rich interfaces
+at the time \ac{PMIx} was introduced.  Many \acp{RM} provide rich interfaces
 to specify the resources assigned to processes.
 As a result, \ac{PMIx} is faced with the challenge
 of attempting to meet the seamingly conflicting goals of creating an \ac{API} which allows
@@ -143,7 +142,7 @@ critical to basic application execution (e.g., \refapi{PMIx_Get}) for certain cl
 
 An area where differences between support on different systems can be challenging is regarding the attributes that provide information to the client process and/or control the behavior of a \ac{PMIx} \ac{API}.  Most
 \ac{PMIx} \ac{API} calls can accept additional information or attributes specified in the form of 
-key/value pairs. These attributes provide information to the \ac{PMIx} implementation which influence the 
+key/value pairs. These attributes provide information to the \ac{PMIx} implementation that influence the 
 behavior of the \ac{API} call.  In addition to \ac{API} calls being optional, support for the 
 individual attributes of an \ac{API} call can vary between systems or implementations.   
 
@@ -175,7 +174,7 @@ It is therefore critical that users and application implementers:
 \item check the return status on all \ac{PMIx} function calls to ensure support was present and that the request was accepted. Note that for non-blocking \acp{API}, a return of \refconst{PMIX_SUCCESS} only indicates that the request had no obvious errors and is being processed – the eventual callback will return the status of the requested operation itself.
 \end{compactalphaenum}
 
-\ac{PMIx} clients (e.g., tools, \ac{MPE} libraries) may find that they depend only on a small subset of interfaces and attributes to work correctly.
+\ac{PMIx} clients (e.g., tools, parallel programming libraries) may find that they depend only on a small subset of interfaces and attributes to work correctly.
 \ac{PMIx} clients are strongly advised to define a document itemizing the \ac{PMIx} interfaces and associated attributes that are required for correct operation, and are optional but recommended for full functionality.
 The \ac{PMIx} standard cannot define this list for all given \ac{PMIx} clients, but such a list is valuable to \acp{RM} desiring to support these clients.
 
@@ -407,5 +406,4 @@ The following changes were introduced in v4.0 of the PMIx Standard:
     \item Add \refconst{PMIX_APP_WILDCARD} to reference all applications within a given job
     \item Fix signature of blocking APIs \refapi{PMIx_Allocation_request}, \refapi{PMIx_Job_control}, \refapi{PMIx_Process_monitor}, \refapi{PMIx_Get_credential}, and \refapi{PMIx_Validate_credential} to allow return of results
     \item Update description to provide an option for blocking behavior of the \refapi{PMIx_Register_event_handler}, \refapi{PMIx_Deregister_event_handler}, \refapi{PMIx_Notify_event}, \refapi{PMIx_IOF_pull}, \refapi{PMIx_IOF_deregister}, and \refapi{PMIx_IOF_push} APIs. The need for blocking forms of these functions was not initially anticipated but has emerged over time. For these functions, the return value is sufficient to provide the caller with information otherwise returned via callback. Thus, use of a \code{NULL} value as the callback function parameter was deemed a minimal disruption method for providing the desired capability
-    \item
 \end{itemize}
