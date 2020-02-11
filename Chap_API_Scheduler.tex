@@ -4,7 +4,7 @@
 \chapter{Scheduler-Specific Interfaces}
 \label{chap:api_scheduler}
 
-The \ac{PMIx} server library includes several interfaces specifically intended to support \acp{WLM} (also known as \emph{schedulers}) by providing access to information of potential use to scheduling algorithms - e.g., information on communication costs between different points on the fabric. Due to their high cost in terms of execution, memory consumption, and interactions with other \ac{SMS} components (e.g., a fabric manager), it is strongly advised that use be restricted to a single \ac{PMIx} server in a system that is supporting the \ac{SMS} component responsible for the scheduling of allocations (i.e., the system \refterm{scheduler})
+The \ac{PMIx} server library includes several interfaces specifically intended to support \acp{WLM} (also known as \emph{schedulers}) by providing access to information of potential use to scheduling algorithms - e.g., information on communication costs between different points on the fabric. Due to their high cost in terms of execution, memory consumption, and interactions with other \ac{SMS} components (e.g., a fabric manager), it is strongly advised that use be restricted to a single \ac{PMIx} server in a system that is supporting the \ac{SMS} component responsible for the scheduling of allocations (i.e., the system \refterm{scheduler}).
 
 Accordingly, access to the functions described in this chapter requires that the \ac{PMIx} server library be initialized with the \refattr{PMIX_SERVER_SCHEDULER} attribute.
 
@@ -34,7 +34,7 @@ Note that in this structure:
 \begin{itemize}
     \item the \refarg{name} is an optional user-supplied string name identifying the fabric being referenced by this struct;
     \item a \ac{PMIx}-provided index identifying this object;
-    \item the \refarg{commcost} element is a square, two-dimensional array of \code{uint16_t} values representing the relative communication cost between the two (row,col) vertices. Note that \ac{PMIx} makes no assumption as to the symmetry of the matrix - while the communication cost of many fabrics is independent of direction (and hence, the \refarg{commcost} matrix is symmetric), others may be direction sensitive;
+    \item the \refarg{commcost} element is a square, two-dimensional array of \code{uint16_t} values representing the relative communication cost between the two \textit{(row,col)} vertices. Note that \ac{PMIx} makes no assumption as to the symmetry of the matrix - while the communication cost of many fabrics is independent of direction (and hence, the \refarg{commcost} matrix is symmetric), others may be direction sensitive;
     \item \refarg{nverts} indicates the number of rows and columns in the \refarg{commcost} array; and
     \item \refarg{module} points to an opaque object reserved for use by the \ac{PMIx} server library.
 \end{itemize}
@@ -63,7 +63,7 @@ The \ac{PMIx} server library has completed updating the entries of all affected 
 
 %
 \declareNewAttribute{PMIX_SERVER_SCHEDULER}{"pmix.srv.sched"}{bool}{
-Server requests access to \ac{WLM}-supporting features
+Server requests access to \ac{WLM}-supporting features.
 }
 
 %%%%%%%%%%%
@@ -78,7 +78,7 @@ The following \acp{API} allow the scheduler that hosts the \ac{PMIx} server libr
 %%%%
 \summary
 
-Register for access to fabric-related information
+Register for access to fabric-related information.
 
 %%%%
 \format
@@ -111,11 +111,11 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 %%%%
 \descr
 
-Register for access to fabric-related information, including communication cost matrix. This call must be made prior to requesting information from a fabric. The caller may request access to a particular \refterm{network plane} via the \refattr{PMIX_NETWORK_PLANE} attribute - otherwise, the default fabric will be returned.
+Register for access to fabric-related information, including the communication cost matrix. This call must be made prior to requesting information from a fabric. The caller may request access to a particular \refterm{network plane} via the \refattr{PMIX_NETWORK_PLANE} attribute - otherwise, the default fabric will be returned.
 
 If available, the \refarg{fabric} struct shall contain the address and size of the communication cost matrix associated with the specified network plane. For performance reasons, the \ac{PMIx} server library does \emph{not} provide thread protection for cost matrix access. Instead, users are required to register for \refconst{PMIX_FABRIC_UPDATE_PENDING} events indicating that an update to the cost matrix is pending. When received, users are required to terminate any actions involving access to the cost matrix before returning from the event.
 
-Completion of the \refconst{PMIX_FABRIC_UPDATE_PENDING} event handler indicates to the \ac{PMIx} server library that the fabric object's entries are available for updating. This may include releasing and re-allocating memory as the number of vertices may have changed (e.g., due to addition or removal of one or more \acp{NIC}). When the update has been completed, the \ac{PMIX} server library will generate a \refconst{PMIX_FABRIC_UPDATED} event indicating that it is safe to begin using the updated fabric object(s).
+Completion of the \refconst{PMIX_FABRIC_UPDATE_PENDING} event handler indicates to the \ac{PMIx} server library that the fabric object's entries are available for updating. This may include releasing and re-allocating memory as the number of vertices may have changed (e.g., due to addition or removal of one or more \acp{NIC}). When the update has been completed, the \ac{PMIx} server library will generate a \refconst{PMIX_FABRIC_UPDATED} event indicating that it is safe to begin using the updated fabric object(s).
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_deregister_fabric}}
@@ -124,7 +124,7 @@ Completion of the \refconst{PMIX_FABRIC_UPDATE_PENDING} event handler indicates 
 %%%%
 \summary
 
-Deregister a fabric object
+Deregister a fabric object.
 
 %%%%
 \format
@@ -181,8 +181,8 @@ Returns one of the following:
 
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating return of a valid value.
-    \item \refconst{PMIX_ERR_BAD_PARAM}, indicating that the provided index is out of bounds
-    \item a \ac{PMIx} error constant indicating either an error in the input or that the request failed
+    \item \refconst{PMIX_ERR_BAD_PARAM}, indicating that the provided index is out of bounds.
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request failed.
 \end{itemize}
 
 %%%%
@@ -196,7 +196,7 @@ Returns one of the following:
 %%%%
 \summary
 
-Given vertex info, return the corresponding communication cost matrix index
+Given vertex info, return the corresponding communication cost matrix index.
 
 %%%%
 \format
@@ -224,7 +224,7 @@ Returns one of the following:
 
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating return of a valid value.
-    \item a \ac{PMIx} error constant indicating either an error in the input or that the request failed
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request failed.
 \end{itemize}
 
 
