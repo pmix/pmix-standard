@@ -11,7 +11,7 @@ Consumers of the \ac{PMIx} \acp{API} are grouped into three categories based on 
 As a result, there are three corresponding sets of initialization and finalization functions.
 If a process initializes as either a \emph{server} or a \emph{tool} that process may also access all of the \emph{client} \acp{API}.
 
-A process operating as a \emph{client} is started (directly or indirectly, for example, by an intermediate script) by a \ac{PMIx} server and is connected to that server when the client calls the client initialization routine.
+A process operating as a \emph{client} is started (directly or indirectly, for example, by an intermediate script) by the \ac{RM} and is connected to the \ac{PMIx} server instance within that \ac{RM} when the client calls the client \ac{PMIx} initialization routine.
 A process operating as a \emph{server} is responsible for starting client processes and coordinating with other server and tool processes in the same \ac{PMIx} universe.
 Often processes operating as a \emph{server} are part of the \acf{RM} infrastructure.
 A process operating as a \emph{tool} will connect to a \ac{PMIx} \emph{server} to interact with the processes in the \ac{PMIx} universe.
