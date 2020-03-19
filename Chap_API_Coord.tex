@@ -177,37 +177,37 @@ Network coordinates have been updated - the affected networks/planes are identif
 These attributes are used to describe information about network resources as assigned by the \ac{RM}, and thus are referenced using the process rank except where noted.
 
 %
-\declareNewAttribute{PMIX_NETWORK_COORDINATE}{"pmix.net.coord"}{pmix_data_array_t}{
+\declareAttribute{PMIX_NETWORK_COORDINATE}{"pmix.net.coord"}{pmix_data_array_t}{
 Network coordinate(s) of the specified process in the view and/or plane provided by the requester. If only one \ac{NIC} has been assigned to the specified process, then the array will contain only one address. Otherwise, the array will contain the coordinates of all \acp{NIC} available to the process in order of least to greatest distance from the process (\acp{NIC} equally distant from the process will be listed in arbitrary order).
 }
 
 %
-\declareNewAttribute{PMIX_NETWORK_VIEW}{"pmix.net.view"}{pmix_coord_view_t}{
+\declareAttribute{PMIX_NETWORK_VIEW}{"pmix.net.view"}{pmix_coord_view_t}{
 Network coordinate view to be used for the requested data - see \refstruct{pmix_coord_view_t} for the list of accepted values.
 }
 
 %
-\declareNewAttribute{PMIX_NETWORK_DIMS}{"pmix.net.dims"}{uint32_t}{
+\declareAttribute{PMIX_NETWORK_DIMS}{"pmix.net.dims"}{uint32_t}{
 Request number of dimensions in the specified network plane/view. If no plane is specified, then the dimensions of all planes in the system will be returned as a \refstruct{pmix_data_array_t} containing an array of \code{uint32_t} values. Default is to provide dimensions in \emph{logical} view.
 }
 
 %
-\declareNewAttribute{PMIX_NETWORK_PLANE}{"pmix.net.plane"}{char*}{
+\declareAttribute{PMIX_NETWORK_PLANE}{"pmix.net.plane"}{char*}{
 ID string of a network plane (e.g., CIDR for Ethernet). When used as a modifier in a request for information, specifies the plane whose information is to be returned. When used directly in a request, returns a \refstruct{pmix_data_array_t} of string identifiers for all network planes in the system.
 }
 
 %
-\declareNewAttribute{PMIX_NETWORK_NIC}{"pmix.net.nic"}{char*}{
+\declareAttribute{PMIX_NETWORK_NIC}{"pmix.net.nic"}{char*}{
 ID string of a network interface card (NIC). When used as a modifier in a request for information, specifies the \ac{NIC} whose information is to be returned. When used directly in a request, returns a \refstruct{pmix_data_array_t} of string identifiers for all \acp{NIC} in the specified network plane. If no plane is specified, then the \ac{NIC} identifiers of each plane in the system will be returned in an array where each element is in turn an array of strings containing the network plane ID followed by the identifiers of the \acp{NIC} attached to that plane.
 }
 
 %
-\declareNewAttribute{PMIX_NETWORK_ENDPT}{"pmix.net.endpt"}{pmix_data_array_t}{
+\declareAttribute{PMIX_NETWORK_ENDPT}{"pmix.net.endpt"}{pmix_data_array_t}{
 Network endpoints for a specified process. As multiple endpoints may be assigned to a given process (e.g., in the case where multiple \acp{NIC} are associated with a socket to which the process is bound), the returned values will be provided in a \refstruct{pmix_data_array_t} - the returned data type of the individual values in the array varies by fabric provider.
 }
 
 %
-\declareNewAttribute{PMIX_NETWORK_SHAPE}{"pmix.net.shape"}{pmix_data_array_t*}{
+\declareAttribute{PMIX_NETWORK_SHAPE}{"pmix.net.shape"}{pmix_data_array_t*}{
 The size of each dimension in the specified network plane/view, returned in a \refstruct{pmix_data_array_t} containing an array of \code{uint32_t} values. The size is defined as the number of elements present in that dimension - e.g., the number of \acp{NIC} in one dimension of a physical view of a network plane. If no plane is specified, then the shape of each plane in the system will be returned in an array of network shapes. Default is to provide the shape in \emph{logical} view.
 }
 

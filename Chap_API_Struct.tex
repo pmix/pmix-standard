@@ -3177,7 +3177,7 @@ The requesting process is a PMIx client.
 }
 
 %
-\declareNewAttribute{PMIX_PSET_NAME}{"pmix.pset.nm"}{char*}{
+\declareAttribute{PMIX_PSET_NAME}{"pmix.pset.nm"}{char*}{
 User-assigned name for the process set containing the given process.
 }
 
@@ -3551,17 +3551,17 @@ Provide an array of \refstruct{pmix_info_t} containing session-level information
 }
 
 %
-\declareNewAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing job-level information. The \refattr{PMIX_SESSION_ID} attribute of the \refterm{session} containing the \refterm{job} is required to be included in the array whenever the \ac{PMIx} server library may host multiple sessions (e.g., when executing with a host \ac{RM} daemon). As information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes when used in that context (though either or both of them may be included). At least one of the job identifiers must be provided in all other contexts where the job being referenced is ambiguous.
 }
 
 %
-\declareNewAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, are must to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
 }
 
 %
-\declareNewAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is required to be included in the array, though both may be included.
 }
 
@@ -3624,7 +3624,7 @@ Number of slots allocated in this context (session, namespace, application, or n
 }
 
 %
-\declareNewAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
+\declareAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
 Number of nodes in this session, or that are currently executing processes from the associated namespace or application.
 }
 
@@ -3769,7 +3769,7 @@ Comma-delimited list of algorithms to use for the collective operation. \ac{PMIx
 }
 
 %
-\declareDepAttribute{PMIX_COLLECTIVE_ALGO_REQD}{"pmix.calreqd"}{bool}{
+\declareAttribute{PMIX_COLLECTIVE_ALGO_REQD}{"pmix.calreqd"}{bool}{
 If \code{true}, indicates that the requested choice of algorithm is mandatory.
 }
 
@@ -3799,7 +3799,7 @@ Look only in the client's local data store for the requested value - do not requ
 }
 
 %
-\declareNewAttribute{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
+\declareAttribute{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
 Request that any pointers in the returned value point directly to values in the key-value store}
 
 %
@@ -4309,17 +4309,17 @@ Query number of seconds (\code{uint32_t}) remaining in allocation for the specif
 }
 
 %
-\declareNewAttribute{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
+\declareAttribute{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
 Query list of supported attributes for specified \acp{API}
 }
 
 %
-\declareNewAttribute{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
+\declareAttribute{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
 Return the number of psets defined in the specified range (defaults to session).
 }
 
 %
-\declareNewAttribute{PMIX_QUERY_PSET_NAMES}{"pmix.qry.psets"}{char*}{
+\declareAttribute{PMIX_QUERY_PSET_NAMES}{"pmix.qry.psets"}{char*}{
 Return a comma-delimited list of the names of the psets defined in the specified range (defaults to session).
 }
 
@@ -4552,7 +4552,7 @@ User-provided string identifier for this allocation request which can later be u
 }
 
 %
-\declareNewAttribute{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
+\declareAttribute{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
 A string identifier (provided by the host environment) for the resulting allocation which can later be used to reference the allocated resources in, for example, a call to \refapi{PMIx_Spawn}.
 }
 
@@ -4925,35 +4925,35 @@ Include all relevant data
 \subsection{Attribute support level attributes}
 \label{api:struct:attributes:level}
 
-\declareNewAttribute{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
+\declareAttribute{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
 Request a list of functions supported by the \ac{PMIx} client library
 }
 
-\declareNewAttribute{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
+\declareAttribute{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
 Request attributes supported by the \ac{PMIx} client library
 }
 
-\declareNewAttribute{PMIX_SERVER_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
+\declareAttribute{PMIX_SERVER_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
 Request a list of functions supported by the \ac{PMIx} server library
 }
 
-\declareNewAttribute{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
+\declareAttribute{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
 Request attributes supported by the \ac{PMIx} server library
 }
 
-\declareNewAttribute{PMIX_HOST_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
+\declareAttribute{PMIX_HOST_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
 Request a list of functions supported by the host environment
 }
 
-\declareNewAttribute{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
+\declareAttribute{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
 Request attributes supported by the host environment
 }
 
-\declareNewAttribute{PMIX_TOOL_FUNCTIONS}{"pmix.tool.fns"}{bool}{
+\declareAttribute{PMIX_TOOL_FUNCTIONS}{"pmix.tool.fns"}{bool}{
 Request a list of functions supported by the \ac{PMIx} tool library
 }
 
-\declareNewAttribute{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
+\declareAttribute{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
 Request attributes supported by the \ac{PMIx} tool library functions
 }
 
@@ -4961,15 +4961,15 @@ Request attributes supported by the \ac{PMIx} tool library functions
 \subsection{Descriptive attributes}
 \label{api:struct:attributes:descr}
 
-\declareNewAttribute{PMIX_MAX_VALUE}{"pmix.descr.maxval"}{varies}{
+\declareAttribute{PMIX_MAX_VALUE}{"pmix.descr.maxval"}{varies}{
 Used in \refstruct{pmix_regattr_t} to describe the maximum valid value for the associated attribute.
 }
 
-\declareNewAttribute{PMIX_MIN_VALUE}{"pmix.descr.minval"}{varies}{
+\declareAttribute{PMIX_MIN_VALUE}{"pmix.descr.minval"}{varies}{
 Used in \refstruct{pmix_regattr_t} to describe the minimum valid value for the associated attribute.
 }
 
-\declareNewAttribute{PMIX_ENUM_VALUE}{"pmix.descr.enum"}{char*}{
+\declareAttribute{PMIX_ENUM_VALUE}{"pmix.descr.enum"}{char*}{
 Used in \refstruct{pmix_regattr_t} to describe accepted values for the associated attribute. Numerical values shall be presented in a form convertible to the attribute's declared data type. Named values (i.e., values defined by constant names via a typical C-language enum declaration) must be provided as their numerical equivalent.
 }
 
@@ -4981,52 +4981,52 @@ Used in \refstruct{pmix_regattr_t} to describe accepted values for the associate
 Attributes for controlling the \ac{PMIx} Group \acp{API}
 
 %
-\declareNewAttribute{PMIX_GROUP_ID}{"pmix.grp.id"}{char*}{
+\declareAttribute{PMIX_GROUP_ID}{"pmix.grp.id"}{char*}{
 User-provided group identifier
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_LEADER}{"pmix.grp.ldr"}{bool}{
+\declareAttribute{PMIX_GROUP_LEADER}{"pmix.grp.ldr"}{bool}{
 This process is the leader of the group
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_OPTIONAL}{"pmix.grp.opt"}{bool}{
+\declareAttribute{PMIX_GROUP_OPTIONAL}{"pmix.grp.opt"}{bool}{
 Participation is optional - do not return an error if any of the specified processes terminate without having joined. The default is false
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_NOTIFY_TERMINATION}{"pmix.grp.notterm"}{bool}{
+\declareAttribute{PMIX_GROUP_NOTIFY_TERMINATION}{"pmix.grp.notterm"}{bool}{
 Notify remaining members when another member terminates without first leaving the group. The default is false
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_INVITE_DECLINE}{"pmix.grp.decline"}{bool}{
+\declareAttribute{PMIX_GROUP_INVITE_DECLINE}{"pmix.grp.decline"}{bool}{
 Notify the inviting process that this process does not wish to participate in the proposed group The default is true
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_MEMBERSHIP}{"pmix.grp.mbrs"}{pmix_data_array_t*}{
+\declareAttribute{PMIX_GROUP_MEMBERSHIP}{"pmix.grp.mbrs"}{pmix_data_array_t*}{
 Array of group member ID's
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_ASSIGN_CONTEXT_ID}{"pmix.grp.actxid"}{bool}{
+\declareAttribute{PMIX_GROUP_ASSIGN_CONTEXT_ID}{"pmix.grp.actxid"}{bool}{
 Requests that the \ac{RM} assign a new context identifier to the newly created group. The identifier is an unsigned, \code{size_t} value that the \ac{RM} guarantees to be unique across the range specified in the request. Thus, the value serves as a means of identifying the group within that range. If no range is specified, then the request defaults to \refconst{PMIX_RANGE_SESSION}.
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_CONTEXT_ID}{"pmix.grp.ctxid"}{size_t}{
+\declareAttribute{PMIX_GROUP_CONTEXT_ID}{"pmix.grp.ctxid"}{size_t}{
 Context identifier assigned to the group by the host \ac{RM}.
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_LOCAL_ONLY}{"pmix.grp.lcl"}{bool}{
+\declareAttribute{PMIX_GROUP_LOCAL_ONLY}{"pmix.grp.lcl"}{bool}{
 Group operation only involves local processes. \ac{PMIx} implementations are \textit{required} to automatically scan an array of group members for local vs remote processes - if only local processes are detected, the implementation need not execute a global collective for the operation unless a context ID has been requested from the host environment. This can result in significant time savings. This attribute can be used to optimize the operation by indicating whether or not only local processes are represented, thus allowing the implementation to bypass the scan. The default is false
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_ENDPT_DATA}{"pmix.grp.endpt"}{pmix_byte_object_t}{
+\declareAttribute{PMIX_GROUP_ENDPT_DATA}{"pmix.grp.endpt"}{pmix_byte_object_t}{
 Data collected to be shared during group construction
 }
 

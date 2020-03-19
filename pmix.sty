@@ -348,29 +348,30 @@
   \vspace{-1.3ex}%
 }
 
-\newcommand{\declareNewAttribute}[4]{%
-   {\color{magenta}\code{#1}} ~~\code{#2}~~(\code{#3})%
-    \index{#1!Definition|textbf} \label{attr:#1}%
-    \StdCopy{str:#1}{\code{#2}}%
-    \StdCopy{attr:#1}{\code{#3}}%
-    \vspace{-1.3ex}%
-      \expandafter\begin{adjustwidth}{.95cm}{}%
-      \StdCopyEcho{#1}{#4}%
-    \end{adjustwidth}%
-  \vspace{-1.3ex}%
-}
-
-\newcommand{\declareDepAttribute}[4]{%
-   {\color{green!80!black}\code{#1}} ~~\code{#2}~~(\code{#3})%
-    \index{#1!Definition|textbf} \label{attr:#1}%
-    \StdCopy{str:#1}{\code{#2}}%
-    \StdCopy{attr:#1}{\code{#3}}%
-    \vspace{-1.3ex}%
-      \expandafter\begin{adjustwidth}{.95cm}{}%
-      \StdCopyEcho{#1}{#4}%
-    \end{adjustwidth}%
-  \vspace{-1.3ex}%
-}
+% Keeping for reference, but commenting out to make sure all are removed
+%\newcommand{\declareNewAttribute}[4]{%
+%   {\color{magenta}\code{#1}} ~~\code{#2}~~(\code{#3})%
+%    \index{#1!Definition|textbf} \label{attr:#1}%
+%    \StdCopy{str:#1}{\code{#2}}%
+%    \StdCopy{attr:#1}{\code{#3}}%
+%    \vspace{-1.3ex}%
+%      \expandafter\begin{adjustwidth}{.95cm}{}%
+%      \StdCopyEcho{#1}{#4}%
+%    \end{adjustwidth}%
+%  \vspace{-1.3ex}%
+%}
+%
+%\newcommand{\declareDepAttribute}[4]{%
+%   {\color{green!80!black}\code{#1}} ~~\code{#2}~~(\code{#3})%
+%    \index{#1!Definition|textbf} \label{attr:#1}%
+%    \StdCopy{str:#1}{\code{#2}}%
+%    \StdCopy{attr:#1}{\code{#3}}%
+%    \vspace{-1.3ex}%
+%      \expandafter\begin{adjustwidth}{.95cm}{}%
+%      \StdCopyEcho{#1}{#4}%
+%    \end{adjustwidth}%
+%  \vspace{-1.3ex}%
+%}
 
 \newcommand{\pasteAttributeItemBegin}[1]{
   \refAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
