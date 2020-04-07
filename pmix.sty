@@ -390,36 +390,43 @@
 \newcommand{\refAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\code{#1}} }
 \newcommand{\refattr}[1]{\refAttributeItem{#1}}
 
-\newcommand{\refPRIAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\color{red}\code{#1}} }
+%\newcommand{\refPRIAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\color{red}\code{#1}} }
+\newcommand{\refPRIAttributeItem}[1]{ \refAttributeItem{#1} }
 
-\newcommand{\pastePRIAttributeItemBegin}[1]{
-  \refPRIAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
-  \vspace{-1.3ex}
-   \expandafter
-   \begin{adjustwidth}{.95cm}{}
-    \StdPaste{#1}
-}
-\newcommand{\pastePRIAttributeItemEnd}{
-   \end{adjustwidth}
-}
+%\newcommand{\pastePRIAttributeItemBegin}[1]{
+%  \refPRIAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
+%  \vspace{-1.3ex}
+%   \expandafter
+%   \begin{adjustwidth}{.95cm}{}
+%    \StdPaste{#1}
+%}
+%\newcommand{\pastePRIAttributeItemEnd}{
+%   \end{adjustwidth}
+%}
+\newcommand{\pastePRIAttributeItemBegin}[1]{\pasteAttributeItemBegin{#1}} 
+\newcommand{\pastePRIAttributeItemEnd}{\pasteAttributeItemEnd{}}
 
 \newcommand{\pastePRIAttributeItem}[1]{
     \pastePRIAttributeItemBegin{#1}
     \pastePRIAttributeItemEnd{}
 }
 
-\newcommand{\refPRRTEAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\color{green!60!black}\code{#1}} }
+%\newcommand{\refPRRTEAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\color{green!60!black}\code{#1}} }
+\newcommand{\refPRRTEAttributeItem}[1]{ \refAttributeItem{#1} }
 
-\newcommand{\pastePRRTEAttributeItemBegin}[1]{
-  \refPRRTEAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
-  \vspace{-1.3ex}
-   \expandafter
-   \begin{adjustwidth}{.95cm}{}
-    \StdPaste{#1}
-}
-\newcommand{\pastePRRTEAttributeItemEnd}{
-   \end{adjustwidth}
-}
+%\newcommand{\pastePRRTEAttributeItemBegin}[1]{
+%  \refPRRTEAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
+%  \vspace{-1.3ex}
+%   \expandafter
+%   \begin{adjustwidth}{.95cm}{}
+%    \StdPaste{#1}
+%}
+%\newcommand{\pastePRRTEAttributeItemEnd}{
+%   \end{adjustwidth}
+%}
+
+\newcommand{\pastePRRTEAttributeItemBegin}[1]{\pasteAttributeItemBegin{#1}} 
+\newcommand{\pastePRRTEAttributeItemEnd}{\pasteAttributeItemEnd{}}
 
 \newcommand{\pastePRRTEAttributeItem}[1]{
     \pastePRRTEAttributeItemBegin{#1}
