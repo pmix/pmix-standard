@@ -671,6 +671,29 @@
 
 \newcommand{\refterm}[1]{\index{#1}\hyperref[term:#1]{\emph{#1}}}
 
+\newenvironment{signature}[1]{
+\versionMarker{#1}
+\cspecificstart
+\begin{codepar}
+}{
+\end{codepar}
+\cspecificend
+}
+
+\newcommand{\copySignature}[3]{
+  \StdCopyEcho{sig:#1}{
+    \begin{signature}{#2}
+      #3
+    \end{signature}
+  }
+}
+
+\newcommand{\pasteSignature}[1]{
+  \StdPaste{sig:#1}
+}
+
+\newlength{\sigspace}
+\setlength{\sigspace}{0.083in} % width of the bolded, monospace characters used in codepar env
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Code and placeholder semantic tagging.
