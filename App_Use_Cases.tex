@@ -316,4 +316,129 @@ It is sometimes desirable or required that standard environmental variables (e.g
 
 Resource managers and launchers must scan for relevant directives, modifying environmental parameters as directed. Directives are to be processed in the order in which they were given, starting with job-level directives (applied to each app) followed by app-level directives.
 
+\section{Hybrid Programming Models}
+\label{app:uc-hybrid-programming-models}
+
+\subsection{Use Case Summary}
+
+Hybrid applications (i.e., applications that utilize more than one lprogramming model, such as an MPI application that also uses OpenMP or PGAS) are growing in popularity, especially as chips with increasingly large numbers of cores and processors proliferate. Unfortunately, the various models currently operate under the assumption that they alone control execution. This leads to conflicts in hybrid applications. Deadlock of parallel applications can occur when one model prevents the other from making progress due to lack of coordination between the multiple programming models~\cite{2016:Hamidouche}.  Sub-optimal performance can also occur due to uncoordinated division of hardware resources between the programming models~\cite{2018:Vallee,ompix-moc}. This use-case offers potential solutions to the problem by providing a pathway for programming models to coordinate their actions.
+
+\subsection{Use Case Details}
+
+\subsubsection{Identifying Active Programming Models}
+
+The current state-of-the-practice for programming models to detect one another is via set environment variables.  For example, OpenMP looks for environment variables to indicate that MPI is active.  Unfortunately, this technique is not completely reliable as environment variables change over time and with new software versions.  Also, the fact that an environment variable is present doesn't guarantee that a particular programming is in active use since Resource Managers routinely set environment variables "just in case" the application needs them. PMIx provides a reliable mechanism by which each library can determine that another library is in operation.
+
+When initializing PMIx, programming models can register themselves, including their name, version, and threading model.  This information is then cached locally and can then be read asynchronously by other programming models using PMIx's Event Notification system (see next section for more details).
+
+This initialization mechanism also allows libraries to share knowledge of each other's resources and intended resource utilization. For example, if OpenMP knows which hardware threads that MPI is using it could potentially avoid processor and cache contention.
+
+\littleheader{Code Example}
+
+\pmixCodeImportC[]{sources/_autogen_/hybrid-prog-model.c_declare_model}
+
+\littleheader{Related Interfaces}
+
+{\large \refapi{PMIx_Init}}
+\pasteSignature{PMIx_Init}
+
+\littleheader{Related Attributes}
+
+\pasteAttributeItem{PMIX_PROGRAMMING_MODEL}
+\pasteAttributeItem{PMIX_MODEL_LIBRARY_NAME}
+\pasteAttributeItem{PMIX_MODEL_LIBRARY_VERSION}
+\pasteAttributeItem{PMIX_THREADING_MODEL}
+\pasteAttributeItem{PMIX_MODEL_NUM_THREADS}
+\pasteAttributeItem{PMIX_MODEL_NUM_CPUS}
+\pasteAttributeItem{PMIX_MODEL_CPU_TYPE}
+\pasteAttributeItem{PMIX_MODEL_PHASE_NAME}
+\pasteAttributeItem{PMIX_MODEL_PHASE_TYPE}
+\pasteAttributeItem{PMIX_MODEL_AFFINITY_POLICY}
+
+\subsubsection{Coordinating at Runtime}
+
+The PMIx Event Notification system provides a mechanism by which the resource manager can communicate system events to applications, thus providing applications with an opportunity to generate an appropriate response. Hybrid applications can leverage these events for cross-library coordination.
+
+Programming models can access the information provided by other programming models during their initialization using the event notification system.  In this case, programming models should register a callback for the \refconst{PMIX_MODEL_DECLARED} event.
+
+Programming models can also use the PMIx event notification system to communicate dynamic information, such as entering a new application phase (\pasteAttributeItem{PMIX_MODEL_PHASE_NAME}) or a change in resources used (\refconst{PMIX_MODEL_RESOURCES}).  This dynamic information can be broadcast to other programming models using the \refapi{PMIx_Notify_event} function.  Other programming models can register callback functions to run when these events occur (i.e., callback functions) using \refapi{PMIx_Register_event_handler}.
+
+\littleheader{Code Example}
+
+Registering a callback to run when another programming model initializes:
+\pmixCodeImportC[]{sources/_autogen_/hybrid-prog-model.c_declare_model_cb}
+
+
+Notifying an event:
+\pmixCodeImportC[]{sources/_autogen_/hybrid-prog-model.c_notify_event}
+
+\littleheader{Related Interfaces and Constants}
+
+{\large \refapi{PMIx_Notify_event}}
+\pasteSignature{PMIx_Notify_event}
+
+\refconst{PMIX_MODEL_DECLARED} \\
+\refconst{PMIX_MODEL_RESOURCES} \\
+\refconst{PMIX_OPENMP_PARALLEL_ENTERED} \\
+\refconst{PMIX_OPENMP_PARALLEL_EXITED} \\
+
+{\large \refapi{PMIx_Register_event_handler}}
+\pasteSignature{PMIx_Register_event_handler}
+
+{\large \refapi{pmix_event_notification_cbfunc_fn_t}}
+\pasteSignature{pmix_event_notification_cbfunc_fn_t}
+
+\refconst{PMIX_EVENT_ACTION_COMPLETE}
+
+
+
+\subsubsection{Coordinating at Runtime with Multiple Event Handlers}
+
+Coordinating with a threading library such as OpenMP creates the need for separate event handlers for threads of the same process.  For example in an MPI+OpenMP hybrid application, the MPI thread and the main OpenMP thread may both want to be notified anytime an OpenMP worker thread enters a parallel region.  This requiring support for multiple threads to potentially register different event handlers against the same status code.
+
+Multiple event handlers registered against the same event are processed in a chain-like manner based on the order in which they were registered, as modified by directive. Registrations against specific event codes are processed first, followed by registrations against multiple event codes and then any default registrations. At each point in the chain, an event handler is called by the PMIx progress thread and given a function to call when that handler has completed its operation. The handler callback notifies PMIx that the handler is done, returning a status code to indicate the result of its work. The results are appended to the array of prior results, with the returned values combined into an array within a single pmix_info_t as follows:
+\begin{itemize}
+\item \texttt{array[0]}: the event handler name provided at registration (may be an empty field if a string name was not given) will be in the key, with the pmix_status_t value returned by the handler
+\item \texttt{array[*]}: the array of results returned by the handler, if any.
+\end{itemize}
+
+The current PMIx standard does not actually specify a default ordering for event handlers as they are being registered. However, it does include an inherent ordering for invocation. Specifically, PMIx stipulates that handlers be called in the following categorical order:
+
+\begin{itemize}
+\item single status event handlers - i.e., handlers that were registered against a single specific status.
+\item multi status event handlers - those registered against more than one specific status
+\item default event handlers - those registered against no specific status
+\end{itemize}
+
+\littleheader{Code Example}
+
+From the OpenMP master thread:
+
+\pmixCodeImportC[]{sources/_autogen_/hybrid-prog-model.c_omp_thread}
+
+From the MPI thread:
+
+\pmixCodeImportC[]{sources/_autogen_/hybrid-prog-model.c_mpi_thread}
+
+\littleheader{Related Interfaces, Attributes, and Constants}
+
+{\large \refapi{PMIx_Register_event_handler}}
+\pasteSignature{PMIx_Register_event_handler}
+
+\pasteAttributeItem{PMIX_EVENT_HDLR_NAME}
+\pasteAttributeItem{PMIX_EVENT_HDLR_FIRST}
+\pasteAttributeItem{PMIX_EVENT_HDLR_LAST}
+\pasteAttributeItem{PMIX_EVENT_HDLR_FIRST_IN_CATEGORY}
+\pasteAttributeItem{PMIX_EVENT_HDLR_LAST_IN_CATEGORY}
+\pasteAttributeItem{PMIX_EVENT_HDLR_BEFORE}
+\pasteAttributeItem{PMIX_EVENT_HDLR_AFTER}
+\pasteAttributeItem{PMIX_EVENT_HDLR_APPEND}
+
+{\large \refapi{pmix_event_notification_cbfunc_fn_t}}
+\pasteSignature{pmix_event_notification_cbfunc_fn_t}
+
+\refconst{PMIX_EVENT_NO_ACTION_TAKEN} \\
+\refconst{PMIX_EVENT_PARTIAL_ACTION_TAKEN} \\
+\refconst{PMIX_EVENT_ACTION_DEFERRED} \\
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
