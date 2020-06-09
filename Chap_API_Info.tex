@@ -1,0 +1,77 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: Informational
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{General Information Interfaces}
+\label{chap:api_info}
+
+The \acp{API} defined in this chapter can be used by any \ac{PMIx} process, regardless of their role in the \ac{PMIx} universe.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Initialization Status}
+\label{chap:api_info:init}
+
+The \acp{API} defined in this section return information about the status of the \ac{PMIx} library.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Initialized}}
+\declareapi{PMIx_Initialized}
+
+%%%%
+\format
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+int PMIx_Initialized(void)
+\end{codepar}
+\cspecificend
+
+A value of \code{1} (true) will be returned if the \ac{PMIx} library has been initialized, and \code{0} (false) otherwise.
+
+\rationalestart
+The return value is an integer for historical reasons as that was the signature of prior PMI libraries.
+\rationaleend
+
+%%%%
+\descr
+
+Check to see if the \ac{PMIx} library has been initialized using any of the initialization functions:
+\refapi{PMIx_Init}, \refapi{PMIx_server_init}, or \refapi{PMIx_tool_init}.
+It is valid to call this \ac{API} outside of a region of initialization.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Library Information}
+\label{chap:api_info:lib}
+
+The \acp{API} defined in this section return information about the \ac{PMIx} library.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Get_version}}
+\declareapi{PMIx_Get_version}
+
+%%%%
+\summary
+
+Get the \ac{PMIx} version information.
+
+%%%%
+\format
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+const char* PMIx_Get_version(void)
+\end{codepar}
+\cspecificend
+
+%%%%
+\descr
+
+Get the \ac{PMIx} version string.
+Note that the provided string is statically defined and must \textit{not} be free'd.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -210,6 +210,38 @@ installing, and using \ac{PRRTE} are available
 on the community's web site \url{https://pmix.org/code/getting-the-pmix-reference-server/}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{PMIx Consumer Roles}
+
+Consumers of the \ac{PMIx} \acp{API} are grouped into three categories based on the role they wish to play in the \ac{PMIx} environment: \emph{clients}, \emph{servers}, and \emph{tools}.
+As a result, there are three corresponding sets of initialization and finalization functions.
+If a process initializes as either a \emph{server} or a \emph{tool} that process may also access all of the \emph{client} \acp{API}.
+
+A process operating as a \emph{client} is started (directly or indirectly, for example, by an intermediate script) by the \ac{RM} and is connected to the \ac{PMIx} server instance within that \ac{RM} when the client calls the client \ac{PMIx} initialization routine.
+A process operating as a \emph{server} is responsible for starting client processes and coordinating with other server and tool processes in the same \ac{PMIx} universe.
+Often processes operating as a \emph{server} are part of the \acf{RM} infrastructure.
+A process operating as a \emph{tool} will connect to a \ac{PMIx} \emph{server} to interact with the processes in the \ac{PMIx} universe.
+An example of a \emph{tool} process is a parallel debugger that will connect to the server to assist with attaching to a set of client processes.
+
+\ac{PMIx} serves as a conduit between processes acting in these three different roles.
+As such, an \ac{API} is often described in how it interacts with processes operating in other roles in the \ac{PMIx} universe.
+
+\adviceimplstart
+A \ac{PMIx} implementation may support all or a subset of the \ac{API} role groupings defined in the standard.
+A common nomenclature is defined here to aid in identifying levels of conformance of an implementation.
+
+A \ac{PMIx} implementation that supports all three sets of the \ac{API} role groupings is said to be \emph{fully \ac{PMIx} standard compliant}.
+These \emph{fully \ac{PMIx} standard compliant} implementations have the advantage of being able to support a broad set of \ac{PMIx} consumers in the different roles.
+
+Alternatively, a \ac{PMIx} implementation may choose to support fewer than all three sets of the \ac{API} role groupings.
+\ac{PMIx} implementations that support only the \emph{client} \acp{API} are said to be \emph{client-only \ac{PMIx} standard compliant}.
+Similarly, an implementation that only supports the \emph{client} and \emph{tool} \acp{API} are said to be \emph{client-and-tool-only \ac{PMIx} standard compliant}.
+Finally, an implementation that only supports the \emph{client} and \emph{server} \acp{API} are said to be \emph{client-and-server-only \ac{PMIx} standard compliant}.
+Note that it would not make sense for an implementation to exclude the \emph{client} interfaces from their implementation since they are also used by the \emph{server} and \emph{tool} roles.
+\adviceimplend
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Organization of this document}
 
 The remainder of this document is structured as follows:

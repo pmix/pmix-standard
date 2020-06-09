@@ -9,6 +9,131 @@ The \ac{RM} daemon that hosts the \ac{PMIx} server library interacts with that l
 Second, the host can provide a set of callback functions by which the \ac{PMIx} server library can pass requests upward for servicing by the host. These include notifications of client connection and finalize, as well as requests by clients for information and/or services that the \ac{PMIx} server library does not itself provide.
 
 %%%%%%%%%%%
+\section{Server Initialization and Finalization}
+\label{chap:api_server:init}
+
+The \ac{PMIx} \acp{API} may only be used between the completion of the initialization function and the start of the finalization function, unless otherwise noted.
+The initialization and finalization functions are paired, and the initialized regions defined by them must not overlap.
+
+\adviceuserstart
+Server initialization includes setting up the infrastructure to support local clients,
+Therefore, server initialization will likely result in additional overhead and an increased memory footprint than client initialization alone.
+\adviceuserend
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_init}}
+\declareapi{PMIx_server_init}
+
+%%%%
+\summary
+
+Initialize the \ac{PMIx} server.
+
+%%%%
+\format
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_init(pmix_server_module_t *module,
+                 pmix_info_t info[], size_t ninfo)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{module}{\refapi{pmix_server_module_t} structure (handle)}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\reqattrstart
+The following attributes are required to be supported by all \ac{PMIx} libraries:
+
+\pastePRIAttributeItem{PMIX_SERVER_NSPACE}
+\pastePRIAttributeItem{PMIX_SERVER_RANK}
+\pastePRIAttributeItem{PMIX_SERVER_TMPDIR}
+\pastePRIAttributeItem{PMIX_SYSTEM_TMPDIR}
+\pastePRIAttributeItem{PMIX_SERVER_TOOL_SUPPORT}
+\pastePRIAttributeItem{PMIX_SERVER_SYSTEM_SUPPORT}
+
+\reqattrend
+
+
+\optattrstart
+The following attributes are optional for implementers of \ac{PMIx} libraries:
+
+\pastePRIAttributeItemBegin{PMIX_USOCK_DISABLE} If the library supports Unix socket connections, this attribute may be supported for disabling it.
+\pastePRIAttributeItemEnd{}
+\pasteAttributeItemBegin{PMIX_SOCKET_MODE} If the library supports socket connections, this attribute may be supported for setting the socket mode.
+\pasteAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_REPORT_URI} If the library supports TCP socket connections, this attribute may be supported for reporting the URI.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IF_INCLUDE} If the library supports TCP socket connections, this attribute may be supported for specifying the interfaces to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IF_EXCLUDE} If the library supports TCP socket connections, this attribute may be supported for specifying the interfaces that are \textit{not} to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IPV4_PORT} If the library supports IPV4 connections, this attribute may be supported for specifying the port to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_IPV6_PORT} If the library supports IPV6 connections, this attribute may be supported for specifying the port to be used.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_DISABLE_IPV4} If the library supports IPV4 connections, this attribute may be supported for disabling it.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
+\pastePRIAttributeItemEnd{}
+\pastePRIAttributeItemBegin{PMIX_SERVER_REMOTE_CONNECTIONS} If the library supports connections from remote tools, this attribute may be supported for enabling or disabling it.
+\pastePRIAttributeItemEnd{}
+
+\pastePRIAttributeItem{PMIX_EVENT_BASE}
+\pastePRIAttributeItemBegin{PMIX_GDS_MODULE} This attribute is specific to the \ac{PRI} and controls only the selection of \ac{GDS} module for internal use by the process. Module selection for interacting with the server is performed dynamically during the connection process.
+\pastePRIAttributeItemEnd{}
+
+\optattrend
+
+%%%%
+\descr
+
+Initialize the \ac{PMIx} server support library, and provide a pointer to a \refapi{pmix_server_module_t} structure containing the caller's callback functions.
+The array of \refstruct{pmix_info_t} structs is used to pass additional info that may be required by the server when initializing.
+For example, it may include the \refattr{PMIX_SERVER_TOOL_SUPPORT} attribute, thereby indicating that the daemon is willing to accept connection requests from \ac{PMIx} tools.
+
+\advicermstart
+Providing a value of \code{NULL} for the \refarg{module} argument is permitted, as is passing an empty \refarg{module} structure. Doing so indicates that the host environment will not provide support for multi-node operations such as \refapi{PMIx_Fence}, but does intend to support local clients access to information.
+\advicermend
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_finalize}}
+\declareapi{PMIx_server_finalize}
+
+%%%%
+\summary
+
+Finalize the \ac{PMIx} server library.
+
+%%%%
+\format
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_finalize(void)
+\end{codepar}
+\cspecificend
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Finalize the \ac{PMIx} server support library, terminating all connections to the attached tools and any local clients.
+All allocated resources are released.
+
+
+%%%%%%%%%%%
 \section{Server Support Functions}
 
 The following \acp{API} allow the \ac{RM} daemon that hosts the \ac{PMIx} server library to request specific services from the \ac{PMIx} library.
