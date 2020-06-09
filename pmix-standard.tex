@@ -67,7 +67,6 @@
 
 % Unified style sheet for PMIx documents:
 \input{pmix.sty}
-\makeindex[intoc,columns=2]
 
 % Watermark for the Unofficial Drafts
 % Note: "allpages","evenpages","oddpages" do not work. Likely because of the index.
@@ -75,6 +74,15 @@
   {\usepackage[printwatermark]{xwatermark}
    \newwatermark[firstpage,color=gray!30,angle=45,scale=3,xpos=-5,ypos=0]{Unofficial Draft}
   }{}
+
+%%%%%%%%%%%%%%%%%%% Indices
+\makeindex[intoc,columns=1,columnseprule=true,columnsep=15pt,title=Index]
+\makeindex[intoc,columns=1,columnseprule=true,columnsep=15pt,name=index_api,title=Index of APIs]
+\makeindex[intoc,columns=1,columnseprule=true,columnsep=15pt,name=index_macro,title=Index of Support Macros]
+\makeindex[intoc,columns=1,columnseprule=true,columnsep=15pt,name=index_const,title=Index of Constants] % 1 column because of long names
+\makeindex[intoc,columns=1,columnseprule=true,columnsep=15pt,name=index_attribute,title=Index of Attributes]
+\makeindex[intoc,columns=1,columnseprule=true,columnsep=15pt,name=index_struct,title=Index of Data Structures]
+
 
 %%%%%%%%%%%%%%%%%%%
 \usepackage{acronym}
@@ -114,6 +122,8 @@
 
 
 \begin{document}
+
+
 %
 % Title page
 %
@@ -220,7 +230,25 @@
 % Index
 %
 	\nolinenumbers
+
+	\indexprologue{General terms and other items not induced in the other indices.}
 	\printindex
+
+	%\indexprologue{Functions}
+	\printindex[index_api]
+
+	%\indexprologue{Macros}
+	\printindex[index_macro]
+
+	%\indexprologue{Data structures}
+	\printindex[index_struct]
+
+	%\indexprologue{Constants}
+	\printindex[index_const]
+
+	%\indexprologue{Attributes}
+	\printindex[index_attribute]
+
 
 \end{document}
 

@@ -40,7 +40,8 @@ INTERMEDIATE_FILES=pmix-standard.pdf \
 		pmix-standard.bbl \
 		pmix-standard.blg \
 		pmix-standard.synctex.gz \
-		pmix-standard.xwm
+		pmix-standard.xwm \
+		*.idx *.ilg *.ind
 
 all: pmix-standard.pdf
 

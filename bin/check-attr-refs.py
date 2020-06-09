@@ -11,6 +11,7 @@ import shutil
 if __name__ == "__main__":
     count_not_used = 0
     attr_declared = {}
+    index_files = ["pmix-standard.idx", "index_attribute.idx"]
 
     #
     # Command line parsing
@@ -27,7 +28,11 @@ if __name__ == "__main__":
     # * pmix-standard.aux
     # * pmix-standard.idx
     #
-    if os.path.exists("pmix-standard.aux") is False or os.path.exists("pmix-standard.idx") is False:
+    missing_index = False
+    for fname in index_files:
+        if os.path.exists(fname) is False:
+            missing_index = True
+    if os.path.exists("pmix-standard.aux") is False or missing_index is True:
         print("Error: Cannot find the .aux or .idx files necessary for processing in the current directory.")
         print("       Please run this script from the base PMIx Standard build directory, and with a recent build.")
         sys.exit(1)
@@ -75,33 +80,45 @@ if __name__ == "__main__":
         print "Verifying list against the index"
         print "-"*50
 
-    p = subprocess.Popen("grep \"\\!Definition\" pmix-standard.idx",
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
-    p.wait()
-    if p.returncode != 0:
-        print("Error: Failed to verify declared attribute \""+attr+"\". grep error code "+str(p.returncode)+")");
-        sys.exit(2)
 
-    # List of Definition is larger than attribute list
-    for line in p.stdout:
-        line = line.rstrip()
-        m = re.match(r'\s*\\indexentry{(\w+)', line)
-        if m is None:
-            print("Error: Failed to extract an attribute on the following line")
-            print(" line: "+line)
-            sys.exit(1)
+    for fname in index_files:
+        if os.path.exists(fname) is False:
+            continue
+        if args.verbose is True:
+            print "Processing Index File: "+fname
 
-        attr_to_find = m.group(1)
-        if attr_to_find in attr_declared:
-            attr_declared[attr_to_find] = attr_declared[attr_to_find] + 1
+        p = subprocess.Popen("grep \"\\!Definition\" "+fname,
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
+        p.wait()
+        if p.returncode != 0:
+            print("Error: Failed to verify declared attribute \""+attr+"\". grep error code "+str(p.returncode)+")");
+            sys.exit(2)
+                
+        # List of Definition is larger than attribute list
+        for line in p.stdout:
+            line = line.rstrip()
+            m = re.match(r'\s*\\indexentry{(\w+)', line)
+            if m is None:
+                print("Error: Failed to extract an attribute on the following line")
+                print(" line: "+line)
+                sys.exit(1)
+
+            attr_to_find = m.group(1)
+            if attr_to_find in attr_declared:
+                attr_declared[attr_to_find] = attr_declared[attr_to_find] + 1
 
     # Sanity check. Should never trigger, but check just in case
     err_out = False
+    num_missing = 0
     for attr in attr_declared:
         if attr_declared[attr] < 0:
             print("Error: Attribute \""+attr+"\" declared, but not in the index")
             err_out = True
+            num_missing += 1
     if err_out is True:
+        print "-"*50
+        print("Number of declared attributes: " + str(len(attr_declared)))
+        print("Number of missing attributes : " + str(num_missing))
         sys.exit(1)
 
     if args.verbose is True:
@@ -117,31 +134,37 @@ if __name__ == "__main__":
         print "Count the usage of each attribute in the document"
         print "-"*50
 
-    # Result set was too big for Python to handle, so use an intermediate file
-    output_file = "pmix-standard.idx-grep"
-    with open(output_file, 'w') as logfile:
-        ret = subprocess.call(['grep', '\|hyperpage', 'pmix-standard.idx'],
-                              stdout=logfile, stderr=logfile, shell=False)
-        if ret != 0:
-            print("Error: Failed to verify declared attribute \""+attr+"\". grep error code "+str(ret)+")");
-            sys.exit(2)
+    for fname in index_files:
+        if os.path.exists(fname) is False:
+            continue
+        if args.verbose is True:
+            print "Processing Index File: "+fname
 
-    # List of references is much larger than attribute list
-    with open(output_file, 'r') as logfile:
-        for line in logfile:
-            line = line.rstrip()
-            m = re.match(r'\s*\\indexentry{(\w+)', line)
-            if m is None:
-                print("Error: Failed to extract an attribute on the following line")
-                print(" line: "+line)
-                sys.exit(1)
+        # Result set was too big for Python to handle, so use an intermediate file
+        output_file = "pmix-standard.idx-grep"
+        with open(output_file, 'w') as logfile:
+            ret = subprocess.call(['grep', '\|hyperpage', fname],
+                                stdout=logfile, stderr=logfile, shell=False)
+            if ret != 0:
+                print("Error: Failed to verify declared attribute \""+attr+"\". grep error code "+str(ret)+")");
+                sys.exit(2)
 
-            attr_to_find = m.group(1)
-            if attr_to_find in attr_declared:
-                attr_declared[attr_to_find] = attr_declared[attr_to_find] + 1
+        # List of references is much larger than attribute list
+        with open(output_file, 'r') as logfile:
+            for line in logfile:
+                line = line.rstrip()
+                m = re.match(r'\s*\\indexentry{(\w+)', line)
+                if m is None:
+                    print("Error: Failed to extract an attribute on the following line")
+                    print(" line: "+line)
+                    sys.exit(1)
 
-    if os.path.isfile(output_file):
-        os.remove(output_file)
+                attr_to_find = m.group(1)
+                if attr_to_find in attr_declared:
+                    attr_declared[attr_to_find] = attr_declared[attr_to_find] + 1
+
+        if os.path.isfile(output_file):
+            os.remove(output_file)
 
 
     #
