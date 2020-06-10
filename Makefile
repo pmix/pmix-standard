@@ -17,9 +17,8 @@ CHAPTERS= \
 	Chap_API_Data_Mgmt.tex \
 	Chap_API_Security.tex \
 	Chap_API_Server.tex \
-	Chap_API_Scheduler.tex \
+	Chap_API_Fabric.tex \
 	Chap_API_Sets_Groups.tex \
-	Chap_API_Coord.tex \
 	App_Python.tex \
 	Acknowledgements.tex
 

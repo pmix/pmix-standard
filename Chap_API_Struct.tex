@@ -3470,12 +3470,12 @@ Comma-delimited list of all nodes in this allocation regardless of whether or no
 
 %
 \declareAttribute{PMIX_HOSTNAME}{"pmix.hname"}{char*}{
-Name of the host where the specified process is running.
+Name of the host (e.g., where a specified process is running, or a given device is located).
 }
 
 %
 \declareAttribute{PMIX_NODEID}{"pmix.nodeid"}{uint32_t}{
-Node identifier where the specified process is located, expressed as the node's index (beginning at zero) in the array resulting from expansion of the \refattr{PMIX_NODE_MAP} regular expression for the \refterm{job}
+Node identifier expressed as the node's index (beginning at zero) in an array of nodes within the active session. The value must be unique and directly correlate to the \refattr{PMIX_HOSTNAME} of the node - i.e., users can interchangeably reference the same location using either the \refattr{PMIX_HOSTNAME} or corresponding \refattr{PMIX_NODEID}.
 }
 
 %
