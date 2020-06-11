@@ -484,7 +484,7 @@ Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} cons
 \subsection{Macros for use with PMIx constants}
 
 \subsubsection{Detect system event constant}
-\declaremacro{pmix_system_event}
+\declaremacro{PMIX_SYSTEM_EVENT}
 
 Test a given error constant to see if it falls within the dedicated range of constants for system event reporting.
 
@@ -529,7 +529,7 @@ Passing a \refstruct{pmix_key_t} value to the standard \textit{sizeof} utility c
 \adviceuserend
 
 \subsubsection{Key support macro}
-\declaremacro{pmix_check_key}
+\declaremacro{PMIX_CHECK_KEY}
 
 Compare the key in a \refstruct{pmix_info_t} to a given value
 
@@ -569,7 +569,7 @@ Passing a \refstruct{pmix_nspace_t} value to the standard \textit{sizeof} utilit
 \adviceuserend
 
 \subsubsection{Namespace support macro}
-\declaremacro{pmix_check_nspace}
+\declaremacro{PMIX_CHECK_NSPACE}
 
 Compare the string in a \refstruct{pmix_nspace_t} to a given value
 
@@ -723,7 +723,7 @@ PMIX_PROC_LOAD(m, n, r)
 \end{arglist}
 
 \subsubsection{Compare identifiers}
-\declaremacro{pmix_check_procid}
+\declaremacro{PMIX_CHECK_PROCID}
 
 Compare two \refstruct{pmix_proc_t} identifiers
 
