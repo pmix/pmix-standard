@@ -700,6 +700,12 @@
 \newcommand{\refapi}[1]{\index[index_api]{#1} \hyperref[apifn:#1]{\code{#1} }}
 \newcommand{\argapi}[1] {\refapi{#1}}
 
+% API references for language bindings (e.g., Python)
+% {Language specific function}{Primary C PMIx function}{Language Classification}
+\newcommand{\declareapibinding}[3]{\index[index_api]{#2!#1 (#3)} \label{bindingfn:#1}}
+\newcommand{\refapibinding}[1]{\hyperref[bindingfn:#1]{\code{#1} }}
+\newcommand{\argapibinding}[1] {\refapibinding{#1}}
+
 \newcommand{\refconst}[1]{\hyperref[const:#1]{\code{#1} }}
 
 \newcommand{\declareattr}[1]{\index[index_attribute]{#1|indexfmt} \label{attr:#1}}
