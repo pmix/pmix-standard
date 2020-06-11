@@ -68,9 +68,16 @@ pmix-standard.pdf: $(CHAPTERS) $(SOURCES) pmix.sty pmix-standard.tex figs/pmix-l
 	@echo "====> Success"
 	@cp pmix-standard.pdf pmix-standard-${version}.pdf
 
-check: pmix-standard.pdf
+check: check-attr-ref check-openpmix
+
+check-attr-ref: pmix-standard.pdf
 	@echo "====> Checking for Attributes Declared, but not referenced"
 	@./bin/check-attr-refs.py
+
+check-openpmix: pmix-standard.pdf
+	@echo "====> Checking cross-reference with OpenPMIx"
+	@./bin/check-openpmix.py
+
 
 clean:
 	rm -f $(INTERMEDIATE_FILES) pmix-standard-*.pdf
