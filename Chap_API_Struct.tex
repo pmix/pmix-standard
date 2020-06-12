@@ -2983,7 +2983,7 @@ Input/output forwarding channel (\refstruct{pmix_iof_channel_t})
 Environmental variable structure (\refstruct{pmix_envar_t})
 %
 \declareconstitemNEW{PMIX_COORD}
-Structure containing network coordinates (\refstruct{pmix_coord_t})
+Structure containing fabric coordinates (\refstruct{pmix_coord_t})
 %
 \declareconstitemNEW{PMIX_REGATTR}
 Structure supporting attribute registrations (\refstruct{pmix_regattr_t})
@@ -4587,14 +4587,14 @@ Number of Megabytes.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
-Array of \refstruct{pmix_info_t} describing requested network resources. This must include at least: \refattr{PMIX_ALLOC_NETWORK_ID}, \refattr{PMIX_ALLOC_NETWORK_TYPE}, and \refattr{PMIX_ALLOC_NETWORK_ENDPTS}, plus whatever other descriptors are desired.
+\declareAttribute{PMIX_ALLOC_FABRIC}{"pmix.alloc.net"}{array}{
+Array of \refstruct{pmix_info_t} describing requested fabric resources. This must include at least: \refattr{PMIX_ALLOC_FABRIC_ID}, \refattr{PMIX_ALLOC_FABRIC_TYPE}, and \refattr{PMIX_ALLOC_FABRIC_ENDPTS}, plus whatever other descriptors are desired.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
-The key to be used when accessing this requested network allocation. The allocation will be returned/stored as a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} indexed by this key and containing at least one entry with the same key and the allocated resource description.
-The type of the included value depends upon the network support. For example, a TCP allocation might consist of a comma-delimited string of socket ranges such as \var{"32000-32100,33005,38123-38146"}. Additional entries will consist of any provided resource request directives, along with their assigned values. Examples include: \refattr{PMIX_ALLOC_NETWORK_TYPE} - the type of resources provided; \refattr{PMIX_ALLOC_NETWORK_PLANE} - if applicable, what plane the resources were assigned from; \refattr{PMIX_ALLOC_NETWORK_QOS} - the assigned QoS; \refattr{PMIX_ALLOC_BANDWIDTH} - the allocated bandwidth; \refattr{PMIX_ALLOC_NETWORK_SEC_KEY} - a security key for the requested network allocation. NOTE: the assigned values may differ from those requested, especially if \refconst{PMIX_INFO_REQD} was not set in the request.
+\declareAttribute{PMIX_ALLOC_FABRIC_ID}{"pmix.alloc.netid"}{char*}{
+The key to be used when accessing this requested fabric allocation. The allocation will be returned/stored as a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} indexed by this key and containing at least one entry with the same key and the allocated resource description.
+The type of the included value depends upon the fabric support. For example, a TCP allocation might consist of a comma-delimited string of socket ranges such as \var{"32000-32100,33005,38123-38146"}. Additional entries will consist of any provided resource request directives, along with their assigned values. Examples include: \refattr{PMIX_ALLOC_FABRIC_TYPE} - the type of resources provided; \refattr{PMIX_ALLOC_FABRIC_PLANE} - if applicable, what plane the resources were assigned from; \refattr{PMIX_ALLOC_FABRIC_QOS} - the assigned QoS; \refattr{PMIX_ALLOC_BANDWIDTH} - the allocated bandwidth; \refattr{PMIX_ALLOC_FABRIC_SEC_KEY} - a security key for the requested fabric allocation. NOTE: the assigned values may differ from those requested, especially if \refconst{PMIX_INFO_REQD} was not set in the request.
 }
 
 %
@@ -4603,7 +4603,7 @@ Mbits/sec.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_QOS}{"pmix.alloc.netqos"}{char*}{
+\declareAttribute{PMIX_ALLOC_FABRIC_QOS}{"pmix.alloc.netqos"}{char*}{
 Quality of service level.
 }
 
@@ -4613,28 +4613,28 @@ Time in seconds.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_TYPE}{"pmix.alloc.nettype"}{char*}{
+\declareAttribute{PMIX_ALLOC_FABRIC_TYPE}{"pmix.alloc.nettype"}{char*}{
 Type of desired transport (e.g., \var{``tcp''}, \var{``udp''})
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_PLANE}{"pmix.alloc.netplane"}{char*}{
+\declareAttribute{PMIX_ALLOC_FABRIC_PLANE}{"pmix.alloc.netplane"}{char*}{
 ID string for the NIC (aka \textit{plane}) to be used for this allocation (e.g., CIDR for Ethernet)
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
+\declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
 Number of endpoints to allocate per process
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
+\declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
 Number of endpoints to allocate per node
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
-Network security key
+\declareAttribute{PMIX_ALLOC_FABRIC_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
+Fabric security key
 }
 
 

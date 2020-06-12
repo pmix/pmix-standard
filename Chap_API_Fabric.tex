@@ -334,6 +334,10 @@ Fabric endpoints for a specified process. As multiple endpoints may be assigned 
 The size of each dimension in the specified fabric plane/view, returned in a \refstruct{pmix_data_array_t} containing an array of \code{uint32_t} values. The size is defined as the number of elements present in that dimension - e.g., the number of \acp{NIC} in one dimension of a physical view of a fabric plane. If no plane is specified, then the shape of each plane in the system will be returned in an array of fabric shapes. Default is to provide the shape in \emph{logical} view.
 }
 
+\declareNewAttribute{PMIX_FABRIC_SHAPE_STRING}{"pmix.fab.shapestr"}{string}{
+Network shape expressed as a string (e.g., "10x12x2").
+}
+
 The following attributes are used to describe devices (a.k.a., \acp{NIC}) attached to the fabric.
 
 \declareNewAttribute{PMIX_FABRIC_DEVICE}{"pmix.fabdev"}{\refstruct{pmix_data_array_t}}{
