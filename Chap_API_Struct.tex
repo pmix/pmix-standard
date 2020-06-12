@@ -4587,10 +4587,17 @@ Number of Megabytes.
 }
 
 %
+\declareDepAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
+Changed to \refattr{PMIX_ALLOC_FABRIC}
+}
+%
 \declareAttribute{PMIX_ALLOC_FABRIC}{"pmix.alloc.net"}{array}{
 Array of \refstruct{pmix_info_t} describing requested fabric resources. This must include at least: \refattr{PMIX_ALLOC_FABRIC_ID}, \refattr{PMIX_ALLOC_FABRIC_TYPE}, and \refattr{PMIX_ALLOC_FABRIC_ENDPTS}, plus whatever other descriptors are desired.
 }
-
+%
+\declareDepAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_ID}
+}
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_ID}{"pmix.alloc.netid"}{char*}{
 The key to be used when accessing this requested fabric allocation. The allocation will be returned/stored as a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} indexed by this key and containing at least one entry with the same key and the allocated resource description.
@@ -4600,6 +4607,11 @@ The type of the included value depends upon the fabric support. For example, a T
 %
 \declareAttribute{PMIX_ALLOC_BANDWIDTH}{"pmix.alloc.bw"}{float}{
 Mbits/sec.
+}
+
+%
+\declareDepAttribute{PMIX_ALLOC_NETWORK_QOS}{"pmix.alloc.netqos"}{char*}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_QOS}
 }
 
 %
@@ -4613,25 +4625,45 @@ Time in seconds.
 }
 
 %
+\declareDepAttribute{PMIX_ALLOC_NETWORK_TYPE}{"pmix.alloc.nettype"}{char*}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_TYPE}
+}
+%
 \declareAttribute{PMIX_ALLOC_FABRIC_TYPE}{"pmix.alloc.nettype"}{char*}{
 Type of desired transport (e.g., \var{``tcp''}, \var{``udp''})
 }
 
+%
+\declareDepAttribute{PMIX_ALLOC_NETWORK_PLANE}{"pmix.alloc.netplane"}{char*}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_PLANE}
+}
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_PLANE}{"pmix.alloc.netplane"}{char*}{
 ID string for the NIC (aka \textit{plane}) to be used for this allocation (e.g., CIDR for Ethernet)
 }
 
 %
+\declareDepAttribute{PMIX_ALLOC_NETWORK_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_ENDPTS}
+}
+%
 \declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
 Number of endpoints to allocate per process
 }
 
 %
+\declareDepAttribute{PMIX_ALLOC_NETWORK_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
+}
+%
 \declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
 Number of endpoints to allocate per node
 }
 
+%
+\declareDepAttribute{PMIX_ALLOC_NETWORK_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_SEC_KEY}
+}
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
 Fabric security key
