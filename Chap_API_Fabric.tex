@@ -219,7 +219,7 @@ The \refstruct{pmix_fabric_t} structure is used by a \ac{WLM} to interact with f
 typedef struct pmix_fabric_s \{
     char *name;
     size_t index;
-    pmix_info_t info[];
+    pmix_info_t *info;
     size_t ninfo;
     void *module;
 \} pmix_fabric_t;;
@@ -398,9 +398,11 @@ A node-level unique identifier for a \ac{PCI} device. Provided only if the devic
 %%%%%%%%%%%
 \section{Fabric Support Functions}
 
-The following \acp{API} allow the \ac{WLM} to request specific services from the fabric subsystem via the \ac{PMIx} library. Due to their high cost in terms of execution, memory consumption, and interactions with other \ac{SMS} components (e.g., a fabric manager), it is strongly advised that use of these \acp{API} be restricted to a single \ac{PMIx} server in a system that is supporting the \ac{SMS} component responsible for the scheduling of allocations (i.e., the system \refterm{scheduler}).
+The following \acp{API} allow the \ac{WLM} to request specific services from the fabric subsystem via the \ac{PMIx} library.
 
-Accordingly, access to the server library functions described in this section requires that the \ac{PMIx} server library be initialized with the \refattr{PMIX_SERVER_SCHEDULER} attribute.
+\advicermstart
+Due to their high cost in terms of execution, memory consumption, and interactions with other \ac{SMS} components (e.g., a fabric manager), it is strongly advised that the underlying implementation of these \acp{API} be restricted to a single \ac{PMIx} server in a system that is supporting the \ac{SMS} component responsible for the scheduling of allocations (i.e., the system \refterm{scheduler}). The \refattr{PMIX_SERVER_SCHEDULER} attribute can be used for this purpose to control the execution path. Tools and other servers utilizing these functions are advised to have their requests forwarded to the server supporting the scheduler.
+\advicermend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_server_register_fabric}}
@@ -563,7 +565,8 @@ Returns one of the following:
 Query information about a specified vertex (fabric device, or \ac{NIC}) in the system. The returned \refarg{status} indicates if requested data was found or not. The returned array of \refstruct{pmix_info_t} will contain information on the specified vertex - the exact contents will depend on the \ac{PMIx} implementation and the fabric vendor. At a minimum, it must contain sufficient information to uniquely identify the device within the system (ordering is arbitrary):
 
 \reqattrstart
-\pastePRIAttributeItem{PMIX_HOSTNAME}
+\pastePRIAttributeItemBegin{PMIX_HOSTNAME} The \refattr{PMIX_NODEID} may be returned in its place, or in addition to the hostname.
+\pastePRIAttributeItemEnd
 \pastePRIAttributeItem{PMIX_FABRIC_DEVICE_NAME}
 \pastePRIAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
 \pastePRIAttributeItem{PMIX_FABRIC_DEVICE_BUS_TYPE}
@@ -614,6 +617,7 @@ PMIx_server_get_index(pmix_fabric_t *fabric,
 \begin{arglist}
 \argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
 \argin{vertex}{array of \refstruct{pmix_info_t} containing info describing the vertex whose index is being queried (handle)}
+\argin{ninfo} number of elements in \refarg{vertex}
 \argout{index}{pointer to the location where the index is to be returned (memory reference (handle))}
 \end{arglist}
 
