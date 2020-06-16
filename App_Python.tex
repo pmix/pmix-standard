@@ -1008,7 +1008,7 @@ The client Python class is by far the richest in terms of \acp{API} as it houses
 
 %%%%%%%%%%%
 \subsection{Client.init}
-\declareapi{PMIxClient.init}
+\declareapibinding{PMIxClient.init}{PMIx_Init}{Python}
 
 \summary Initialize the \ac{PMIx} client library after obtaining a new PMIxClient object
 
@@ -1038,7 +1038,7 @@ See \refapi{PMIx_Init} for description of all relevant attributes and behaviors
 
 %%%%%%%%%%%
 \subsection{Client.initialized}
-\declareapi{PMIxClient.initialized}
+\declareapibinding{PMIxClient.initialized}{PMIx_Initialized}{Python}
 
 \format
 
@@ -1063,7 +1063,7 @@ See \refapi{PMIx_Initialized} for description of all relevant attributes and beh
 
 %%%%%%%%%%%
 \subsection{Client.get_version}
-\declareapi{PMIxClient.get_version}
+\declareapibinding{PMIxClient.get_version}{PMIx_Get_version}{Python}
 
 \format
 
@@ -1088,7 +1088,7 @@ See \refapi{PMIx_Get_version} for description of all relevant attributes and beh
 
 %%%%%%%%%%%
 \subsection{Client.finalize}
-\declareapi{PMIxClient.finalize}
+\declareapibinding{PMIxClient.finalize}{PMIx_Finalize}{Python}
 
 %%%%
 \summary
@@ -1121,7 +1121,7 @@ See \refapi{PMIx_Finalize} for description of all relevant attributes and behavi
 
 %%%%%%%%%%%
 \subsection{Client.abort}
-\declareapi{PMIxClient.abort}
+\declareapibinding{PMIxClient.abort}{PMIx_Abort}{Python}
 
 %%%%
 \summary
@@ -1156,7 +1156,7 @@ See \refapi{PMIx_Abort} for description of all relevant attributes and behaviors
 
 %%%%%%%%%%%
 \subsection{Client.store_internal}
-\declareapi{PMIxClient.store_internal}
+\declareapibinding{PMIxClient.store_internal}{PMIx_Store_internal}{Python}
 
 %%%%
 \summary
@@ -1191,7 +1191,7 @@ See \refapi{PMIx_Store_internal} for details
 
 %%%%%%%%%%%
 \subsection{Client.put}
-\declareapi{PMIxClient.put}
+\declareapibinding{PMIxClient.put}{PMIx_Put}{Python}
 
 %%%%
 \summary
@@ -1226,12 +1226,12 @@ See \refapi{PMIx_Put} for description of all relevant attributes and behaviors
 
 %%%%%%%%%%%
 \subsection{Client.commit}
-\declareapi{PMIxClient.commit}
+\declareapibinding{PMIxClient.commit}{PMIx_Commit}{Python}
 
 %%%%
 \summary
 
-Push all previously \refapi{PMIxClient.put} values to the local PMIx server.
+Push all previously \refapibinding{PMIxClient.put} values to the local PMIx server.
 
 %%%%
 \format
@@ -1255,7 +1255,7 @@ See \refapi{PMIx_Commit} for description of all relevant attributes and behavior
 
 %%%%%%%%%%%
 \subsection{Client.fence}
-\declareapi{PMIxClient.fence}
+\declareapibinding{PMIxClient.fence}{PMIx_Fence}{Python}
 
 %%%%
 \summary
@@ -1289,7 +1289,7 @@ See \refapi{PMIx_Fence} for description of all relevant attributes and behaviors
 
 %%%%%%%%%%%
 \subsection{Client.get}
-\declareapi{PMIxClient.get}
+\declareapibinding{PMIxClient.get}{PMIx_Get}{Python}
 
 %%%%
 \summary
@@ -1325,7 +1325,7 @@ See \refapi{PMIx_Get} for description of all relevant attributes and behaviors
 
 %%%%%%%%%%%
 \subsection{Client.publish}
-\declareapi{PMIxClient.publish}
+\declareapibinding{PMIxClient.publish}{PMIx_Publish}{Python}
 
 %%%%
 \summary
@@ -1359,7 +1359,7 @@ See \refapi{PMIx_Publish} for description of all relevant attributes and behavio
 
 %%%%%%%%%%%
 \subsection{Client.lookup}
-\declareapi{PMIxClient.lookup}
+\declareapibinding{PMIxClient.lookup}{PMIx_Lookup}{Python}
 
 %%%%
 \summary
@@ -1394,7 +1394,7 @@ See \refapi{PMIx_Lookup} for description of all relevant attributes and behavior
 
 %%%%%%%%%%%
 \subsection{Client.unpublish}
-\declareapi{PMIxClient.unpublish}
+\declareapibinding{PMIxClient.unpublish}{PMIx_Unpublish}{Python}
 
 %%%%
 \summary
@@ -1428,7 +1428,7 @@ See \refapi{PMIx_Unpublish} for description of all relevant attributes and behav
 
 %%%%%%%%%%%
 \subsection{Client.spawn}
-\declareapi{PMIxClient.spawn}
+\declareapibinding{PMIxClient.spawn}{PMIx_Spawn}{Python}
 
 %%%%
 \summary
@@ -1463,7 +1463,7 @@ See \refapi{PMIx_Spawn} for description of all relevant attributes and behaviors
 
 %%%%%%%%%%%
 \subsection{Client.connect}
-\declareapi{PMIxClient.connect}
+\declareapibinding{PMIxClient.connect}{PMIx_Connect}{Python}
 
 %%%%
 \summary
@@ -1497,7 +1497,7 @@ See \refapi{PMIx_Connect} for description of all relevant attributes and behavio
 
 %%%%%%%%%%%
 \subsection{Client.disconnect}
-\declareapi{PMIxClient.disconnect}
+\declareapibinding{PMIxClient.disconnect}{PMIx_Disconnect}{Python}
 
 %%%%
 \summary
@@ -1531,7 +1531,7 @@ See \refapi{PMIx_Disconnect} for description of all relevant attributes and beha
 
 %%%%%%%%%%%
 \subsection{Client.resolve_peers}
-\declareapi{PMIxClient.resolve_peers}
+\declareapibinding{PMIxClient.resolve_peers}{PMIx_Resolve_peers}{Python}
 
 %%%%
 \summary
@@ -1566,7 +1566,7 @@ See \refapi{PMIx_Resolve_peers} for description of all relevant attributes and b
 
 %%%%%%%%%%%
 \subsection{Client.resolve_nodes}
-\declareapi{PMIxClient.resolve_nodes}
+\declareapibinding{PMIxClient.resolve_nodes}{PMIx_Resolve_nodes}{Python}
 
 %%%%
 \summary
@@ -1600,7 +1600,7 @@ See \refapi{PMIx_Resolve_nodes} for description of all relevant attributes and b
 
 %%%%%%%%%%%
 \subsection{Client.query}
-\declareapi{PMIxClient.query}
+\declareapibinding{PMIxClient.query}{PMIx_Query_info_nb}{Python}
 
 %%%%
 \summary
@@ -1635,7 +1635,7 @@ See \refapi{PMIx_Query_info_nb} for description of all relevant attributes and b
 
 %%%%%%%%%%%
 \subsection{Client.log}
-\declareapi{PMIxClient.log}
+\declareapibinding{PMIxClient.log}{PMIx_Log}{Python}
 
 %%%%
 \summary
@@ -1669,7 +1669,7 @@ See \refapi{PMIx_Log} for description of all relevant attributes and behaviors
 
 %%%%%%%%%%%
 \subsection{Client.allocate}
-\declareapi{PMIxClient.allocate}
+\declareapibinding{PMIxClient.allocate}{PMIx_Allocation_request_nb}{Python}
 
 %%%%
 \summary
@@ -1704,7 +1704,7 @@ See \refapi{PMIx_Allocation_request_nb} for description of all relevant attribut
 
 %%%%%%%%%%%
 \subsection{Client.job_ctrl}
-\declareapi{PMIxClient.job_ctrl}
+\declareapibinding{PMIxClient.job_ctrl}{PMIx_Job_control_nb}{Python}
 
 %%%%
 \summary
@@ -1739,7 +1739,7 @@ See \refapi{PMIx_Job_control_nb} for description of all relevant attributes and 
 
 %%%%%%%%%%%
 \subsection{Client.monitor}
-\declareapi{PMIxClient.monitor}
+\declareapibinding{PMIxClient.monitor}{PMIx_Process_monitor_nb}{Python}
 
 %%%%
 \summary
@@ -1774,7 +1774,7 @@ See \refapi{PMIx_Process_monitor_nb} for description of all relevant attributes 
 
 %%%%%%%%%%%
 \subsection{Client.get_credential}
-\declareapi{PMIxClient.get_credential}
+\declareapibinding{PMIxClient.get_credential}{PMIx_Get_credential}{Python}
 
 %%%%
 \summary
@@ -1809,7 +1809,7 @@ See \refapi{PMIx_Get_credential} for description of all relevant attributes and 
 
 %%%%%%%%%%%
 \subsection{Client.validate_credential}
-\declareapi{PMIxClient.validate_credential}
+\declareapibinding{PMIxClient.validate_credential}{PMIx_Validate_credential}{Python}
 
 %%%%
 \summary
@@ -1844,7 +1844,7 @@ See \refapi{PMIx_Validate_credential} for description of all relevant attributes
 
 %%%%%%%%%%%
 \subsection{Client.group_construct}
-\declareapi{PMIxClient.group_construct}
+\declareapibinding{PMIxClient.group_construct}{PMIx_Group_construct}{Python}
 
 %%%%
 \summary
@@ -1881,7 +1881,7 @@ See \refapi{PMIx_Group_construct} for description of all relevant attributes and
 
 %%%%%%%%%%%
 \subsection{Client.group_invite}
-\declareapi{PMIxClient.group_invite}
+\declareapibinding{PMIxClient.group_invite}{PMIx_Group_invite}{Python}
 
 %%%%
 \summary
@@ -1917,7 +1917,7 @@ See \refapi{PMIx_Group_invite} for description of all relevant attributes and be
 
 %%%%%%%%%%%
 \subsection{Client.group_join}
-\declareapi{PMIxClient.group_join}
+\declareapibinding{PMIxClient.group_join}{PMIx_Group_join}{Python}
 
 %%%%
 \summary
@@ -1954,7 +1954,7 @@ See \refapi{PMIx_Group_join} for description of all relevant attributes and beha
 
 %%%%%%%%%%%
 \subsection{Client.group_leave}
-\declareapi{PMIxClient.group_leave}
+\declareapibinding{PMIxClient.group_leave}{PMIx_Group_leave}{Python}
 
 %%%%
 \summary
@@ -1988,7 +1988,7 @@ See \refapi{PMIx_Group_leave} for description of all relevant attributes and beh
 
 %%%%%%%%%%%
 \subsection{Client.group_destruct}
-\declareapi{PMIxClient.group_destruct}
+\declareapibinding{PMIxClient.group_destruct}{PMIx_Group_destruct}{Python}
 
 %%%%
 \summary
@@ -2022,7 +2022,7 @@ See \refapi{PMIx_Group_destruct} for description of all relevant attributes and 
 
 %%%%%%%%%%%
 \subsection{Client.register_event_handler}
-\declareapi{PMIxClient.register_event_handler}
+\declareapibinding{PMIxClient.register_event_handler}{PMIx_Register_event_handler}{Python}
 
 %%%%
 \summary
@@ -2058,7 +2058,7 @@ See \refapi{PMIx_Register_event_handler} for description of all relevant attribu
 
 %%%%%%%%%%%
 \subsection{Client.deregister_event_handler}
-\declareapi{PMIxClient.deregister_event_handler}
+\declareapibinding{PMIxClient.deregister_event_handler}{PMIx_Deregister_event_handler}{Python}
 
 %%%%
 \summary
@@ -2086,7 +2086,7 @@ See \refapi{PMIx_Deregister_event_handler} for description of all relevant attri
 
 %%%%%%%%%%%
 \subsection{Client.notify_event}
-\declareapi{PMIxClient.notify_event}
+\declareapibinding{PMIxClient.notify_event}{PMIx_Notify_event}{Python}
 
 %%%%
 \summary
@@ -2121,7 +2121,7 @@ See \refapi{PMIx_Notify_event} for description of all relevant attributes and be
 
 %%%%%%%%%%%
 \subsection{Client.error_string}
-\declareapi{PMIxClient.error_string}
+\declareapibinding{PMIxClient.error_string}{PMIx_Error_string}{Python}
 
 %%%%
 \summary
@@ -2152,7 +2152,7 @@ See \refapi{PMIx_Error_string} for further details
 
 %%%%%%%%%%%
 \subsection{Client.proc_state_string}
-\declareapi{PMIxClient.proc_state_string}
+\declareapibinding{PMIxClient.proc_state_string}{PMIx_Proc_state_string}{Python}
 
 %%%%
 \summary
@@ -2183,7 +2183,7 @@ See \refapi{PMIx_Proc_state_string} for further details
 
 %%%%%%%%%%%
 \subsection{Client.scope_string}
-\declareapi{PMIxClient.scope_string}
+\declareapibinding{PMIxClient.scope_string}{PMIx_Scope_string}{Python}
 
 %%%%
 \summary
@@ -2214,7 +2214,7 @@ See \refapi{PMIx_Scope_string} for further details
 
 %%%%%%%%%%%
 \subsection{Client.persistence_string}
-\declareapi{PMIxClient.persistence_string}
+\declareapibinding{PMIxClient.persistence_string}{PMIx_Persistence_string}{Python}
 
 %%%%
 \summary
@@ -2245,7 +2245,7 @@ See \refapi{PMIx_Persistence_string} for further details
 
 %%%%%%%%%%%
 \subsection{Client.data_range_string}
-\declareapi{PMIxClient.data_range_string}
+\declareapibinding{PMIxClient.data_range_string}{PMIx_Data_range_string}{Python}
 
 %%%%
 \summary
@@ -2276,7 +2276,7 @@ See \refapi{PMIx_Data_range_string} for further details
 
 %%%%%%%%%%%
 \subsection{Client.info_directives_string}
-\declareapi{PMIxClient.info_directives_string}
+\declareapibinding{PMIxClient.info_directives_string}{PMIx_Info_directives_string}{Python}
 
 %%%%
 \summary
@@ -2307,7 +2307,7 @@ See \refapi{PMIx_Info_directives_string} for further details
 
 %%%%%%%%%%%
 \subsection{Client.data_type_string}
-\declareapi{PMIxClient.data_type_string}
+\declareapibinding{PMIxClient.data_type_string}{PMIx_Data_type_string}{Python}
 
 %%%%
 \summary
@@ -2338,7 +2338,7 @@ See \refapi{PMIx_Data_type_string} for further details
 
 %%%%%%%%%%%
 \subsection{Client.alloc_directive_string}
-\declareapi{PMIxClient.alloc_directive_string}
+\declareapibinding{PMIxClient.alloc_directive_string}{PMIx_Alloc_directive_string}{Python}
 
 %%%%
 \summary
@@ -2369,7 +2369,7 @@ See \refapi{PMIx_Alloc_directive_string} for further details
 
 %%%%%%%%%%%
 \subsection{Client.iof_channel_string}
-\declareapi{PMIxClient.iof_channel_string}
+\declareapibinding{PMIxClient.iof_channel_string}{PMIx_IOF_channel_string}{Python}
 
 %%%%
 \summary
@@ -2407,7 +2407,7 @@ The server Python class inherits the Python "client" class as its parent. Thus, 
 
 %%%%%%%%%%%
 \subsection{Server.init}
-\declareapi{PMIxServer.init}
+\declareapibinding{PMIxServer.init}{PMIx_server_init}{Python}
 
 \summary Initialize the \ac{PMIx} server library after obtaining a new PMIxServer object
 
@@ -2438,7 +2438,7 @@ See \refapi{PMIx_server_init} for description of all relevant attributes and beh
 
 %%%%%%%%%%%
 \subsection{Server.finalize}
-\declareapi{PMIxServer.finalize}
+\declareapibinding{PMIxServer.finalize}{PMIx_server_finalize}{Python}
 
 \summary Finalize the \ac{PMIx} server library
 
@@ -2464,7 +2464,7 @@ See \refapi{PMIx_server_finalize} for details
 
 %%%%%%%%%%%
 \subsection{Server.generate_regex}
-\declareapi{PMIxServer.generate_regex}
+\declareapibinding{PMIxServer.generate_regex}{PMIx_generate_regex}{Python}
 
 \summary
 Generate a regular expression representation of the input strings.
@@ -2496,7 +2496,7 @@ See \refapi{PMIx_generate_regex} for details
 
 %%%%%%%%%%%
 \subsection{Server.generate_ppn}
-\declareapi{PMIxServer.generate_ppn}
+\declareapibinding{PMIxServer.generate_ppn}{PMIx_generate_ppn}{Python}
 
 \summary
 Generate a regular expression representation of the input strings.
@@ -2528,7 +2528,7 @@ See \refapi{PMIx_generate_ppn} for details
 
 %%%%%%%%%%%
 \subsection{Server.register_nspace}
-\declareapi{PMIxServer.register_nspace}
+\declareapibinding{PMIxServer.register_nspace}{PMIx_server_register_nspace}{Python}
 
 \summary Setup the data about a particular namespace.
 
@@ -2562,7 +2562,7 @@ See \refapi{PMIx_server_register_nspace} for description of all relevant attribu
 
 %%%%%%%%%%%
 \subsection{Server.deregister_nspace}
-\declareapi{PMIxServer.deregister_nspace}
+\declareapibinding{PMIxServer.deregister_nspace}{PMIx_server_deregister_nspace}{Python}
 
 \summary Deregister a namespace.
 
@@ -2588,7 +2588,7 @@ See \refapi{PMIx_server_deregister_nspace} for details
 
 %%%%%%%%%%%
 \subsection{Server.register_client}
-\declareapi{PMIxServer.register_client}
+\declareapibinding{PMIxServer.register_client}{PMIx_server_register_client}{Python}
 
 \summary
 Register a client process with the PMIx server library.
@@ -2622,7 +2622,7 @@ See \refapi{PMIx_server_register_client} for details
 
 %%%%%%%%%%%
 \subsection{Server.deregister_client}
-\declareapi{PMIxServer.deregister_client}
+\declareapibinding{PMIxServer.deregister_client}{PMIx_server_deregister_client}{Python}
 
 \summary
 Dergister a client process and purge all data relating to it
@@ -2650,7 +2650,7 @@ See \refapi{PMIx_server_deregister_client} for details
 
 %%%%%%%%%%%
 \subsection{Server.setup_fork}
-\declareapi{PMIxServer.setup_fork}
+\declareapibinding{PMIxServer.setup_fork}{PMIx_server_setup_fork}{Python}
 
 \summary
 Setup the environment of a child process that is to be forked
@@ -2683,7 +2683,7 @@ See \refapi{PMIx_server_setup_fork} for details
 
 %%%%%%%%%%%
 \subsection{Server.dmodex_request}
-\declareapi{PMIxServer.dmodex_request}
+\declareapibinding{PMIxServer.dmodex_request}{PMIx_server_dmodex_request}{Python}
 
 \summary
 Function by which the host server can request modex data from the local PMIx server.
@@ -2715,7 +2715,7 @@ See \refapi{PMIx_server_dmodex_request} for details
 
 %%%%%%%%%%%
 \subsection{Server.setup_application}
-\declareapi{PMIxServer.setup_application}
+\declareapibinding{PMIxServer.setup_application}{PMIx_server_setup_application}{Python}
 
 \summary
 Function by which the resource manager can request application-specific setup data prior to launch of a \refterm{job}.
@@ -2748,7 +2748,7 @@ See \refapi{PMIx_server_setup_application} for details
 
 %%%%%%%%%%%
 \subsection{Server.register_attributes}
-\declareapi{PMIxServer.register_attributes}
+\declareapibinding{PMIxServer.register_attributes}{PMIx_Register_attributes}{Python}
 
 \summary
 Register host environment attribute support for a function.
@@ -2780,7 +2780,7 @@ See \refapi{PMIx_Register_attributes} for details
 
 %%%%%%%%%%%
 \subsection{Server.setup_local_support}
-\declareapi{PMIxServer.setup_local_support}
+\declareapibinding{PMIxServer.setup_local_support}{PMIx_server_setup_local_support}{Python}
 
 \summary
 Function by which the local \ac{PMIx} server can perform any application-specific operations prior to spawning local clients of a given application
@@ -2812,7 +2812,7 @@ See \refapi{PMIx_server_setup_local_support} for details
 
 %%%%%%%%%%%
 \subsection{Server.iof_deliver}
-\declareapi{PMIxServer.iof_deliver}
+\declareapibinding{PMIxServer.iof_deliver}{PMIx_server_IOF_deliver}{Python}
 
 \summary
 Function by which the host environment can pass forwarded \ac{IO} to the \ac{PMIx} server library for distribution to its clients.
@@ -2847,7 +2847,7 @@ See \refapi{PMIx_server_IOF_deliver} for details
 
 %%%%%%%%%%%
 \subsection{Server.collect_inventory}
-\declareapi{PMIxServer.collect_inventory}
+\declareapibinding{PMIxServer.collect_inventory}{PMIx_server_collect_inventory}{Python}
 
 \summary
 Collect inventory of resources on a node
@@ -2879,7 +2879,7 @@ See \refapi{PMIx_server_collect_inventory} for details
 
 %%%%%%%%%%%
 \subsection{Server.deliver_inventory}
-\declareapi{PMIxServer.deliver_inventory}
+\declareapibinding{PMIxServer.deliver_inventory}{PMIx_server_deliver_inventory}{Python}
 
 \summary
 Pass collected inventory to the \ac{PMIx} server library for storage
@@ -2918,7 +2918,7 @@ The tool Python class inherits the Python "server" class as its parent. Thus, it
 
 %%%%%%%%%%%
 \subsection{Tool.init}
-\declareapi{PMIxTool.init}
+\declareapibinding{PMIxTool.init}{PMIx_tool_init}{Python}
 
 \summary Initialize the \ac{PMIx} tool library after obtaining a new PMIxTool object
 
@@ -2949,7 +2949,7 @@ See \refapi{PMIx_tool_init} for description of all relevant attributes and behav
 
 %%%%%%%%%%%
 \subsection{Tool.finalize}
-\declareapi{PMIxTool.finalize}
+\declareapibinding{PMIxTool.finalize}{PMIx_tool_finalize}{Python}
 
 \summary Finalize the PMIx tool library, closing the connection to the server.
 
@@ -2975,7 +2975,7 @@ See \refapi{PMIx_tool_finalize} for description of all relevant attributes and b
 
 %%%%%%%%%%%
 \subsection{Tool.connect_to_server}
-\declareapi{PMIxTool.connect_to_server}
+\declareapibinding{PMIxTool.connect_to_server}{PMIx_tool_connect_to_server}{Python}
 
 \summary
 Switch connection from the current \ac{PMIx} server to another one, or initialize a connection to a specified server.
@@ -3008,7 +3008,7 @@ See \refapi{PMIx_tool_connect_to_server} for description of all relevant attribu
 
 %%%%%%%%%%%
 \subsection{Tool.iof_pull}
-\declareapi{PMIxTool.iof_pull}
+\declareapibinding{PMIxTool.iof_pull}{PMIx_IOF_pull}{Python}
 
 %%%%
 \summary
@@ -3045,7 +3045,7 @@ See \refapi{PMIx_IOF_pull} for description of all relevant attributes and behavi
 
 %%%%%%%%%%%
 \subsection{Tool.iof_deregister}
-\declareapi{PMIxTool.iof_deregister}
+\declareapibinding{PMIxTool.iof_deregister}{PMIx_IOF_deregister}{Python}
 
 %%%%
 \summary
@@ -3079,7 +3079,7 @@ See \refapi{PMIx_IOF_deregister} for description of all relevant attributes and 
 
 %%%%%%%%%%%
 \subsection{Tool.iof_push}
-\declareapi{PMIxTool.iof_push}
+\declareapibinding{PMIxTool.iof_push}{PMIx_IOF_push}{Python}
 
 %%%%
 \summary
