@@ -966,6 +966,51 @@ The data is intended solely for this process and is not shared with other proces
 \end{constantdesc}
 
 
+%%%%%%%%%%%
+\subsection{Job State Structure}
+\label{api:struct:jobstate}
+\declarestruct{pmix_job_state_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_job_state_t} structure is a \code{uint8_t} type for job state values. The following constants can be used to set a variable of the type \refstruct{pmix_job_state_t}. All values were originally defined in version 4 of the standard unless otherwise marked.
+
+\adviceuserstart
+The fine-grained nature of the following constants may exceed the ability of an \ac{RM} to provide updated job state values during the job lifetime. This is particularly true of states in the launch process, and for short-lived jobs.
+\adviceuserend
+
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_JOB_STATE_UNDEF}
+Undefined job state
+%
+\declareconstitem{PMIX_JOB_STATE_PREPPED}
+Job is ready to be launched
+%
+\declareconstitem{PMIX_JOB_STATE_LAUNCH_UNDERWAY}
+Job launch is underway
+%
+\declareconstitem{PMIX_JOB_STATE_RUNNING}
+All processes in the job have been spawned
+%
+\declareconstitem{PMIX_JOB_STATE_SUSPENDED}
+All processes in the job have been suspended
+%
+\declareconstitem{PMIX_JOB_STATE_CONNECTED}
+All processes in the job have connected to their \ac{PMIx} server
+%
+\declareconstitem{PMIX_JOB_STATE_UNTERMINATED}
+Define a ``boundary'' between the terminated states and \refconst{PMIX_JOB_STATE_TERMINATED} so users can easily and quickly determine if a job is still running or not.
+Any value less than this constant means that the job has not terminated.
+%
+\declareconstitem{PMIX_JOB_STATE_TERMINATED}
+All processes in the job have terminated and are no longer running - typically will be accompanied by the job exit status in response to a query
+%
+\declareconstitem{PMIX_JOB_STATE_TERMINATED_WITH_ERROR}
+Define a boundary so users can easily and quickly determine if a job abnormally terminated - typically will be accompanied by a job-related error code in response to a query
+Any value above this constant means that the job terminated abnormally.
+%
+\end{constantdesc}
+
 
 %%%%%%%%%%%
 \subsection{Range of Published Data}
@@ -5877,6 +5922,66 @@ String representation of a \refstruct{pmix_iof_channel_t}.
 \begin{codepar}
 const char*
 PMIx_IOF_channel_string(pmix_iof_channel_t channel);
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\summary
+\declareapi{PMIx_Job_state_string}
+
+String representation of a \refstruct{pmix_job_state_t}.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+const char*
+PMIx_Job_state_string(pmix_job_state_t state);
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\summary
+\declareapi{PMIx_Get_attribute_string}
+
+String representation of a \ac{PMIx} attribute
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+const char*
+PMIx_Get_attribute_string(char *attributename);
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\summary
+\declareapi{PMIx_Get_attribute_name}
+
+Return the \ac{PMIx} attribute name corresponding to the given attribute string
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+const char*
+PMIx_Get_attribute_name(char *attributestring);
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\summary
+\declareapi{PMIx_Link_state_string}
+
+String representation of a \refstruct{pmix_link_state_t}
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+const char*
+PMIx_Link_state_string(pmix_link_state_t state);
 \end{codepar}
 \cspecificend
 

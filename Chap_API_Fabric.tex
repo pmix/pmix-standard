@@ -401,12 +401,12 @@ A node-level unique identifier for a \ac{PCI} device. Provided only if the devic
 The following \acp{API} allow the \ac{WLM} to request specific services from the fabric subsystem via the \ac{PMIx} library.
 
 \advicermstart
-Due to their high cost in terms of execution, memory consumption, and interactions with other \ac{SMS} components (e.g., a fabric manager), it is strongly advised that the underlying implementation of these \acp{API} be restricted to a single \ac{PMIx} server in a system that is supporting the \ac{SMS} component responsible for the scheduling of allocations (i.e., the system \refterm{scheduler}). The \refattr{PMIX_SERVER_SCHEDULER} attribute can be used for this purpose to control the execution path. Tools and other servers utilizing these functions are advised to have their requests forwarded to the server supporting the scheduler.
+Due to their high cost in terms of execution, memory consumption, and interactions with other \ac{SMS} components (e.g., a fabric manager), it is strongly advised that the underlying implementation of these \acp{API} be restricted to a single \ac{PMIx} server in a system that is supporting the \ac{SMS} component responsible for the scheduling of allocations (i.e., the system \refterm{scheduler}). The \refattr{PMIX_SERVER_SCHEDULER} attribute can be used for this purpose to control the execution path. Clients, tools, and other servers utilizing these functions are advised to have their requests forwarded to the server supporting the scheduler.
 \advicermend
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_server_register_fabric}}
-\declareapi{PMIx_server_register_fabric}
+\subsection{\code{PMIx_Fabric_register}}
+\declareapi{PMIx_Fabric_register}
 
 %%%%
 \summary
@@ -420,9 +420,9 @@ Register for access to fabric-related information.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_server_register_fabric(pmix_fabric_t *fabric,
-                            const pmix_info_t directives[],
-                            size_t ndirs)
+PMIx_Fabric_register(pmix_fabric_t *fabric,
+                     const pmix_info_t directives[],
+                     size_t ndirs)
 \end{codepar}
 \cspecificend
 
@@ -448,21 +448,21 @@ The following directives are required to be supported by all \ac{PMIx} libraries
 
 Register for access to fabric-related information, including the communication cost matrix. This call must be made prior to requesting information from a fabric. The caller may request access to a particular fabric using the vendor, type, or identifier, or to a specific \refterm{fabric plane} via the \refattr{PMIX_FABRIC_PLANE} attribute - otherwise, the default fabric will be returned.
 
-For performance reasons, the \ac{PMIx} server library does not provide thread protection for accessing the information in the \refstruct{pmix_fabric_t} structure. Instead, the \ac{PMIx} implementation shall provide two methods for coordinating updates to the provided fabric information:
+For performance reasons, the \ac{PMIx} library does not provide thread protection for accessing the information in the \refstruct{pmix_fabric_t} structure. Instead, the \ac{PMIx} implementation shall provide two methods for coordinating updates to the provided fabric information:
 
 \begin{itemize}
 
-    \item Users may periodically poll for updates using the \refapi{PMIx_server_update_fabric} \ac{API}
+    \item Users may periodically poll for updates using the \refapi{PMIx_Fabric_update} \ac{API}
 
-    \item Users may register for \refconst{PMIX_FABRIC_UPDATE_PENDING} events indicating that an update to the cost matrix is pending. When received, users are required to terminate or pause any actions involving access to the cost matrix before returning from the event. Completion of the \refconst{PMIX_FABRIC_UPDATE_PENDING} event handler indicates to the \ac{PMIx} server library that the fabric object's entries are available for updating. This may include releasing and re-allocating memory as the number of vertices may have changed (e.g., due to addition or removal of one or more \acp{NIC}). When the update has been completed, the \ac{PMIx} server library will generate a \refconst{PMIX_FABRIC_UPDATED} event indicating that it is safe to begin using the updated fabric object(s).
+    \item Users may register for \refconst{PMIX_FABRIC_UPDATE_PENDING} events indicating that an update to the cost matrix is pending. When received, users are required to terminate or pause any actions involving access to the cost matrix before returning from the event. Completion of the \refconst{PMIX_FABRIC_UPDATE_PENDING} event handler indicates to the \ac{PMIx} library that the fabric object's entries are available for updating. This may include releasing and re-allocating memory as the number of vertices may have changed (e.g., due to addition or removal of one or more \acp{NIC}). When the update has been completed, the \ac{PMIx} library will generate a \refconst{PMIX_FABRIC_UPDATED} event indicating that it is safe to begin using the updated fabric object(s).
 
 \end{itemize}
 
 There is no requirement that the caller exclusively use either one of these options. For example, the user may choose to both register for fabric update events, but poll for an update prior to some critical operation.
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_server_update_fabric}}
-\declareapi{PMIx_server_update_fabric}
+\subsection{\code{PMIx_Fabric_update}}
+\declareapi{PMIx_Fabric_update}
 
 %%%%
 \summary
@@ -476,7 +476,7 @@ Update fabric-related information.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_server_update_fabric(pmix_fabric_t *fabric)
+PMIx_Fabric_update(pmix_fabric_t *fabric)
 \end{codepar}
 \cspecificend
 
@@ -493,8 +493,8 @@ Update fabric-related information. This call can be made at any time to request 
 
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_server_deregister_fabric}}
-\declareapi{PMIx_server_deregister_fabric}
+\subsection{\code{PMIx_Fabric_deregister}}
+\declareapi{PMIx_Fabric_deregister}
 
 %%%%
 \summary
@@ -507,7 +507,7 @@ Deregister a fabric object.
 \versionMarker{4.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_server_deregister_fabric(pmix_fabric_t *fabric)
+pmix_status_t PMIx_Fabric_deregister(pmix_fabric_t *fabric)
 \end{codepar}
 \cspecificend
 
@@ -520,12 +520,12 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx}
 %%%%
 \descr
 
-Deregister a fabric object, providing an opportunity for the \ac{PMIx} server library to cleanup any information (e.g., cost matrix) associated with it. Contents of the provided \refstruct{pmix_fabric_t} will be invalidated upon function return.
+Deregister a fabric object, providing an opportunity for the \ac{PMIx} library to cleanup any information (e.g., cost matrix) associated with it. Contents of the provided \refstruct{pmix_fabric_t} will be invalidated upon function return.
 
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_server_get_vertex_info}}
-\declareapi{PMIx_server_get_vertex_info}
+\subsection{\code{PMIx_Fabric_get_vertex_info}}
+\declareapi{PMIx_Fabric_get_vertex_info}
 
 %%%%
 \summary
@@ -539,7 +539,7 @@ Given a communication cost matrix index for a specified fabric, return the corre
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_server_get_vertex_info(pmix_fabric_t *fabric, uint32_t index,
+PMIx_Fabric_get_vertex_info(pmix_fabric_t *fabric, uint32_t index,
                             pmix_info_t **info, size_t *ninfo)
 \end{codepar}
 \cspecificend
@@ -593,8 +593,8 @@ The caller is responsible for releasing the returned array.
 
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_server_get_index}}
-\declareapi{PMIx_server_get_index}
+\subsection{\code{PMIx_Fabric_get_index}}
+\declareapi{PMIx_Fabric_get_index}
 
 %%%%
 \summary
@@ -608,7 +608,7 @@ Given vertex info, return the corresponding communication cost matrix index.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_server_get_index(pmix_fabric_t *fabric,
+PMIx_Fabric_get_index(pmix_fabric_t *fabric,
                       const pmix_info_t vertex[], size_t ninfo,
                       uint32_t *index)
 \end{codepar}
