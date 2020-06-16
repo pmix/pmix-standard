@@ -81,7 +81,8 @@ Table~\ref{app:python:ctopy} lists the correspondence between datatypes in the t
         \refstruct{pmix_pdata_t} & PMIX_PDATA & \pylabel{pdata}\{'proc': \{'nspace': nspace, 'rank': rank\}, 'key': key, 'value': value, 'val_type': type\} & \refarg{proc} is a Python \refpy{proc} dictionary; \refarg{key} is a Python string \refpy{key}; \refarg{type} is the \ac{PMIx} datatype of \refarg{value}; and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype  \\ \hline
         \refstruct{pmix_app_t} & PMIX_APP & \pylabel{app}\{'cmd': cmd, 'argv': [argv], 'env': [env], 'maxprocs': maxprocs, 'info': [info]\} & \refarg{cmd} is a Python string; \refarg{argv} and \refarg{env} are Python \emph{lists} containing Python strings; \refarg{maxprocs} is an integer; and \refarg{info} is a Python \emph{list} of \refpy{info} values   \\ \hline
         \refstruct{pmix_query_t} & PMIX_QUERY & \pylabel{query}\{'keys': [keys], 'qualifiers': [info]\} & \refarg{keys} is a Python \emph{list} of Python strings, and \refarg{qualifiers} is a Python \emph{list} of \refpy{info} values \\ \hline
-        \refstruct{pmix_regattr_t} & PMIX_REGATTR & \pylabel{regattr}\{'name': name, 'key': key, 'type': type, info': [info], 'description': [desc]\} & \refarg{name} and \refarg{string} are Python strings; \refarg{type} is the \ac{PMIx} datatype for the attribute's value; \refarg{info} is a Python \emph{list} of \refpy{info} values; and \refarg{description} is a list of Python strings describing the attribute  \\ \hline
+        \refstruct{pmix_regattr_t} & PMIX_REGATTR & \pylabel{regattr}\{'name': name, 'key': key, 'type': type, 'info': [info], 'description': [desc]\} & \refarg{name} and \refarg{string} are Python strings; \refarg{type} is the \ac{PMIx} datatype for the attribute's value; \refarg{info} is a Python \emph{list} of \refpy{info} values; and \refarg{description} is a list of Python strings describing the attribute  \\ \hline
+        \refstruct{pmix_link_state_t} & PMIX_LINK_STATE& integer & value shall be limited to the \code{uint8_t} range \\ \hline
         \hline
     \end{longtable}
 \end{small}
@@ -119,14 +120,14 @@ info = [\{'key':PMIX_PROGRAMMING_MODEL,
           'value':'TEST', 'val_type':PMIX_STRING\},
         \{'key':PMIX_MODEL_LIBRARY_NAME,
           'value':'PMIX', 'val_type':PMIX_STRING\}]
-rc,myproc = myclient.init(info)
+(rc,myproc) = myclient.init(info)
 
 \end{codepar}
 
 Note the use of the \refconst{PMIX_STRING} identifier to ensure the Python bindings interpret the provided string value as a \ac{PMIx} "string" and not an array of bytes.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Function Definitions}
+\section{Callback Function Definitions}
 \label{app:python:fns}
 
 %%%%%%%%%%%
@@ -275,16 +276,18 @@ Notify the host environment that a local client called \refapi{PMIx_Abort}.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def clientaborted(proc:dict is not None, status:integer,
-                  msg:str, targets:list)
+def clientaborted(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} identifying the namespace/rank of the process that called abort (dict)}
-\argin{status}{PMIx status to be returned on exit (integer)}
-\argin{msg}{String message to be printed (string)}
-\argin{targets}{List of Python \refpy{proc} dictionaries (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'caller': Python \refpy{proc} identifying the namespace/rank of the process calling abort (dict)
+        \item 'status': PMIx status  to be returned on exit (integer)
+        \item 'msg': Optional string message to be printed (string)
+        \item 'targets': Optional list of Python \refpy{proc} identifying the namespace/rank of the processes to be aborted (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -309,14 +312,17 @@ At least one client called either \refapi{PMIx_Fence} or \refapi{PMIx_Fence_nb}
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def fence(procs:list, directives:list, data:bytearray)
+def fence(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{procs}{List of Python \refpy{proc} dictionaries (list)}
-\argin{directives}{List of Python \refpy{info} dictionaries (list)}
-\argin{data}{Python bytearray of data to be circulated during fence operation (bytearray)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'procs': List of Python \refpy{proc} identifying the namespace/rank of the participating processes (list)
+        \item 'directives': Optional list of Python \refpy{info} containing directives controlling the operation (list)
+        \item 'data': Optional Python bytearray of data to be circulated during fence operation (bytearray)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -341,13 +347,16 @@ Used by the PMIx server to request its local host contact the \ac{PMIx} server o
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def dmodex(proc:dict, directives:list)
+def dmodex(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} dictionary of process whose data is being requested (list)}
-\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'proc': Python \refpy{proc} of process whose data is being requested (dict)
+        \item 'directives': Optional list of Python \refpy{info} containing directives controlling the operation (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -372,13 +381,16 @@ Publish data per the PMIx API specification.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def publish(proc:dict, directives:list)
+def publish(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} dictionary of process publishing the data (list)}
-\argin{directives}{List of Python \refpy{info} dictionaries containing data and directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'proc': Python \refpy{proc} dictionary of process publishing the data (dict)
+        \item 'directives': List of Python \refpy{info} containing data and directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -403,14 +415,17 @@ Lookup published data.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def lookup(proc:dict, keys:list, directives:list)
+def lookup(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} dictionary of process seeking the data (list)}
-\argin{keys}{List of Python strings (list)}
-\argin{directives}{List of Python \refpy{info} dictionaries containing directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'proc': Python \refpy{proc} of process seeking the data (dict)
+        \item 'keys': List of Python strings (list)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -436,14 +451,17 @@ Delete data from the data store.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def unpublish(proc:dict, keys:list, directives:list)
+def unpublish(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} dictionary of process making the request (list)}
-\argin{keys}{List of Python strings (list)}
-\argin{directives}{List of Python \refpy{info} dictionaries containing directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'proc': Python \refpy{proc} of process unpublishing data (dict)
+        \item 'keys': List of Python strings (list)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -468,14 +486,17 @@ Spawn a set of applications/processes as per the \refapi{PMIx_Spawn} API.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def spawn(proc:dict, jobInfo:list, apps:list)
+def spawn(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} dictionary of process making the request (list)}
-\argin{jobInfo}{List of Python \refpy{info} job-level directives and information (list)}
-\argin{apps}{List of Python \refpy{app} dictionaries describing applications to be spawned (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'proc': Python \refpy{proc} of process making the request (dict)
+        \item 'jobinfo': Optional list of Python \refpy{info} job-level directives and information (list)
+        \item 'apps': List of Python \refpy{app} describing applications to be spawned (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -501,13 +522,16 @@ Record the specified processes as \textit{connected}.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def connect(procs:list, directives:list)
+def connect(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{procs}{List of Python \refpy{proc} dictionaries identifying participants (list)}
-\argin{directives}{List of Python \refpy{info} directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'procs': List of Python \refpy{proc} identifying the namespace/rank of the participating processes (list)
+        \item 'directives': Optional list of Python \refpy{info} containing directives controlling the operation (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -532,13 +556,16 @@ Disconnect a previously connected set of processes.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def disconnect(procs:list, directives:list)
+def disconnect(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{procs}{List of Python \refpy{proc} dictionaries identifying participants (list)}
-\argin{directives}{List of Python \refpy{info} directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'procs': List of Python \refpy{proc} identifying the namespace/rank of the participating processes (list)
+        \item 'directives': Optional list of Python \refpy{info} containing directives controlling the operation (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -563,13 +590,16 @@ Register to receive notifications for the specified events.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def register_events(codes:list, directives:list)
+def register_events(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{codes}{List of Python integers (list)}
-\argin{directives}{List of Python \refpy{info} directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'codes': List of Python integers (list)
+        \item 'directives': Optional list of Python \refpy{info} containing directives controlling the operation (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -594,12 +624,15 @@ Deregister to receive notifications for the specified events.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def deregister_events(codes:list)
+def deregister_events(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{codes}{List of Python integers (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'codes': List of Python integers (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -624,15 +657,18 @@ Notify the specified range of processes of an event.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def notify_event(code:integer, source:dict, range:integer, directives:list)
+def notify_event(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{code}{Python integer \refstruct{pmix_status_t}  (list)}
-\argin{source}{Python \refpy{proc} of process that generated the event (dict)}
-\argin{range}{Python \refpy{range} in which the event is to be reported (integer)}
-\argin{directives}{List of Python \refpy{info} directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'code': Python integer \refstruct{pmix_status_t} (integer)
+        \item 'source': Python \refpy{proc} of process that generated the event (dict)
+        \item 'range': Python \refpy{range} in which the event is to be reported (integer)
+        \item 'directives': Optional list of Python \refpy{info} directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -657,13 +693,16 @@ Query information from the resource manager.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def query(proc:dict, queries:list)
+def query(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} of requesting process (dict)}
-\argin{queries}{List of Python \refpy{query} directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'source': Python \refpy{proc} of requesting process (dict)
+        \item 'queries': List of Python \refpy{query} directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -689,12 +728,15 @@ Register that a tool has connected to the server.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def tool_connected(info:list)
+def tool_connected(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{info}{List of Python \refpy{info} containing info on the connecting tool (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'directives': Optional list of Python \refpy{info} info on the connecting tool (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -720,14 +762,17 @@ Log data on behalf of a client.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def log(proc:dict, data:list, directives:list)
+def log(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} of requesting process (dict)}
-\argin{data}{List of Python \refpy{info} containing data to be logged (list)}
-\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'source': Python \refpy{proc} of requesting process (dict)
+        \item 'data': Optional list of Python \refpy{info} containing data to be logged (list)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -752,14 +797,17 @@ Request allocation operations on behalf of a client.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def allocate(proc:dict, action:integer, directives:list)
+def allocate(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} of requesting process (dict)}
-\argin{action}{Python \refpy{allocdir} specifying requested action (integer)}
-\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'source': Python \refpy{proc} of requesting process (dict)
+        \item 'action': Python \refpy{allocdir} specifying requested action (integer)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -785,14 +833,17 @@ Execute a job control action on behalf of a client.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def job_control(proc:dict, targets:list, directives:list)
+def job_control(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} of requesting process (dict)}
-\argin{targets}{List of Python \refpy{proc} specifying target processes (list)}
-\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'source': Python \refpy{proc} of requesting process (dict)
+        \item 'targets': List of Python \refpy{proc} specifying target processes (list)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -817,14 +868,18 @@ Request that a client be monitored for activity.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def monitor(proc:dict, request:list, directives:list)
+def monitor(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} of requesting process (dict)}
-\argin{request}{List of Python \refpy{info} specifying requested monitoring operations (list)}
-\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'source': Python \refpy{proc} of requesting process (dict)
+        \item 'monitor': Python \refpy{info} attribute indicating the type of monitor being requested (dict)
+        \item 'error': Status code to be used when generating an event notification (integer) alerting that the monitor has been triggered.
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -849,13 +904,16 @@ Request a credential from the host environment
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def get_credential(proc:dict, directives:list)
+def get_credential(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} of requesting process (dict)}
-\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'source': Python \refpy{proc} of requesting process (dict)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -882,14 +940,17 @@ Request validation of a credential
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def validate_credential(proc:dict, cred:dict, directives:list)
+def validate_credential(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} of requesting process (dict)}
-\argin{cred}{Python \refpy{byteobject} containing credential (dict)}
-\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'source': Python \refpy{proc} of requesting process (dict)
+        \item 'credential': Python \refpy{byteobject} containing credential (dict)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -915,14 +976,17 @@ Request the specified IO channels be forwarded from the given array of processes
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def iof_pull(sources:list, channels:integer, directives:list)
+def iof_pull(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{sources}{List of Python \refpy{proc} whose IO is being requested (list)}
-\argin{channels}{Bitmask of Python \refpy{channel} identifying IO channels to be forwarded (integer)}
-\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\argin{args}{Python dictionary containing:
+    \begin{itemize}
+        \item 'sources': List of Python \refpy{proc} of processes  whose IO is being requested (list)
+        \item 'channels': Bitmask of Python \refpy{channel} identifying IO channels to be forwarded (integer)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -947,14 +1011,18 @@ Pass standard input data to the host environment for transmission to specified r
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def iof_push(source:dict, targets:list, directives:list)
+def iof_push(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{source}{Python \refpy{proc} whose stdin data is being provided (dict)}
-\argin{targets}{List of Python \refpy{proc} identifying targets to receive the provided data (list)}
-\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\argin{args}{Python dictionary containing:
+   \begin{itemize}
+        \item 'source': Python \refpy{proc} of process whose input is being forwarded (dict)
+        \item 'payload': Python \refpy{byteobject} containing input bytes (dict)
+        \item 'targets': List of \refpy{proc} of processes that are to receive the payload (list)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -979,15 +1047,18 @@ Request group operations (construct, destruct, etc.) on behalf of a set of proce
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def group(op:integer, grp:str, procs:list, directives:list)
+def group(args:dict is not None)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{op}{Operation host is to perform on the specified group (integer)}
-\argin{grp}{String identifier of target group (str)}
-\argin{procs}{List of Python \refpy{proc} of participating processes (dict)}
-\argin{directives}{List of Python \refpy{info} containing directives (list)}
+\argin{args}{Python dictionary containing:
+   \begin{itemize}
+        \item 'op': Operation host is to perform on the specified group (integer)
+        \item 'group': String identifier of target group (str)
+        \item 'procs': List of Python \refpy{proc} of participating processes (dict)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
 \end{arglist}
 
 Returns:
@@ -1613,13 +1684,12 @@ Query information about the system in general
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,info = myclient.query(queries:list, directives:list)
+rc,info = myclient.query(queries:list)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
 \argin{queries}{List of Python \refpy{query} dictionaries (list)}
-\argin{directives}{List of Python \refpy{info} dictionaries (list)}
 \end{arglist}
 
 Returns:
@@ -1653,8 +1723,8 @@ rc = myclient.log(data:list, directives:list)
 \pyspecificend
 
 \begin{arglist}
-\argin{data}{List of Python \refpy{info} dictionaries (list)}
-\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\argin{data}{List of Python \refpy{info} (list)}
+\argin{directives}{Optional list of Python \refpy{info} (list)}
 \end{arglist}
 
 Returns:
@@ -1688,7 +1758,7 @@ rc,info = myclient.allocate(request:integer, directives:list)
 
 \begin{arglist}
 \argin{request}{Python \refpy{allocdir} specifying requested operation (integer)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{List of Python \refpy{info} describing request (list)}
 \end{arglist}
 
 Returns:
@@ -1723,7 +1793,7 @@ rc,info = myclient.job_ctrl(targets:list, directives:list)
 
 \begin{arglist}
 \argin{targets}{List of Python \refpy{proc} specifying targets of requested operation (integer)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{List of Python \refpy{info} describing operation to be performed (list)}
 \end{arglist}
 
 Returns:
@@ -1752,13 +1822,14 @@ Request that something be monitored
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,info = myclient.monitor(targets:list, directives:list)
+rc,info = myclient.monitor(monitor:dict, error_code:integer, directives:list)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{targets}{List of Python \refpy{proc} specifying targets of requested operation (integer)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{monitor}{Python \refpy{info} specifying specifying the type of monitor being requested (dict)}
+\argin{error_code}{Status code to be used when generating an event notification alerting that the monitor has been triggered (integer)}
+\argin{directives}{List of Python \refpy{info} describing request (list)}
 \end{arglist}
 
 Returns:
@@ -1787,12 +1858,12 @@ Request a credential from the PMIx server/SMS
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,cred,info = myclient.get_credential(directives:list)
+rc,cred = myclient.get_credential(directives:list)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{Optional list of Python \refpy{info} describing request (list)}
 \end{arglist}
 
 Returns:
@@ -1800,7 +1871,6 @@ Returns:
 \begin{itemize}
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
     \item \refarg{cred} - Python \refpy{byteobject} containing returned credential (dict)
-    \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
 \end{itemize}
 
 
@@ -1828,7 +1898,7 @@ rc,info = myclient.validate_credential(cred:dict, directives:list)
 
 \begin{arglist}
 \argin{cred}{Python \refpy{byteobject} containing credential (dict)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{Optional list of Python \refpy{info} describing request (list)}
 \end{arglist}
 
 Returns:
@@ -1865,7 +1935,7 @@ rc,info = myclient.construct_group(grp:string, members:list, directives:list)
 \begin{arglist}
 \argin{grp}{Python string identifier for the group (str)}
 \argin{members}{List of Python \refpy{proc} dictionaries identifying group members (list)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{Optional list of Python \refpy{info} describing request (list)}
 \end{arglist}
 
 Returns:
@@ -1901,7 +1971,7 @@ rc,info = myclient.group_invite(grp:string, members:list, directives:list)
 \begin{arglist}
 \argin{grp}{Python string identifier for the group (str)}
 \argin{members}{List of Python \refpy{proc} dictionaries identifying processes to be invited (list)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{Optional list of Python \refpy{info} describing request (list)}
 \end{arglist}
 
 Returns:
@@ -1938,7 +2008,7 @@ rc,info = myclient.group_join(grp:string, leader:dict, opt:integer, directives:l
 \argin{grp}{Python string identifier for the group (str)}
 \argin{leader}{Python \refpy{proc} dictionary identifying process leading the group (dict)}
 \argin{opt}{One of the \refstruct{pmix_group_opt_t} values indicating decline/accept (integer)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{Optional list of Python \refpy{info} describing request (list)}
 \end{arglist}
 
 Returns:
@@ -1973,7 +2043,7 @@ rc = myclient.group_leave(grp:string, directives:list)
 
 \begin{arglist}
 \argin{grp}{Python string identifier for the group (str)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{Optional list of Python \refpy{info} describing request (list)}
 \end{arglist}
 
 Returns:
@@ -2007,7 +2077,7 @@ rc = myclient.group_destruct(grp:string, directives:list)
 
 \begin{arglist}
 \argin{grp}{Python string identifier for the group (str)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{Optional list of Python \refpy{info} describing request (list)}
 \end{arglist}
 
 Returns:
@@ -2041,7 +2111,7 @@ rc,id = myclient.register_event_handler(codes:list, directives:list, cbfunc)
 
 \begin{arglist}
 \argin{codes}{List of Python integer status codes that should be reported to this handler (llist)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{Optional list of Python \refpy{info} describing request (list)}
 \argin{cbfunc}{Python \refpy{evhandler} to be called when event is received (func)}
 \end{arglist}
 
@@ -2108,7 +2178,7 @@ rc = myclient.notify_event(status:integer, source:dict,
 \argin{status}{\ac{PMIx} status code indicating the event being reported (integer)}
 \argin{source}{Python \refpy{proc} of the process that generated the event (dict)}
 \argin{range}{Python \refpy{range} in which the event is to be reported (integer)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{directives}{Optional list of Python \refpy{info} dictionaries describing the event (list)}
 \end{arglist}
 
 Returns:
@@ -2117,6 +2187,152 @@ Returns:
 \end{itemize}
 
 See \refapi{PMIx_Notify_event} for description of all relevant attributes and behaviors
+
+
+%%%%%%%%%%%
+\subsection{Client.fabric_register}
+\declareapibinding{PMIxClient.fabric_register}{PMIx_Fabric_register}{Python}
+
+\summary
+Register for access to fabric-related information, including communication cost matrix.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,fabricinfo = myserver.fabric_register(directives:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{directives}{Optional list of Python \refpy{info} containing directives (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{fabricinfo} - List of Python \refpy{info} containing fabric info (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Fabric_register} for details
+
+
+%%%%%%%%%%%
+\subsection{Client.fabric_update}
+\declareapibinding{PMIxClient.fabric_update}{PMIx_Fabric_update}{Python}
+
+\summary
+Update fabric-related information, including communication cost matrix.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,fabricinfo = myserver.fabric_update()
+\end{codepar}
+\pyspecificend
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{fabricinfo} - List of Python \refpy{info} containing updated fabric info (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Fabric_update} for details
+
+
+%%%%%%%%%%%
+\subsection{Client.fabric_deregister}
+\declareapibinding{PMIxClient.fabric_deregister}{PMIx_Fabric_deregister}{Python}
+
+\summary
+Deregister fabric
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.fabric_deregister()
+\end{codepar}
+\pyspecificend
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Fabric_deregister} for details
+
+
+%%%%%%%%%%%
+\subsection{Client.fabric_get_vertex_info}
+\declareapibinding{PMIxClient.fabric_get_vertex_info}{PMIx_Fabric_get_vertex_info}{Python}
+
+\summary
+Given a communication cost matrix index for a specified fabric, return an array of information describing the corresponding \ac{NIC}.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,nicinfo = myserver.fabric_get_vertex_info(index:integer)
+\end{codepar}
+\pyspecificend
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{nicinfo} - List of Python \refpy{info} describing the referenced \ac{NIC} (list)
+\end{itemize}
+
+
+See \refapi{PMIx_Fabric_get_vertex_info} for details
+
+
+%%%%%%%%%%%
+\subsection{Client.fabric_get_index}
+\declareapibinding{PMIxClient.fabric_get_index}{PMIx_Fabric_get_index}{Python}
+
+\summary
+Given info describing a given vertex, return the corresponding communication cost matrix index
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,index = myserver.fabric_get_index(info:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{info}{List of Python \refpy{info} containing vertex description (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{index} - Index of corresponding \ac{NIC} (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Fabric_get_index} for details
 
 
 %%%%%%%%%%%
@@ -2398,6 +2614,133 @@ Returns:
 See \refapi{PMIx_IOF_channel_string} for further details
 
 
+%%%%%%%%%%%
+\subsection{Client.job_state_string}
+\declareapibinding{PMIxClient.job_state_string}{PMIx_Job_state_string}{Python}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_job_state_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.job_state_string(state:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{state}{\ac{PMIx} job state value (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided job state (str)
+\end{itemize}
+
+See \refapi{PMIx_Job_state_string} for further details
+
+
+
+%%%%%%%%%%%
+\subsection{Client.get_attribute_string}
+\declareapibinding{PMIxClient.get_attribute_string}{PMIx_Get_attribute_string}{Python}
+
+%%%%
+\summary
+
+Pretty-print string representation of a \ac{PMIx} attribute.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.get_attribute_string(attribute:str)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{attribute}{\ac{PMIx} attribute name (string)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided attribute (str)
+\end{itemize}
+
+See \refapi{PMIx_Get_attribute_string} for further details
+
+
+%%%%%%%%%%%
+\subsection{Client.get_attribute_name}
+\declareapibinding{PMIxClient.get_attribute_name}{PMIx_Get_attribute_name}{Python}
+
+%%%%
+\summary
+
+Pretty-print name of a \ac{PMIx} attribute corresponding to the provided string
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.get_attribute_name(attribute:str)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{attributestring}{Attribute string (string)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - Attribute name corresponding to the provided string (str)
+\end{itemize}
+
+See \refapi{PMIx_Get_attribute_name} for further details
+
+
+
+%%%%%%%%%%%
+\subsection{Client.link_state_string}
+\declareapibinding{PMIxClient.link_state_string}{PMIx_Link_state_string}{Python}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_link_state_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.link_state_string(state:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{state}{\ac{PMIx} link state value (integer)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided link state (str)
+\end{itemize}
+
+See \refapi{PMIx_Link_state_string} for further details
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{PMIxServer}
@@ -2512,7 +2855,7 @@ rc,regex = myserver.generate_ppn(input:list)
 
 
 \begin{arglist}
-\argin{input}{List of Python strings describing the ranks on each node (list)}
+\argin{input}{List of Python strings, each string consisting of a comma-delimited list of ranks on each node, with the strings being in the same order as the node names provided to "generate_regex" (list)}
 \end{arglist}
 
 Returns:
@@ -2765,7 +3108,7 @@ rc = myserver.register_attributes(function:str, attrs:list)
 
 \begin{arglist}
 \argin{function}{Name of the function (str)}
-\argin{attrs}{Python list of \refpy{regattr} dictionaries describing the supported attributes}
+\argin{attrs}{Python list of \refpy{regattr} describing the supported attributes}
 \end{arglist}
 
 Returns:
@@ -2797,7 +3140,7 @@ rc = myserver.setup_local_support(nspace:str, info:list)
 
 \begin{arglist}
 \argin{nspace}{Namespace whose setup information is being requested (str)}
-\argin{info}{Python list of \refpy{info} dictionaries containing the setup data (list)}
+\argin{info}{Python list of \refpy{info} containing the setup data (list)}
 \end{arglist}
 
 Returns:
@@ -2832,7 +3175,7 @@ rc = myserver.iof_deliver(source:dict, channel:integer,
 \argin{source}{Python \refpy{proc} dictionary identifying the process who generated the data (dict)}
 \argin{channel}{Python \refpy{channel} bitmask identifying IO channel of the provided data (integer)}
 \argin{data}{Python \refpy{byteobject} containing the data (dict)}
-\argin{directives}{Python list of \refpy{info} dictionaries containing directives (list)}
+\argin{directives}{Python list of \refpy{info} containing directives (list)}
 \end{arglist}
 
 Returns:
@@ -2863,14 +3206,14 @@ rc,info = myserver.collect_inventory(directives:list)
 
 
 \begin{arglist}
-\argin{directives}{Python list of \refpy{info} dictionaries containing directives (list)}
+\argin{directives}{Optional Python list of \refpy{info} containing directives (list)}
 \end{arglist}
 
 Returns:
 
 \begin{itemize}
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{info} - Python list of \refpy{info} dictionaries containing the returned data (list)
+    \item \refarg{info} - Python list of \refpy{info} containing the returned data (list)
 \end{itemize}
 
 
@@ -2933,14 +3276,14 @@ rc,proc = mytool.init(info:list)
 
 
 \begin{arglist}
-\argin{info}{List of Python \refpy{info} dictionaries (list)}
+\argin{info}{List of Python \refpy{info} directives (list)}
 \end{arglist}
 
 Returns:
 
 \begin{itemize}
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{proc} - a Python \refpy{proc} dictionary (dict)
+    \item \refarg{proc} - a Python \refpy{proc} (dict)
 \end{itemize}
 
 
@@ -2999,7 +3342,7 @@ Returns:
 
 \begin{itemize}
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{proc} - a Python \refpy{proc} dictionary (dict)
+    \item \refarg{proc} - a Python \refpy{proc} (dict)
 \end{itemize}
 
 
@@ -3098,9 +3441,9 @@ rc = mytool.iof_push(targets:list, data:dict, directives:list)
 \pyspecificend
 
 \begin{arglist}
-\argin{sources}{List of Python \refpy{proc} dictionaries of target processes (list)}
-\argin{data}{Python \refpy{byteobject} dictionary containing data to be delivered (dict)}
-\argin{directives}{List of Python \refpy{info} dictionaries describing request (list)}
+\argin{sources}{List of Python \refpy{proc} of target processes (list)}
+\argin{data}{Python \refpy{byteobject} containing data to be delivered (dict)}
+\argin{directives}{Optional list of Python \refpy{info} describing request (list)}
 \end{arglist}
 
 Returns:

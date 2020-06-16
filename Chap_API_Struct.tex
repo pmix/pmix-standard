@@ -966,6 +966,51 @@ The data is intended solely for this process and is not shared with other proces
 \end{constantdesc}
 
 
+%%%%%%%%%%%
+\subsection{Job State Structure}
+\label{api:struct:jobstate}
+\declarestruct{pmix_job_state_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_job_state_t} structure is a \code{uint8_t} type for job state values. The following constants can be used to set a variable of the type \refstruct{pmix_job_state_t}. All values were originally defined in version 4 of the standard unless otherwise marked.
+
+\adviceuserstart
+The fine-grained nature of the following constants may exceed the ability of an \ac{RM} to provide updated job state values during the job lifetime. This is particularly true of states in the launch process, and for short-lived jobs.
+\adviceuserend
+
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_JOB_STATE_UNDEF}
+Undefined job state
+%
+\declareconstitem{PMIX_JOB_STATE_PREPPED}
+Job is ready to be launched
+%
+\declareconstitem{PMIX_JOB_STATE_LAUNCH_UNDERWAY}
+Job launch is underway
+%
+\declareconstitem{PMIX_JOB_STATE_RUNNING}
+All processes in the job have been spawned
+%
+\declareconstitem{PMIX_JOB_STATE_SUSPENDED}
+All processes in the job have been suspended
+%
+\declareconstitem{PMIX_JOB_STATE_CONNECTED}
+All processes in the job have connected to their \ac{PMIx} server
+%
+\declareconstitem{PMIX_JOB_STATE_UNTERMINATED}
+Define a ``boundary'' between the terminated states and \refconst{PMIX_JOB_STATE_TERMINATED} so users can easily and quickly determine if a job is still running or not.
+Any value less than this constant means that the job has not terminated.
+%
+\declareconstitem{PMIX_JOB_STATE_TERMINATED}
+All processes in the job have terminated and are no longer running - typically will be accompanied by the job exit status in response to a query
+%
+\declareconstitem{PMIX_JOB_STATE_TERMINATED_WITH_ERROR}
+Define a boundary so users can easily and quickly determine if a job abnormally terminated - typically will be accompanied by a job-related error code in response to a query
+Any value above this constant means that the job terminated abnormally.
+%
+\end{constantdesc}
+
 
 %%%%%%%%%%%
 \subsection{Range of Published Data}
@@ -2983,7 +3028,7 @@ Input/output forwarding channel (\refstruct{pmix_iof_channel_t})
 Environmental variable structure (\refstruct{pmix_envar_t})
 %
 \declareconstitemNEW{PMIX_COORD}
-Structure containing network coordinates (\refstruct{pmix_coord_t})
+Structure containing fabric coordinates (\refstruct{pmix_coord_t})
 %
 \declareconstitemNEW{PMIX_REGATTR}
 Structure supporting attribute registrations (\refstruct{pmix_regattr_t})
@@ -3470,12 +3515,12 @@ Comma-delimited list of all nodes in this allocation regardless of whether or no
 
 %
 \declareAttribute{PMIX_HOSTNAME}{"pmix.hname"}{char*}{
-Name of the host where the specified process is running.
+Name of the host (e.g., where a specified process is running, or a given device is located).
 }
 
 %
 \declareAttribute{PMIX_NODEID}{"pmix.nodeid"}{uint32_t}{
-Node identifier where the specified process is located, expressed as the node's index (beginning at zero) in the array resulting from expansion of the \refattr{PMIX_NODE_MAP} regular expression for the \refterm{job}
+Node identifier expressed as the node's index (beginning at zero) in an array of nodes within the active session. The value must be unique and directly correlate to the \refattr{PMIX_HOSTNAME} of the node - i.e., users can interchangeably reference the same location using either the \refattr{PMIX_HOSTNAME} or corresponding \refattr{PMIX_NODEID}.
 }
 
 %
@@ -4587,14 +4632,21 @@ Number of Megabytes.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
-Array of \refstruct{pmix_info_t} describing requested network resources. This must include at least: \refattr{PMIX_ALLOC_NETWORK_ID}, \refattr{PMIX_ALLOC_NETWORK_TYPE}, and \refattr{PMIX_ALLOC_NETWORK_ENDPTS}, plus whatever other descriptors are desired.
+\declareDepAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
+Changed to \refattr{PMIX_ALLOC_FABRIC}
 }
-
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
-The key to be used when accessing this requested network allocation. The allocation will be returned/stored as a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} indexed by this key and containing at least one entry with the same key and the allocated resource description.
-The type of the included value depends upon the network support. For example, a TCP allocation might consist of a comma-delimited string of socket ranges such as \var{"32000-32100,33005,38123-38146"}. Additional entries will consist of any provided resource request directives, along with their assigned values. Examples include: \refattr{PMIX_ALLOC_NETWORK_TYPE} - the type of resources provided; \refattr{PMIX_ALLOC_NETWORK_PLANE} - if applicable, what plane the resources were assigned from; \refattr{PMIX_ALLOC_NETWORK_QOS} - the assigned QoS; \refattr{PMIX_ALLOC_BANDWIDTH} - the allocated bandwidth; \refattr{PMIX_ALLOC_NETWORK_SEC_KEY} - a security key for the requested network allocation. NOTE: the assigned values may differ from those requested, especially if \refconst{PMIX_INFO_REQD} was not set in the request.
+\declareAttribute{PMIX_ALLOC_FABRIC}{"pmix.alloc.net"}{array}{
+Array of \refstruct{pmix_info_t} describing requested fabric resources. This must include at least: \refattr{PMIX_ALLOC_FABRIC_ID}, \refattr{PMIX_ALLOC_FABRIC_TYPE}, and \refattr{PMIX_ALLOC_FABRIC_ENDPTS}, plus whatever other descriptors are desired.
+}
+%
+\declareDepAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_ID}
+}
+%
+\declareAttribute{PMIX_ALLOC_FABRIC_ID}{"pmix.alloc.netid"}{char*}{
+The key to be used when accessing this requested fabric allocation. The allocation will be returned/stored as a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} indexed by this key and containing at least one entry with the same key and the allocated resource description.
+The type of the included value depends upon the fabric support. For example, a TCP allocation might consist of a comma-delimited string of socket ranges such as \var{"32000-32100,33005,38123-38146"}. Additional entries will consist of any provided resource request directives, along with their assigned values. Examples include: \refattr{PMIX_ALLOC_FABRIC_TYPE} - the type of resources provided; \refattr{PMIX_ALLOC_FABRIC_PLANE} - if applicable, what plane the resources were assigned from; \refattr{PMIX_ALLOC_FABRIC_QOS} - the assigned QoS; \refattr{PMIX_ALLOC_BANDWIDTH} - the allocated bandwidth; \refattr{PMIX_ALLOC_FABRIC_SEC_KEY} - a security key for the requested fabric allocation. NOTE: the assigned values may differ from those requested, especially if \refconst{PMIX_INFO_REQD} was not set in the request.
 }
 
 %
@@ -4603,7 +4655,12 @@ Mbits/sec.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_QOS}{"pmix.alloc.netqos"}{char*}{
+\declareDepAttribute{PMIX_ALLOC_NETWORK_QOS}{"pmix.alloc.netqos"}{char*}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_QOS}
+}
+
+%
+\declareAttribute{PMIX_ALLOC_FABRIC_QOS}{"pmix.alloc.netqos"}{char*}{
 Quality of service level.
 }
 
@@ -4613,28 +4670,48 @@ Time in seconds.
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_TYPE}{"pmix.alloc.nettype"}{char*}{
+\declareDepAttribute{PMIX_ALLOC_NETWORK_TYPE}{"pmix.alloc.nettype"}{char*}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_TYPE}
+}
+%
+\declareAttribute{PMIX_ALLOC_FABRIC_TYPE}{"pmix.alloc.nettype"}{char*}{
 Type of desired transport (e.g., \var{``tcp''}, \var{``udp''})
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_PLANE}{"pmix.alloc.netplane"}{char*}{
+\declareDepAttribute{PMIX_ALLOC_NETWORK_PLANE}{"pmix.alloc.netplane"}{char*}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_PLANE}
+}
+%
+\declareAttribute{PMIX_ALLOC_FABRIC_PLANE}{"pmix.alloc.netplane"}{char*}{
 ID string for the NIC (aka \textit{plane}) to be used for this allocation (e.g., CIDR for Ethernet)
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
+\declareDepAttribute{PMIX_ALLOC_NETWORK_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_ENDPTS}
+}
+%
+\declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
 Number of endpoints to allocate per process
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
+\declareDepAttribute{PMIX_ALLOC_NETWORK_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
+}
+%
+\declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
 Number of endpoints to allocate per node
 }
 
 %
-\declareAttribute{PMIX_ALLOC_NETWORK_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
-Network security key
+\declareDepAttribute{PMIX_ALLOC_NETWORK_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
+Changed to \refattr{PMIX_ALLOC_FABRIC_SEC_KEY}
+}
+%
+\declareAttribute{PMIX_ALLOC_FABRIC_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
+Fabric security key
 }
 
 
@@ -5845,6 +5922,66 @@ String representation of a \refstruct{pmix_iof_channel_t}.
 \begin{codepar}
 const char*
 PMIx_IOF_channel_string(pmix_iof_channel_t channel);
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\summary
+\declareapi{PMIx_Job_state_string}
+
+String representation of a \refstruct{pmix_job_state_t}.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+const char*
+PMIx_Job_state_string(pmix_job_state_t state);
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\summary
+\declareapi{PMIx_Get_attribute_string}
+
+String representation of a \ac{PMIx} attribute
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+const char*
+PMIx_Get_attribute_string(char *attributename);
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\summary
+\declareapi{PMIx_Get_attribute_name}
+
+Return the \ac{PMIx} attribute name corresponding to the given attribute string
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+const char*
+PMIx_Get_attribute_name(char *attributestring);
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\summary
+\declareapi{PMIx_Link_state_string}
+
+String representation of a \refstruct{pmix_link_state_t}
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+const char*
+PMIx_Link_state_string(pmix_link_state_t state);
 \end{codepar}
 \cspecificend
 

@@ -117,6 +117,8 @@
 \acrodef{OS}{Operating System}
 \acrodef{PGCID}{Process Group Context IDentifier}
 \acrodef{NIC}{Network Interface Card}
+\acrodef{PCI}{Peripheral Component Interconnect}
+\acrodef{MAC}{Media Access Control}
 
 %%%%%%%%%%%%%%%%%%%
 
@@ -195,15 +197,12 @@
     %  - setup_fork, (de)register_nspace, pmix_server_module_t
     \input{Chap_API_Server.tex}
 
-    % PMIx Scheduler Specific Interfaces
+    % PMIx fabric support interfaces
     %  - register/deregister fabric, get vertex/index
-    \input{Chap_API_Scheduler.tex}
+    \input{Chap_API_Fabric.tex}
 
     % PMIx Process Sets and Groups
     \input{Chap_API_Sets_Groups.tex}
-
-    % PMIx Network Coordinates
-    \input{Chap_API_Coord.tex}
 
 %
 % Appendix
