@@ -11,6 +11,7 @@ import shutil
 if __name__ == "__main__":
     count_not_used = 0
     attr_declared = {}
+    deprecated_attr = []
     index_files = ["pmix-standard.idx", "index_attribute.idx"]
 
     #
@@ -73,7 +74,6 @@ if __name__ == "__main__":
     #
     # Verify the list against the index
     # If any difference then post a warning
-    #  grep "PMIX_SERVER_REMOTE_CONNECTIONS\!Def" pmix-standard.idx
     #
     if args.verbose is True:
         print "-"*50
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         if args.verbose is True:
             print "Processing Index File: "+fname
 
-        p = subprocess.Popen("grep \"\\!Definition\" "+fname,
+        p = subprocess.Popen("grep \"\\|hyperindexformat\" "+fname,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
         p.wait()
         if p.returncode != 0:
@@ -102,10 +102,18 @@ if __name__ == "__main__":
                 print("Error: Failed to extract an attribute on the following line")
                 print(" line: "+line)
                 sys.exit(1)
+            else:
+                attr_to_find = m.group(1)
 
-            attr_to_find = m.group(1)
-            if attr_to_find in attr_declared:
-                attr_declared[attr_to_find] = attr_declared[attr_to_find] + 1
+                # Check to see if this is deprecated
+                if re.search("indexdepfmt", line) is not None:
+                    if args.verbose is True:
+                        print("Found a Deprecated Attribute: "+attr_to_find)
+                    deprecated_attr.insert(0, attr_to_find)
+
+                if attr_to_find in attr_declared:
+                    attr_declared[attr_to_find] = attr_declared[attr_to_find] + 1
+
 
     # Sanity check. Should never trigger, but check just in case
     err_out = False
@@ -117,8 +125,9 @@ if __name__ == "__main__":
             num_missing += 1
     if err_out is True:
         print "-"*50
-        print("Number of declared attributes: " + str(len(attr_declared)))
-        print("Number of missing attributes : " + str(num_missing))
+        print("Number of deprecated attributes: " + str(len(deprecated_attr)))
+        print("Number of declared attributes  : " + str(len(attr_declared)))
+        print("Number of missing attributes   : " + str(num_missing))
         sys.exit(1)
 
     if args.verbose is True:
@@ -170,10 +179,14 @@ if __name__ == "__main__":
     #
     # Display a list of attributes that are declared but not used
     #
-    for attr in attr_declared:
+    for attr in sorted(attr_declared):
         if attr_declared[attr] <= 0:
-            print("Attribute Missing Reference: "+attr)
-            count_not_used += 1
+            if attr not in deprecated_attr:
+                print("Attribute Missing Reference: "+attr)
+                count_not_used += 1
+            elif args.verbose is True:
+                print("=====> Deprecated Attribute Missing Reference: "+attr)
+
 
     print("%3d of %3d Attributes are missing reference" % (count_not_used, len(attr_declared)))
     sys.exit(count_not_used)

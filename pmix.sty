@@ -133,6 +133,8 @@
 
 % Formatting for "Definition" items in the index
 \newcommand{\indexfmt}[1]{\textbf{\underline{#1}}}
+% Formatting for deprecated items in the index
+\newcommand{\indexdepfmt}[1]{\textbf{\underline{#1}}}
 
 
 % \url styled in Roman font.
@@ -385,7 +387,7 @@
 
 \newcommand{\declareDepAttribute}[4]{%
    {\color{green!80!black}\code{#1}} ~~\code{#2}~~(\code{#3})%
-    \index[index_attribute]{#1|indexfmt} \label{attr:#1}%
+    \index[index_attribute]{#1@#1 \textbf{(Deprecated)}|indexdepfmt} \label{attr:#1}%
     \StdCopy{str:#1}{\code{#2}}%
     \StdCopy{attr:#1}{\code{#3}}%
     \vspace{-1.3ex}%
