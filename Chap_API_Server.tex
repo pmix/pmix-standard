@@ -1050,7 +1050,7 @@ Provide a function by which the host environment can pass inventory information 
 
 \ac{PMIx} utilizes a "function-shipping" approach to support for implementing the server-side of the protocol. This method allows \acp{RM} to implement the server without being burdened with \ac{PMIx} internal details. When a request is received from the client, the corresponding server function will be called with the information.
 
-Any functions not supported by the \ac{RM} can be indicated by a \code{NULL} for the function pointer. Client calls to such functions will return a \refconst{PMIX_ERR_NOT_SUPPORTED} status.
+Any functions not supported by the \ac{RM} can be indicated by a \code{NULL} for the function pointer. \ac{PMIx} implementations are required to return a \refconst{PMIX_ERR_NOT_SUPPORTED} status to all calls to functions that require host environment support and are not backed by a corresponding server module entry.
 
 The host \ac{RM} will provide the function pointers in a \refapi{pmix_server_module_t} structure passed to \refapi{PMIx_server_init}.
 That module structure and associated function references are defined in this section.
@@ -1278,6 +1278,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -1332,6 +1333,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -1433,6 +1435,7 @@ Returns one of the following:
 
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -1494,6 +1497,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -1575,6 +1579,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -1654,6 +1659,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -1731,6 +1737,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -1840,6 +1847,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -1909,6 +1917,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -1978,6 +1987,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -2045,6 +2055,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -2104,6 +2115,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -2205,6 +2217,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -2411,6 +2424,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -2503,6 +2517,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -2590,6 +2605,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -2664,7 +2680,7 @@ typedef pmix_status_t (*pmix_server_get_cred_fn_t)(
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will not be called.
+Returns \refconst{PMIX_SUCCESS}, \refconst{PMIX_ERR_NOT_SUPPORTED} indicating that the host environment does not support the request (even though the function entry was provided in the server module), or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{cbfunc} will not be called.
 
 \reqattrstart
 If the \ac{PMIx} library does not itself provide the requested credential, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
@@ -2731,6 +2747,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -2801,6 +2818,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -2881,6 +2899,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -2937,6 +2956,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
@@ -3004,6 +3024,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
