@@ -73,7 +73,7 @@ if __name__ == "__main__":
     #
     # Verify the list against the index
     # If any difference then post a warning
-    #  grep "PMIX_SERVER_REMOTE_CONNECTIONS\!Def" pmix-standard.idx
+    #  grep "PMIX_SERVER_REMOTE_CONNECTIONS\|hyperindexformat" pmix-standard.idx
     #
     if args.verbose is True:
         print "-"*50
@@ -87,7 +87,7 @@ if __name__ == "__main__":
         if args.verbose is True:
             print "Processing Index File: "+fname
 
-        p = subprocess.Popen("grep \"\\!Definition\" "+fname,
+        p = subprocess.Popen("grep \"\\|hyperindexformat\" "+fname,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
         p.wait()
         if p.returncode != 0:
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     #
     # Display a list of attributes that are declared but not used
     #
-    for attr in attr_declared:
+    for attr in sorted(attr_declared):
         if attr_declared[attr] <= 0:
             print("Attribute Missing Reference: "+attr)
             count_not_used += 1
