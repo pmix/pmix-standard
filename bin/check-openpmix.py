@@ -68,7 +68,7 @@ def check_missing_openpmix(std_all_refs, openpmix_all_refs, verbose=False):
                 break
         if found_ref is False:
             # Double check that we didn't miss it earlier when parsing OpenPMIx
-            p = subprocess.Popen("grep -in \""+std_ref+"\" check-openpmix/include/*",
+            p = subprocess.Popen("grep -in \""+std_ref+"[^a-zA-Z0-9_]\" check-openpmix/include/*",
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
             p.wait()
             if p.returncode != 0 and p.returncode != 1:
