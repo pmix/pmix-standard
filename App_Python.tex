@@ -1070,6 +1070,42 @@ Returns:
 See \refapi{pmix_server_grp_fn_t} for details
 
 
+%%%%%%%%%%%
+\subsubsection{Fabric Operations}
+
+%%%%
+\summary
+
+Request fabric-related operations (e.g., information on a fabric) on behalf of a tool or other process.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+def fabric(args:dict is not None)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{args}{Python dictionary containing:
+   \begin{itemize}
+        \item 'source': Python \refpy{proc} of requesting process (dict)
+        \item 'op': Operation host is to perform on the specified fabric (integer)
+        \item 'directives': Optional list of Python \refpy{info} containing directives (list)
+    \end{itemize}}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
+    \item refarg{info} - List of Python \refpy{info} containing results of requested operation (list)
+\end{itemize}
+
+See \refapi{pmix_server_fabric_fn_t} for details
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{PMIxClient}

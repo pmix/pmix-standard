@@ -207,6 +207,32 @@ The port is active.
 
 \end{constantdesc}
 
+\subsection{Fabric Operation Constants}
+\declarestruct{pmix_fabric_operation_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_fabric_operation_t} structure is an enumerated type for specifying fabric operations used in the \ac{PMIx} server module's \refapi{pmix_server_fabric_fn_t} \ac{API}. All values were originally defined in version 4 of the standard unless otherwise marked.
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_FABRIC_REQUEST_INFO}
+Request information on a specific fabric - if the fabric isn't specified as per \refapi{PMIx_Fabric_register}, then return information on the system default fabric. Information to be returned is described in \refstruct{pmix_fabric_t}.
+%
+\declareconstitemNEW{PMIX_FABRIC_UPDATE_INFO}
+Update information on a specific fabric - the index of the fabric (\refattr{PMIX_FABRIC_INDEX}) to be updated must be provided.
+%
+\declareconstitemNEW{PMIX_FABRIC_GET_VERTEX_INFO}
+Request information on a specific \ac{NIC} within the identified fabric - the index of the device (\refattr{PMIX_FABRIC_DEVICE_INDEX}) and of the fabric (\refattr{PMIX_FABRIC_INDEX}) must be provided. If the \ac{NIC} identifier is not specified, then return vertex info on all \acp{NIC} in the fabric. Information to be included on each vertex is described in \refstruct{pmix_fabric_t}.
+
+\adviceuserstart
+Requesting information on every \ac{NIC} in the fabric may be an expensive operation in terms of both memory footprint and time.
+\adviceuserend
+%
+\declareconstitemNEW{PMIX_FABRIC_GET_DEVICE_INDEX}
+Request the fabric-wide index (returned as \refattr{PMIX_FABRIC_DEVICE_INDEX}) for a specific \ac{NIC} within the identified fabric based on the provided vertex information. The index of the fabric must be provided.
+%
+\end{constantdesc}
+
 
 \subsection{Fabric registration structure}
 \declarestruct{pmix_fabric_t}
@@ -256,7 +282,7 @@ and may optionally contain one or more of the following:
 \pastePRIAttributeItem{PMIX_FABRIC_SHAPE}
 \pastePRIAttributeItem{PMIX_FABRIC_SHAPE_STRING}
 
-While unusual due to scaling issues, implementations may include an array of \refattr{PMIX_FABRIC_DEVICE} elements, each containing a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} values describing the device. Each array can contain one or more of the following (ordering is arbitrary):
+While unusual due to scaling issues, implementations may include an array of \refattr{PMIX_FABRIC_DEVICE} elements describing the vertex information for each \ac{NIC} in the system. Each element shall contain a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} values describing the device. Each array may contain one or more of the following (ordering is arbitrary):
 
 \pastePRIAttributeItem{PMIX_FABRIC_DEVICE_NAME}
 \pastePRIAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
@@ -302,6 +328,10 @@ Name of fabric vendor (e.g., Amazon, Mellanox, Cray, Intel)
 An identifier for the fabric (e.g., MgmtEthernet, Slingshot-11, OmniPath-1)
 }
 
+\declareNewAttribute{PMIX_FABRIC_INDEX}{"pmix.fab.idx"}{size_t}{
+The index of the fabric as returned in \refstruct{pmix_fabric_t}
+}
+
 \declareNewAttribute{PMIX_FABRIC_NUM_VERTICES}{"pmix.fab.nverts"}{size_t}{
 Total number of \acp{NIC} in the system - corresponds to the number of vertices (i.e., rows and columns) in the cost matrix
 }
@@ -344,6 +374,10 @@ The following attributes are used to describe devices (a.k.a., \acp{NIC}) attach
 
 \declareNewAttribute{PMIX_FABRIC_DEVICE}{"pmix.fabdev"}{\refstruct{pmix_data_array_t}}{
 An array of \refstruct{pmix_info_t} describing a particular fabric device (\ac{NIC}).
+}
+
+\declareNewAttribute{PMIX_FABRIC_DEVICE_INDEX}{"pmix.fabdev.idx"}{\code{uint32_t}}{
+System-unique index of a particular fabric device (\ac{NIC}).
 }
 
 \declareNewAttribute{PMIX_FABRIC_DEVICE_NAME}{"pmix.fabdev.nm"}{string}{
@@ -401,7 +435,7 @@ A node-level unique identifier for a \ac{PCI} device. Provided only if the devic
 The following \acp{API} allow the \ac{WLM} to request specific services from the fabric subsystem via the \ac{PMIx} library.
 
 \advicermstart
-Due to their high cost in terms of execution, memory consumption, and interactions with other \ac{SMS} components (e.g., a fabric manager), it is strongly advised that the underlying implementation of these \acp{API} be restricted to a single \ac{PMIx} server in a system that is supporting the \ac{SMS} component responsible for the scheduling of allocations (i.e., the system \refterm{scheduler}). The \refattr{PMIX_SERVER_SCHEDULER} attribute can be used for this purpose to control the execution path. Clients, tools, and other servers utilizing these functions are advised to have their requests forwarded to the server supporting the scheduler.
+Due to their high cost in terms of execution, memory consumption, and interactions with other \ac{SMS} components (e.g., a fabric manager), it is strongly advised that the underlying implementation of these \acp{API} be restricted to a single \ac{PMIx} server in a system that is supporting the \ac{SMS} component responsible for the scheduling of allocations (i.e., the system \refterm{scheduler}). The \refattr{PMIX_SERVER_SCHEDULER} attribute can be used for this purpose to control the execution path. Clients, tools, and other servers utilizing these functions are advised to have their requests forwarded to the server supporting the scheduler using the \refapi{pmix_server_fabric_fn_t} server module function, as needed.
 \advicermend
 
 %%%%%%%%%%%
