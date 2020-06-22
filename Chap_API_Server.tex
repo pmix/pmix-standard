@@ -3029,17 +3029,18 @@ Returns one of the following:
 \end{itemize}
 
 \reqattrstart
-The following directives are required to be supported by all hosts to aid users in identifying the fabric to whom the operation is to be applied:
+The following directives are required to be supported by all hosts to aid users in identifying the fabric and (if applicable) the device to whom the operation references:
 
 \pastePRIAttributeItem{PMIX_FABRIC_VENDOR}
 \pastePRIAttributeItem{PMIX_FABRIC_IDENTIFIER}
 \pastePRIAttributeItem{PMIX_FABRIC_PLANE}
+\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_INDEX}
 
 \reqattrend
 
 %%%%
 \descr
 
-Perform the specified operation. Return the result of any requests in the callback function when the operation is completed. Operations may, for example, include a request for fabric information. See \refstruct{pmix_fabric_t} for a list of expected information to be included in the response.
+Perform the specified operation. Return the result of any requests in the callback function when the operation is completed. Operations may, for example, include a request for fabric information. See \refstruct{pmix_fabric_t} for a list of expected information to be included in the response. Note that requests for device index are to be returned in the callback function's array of \refstruct{pmix_info_t} using the \refattr{PMIX_FABRIC_DEVICE_INDEX} attribute.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
