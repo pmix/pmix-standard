@@ -2341,8 +2341,8 @@ See \refapi{PMIx_Fabric_get_vertex_info} for details
 
 
 %%%%%%%%%%%
-\subsection{Client.fabric_get_index}
-\declareapibinding{PMIxClient.fabric_get_index}{PMIx_Fabric_get_index}{Python}
+\subsection{Client.fabric_get_device_index}
+\declareapibinding{PMIxClient.fabric_get_device_index}{PMIx_Fabric_get_device_index}{Python}
 
 \summary
 Given info describing a given vertex, return the corresponding communication cost matrix index
@@ -2352,7 +2352,7 @@ Given info describing a given vertex, return the corresponding communication cos
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,index = myserver.fabric_get_index(info:list)
+rc,index = myserver.fabric_get_device_index(info:list)
 \end{codepar}
 \pyspecificend
 
@@ -2368,7 +2368,7 @@ Returns:
 \end{itemize}
 
 
-See \refapi{PMIx_Fabric_get_index} for details
+See \refapi{PMIx_Fabric_get_device_index} for details
 
 
 %%%%%%%%%%%

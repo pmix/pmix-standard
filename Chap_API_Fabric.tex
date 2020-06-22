@@ -627,8 +627,8 @@ The caller is responsible for releasing the returned array.
 
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Fabric_get_index}}
-\declareapi{PMIx_Fabric_get_index}
+\subsection{\code{PMIx_Fabric_get_device_index}}
+\declareapi{PMIx_Fabric_get_device_index}
 
 %%%%
 \summary
@@ -642,7 +642,7 @@ Given vertex info, return the corresponding communication cost matrix index.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_Fabric_get_index(pmix_fabric_t *fabric,
+PMIx_Fabric_get_device_index(pmix_fabric_t *fabric,
                       const pmix_info_t vertex[], size_t ninfo,
                       uint32_t *index)
 \end{codepar}
