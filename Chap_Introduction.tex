@@ -210,16 +210,16 @@ installing, and using \ac{PRRTE} are available
 on the community's web site \url{https://pmix.org/code/getting-the-pmix-reference-server/}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{PMIx Consumer Roles}
+\subsection{PMIx Roles}
 
-Consumers of the \ac{PMIx} \acp{API} are grouped into three categories based on the role they wish to play in the \ac{PMIx} environment: \emph{clients}, \emph{servers}, and \emph{tools}.
+The role of a \ac{PMIx} process in the \ac{PMIx} universe is grouped into three categories based on how it operates in the \ac{PMIx} environment namely as a \emph{client}, \emph{server}, or \emph{tool}. 
 As a result, there are three corresponding sets of initialization and finalization functions.
 If a process initializes as either a \emph{server} or a \emph{tool} that process may also access all of the \emph{client} \acp{API}.
 
-A process operating as a \emph{client} is started (directly or indirectly, for example, by an intermediate script) by the \ac{RM} and is connected to the \ac{PMIx} server instance within that \ac{RM} when the client calls the client \ac{PMIx} initialization routine.
-A process operating as a \emph{server} is responsible for starting client processes and coordinating with other server and tool processes in the same \ac{PMIx} universe.
+A process operating as a \emph{client}\declareterm{client} is started (directly or indirectly, for example, by an intermediate script) by the \ac{RM} and is connected to the \ac{PMIx} server instance within that \ac{RM} when the client calls the client \ac{PMIx} initialization routine.
+A process operating as a \emph{server}\declareterm{server} is responsible for starting client processes and coordinating with other server and tool processes in the same \ac{PMIx} universe.
 Often processes operating as a \emph{server} are part of the \acf{RM} infrastructure.
-A process operating as a \emph{tool} will connect to a \ac{PMIx} \emph{server} to interact with the processes in the \ac{PMIx} universe.
+A process operating as a \emph{tool}\declareterm{tool} will connect to a \ac{PMIx} \emph{server} to interact with the processes in the \ac{PMIx} universe.
 An example of a \emph{tool} process is a parallel debugger that will connect to the server to assist with attaching to a set of client processes.
 
 \ac{PMIx} serves as a conduit between processes acting in these three different roles.
