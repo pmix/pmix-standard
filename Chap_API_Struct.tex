@@ -306,8 +306,8 @@ Process terminated without calling \refapi{PMIx_Finalize}, or was a member of an
 \declareconstitem{PMIX_ERR_EVENT_REGISTRATION}
 Error in event registration
 %
-\declareconstitem{PMIX_ERR_JOB_TERMINATED}
-Error job terminated
+\declareconstitemDEP{PMIX_ERR_JOB_TERMINATED}
+Changed to \refconst{PMIX_EVENT_JOB_END}
 %
 \declareconstitem{PMIX_ERR_UPDATE_ENDPOINTS}
 Error updating endpoints
@@ -429,6 +429,74 @@ An \ac{IO} forwarding operation failed - the affected channel will be included i
 The data returned by \refapi{PMIx_Get} contains values that required dynamic memory allocations (i.e., "malloc"), despite a request for static pointers to the values in the key-value store. User is responsible for releasing the memory when done with the information.
 
 \end{constantdesc}
+
+\subsubsection{Job-related constants}
+
+The following constants indicate that a session or job has started and normally completed:
+
+\begin{constantdesc}
+
+%
+\declareconstitemNEW{PMIX_EVENT_JOB_START}
+The job has started
+%
+\declareconstitemNEW{PMIX_EVENT_JOB_END}
+The job has normally terminated
+%
+\declareconstitemNEW{PMIX_EVENT_SESSION_START}
+The session has started
+%
+\declareconstitemNEW{PMIX_EVENT_SESSION_END}
+The session has normally terminated
+
+\end{constantdesc}
+
+The next set of constants are used to indicate that a job has abnormally terminated and to convey some information as to the cause:
+
+\begin{constantdesc}
+
+%
+\declareconstitemNEW{PMIX_ERR_JOB_APP_NOT_EXECUTABLE}
+The specified application executable either could not be found, or lacks execution privileges.
+%
+\declareconstitemNEW{PMIX_ERR_NO_EXE_SPECIFIED}
+The job request did not specify an executable.
+%
+\declareconstitemNEW{PMIX_ERR_JOB_FAILED_TO_MAP}
+The launcher was unable to map the processes for the specified job request.
+%
+\declareconstitemNEW{PMIX_ERR_JOB_CANCELED}
+The job was canceled by the host environment
+%
+\declareconstitemNEW{PMIX_ERR_JOB_FAILED_TO_LAUNCH}
+One or more processes in the job request failed to launch
+%
+\declareconstitemNEW{PMIX_ERR_JOB_ABORTED}
+One or more processes in the job called abort, causing the job to be terminated
+%
+\declareconstitemNEW{PMIX_ERR_JOB_KILLED_BY_CMD}
+The job was killed by user command
+%
+\declareconstitemNEW{PMIX_ERR_JOB_ABORTED_BY_SIG}
+The job was aborted due to receipt of an error signal (e.g., SIGKILL)
+%
+\declareconstitemNEW{PMIX_ERR_JOB_TERM_WO_SYNC}
+The job was terminated due to one or more processes exiting without first calling \refapi{PMIx_Finalize}
+%
+\declareconstitemNEW{PMIX_ERR_JOB_SENSOR_BOUND_EXCEEDED}
+The job was terminated due to one or more processes exceeding a specified sensor limit
+%
+\declareconstitemNEW{PMIX_ERR_JOB_NON_ZERO_TERM}
+The job was terminated due to one or more processes exiting with a non-zero status
+%
+\declareconstitemNEW{PMIX_ERR_JOB_ALLOC_FAILED}
+The job request could not be executed due to failure to obtain the specified allocation
+%
+\declareconstitemNEW{PMIX_ERR_JOB_ABORTED_BY_SYS_EVENT}
+The job was aborted due to receipt of a system event
+
+\end{constantdesc}
+
 
 \subsubsection{System error constants}
 
@@ -3856,7 +3924,7 @@ This attribute would direct \refapi{PMIx_Finalize} to execute a barrier as part 
 
 %
 \declareAttribute{PMIX_JOB_TERM_STATUS}{"pmix.job.term.status"}{pmix_status_t}{
-Status returned by job upon its termination. The status will be communicated as part of a \ac{PMIx} event payload provided by the host environment upon termination of a job. Note that generation of the \refconst{PMIX_ERR_JOB_TERMINATED} event is optional and host environments may choose to provide it only upon request.
+Status returned by job upon its termination. The status will be communicated as part of a \ac{PMIx} event payload provided by the host environment upon termination of a job. Note that generation of the \refconst{PMIX_EVENT_JOB_END} event is optional and host environments may choose to provide it only upon request.
 }
 
 %
