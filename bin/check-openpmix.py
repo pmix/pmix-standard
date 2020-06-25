@@ -131,6 +131,8 @@ if __name__ == "__main__":
         print("Warning: Missing OpenPMIx checkout. Trying to clone now")
         os.system("git clone https://github.com/openpmix/openpmix.git check-openpmix")
         print("")
+    else:
+        os.system("cd check-openpmix ; git pull")
 
     if os.path.exists("pmix-standard.aux") is False or os.path.exists("check-openpmix") is False:
         print("Error: Cannot find the .aux files or OpenPMIx checkout necessary for processing in the current directory.")
@@ -216,9 +218,16 @@ if __name__ == "__main__":
     # --------------------------------------------------
     # Extract the declared items from OpenPMIx
     # --------------------------------------------------
-    openpmix_files = ["include/pmix_common.h.in", "include/pmix_tool.h", "include/pmix_server.h", "include/pmix_sched.h", "include/pmix.h"]
+    openpmix_files = []
+    for fname in os.listdir("check-openpmix/include"):
+        m = re.search(r'.h', fname)
+        if m is not None:
+            m = re.search(r'pmi[2]?.h', fname) # Exclude pmi.h and pmi2.h
+            if m is None:
+                openpmix_files.append(fname)
+
     for openpmix_file in openpmix_files:
-        openpmix_file = "check-openpmix/" + openpmix_file
+        openpmix_file = "check-openpmix/include/" + openpmix_file
         if args.verbose is True:
             print "-"*50
             print "Extracting OpenPMIx Definitions from: " + openpmix_file

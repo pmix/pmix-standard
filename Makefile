@@ -67,13 +67,15 @@ pmix-standard.pdf: $(CHAPTERS) $(SOURCES) pmix.sty pmix-standard.tex figs/pmix-l
 	@echo "====> Success"
 	@cp pmix-standard.pdf pmix-standard-${version}.pdf
 
+FORCECHECK:
+
 check: check-attr-ref check-openpmix
 
-check-attr-ref: pmix-standard.pdf
+check-attr-ref: pmix-standard.pdf FORCECHECK
 	@echo "====> Checking for Attributes Declared, but not referenced"
 	@./bin/check-attr-refs.py
 
-check-openpmix: pmix-standard.pdf
+check-openpmix: pmix-standard.pdf FORCECHECK
 	@echo "====> Checking cross-reference with OpenPMIx"
 	@./bin/check-openpmix.py
 
