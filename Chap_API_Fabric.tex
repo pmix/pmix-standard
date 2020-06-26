@@ -27,10 +27,6 @@ The \ac{PMIx} server library has been alerted to a change in the fabric that req
 \declareconstitemNEW{PMIX_FABRIC_UPDATED}
 The \ac{PMIx} server library has completed updating the entries of all affected \refstruct{pmix_fabric_t} objects registered with the library. Access to the entries of those objects may now resume.
 
-%
-\declareconstitemNEW{PMIX_FABRIC_COORDS_UPDATED}
-Fabric coordinates have been updated - the affected fabrics/planes are identified in the notification. Coordinates of processes and devices on those affected components should be refreshed prior to next use.
-
 \end{constantdesc}
 
 %%%%%%%%%%%
@@ -300,6 +296,23 @@ While unusual due to scaling issues, implementations may include an array of \re
 
 \optattrend
 
+%%%%
+\subsubsection{Initialize the \refstruct{pmix_fabric_t} structure}
+\declaremacro{PMIX_FABRIC_CONSTRUCT}
+
+Initialize the \refstruct{pmix_fabric_t} fields
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_FABRIC_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_fabric_t})}
+\end{arglist}
+
 
 \section{Fabric Support Attributes}
 \label{api:sched:attrs}
@@ -357,6 +370,11 @@ ID string of a fabric plane (e.g., CIDR for Ethernet). When used as a modifier i
 }
 
 %
+\declareNewAttribute{PMIX_FABRIC_SWITCH}{"pmix.fab.switch"}{char*}{
+ID string of a fabric switch. When used as a modifier in a request for information, specifies the switch whose information is to be returned. When used directly in a request, returns a \refstruct{pmix_data_array_t} of string identifiers for all fabric switches in the system.
+}
+
+%
 \declareNewAttribute{PMIX_FABRIC_ENDPT}{"pmix.fab.endpt"}{pmix_data_array_t}{
 Fabric endpoints for a specified process. As multiple endpoints may be assigned to a given process (e.g., in the case where multiple \acp{NIC} are associated with a package to which the process is bound), the returned values will be provided in a \refstruct{pmix_data_array_t} - the returned data type of the individual values in the array varies by fabric provider.
 }
@@ -369,6 +387,9 @@ The size of each dimension in the specified fabric plane/view, returned in a \re
 \declareNewAttribute{PMIX_FABRIC_SHAPE_STRING}{"pmix.fab.shapestr"}{string}{
 Network shape expressed as a string (e.g., "10x12x2").
 }
+
+\declareNewAttribute{PMIX_SWITCH_PEERS}{"pmix.speers"}{string}{
+Comma-delimited string of peers that share the same switch as the process specified in the call to \refapi{PMIx_Get}. Single-NIC environments will return a string. Multi-NIC environments will return an array of results, each element consisting of an array containing the \refattr{PMIX_FABRIC_DEVICE_INDEX} of the local \ac{NIC} and the list of peers sharing the switch to which that \ac{NIC} is connected.}
 
 The following attributes are used to describe devices (a.k.a., \acp{NIC}) attached to the fabric.
 
@@ -495,6 +516,50 @@ For performance reasons, the \ac{PMIx} library does not provide thread protectio
 There is no requirement that the caller exclusively use either one of these options. For example, the user may choose to both register for fabric update events, but poll for an update prior to some critical operation.
 
 %%%%%%%%%%%
+\subsection{\code{PMIx_Fabric_register_nb}}
+\declareapi{PMIx_Fabric_register_nb}
+
+%%%%
+\summary
+
+Register for access to fabric-related information.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Fabric_register_nb(pmix_fabric_t *fabric,
+                        const pmix_info_t directives[],
+                        size_t ndirs,
+                        pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{fabric}{address of a \refstruct{pmix_fabric_t} (backed by storage). User may populate the "name" field at will - \ac{PMIx} does not utilize this field (handle)}
+\argin{directives}{an optional array of values indicating desired behaviors and/or fabric to be accessed. If \code{NULL}, then the highest priority available fabric will be used (array of handles)}
+\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+\end{itemize}
+
+
+%%%%
+\descr
+
+Non-blocking form of \refapi{PMIx_Fabric_register}. The caller is not allowed to access the provided \refstruct{pmix_fabric_t} until the callback function has been executed, at which time the fabric information will have been loaded into the provided structure.
+
+%%%%%%%%%%%
 \subsection{\code{PMIx_Fabric_update}}
 \declareapi{PMIx_Fabric_update}
 
@@ -527,6 +592,46 @@ Update fabric-related information. This call can be made at any time to request 
 
 
 %%%%%%%%%%%
+\subsection{\code{PMIx_Fabric_update_nb}}
+\declareapi{PMIx_Fabric_update_nb}
+
+%%%%
+\summary
+
+Update fabric-related information.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Fabric_update_nb(pmix_fabric_t *fabric,
+                      pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+\end{itemize}
+
+%%%%
+\descr
+
+Non-blocking form of \refapi{PMIx_Fabric_update}. The caller is not allowed to access the provided \refstruct{pmix_fabric_t} until the callback function has been executed.
+
+
+%%%%%%%%%%%
 \subsection{\code{PMIx_Fabric_deregister}}
 \declareapi{PMIx_Fabric_deregister}
 
@@ -546,7 +651,7 @@ pmix_status_t PMIx_Fabric_deregister(pmix_fabric_t *fabric)
 \cspecificend
 
 \begin{arglist}
-\argin{input}{address of a \refstruct{pmix_fabric_t} (handle)}
+\argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
@@ -555,6 +660,45 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx}
 \descr
 
 Deregister a fabric object, providing an opportunity for the \ac{PMIx} library to cleanup any information (e.g., cost matrix) associated with it. Contents of the provided \refstruct{pmix_fabric_t} will be invalidated upon function return.
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Fabric_deregister_nb}}
+\declareapi{PMIx_Fabric_deregister_nb}
+
+%%%%
+\summary
+
+Deregister a fabric object.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t PMIx_Fabric_deregister_nb(pmix_fabric_t *fabric,
+                            pmix_op_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+\end{itemize}
+
+%%%%
+\descr
+
+Non-blocking form of \refapi{PMIx_Fabric_deregister}. Provided \refarg{fabric} must not be accessed until after callback function has been executed.
 
 
 %%%%%%%%%%%
@@ -627,6 +771,47 @@ The caller is responsible for releasing the returned array.
 
 
 %%%%%%%%%%%
+\subsection{\code{PMIx_Fabric_get_vertex_info_nb}}
+\declareapi{PMIx_Fabric_get_vertex_info_nb}
+
+%%%%
+\summary
+
+Given a communication cost matrix index for a specified fabric, return the corresponding vertex info.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Fabric_get_vertex_info_nb(pmix_fabric_t *fabric, uint32_t index,
+                               pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
+\argin{index}{vertex index (i.e., communication cost matrix row or column number) (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+\end{itemize}
+
+%%%%
+\descr
+
+Non-blocking form of \refapi{PMIx_Fabric_get_vertex_info}. Data will be returned in the provided callback function.
+
+
+%%%%%%%%%%%
 \subsection{\code{PMIx_Fabric_get_device_index}}
 \declareapi{PMIx_Fabric_get_device_index}
 
@@ -668,5 +853,48 @@ Returns one of the following:
 
 Query the index number of a vertex corresponding to the provided description. The description must provide adequate information to uniquely identify the target vertex. At a minimum, this must include identification of the node hosting the device using either the \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID}, plus a node-level unique identifier for the device (e.g., the \refattr{PMIX_FABRIC_DEVICE_PCI_DEVID} for a \ac{PCI} device).
 
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Fabric_get_device_index_nb}}
+\declareapi{PMIx_Fabric_get_device_index_nb}
+
+%%%%
+\summary
+
+Given vertex info, return the corresponding communication cost matrix index.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Fabric_get_device_index_nb(pmix_fabric_t *fabric,
+                      const pmix_info_t vertex[], size_t ninfo,
+                      pmix_info_cbfunc_t cbfunc, void *cbdata)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
+\argin{vertex}{array of \refstruct{pmix_info_t} containing info describing the vertex whose index is being queried (handle)}
+\argin{ninfo} number of elements in \refarg{vertex}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+\end{itemize}
+
+
+%%%%
+\descr
+
+Non-blocking form of \refapi{PMIx_Fabric_get_device_index}. Index will be returned in the provided callback function via the \refattr{PMIX_FABRIC_INDEX} attribute.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
