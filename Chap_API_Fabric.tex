@@ -300,6 +300,23 @@ While unusual due to scaling issues, implementations may include an array of \re
 
 \optattrend
 
+%%%%
+\subsubsection{Initialize the \refstruct{pmix_fabric_t} structure}
+\declaremacro{PMIX_FABRIC_CONSTRUCT}
+
+Initialize the \refstruct{pmix_fabric_t} fields
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_FABRIC_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_fabric_t})}
+\end{arglist}
+
 
 \section{Fabric Support Attributes}
 \label{api:sched:attrs}
@@ -357,6 +374,11 @@ ID string of a fabric plane (e.g., CIDR for Ethernet). When used as a modifier i
 }
 
 %
+\declareNewAttribute{PMIX_FABRIC_SWITCH}{"pmix.fab.switch"}{char*}{
+ID string of a fabric switch. When used as a modifier in a request for information, specifies the switch whose information is to be returned. When used directly in a request, returns a \refstruct{pmix_data_array_t} of string identifiers for all fabric switches in the system.
+}
+
+%
 \declareNewAttribute{PMIX_FABRIC_ENDPT}{"pmix.fab.endpt"}{pmix_data_array_t}{
 Fabric endpoints for a specified process. As multiple endpoints may be assigned to a given process (e.g., in the case where multiple \acp{NIC} are associated with a package to which the process is bound), the returned values will be provided in a \refstruct{pmix_data_array_t} - the returned data type of the individual values in the array varies by fabric provider.
 }
@@ -369,6 +391,9 @@ The size of each dimension in the specified fabric plane/view, returned in a \re
 \declareNewAttribute{PMIX_FABRIC_SHAPE_STRING}{"pmix.fab.shapestr"}{string}{
 Network shape expressed as a string (e.g., "10x12x2").
 }
+
+\declareNewAttribute{PMIX_SWITCH_PEERS}{"pmix.speers"}{string}{
+Comma-delimited string of peers that share the same switch as the process specified in the call to \refapi{PMIx_Get}. Single-NIC environments will return a string. Multi-NIC environments will return an array of results, each element consisting of an array containing the \refattr{PMIX_FABRIC_DEVICE_INDEX} of the local \ac{NIC} and the list of peers sharing the switch to which that \ac{NIC} is connected.}
 
 The following attributes are used to describe devices (a.k.a., \acp{NIC}) attached to the fabric.
 
