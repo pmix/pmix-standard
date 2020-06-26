@@ -2946,7 +2946,7 @@ PMIX_DATA_ARRAY_CREATE(m, n, t)
 
 
 \subsubsection{Free a \refstruct{pmix_data_array_t} structure}
-\declaremacro{PMIX_DATA_ARRAY_RELEASE}
+\declaremacro{PMIX_DATA_ARRAY_FREE}
 
 Release the memory in the array, and then release the \refstruct{pmix_data_array_t} object itself.
 
@@ -4244,7 +4244,8 @@ Look only in the client's local data store for the requested value - do not requ
 
 %
 \declareNewAttribute{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
-Request that any pointers in the returned value point directly to values in the key-value store}
+Request that any pointers in the returned value point directly to values in the key-value store
+}
 
 %
 \declareAttribute{PMIX_EMBED_BARRIER}{"pmix.embed.barrier"}{bool}{
@@ -5948,7 +5949,7 @@ typedef void (*pmix_evhdlr_reg_cbfunc_t)
 %%%%
 \descr
 
-Define a callback function for calls to \refapi{PMIx_Register_event_handler}
+Define a callback function for calls to \refapi{PMIx_Register_event_handler} Deprecated in v4.0 in favor of \refapi{pmix_hdlr_reg_cbfunc_t}.
 
 
 %%%%%%%%%%%
