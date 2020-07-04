@@ -21,22 +21,18 @@ This chapter defines specific \acp{API} related to tools, provides tool develope
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Initialization}
-\label{chap:api_tools:init}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Finalizing}
-\label{chap:api_tools:fini}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connection Mechanisms}
 \label{chap:api_tools:cnct}
 
-The key to supporting tools lies in providing a mechanism by which a tool can connect to a \ac{PMIx} server. Application processes are able to connect because their local \ac{RM} daemon provides them with the necessary contact information upon execution. A command-line tool, however, isn't spawned by an \ac{RM} daemon, and therefore lacks the information required for rendezvous with a \ac{PMIx} server.
+The key to supporting tools lies in providing mechanisms by which a tool can connect to a \ac{PMIx} server. Application processes are able to connect because their local \ac{RM} daemon provides them with the necessary contact information upon execution. A command-line tool, however, isn't spawned by an \ac{RM} daemon, and therefore lacks the information required for rendezvous with a \ac{PMIx} server.
+
+Tools can connect to any local or remote \ac{PMIx} server provided they are either given the required connection information, or are able to discover it via one of several defined rendezvous protocols. In all cases, the \ac{PMIx} server:
+
+\begin{itemize}
+    \item Must be initialized with an appropriate attribute indicating that tool connections are to be allowed
+    \item Will provide an opportunity for the host environment to authenticate and approve each connection request from a specific tool, assuming that the host environment has provided the necessary server module "hook" for that purpose
+\end{itemize}
+
 
 \subsection{Rendezvousing with a local server}
 
@@ -135,8 +131,6 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pastePRIAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
 \pastePRIAttributeItemEnd{}
 \pastePRIAttributeItem{PMIX_EVENT_BASE}
-\pastePRIAttributeItemBegin{PMIX_GDS_MODULE} This attribute is specific to the \ac{PRI} and controls only the selection of \ac{GDS} module for internal use by the process. Module selection for interacting with the server is performed dynamically during the connection process.
-\pastePRIAttributeItemEnd{}
 
 \optattrend
 
@@ -361,7 +355,7 @@ Identifier of process(es) to be debugged - a rank of \refconst{PMIX_RANK_WILDCAR
 
 %
 \declareNewAttribute{PMIX_NOHUP}{"pmix.nohup"}{bool}{
-Any descendants of the calling tool (or the specified namespace, if such specification is included in the list of attributes) should continue after disconnect}
+Any descendants of the calling tool (or the specified namespace, if such specification is included in the list of attributes) should continue after disconnect
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

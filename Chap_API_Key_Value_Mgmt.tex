@@ -101,23 +101,23 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
 
-\pastePRIAttributeItem{PMIX_OPTIONAL}
-\pastePRIAttributeItem{PMIX_IMMEDIATE}
-\pastePRIAttributeItem{PMIX_DATA_SCOPE}
-\pastePRIAttributeItem{PMIX_SESSION_INFO}
-\pastePRIAttributeItem{PMIX_JOB_INFO}
-\pastePRIAttributeItem{PMIX_APP_INFO}
-\pastePRIAttributeItem{PMIX_NODE_INFO}
-\pastePRIAttributeItemBegin{PMIX_GET_STATIC_VALUES}
+\pasteAttributeItem{PMIX_OPTIONAL}
+\pasteAttributeItem{PMIX_IMMEDIATE}
+\pasteAttributeItem{PMIX_DATA_SCOPE}
+\pasteAttributeItem{PMIX_SESSION_INFO}
+\pasteAttributeItem{PMIX_JOB_INFO}
+\pasteAttributeItem{PMIX_APP_INFO}
+\pasteAttributeItem{PMIX_NODE_INFO}
+\pasteAttributeItemBegin{PMIX_GET_STATIC_VALUES}
 and indicate that the address provided for the return value points to a statically defined memory location. Returned non-pointer values should therefore be copied directly into the provided memory. Pointers in the returned value should point directly to values in the key-value store. User is responsible for \emph{not} releasing memory on any returned pointer value. Note that a return status of \refconst{PMIX_ERR_GET_MALLOC_REQD} indicates that direct pointers could not be supported - thus, the returned data contains allocated memory that the user must release.
-\pastePRIAttributeItemEnd
+\pasteAttributeItemEnd
 
 \reqattrend
 
 \optattrstart
 The following attributes are optional for host environments:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
 
@@ -128,18 +128,11 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 %%%%
 \descr
 
-Retrieve information for the specified \refarg{key} as published by the process identified in the given \refstruct{pmix_proc_t}, returning a pointer to the value in the given address.
+Retrieve information for the specified \refarg{key} associated with the process identified in the given \refstruct{pmix_proc_t}, returning a pointer to the value in the given address. In general, data posted by a process via \refapi{PMIx_Put} and data that refers directly to a process-related value must be retrieved by specifying the rank of the target process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD}, as illustrated in \ref{chap:api_kv:getex}. See \ref{api:struct:attributes:retrieval} for an explanation regarding use of the \emph{level} attributes, and \refapi{PMIx_server_register_nspace} for a description of the available information.
 
-This is a blocking operation - the caller will block until either the specified data becomes available from the specified rank in the \refarg{proc} structure or the operation times out should the \refattr{PMIX_TIMEOUT} attribute have been given.
-The caller is responsible for freeing all memory associated with the returned \refarg{value} when no longer required.
+This is a blocking operation - the caller will block until either the specified data becomes available from the specified rank in the \refarg{proc} structure, the operation times out should the \refattr{PMIX_TIMEOUT} attribute have been given, or the \refattr{PMIX_OPTIONAL} or the \refattr{PMIX_IMMEDIATE} conditions are met. The caller is responsible for freeing all memory associated with the returned \refarg{value} when no longer required.
 
 The \refarg{info} array is used to pass user requests regarding the get operation.
-
-\adviceuserstart
-Information provided by the \ac{PMIx} server at time of process start is accessed by providing the namespace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. The list of data referenced in this way is maintained on the \ac{PMIx} web site at \url{https://pmix.org/support/faq/wildcard-rank-access/} but includes items such as the number of processes in the namespace (\refattr{PMIX_JOB_SIZE}), total available slots in the allocation (\refattr{PMIX_UNIV_SIZE}), and the number of nodes in the allocation (\refattr{PMIX_NUM_NODES}).
-
-Data posted by a process via \refapi{PMIx_Put} needs to be retrieved by specifying the rank of the posting process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD} when the information being retrieved refers to something non-rank specific (e.g., number of processes on a node, number of processes in a job), and using the rank of the relevant process when requesting information that is rank-specific (e.g., the \ac{URI} of the process, or the node upon which it is executing). Each subsection of Section \ref{api:struct:attributes} indicates the appropriate rank value for referencing the defined attribute.
-\adviceuserend
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Get_nb}}
@@ -191,23 +184,23 @@ If executed, the status returned in the provided callback function will be one o
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
 
-\pastePRIAttributeItem{PMIX_OPTIONAL}
-\pastePRIAttributeItem{PMIX_IMMEDIATE}
-\pastePRIAttributeItem{PMIX_DATA_SCOPE}
-\pastePRIAttributeItem{PMIX_SESSION_INFO}
-\pastePRIAttributeItem{PMIX_JOB_INFO}
-\pastePRIAttributeItem{PMIX_APP_INFO}
-\pastePRIAttributeItem{PMIX_NODE_INFO}
-\pastePRIAttributeItemBegin{PMIX_GET_STATIC_VALUES}
+\pasteAttributeItem{PMIX_OPTIONAL}
+\pasteAttributeItem{PMIX_IMMEDIATE}
+\pasteAttributeItem{PMIX_DATA_SCOPE}
+\pasteAttributeItem{PMIX_SESSION_INFO}
+\pasteAttributeItem{PMIX_JOB_INFO}
+\pasteAttributeItem{PMIX_APP_INFO}
+\pasteAttributeItem{PMIX_NODE_INFO}
+\pasteAttributeItemBegin{PMIX_GET_STATIC_VALUES}
 and indicate that user takes responsibility for properly releasing memory on the returned value (i.e., free'ing the value structure but not the pointer fields). Note that a return status of \refconst{PMIX_ERR_GET_MALLOC_REQD} indicates that direct pointers could not be supported - thus, the returned data contains allocated memory that the user must release.
-\pastePRIAttributeItemEnd
+\pasteAttributeItemEnd
 
 \reqattrend
 
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
 
@@ -219,13 +212,7 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 \descr
 
 The callback function will be executed once the specified data becomes available from the identified process and retrieved by the local server.
-The \argref{info} array is used as described by the \refapi{PMIx_Get} routine.
-
-\adviceuserstart
-Information provided by the \ac{PMIx} server at time of process start is accessed by providing the namespace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. Attributes referenced in this way are identified in \ref{api:struct:attributes} but includes items such as the number of processes in the namespace (\refattr{PMIX_JOB_SIZE}), total available slots in the allocation (\refattr{PMIX_UNIV_SIZE}), and the number of nodes in the allocation (\refattr{PMIX_NUM_NODES}).
-
-In general, data posted by a process via \refapi{PMIx_Put} and data that refers directly to a process-related value needs to be retrieved by specifying the rank of the posting process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD}, as illustrated in \ref{chap:api_kv:getex}. See \ref{api:struct:attributes:retrieval} for an explanation regarding use of the \emph{level} attributes.
-\adviceuserend
+See \refapi{PMIx_Get} for a full description.
 
 
 %%%%%%%%%%%
@@ -521,14 +508,14 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
 
-\pastePRIAttributeItem{PMIX_COLLECT_DATA}
+\pasteAttributeItem{PMIX_COLLECT_DATA}
 
 \reqattrend
 
 \optattrstart
 The following attributes are optional for host environments:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
@@ -599,14 +586,14 @@ Returns one of the following:
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
 
-\pastePRIAttributeItem{PMIX_COLLECT_DATA}
+\pasteAttributeItem{PMIX_COLLECT_DATA}
 
 \reqattrend
 
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
@@ -680,9 +667,9 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
-\pastePRRTEAttributeItem{PMIX_PERSISTENCE}
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_PERSISTENCE}
 
 \optattrend
 
@@ -752,9 +739,9 @@ Returns one of the following:
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
-\pastePRRTEAttributeItem{PMIX_PERSISTENCE}
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_PERSISTENCE}
 
 \optattrend
 
@@ -808,9 +795,9 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
-\pastePRRTEAttributeItem{PMIX_WAIT}
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_WAIT}
 
 \optattrend
 
@@ -890,9 +877,9 @@ Returns one of the following:
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
-\pastePRRTEAttributeItem{PMIX_WAIT}
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_WAIT}
 
 \optattrend
 
@@ -947,8 +934,8 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
 
 \optattrend
 
@@ -1014,8 +1001,8 @@ Returns one of the following:
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
 
 \optattrend
 

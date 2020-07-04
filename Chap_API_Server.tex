@@ -134,108 +134,161 @@ Returns one of the following:
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
 
-\pastePRIAttributeItem{PMIX_REGISTER_NODATA}
+\pasteAttributeItem{PMIX_REGISTER_NODATA}
 
 \divider
 
-Host environments are required to provide the following attributes:
+Host environments are required to provide a wide range of session-, job-, application-, node-, and process-level information, and may choose to provide a similarly wide range of optional information. The information is broadly separated into categories based on the \emph{level} definitions explained in \ref{api:struct:attributes:storage}.
+
+Session-level information may be passed as individual \refstruct{pmix_info_t} entries, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute. Session-level information is always accessed using the namespace and the \refconst{PMIX_RANK_WILDCARD} rank, accompanied by the \refattr{PMIX_SESSION_INFO} attribute where ambiguity may exist. The list of data referenced in this way shall include:
 
 \begin{itemize}
-    \item for the session containing the given namespace:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_UNIV_SIZE}
-        \end{itemize}
-    \item for the given namespace:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_JOBID}
-            \item \pastePRRTEAttributeItem{PMIX_JOB_SIZE}
-            \item \pastePRRTEAttributeItem{PMIX_MAX_PROCS}
-            \item \pastePRRTEAttributeItem{PMIX_NODE_MAP}
-            \item \pastePRRTEAttributeItem{PMIX_PROC_MAP}
-        \end{itemize}
-    \item for its own node:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_LOCAL_SIZE}
-            \item \pastePRRTEAttributeItem{PMIX_LOCAL_PEERS}
-            \item \pastePRRTEAttributeItem{PMIX_LOCAL_CPUSETS}
-        \end{itemize}
-    \item for each process in the given namespace:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_RANK}
-            \item \pastePRRTEAttributeItem{PMIX_LOCAL_RANK}
-            \item \pastePRRTEAttributeItem{PMIX_NODE_RANK}
-            \item \pastePRRTEAttributeItem{PMIX_NODEID}
-        \end{itemize}
+    \item \pasteAttributeItem{PMIX_UNIV_SIZE}
+    \item \pasteAttributeItemBegin{PMIX_MAX_PROCS}Must be provided if \refattr{PMIX_UNIV_SIZE} is not given. Requires use of the \refattr{PMIX_SESSION_INFO} attribute to avoid ambiguity when retrieving it.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItem{PMIX_SESSION_ID}
 \end{itemize}
 
-If more than one application is included in the namespace, then the host environment is also required to provide the following attributes:
+plus the following optional information:
 
 \begin{itemize}
-    \item for each application:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_APPNUM}
-            \item \pastePRRTEAttributeItem{PMIX_APPLDR}
-            \item \pastePRRTEAttributeItem{PMIX_APP_SIZE}
-        \end{itemize}
-    \item for each process:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_APP_RANK}
-            \item \pastePRRTEAttributeItem{PMIX_APPNUM}
-        \end{itemize}
+    \item \pasteAttributeItem{PMIX_CLUSTER_ID}
+    \item \pasteAttributeItem{PMIX_ALLOCATED_NODELIST}
 \end{itemize}
 
-\reqattrend
-
-
-\optattrstart
-
-The following attributes may be provided by host environments:
+Job-level information may be passed as individual \refstruct{pmix_info_t} entries, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_JOB_INFO_ARRAY} attribute. The list of data referenced in this way shall include:
 
 \begin{itemize}
-    \item for the session containing the given namespace:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_SESSION_ID}
-        \end{itemize}
-    \item for the given namespace:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_SERVER_NSPACE}
-            \item \pastePRRTEAttributeItem{PMIX_SERVER_RANK}
-            \item \pastePRRTEAttributeItem{PMIX_NPROC_OFFSET}
-            \item \pastePRRTEAttributeItem{PMIX_ALLOCATED_NODELIST}
-            \item \pastePRRTEAttributeItem{PMIX_JOB_NUM_APPS}
-            \item \pastePRRTEAttributeItem{PMIX_MAPBY}
-            \item \pastePRRTEAttributeItem{PMIX_RANKBY}
-            \item \pastePRRTEAttributeItem{PMIX_BINDTO}
-            \item \pasteAttributeItem{PMIX_ANL_MAP}
-        \end{itemize}
-    \item for its own node:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_AVAIL_PHYS_MEMORY}
-            \item \pastePRRTEAttributeItem{PMIX_HWLOC_XML_V1}
-            \item \pastePRRTEAttributeItem{PMIX_HWLOC_XML_V2}
-            \item \pastePRRTEAttributeItem{PMIX_LOCALLDR}
-            \item \pastePRRTEAttributeItem{PMIX_NODE_SIZE}
-            \item \pastePRRTEAttributeItem{PMIX_LOCAL_PROCS}
-        \end{itemize}
-    \item for each process in the given namespace:
-        \begin{itemize}
-            \item \pastePRRTEAttributeItem{PMIX_PROCID}
-            \item \pastePRRTEAttributeItem{PMIX_GLOBAL_RANK}
-            \item \pastePRRTEAttributeItem{PMIX_HOSTNAME}
-        \end{itemize}
+    \item \pasteAttributeItem{PMIX_SERVER_NSPACE}
+    \item \pasteAttributeItem{PMIX_SERVER_RANK}
+    \item \pasteAttributeItem{PMIX_NSPACE}
+    \item \pasteAttributeItem{PMIX_JOBID}
+    \item \pasteAttributeItem{PMIX_JOB_SIZE}
+    \item \pasteAttributeItemBegin{PMIX_MAX_PROCS}Retrieval of this attribute defaults to the job level unless an appropriate specification is given (e.g., \refattr{PMIX_SESSION_INFO}).
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItem{PMIX_NODE_MAP}
+    \item \pasteAttributeItem{PMIX_PROC_MAP}
 \end{itemize}
+
+plus the following optional information:
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_NPROC_OFFSET}
+    \item \pasteAttributeItemBegin{PMIX_JOB_NUM_APPS}This is a required attribute if more than one application is included in the job
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItem{PMIX_MAPBY}
+    \item \pasteAttributeItem{PMIX_RANKBY}
+    \item \pasteAttributeItem{PMIX_BINDTO}
+    \item \pasteAttributeItem{PMIX_HOSTNAME_KEEP_FQDN}
+    \item \pasteAttributeItem{PMIX_ANL_MAP}
+\end{itemize}
+
+Application-level information is accessed by providing both the namespace of the job (with the rank set to \refconst{PMIX_RANK_WILDCARD}). If application-level information is requested for an application other than the one the caller belongs to, then the \refattr{PMIX_APPNUM} attribute must be provided. If more than one application is included in the namespace, then the the host environment is also required to supply data consisting of the following items for each application in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_APP_INFO_ARRAY} attribute:
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_APPNUM}
+    \item \pasteAttributeItem{PMIX_APP_SIZE}
+    \item \pasteAttributeItemBegin{PMIX_MAX_PROCS}Requires use of the \refattr{PMIX_APP_INFO} attribute to avoid ambiguity when retrieving it.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItem{PMIX_APPLDR}
+    \item \pasteAttributeItemBegin{PMIX_WDIR}This attribute is required for all registrations, but may be provided as an individual \refstruct{pmix_info_t} entry if only one application is included in the namespace.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItemBegin{PMIX_APP_ARGV}This attribute is required for all registrations, but may be provided as an individual \refstruct{pmix_info_t} entry if only one application is included in the namespace.
+    \pasteAttributeItemEnd
+\end{itemize}
+
+plus the following optional information:
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_PSET_NAME}
+\end{itemize}
+
+The data may also include attributes provided by the host environment that identify the programming model (as specified by the user) being executed within the namespace. The \ac{PMIx} server library may utilize this information to customize the environment to fit that model (e.g., adding environmental variables specified by the corresponding standard for that model):
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_PROGRAMMING_MODEL}
+    \item \pasteAttributeItem{PMIX_MODEL_LIBRARY_NAME}
+    \item \pasteAttributeItem{PMIX_MODEL_LIBRARY_VERSION}
+\end{itemize}
+
+
+Node-level information is accessed by providing the namespace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. If node-level information is requested for a node other than the one the caller is executing on, then the \refattr{PMIX_NODEID} or the \refattr{PMIX_HOSTNAME} attribute of the target node must be provided. Registration shall include the following data for each node in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_NODE_INFO_ARRAY} attribute:
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_NODEID}
+    \item \pasteAttributeItem{PMIX_HOSTNAME}
+    \item \pasteAttributeItem{PMIX_HOSTNAME_ALIASES}
+    \item \pasteAttributeItem{PMIX_LOCAL_SIZE}
+    \item \pasteAttributeItem{PMIX_NODE_SIZE}
+    \item \pasteAttributeItem{PMIX_LOCALLDR}
+    \item \pasteAttributeItem{PMIX_LOCAL_PEERS}
+\end{itemize}
+
+plus the following information for the server's own node:
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_LOCAL_CPUSETS}
+    \item \pasteAttributeItem{PMIX_TMPDIR}
+    \item \pasteAttributeItem{PMIX_NSDIR}
+    \item \pasteAttributeItem{PMIX_LOCAL_PROCS}
+\end{itemize}
+
+The data may also include one or more of the following methods for passing the HWLOC topology information for the server's own node:
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_HWLOC_SHMEM_FILE}
+    \item \pasteAttributeItem{PMIX_HWLOC_SHMEM_ADDR}
+    \item \pasteAttributeItem{PMIX_HWLOC_SHMEM_SIZE}
+    \item \pasteAttributeItem{PMIX_HWLOC_XML_V1}
+    \item \pasteAttributeItem{PMIX_HWLOC_XML_V2}
+\end{itemize}
+
+plus the following optional information for the server's own node:
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_AVAIL_PHYS_MEMORY}
+\end{itemize}
+
+and the following optional information for arbitrary nodes:
+
+\begin{itemize}
+    \item \pasteAttributeItemBegin{PMIX_MAX_PROCS}Requires use of the \refattr{PMIX_NODE_INFO} attribute to avoid ambiguity when retrieving it.
+    \pasteAttributeItemEnd
+\end{itemize}
+
+Process-level information is accessed by providing the namespace of the job and the rank of the target process. Registration shall include the following data for each process in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_PROC_INFO_ARRAY} attribute:
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_RANK}
+    \item \pasteAttributeItemBegin{PMIX_APPNUM}This attribute may be omitted if only one application is present in the namespace.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItemBegin{PMIX_APP_RANK}This attribute may be omitted if only one application is present in the namespace.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItem{PMIX_GLOBAL_RANK}
+    \item \pasteAttributeItem{PMIX_LOCAL_RANK}
+    \item \pasteAttributeItem{PMIX_NODE_RANK}
+    \item \pasteAttributeItem{PMIX_NODEID}
+    \item \pasteAttributeItem{PMIX_REINCARNATION}
+    \item \pasteAttributeItem{PMIX_SPAWNED}
+\end{itemize}
+
+plus the following information for processes that are local to the server:
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_LOCALITY_STRING}
+    \item \pasteAttributeItem{PMIX_PROCDIR}
+\end{itemize}
+
+and the following optional information - note that this information can be derived from information already provided by other attributes, but it may be included here for ease of retrieval by users:
+
+\begin{itemize}
+    \item \pasteAttributeItem{PMIX_HOSTNAME}
+\end{itemize}
+
+\divider
 
 Attributes not directly provided by the host environment may be derived by the \ac{PMIx} server library from other required information and included in the data made available to the server library's clients.
 
-The following optional attributes may be provided by the host environment to identify the programming model (as specified by the user) being executed within the namespace. The \ac{PMIx} server library may utilize this information to customize the environment to fit that model (e.g., adding environmental variables specified by the corresponding standard for that model):
-
-\begin{itemize}
-    \item \pastePRIAttributeItem{PMIX_PROGRAMMING_MODEL}
-    \item \pastePRIAttributeItem{PMIX_MODEL_LIBRARY_NAME}
-    \item \pastePRIAttributeItem{PMIX_MODEL_LIBRARY_VERSION}
-\end{itemize}
-
-\optattrend
 
 %%%%
 \descr
@@ -418,7 +471,7 @@ Upon conclusion of this step, the \refarg{info} array might look like that shown
 \end{figure*}
 \endgroup
 
-\item Process-level information includes an entry for each process in the job being registered, each entry marked with the \refattr{PMIX_PROC_DATA} attribute. The \refterm{rank} of the process must be the first entry in the array - this provides efficiency when storing the data. Upon conclusion of this step, the \refarg{info} array might look like the diagram in \ref{fig:procinfo}:
+\item Process-level information includes an entry for each process in the job being registered, each entry marked with the \refattr{PMIX_PROC_INFO_ARRAY} attribute. The \refterm{rank} of the process must be the first entry in the array - this provides efficiency when storing the data. Upon conclusion of this step, the \refarg{info} array might look like the diagram in \ref{fig:procinfo}:
 
 \begingroup
 \begin{figure*}[ht!]
@@ -765,32 +818,32 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries that support this operation are required to support the following:
 
-\pastePRIAttributeItem{PMIX_SETUP_APP_ENVARS}
-\pastePRIAttributeItem{PMIX_SETUP_APP_NONENVARS}
-\pastePRIAttributeItem{PMIX_SETUP_APP_ALL}
-\pastePRIAttributeItem{PMIX_ALLOC_FABRIC}
-\pastePRIAttributeItem{PMIX_ALLOC_FABRIC_ID}
-\pastePRIAttributeItem{PMIX_ALLOC_FABRIC_SEC_KEY}
-\pastePRIAttributeItem{PMIX_ALLOC_FABRIC_TYPE}
-\pastePRIAttributeItem{PMIX_ALLOC_FABRIC_PLANE}
-\pastePRIAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS}
-\pastePRIAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
+\pasteAttributeItem{PMIX_SETUP_APP_ENVARS}
+\pasteAttributeItem{PMIX_SETUP_APP_NONENVARS}
+\pasteAttributeItem{PMIX_SETUP_APP_ALL}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_ID}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_SEC_KEY}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_TYPE}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_PLANE}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
 
 \reqattrend
 
 \optattrstart
 \ac{PMIx} libraries that support this operation may support the following:
 
-\pastePRIAttributeItem{PMIX_ALLOC_BANDWIDTH}
-\pastePRIAttributeItem{PMIX_ALLOC_FABRIC_QOS}
-\pastePRIAttributeItem{PMIX_ALLOC_TIME}
+\pasteAttributeItem{PMIX_ALLOC_BANDWIDTH}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_QOS}
+\pasteAttributeItem{PMIX_ALLOC_TIME}
 
 The following optional attributes may be provided by the host environment to identify the programming model (as specified by the user) being executed within the application. The \ac{PMIx} server library may utilize this information to harvest/forward model-specific environmental variables, record the programming model associated with the application, etc.
 
 \begin{itemize}
-    \item \pastePRIAttributeItem{PMIX_PROGRAMMING_MODEL}
-    \item \pastePRIAttributeItem{PMIX_MODEL_LIBRARY_NAME}
-    \item \pastePRIAttributeItem{PMIX_MODEL_LIBRARY_VERSION}
+    \item \pasteAttributeItem{PMIX_PROGRAMMING_MODEL}
+    \item \pasteAttributeItem{PMIX_MODEL_LIBRARY_NAME}
+    \item \pasteAttributeItem{PMIX_MODEL_LIBRARY_VERSION}
 \end{itemize}
 
 \optattrend
@@ -1344,14 +1397,14 @@ Returns one of the following:
 
 The following attributes are required to be supported by all host environments:
 
-\pastePRRTEAttributeItem{PMIX_COLLECT_DATA}
+\pasteAttributeItem{PMIX_COLLECT_DATA}
 
 \reqattrend
 
 \optattrstart
 The following attributes are optional for host environments:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
@@ -1388,7 +1441,7 @@ memcpy(\&total[sz_blob1], blob2, sz_blob2);
 \end{codepar}
 \cspecificend
 
-Note that the ordering of the data blobs does not matter.
+Note that the ordering of the data blobs does not matter. The host is responsible for free'ing the \refarg{data} object passed to it by the \ac{PMIx} server library.
 \advicermend
 
 The provided data is to be collectively shared with all \ac{PMIx} servers involved in the fence operation, and returned in the modex \refarg{cbfunc}.
@@ -1446,7 +1499,7 @@ Returns one of the following:
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
 
@@ -1504,15 +1557,15 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
 Host environments that implement this entry point are required to support the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_RANGE}
-\pastePRRTEAttributeItem{PMIX_PERSISTENCE}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_PERSISTENCE}
 
 \reqattrend
 
@@ -1586,15 +1639,15 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
 Host environments that implement this entry point are required to support the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_RANGE}
-\pastePRRTEAttributeItem{PMIX_WAIT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_WAIT}
 
 \reqattrend
 
@@ -1666,14 +1719,14 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
 Host environments that implement this entry point are required to support the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_RANGE}
 
 \reqattrend
 
@@ -1744,54 +1797,54 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
 Host environments that provide this module entry point are required to pass the \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes to all \ac{PMIx} servers launching new child processes so those values can be returned to clients upon connection to the \ac{PMIx} server. In addition, they are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
 
-\pastePRRTEAttributeItem{PMIX_WDIR}
-\pastePRRTEAttributeItem{PMIX_SET_SESSION_CWD}
-\pastePRRTEAttributeItem{PMIX_PREFIX}
-\pastePRRTEAttributeItem{PMIX_HOST}
-\pastePRRTEAttributeItem{PMIX_HOSTFILE}
+\pasteAttributeItem{PMIX_WDIR}
+\pasteAttributeItem{PMIX_SET_SESSION_CWD}
+\pasteAttributeItem{PMIX_PREFIX}
+\pasteAttributeItem{PMIX_HOST}
+\pasteAttributeItem{PMIX_HOSTFILE}
 
 \reqattrend
 
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_ADD_HOSTFILE}
-\pastePRRTEAttributeItem{PMIX_ADD_HOST}
-\pastePRRTEAttributeItem{PMIX_PRELOAD_BIN}
-\pastePRRTEAttributeItem{PMIX_PRELOAD_FILES}
-\pastePRRTEAttributeItem{PMIX_PERSONALITY}
-\pastePRRTEAttributeItem{PMIX_MAPPER}
-\pastePRRTEAttributeItem{PMIX_DISPLAY_MAP}
-\pastePRRTEAttributeItem{PMIX_PPR}
-\pastePRRTEAttributeItem{PMIX_MAPBY}
-\pastePRRTEAttributeItem{PMIX_RANKBY}
-\pastePRRTEAttributeItem{PMIX_BINDTO}
-\pastePRRTEAttributeItem{PMIX_NON_PMI}
-\pastePRRTEAttributeItem{PMIX_STDIN_TGT}
-\pastePRRTEAttributeItem{PMIX_FWD_STDIN}
-\pastePRRTEAttributeItem{PMIX_FWD_STDOUT}
-\pastePRRTEAttributeItem{PMIX_FWD_STDERR}
-\pastePRRTEAttributeItem{PMIX_DEBUGGER_DAEMONS}
-\pastePRRTEAttributeItem{PMIX_TAG_OUTPUT}
-\pastePRRTEAttributeItem{PMIX_TIMESTAMP_OUTPUT}
-\pastePRRTEAttributeItem{PMIX_MERGE_STDERR_STDOUT}
-\pastePRRTEAttributeItem{PMIX_OUTPUT_TO_FILE}
-\pastePRRTEAttributeItem{PMIX_INDEX_ARGV}
-\pastePRRTEAttributeItem{PMIX_CPUS_PER_PROC}
-\pastePRRTEAttributeItem{PMIX_NO_PROCS_ON_HEAD}
-\pastePRRTEAttributeItem{PMIX_NO_OVERSUBSCRIBE}
-\pastePRRTEAttributeItem{PMIX_REPORT_BINDINGS}
-\pastePRRTEAttributeItem{PMIX_CPU_LIST}
-\pastePRRTEAttributeItem{PMIX_JOB_RECOVERABLE}
-\pastePRRTEAttributeItem{PMIX_JOB_CONTINUOUS}
-\pastePRRTEAttributeItem{PMIX_MAX_RESTARTS}
+\pasteAttributeItem{PMIX_ADD_HOSTFILE}
+\pasteAttributeItem{PMIX_ADD_HOST}
+\pasteAttributeItem{PMIX_PRELOAD_BIN}
+\pasteAttributeItem{PMIX_PRELOAD_FILES}
+\pasteAttributeItem{PMIX_PERSONALITY}
+\pasteAttributeItem{PMIX_MAPPER}
+\pasteAttributeItem{PMIX_DISPLAY_MAP}
+\pasteAttributeItem{PMIX_PPR}
+\pasteAttributeItem{PMIX_MAPBY}
+\pasteAttributeItem{PMIX_RANKBY}
+\pasteAttributeItem{PMIX_BINDTO}
+\pasteAttributeItem{PMIX_NON_PMI}
+\pasteAttributeItem{PMIX_STDIN_TGT}
+\pasteAttributeItem{PMIX_FWD_STDIN}
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
+\pasteAttributeItem{PMIX_TAG_OUTPUT}
+\pasteAttributeItem{PMIX_TIMESTAMP_OUTPUT}
+\pasteAttributeItem{PMIX_MERGE_STDERR_STDOUT}
+\pasteAttributeItem{PMIX_OUTPUT_TO_FILE}
+\pasteAttributeItem{PMIX_INDEX_ARGV}
+\pasteAttributeItem{PMIX_CPUS_PER_PROC}
+\pasteAttributeItem{PMIX_NO_PROCS_ON_HEAD}
+\pasteAttributeItem{PMIX_NO_OVERSUBSCRIBE}
+\pasteAttributeItem{PMIX_REPORT_BINDINGS}
+\pasteAttributeItem{PMIX_CPU_LIST}
+\pasteAttributeItem{PMIX_JOB_RECOVERABLE}
+\pasteAttributeItem{PMIX_JOB_CONTINUOUS}
+\pasteAttributeItem{PMIX_MAX_RESTARTS}
 \pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
@@ -1858,7 +1911,7 @@ Returns one of the following:
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
@@ -1994,8 +2047,8 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \reqattrend
 
@@ -2126,7 +2179,7 @@ Returns one of the following:
 
 Host environments that provide this module entry point are required to support the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_RANGE}
 
 \reqattrend
 
@@ -2224,8 +2277,8 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \reqattrend
 
@@ -2233,18 +2286,18 @@ Returns one of the following:
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_QUERY_NAMESPACES}
-\pastePRRTEAttributeItem{PMIX_QUERY_JOB_STATUS}
+\pasteAttributeItem{PMIX_QUERY_NAMESPACES}
+\pasteAttributeItem{PMIX_QUERY_JOB_STATUS}
 \pasteAttributeItem{PMIX_QUERY_QUEUE_LIST}
 \pasteAttributeItem{PMIX_QUERY_QUEUE_STATUS}
-\pastePRRTEAttributeItem{PMIX_QUERY_PROC_TABLE}
-\pastePRRTEAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
 \pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
 \pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
-\pastePRRTEAttributeItem{PMIX_QUERY_MEMORY_USAGE}
-\pastePRRTEAttributeItem{PMIX_QUERY_LOCAL_ONLY}
-\pastePRRTEAttributeItem{PMIX_QUERY_REPORT_AVG}
-\pastePRRTEAttributeItem{PMIX_QUERY_REPORT_MINMAX}
+\pasteAttributeItem{PMIX_QUERY_MEMORY_USAGE}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_ONLY}
+\pasteAttributeItem{PMIX_QUERY_REPORT_AVG}
+\pasteAttributeItem{PMIX_QUERY_REPORT_MINMAX}
 \pasteAttributeItem{PMIX_QUERY_ALLOC_STATUS}
 \pasteAttributeItem{PMIX_TIME_REMAINING}
 
@@ -2293,8 +2346,8 @@ typedef void (*pmix_server_tool_connection_fn_t)(
 \reqattrstart
 \ac{PMIx} libraries are required to pass the following attributes in the \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \reqattrend
 
@@ -2302,9 +2355,9 @@ typedef void (*pmix_server_tool_connection_fn_t)(
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_FWD_STDOUT}
-\pastePRRTEAttributeItem{PMIX_FWD_STDERR}
-\pastePRRTEAttributeItem{PMIX_FWD_STDIN}
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_FWD_STDIN}
 
 \optattrend
 
@@ -2357,16 +2410,16 @@ typedef void (*pmix_server_log_fn_t)(
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
 Host environments that provide this module entry point are required to support the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_LOG_STDERR}
-\pastePRRTEAttributeItem{PMIX_LOG_STDOUT}
-\pastePRRTEAttributeItem{PMIX_LOG_SYSLOG}
+\pasteAttributeItem{PMIX_LOG_STDERR}
+\pasteAttributeItem{PMIX_LOG_STDOUT}
+\pasteAttributeItem{PMIX_LOG_SYSLOG}
 
 \reqattrend
 
@@ -2431,8 +2484,8 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
@@ -2524,19 +2577,19 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any attributes provided by the client to the host environment for processing. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
 Host environments that provide this module entry point are required to support the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_ID}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_PAUSE}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_RESUME}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_KILL}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_SIGNAL}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_TERMINATE}
+\pasteAttributeItem{PMIX_JOB_CTRL_ID}
+\pasteAttributeItem{PMIX_JOB_CTRL_PAUSE}
+\pasteAttributeItem{PMIX_JOB_CTRL_RESUME}
+\pasteAttributeItem{PMIX_JOB_CTRL_KILL}
+\pasteAttributeItem{PMIX_JOB_CTRL_SIGNAL}
+\pasteAttributeItem{PMIX_JOB_CTRL_TERMINATE}
 
 \reqattrend
 
@@ -2614,8 +2667,8 @@ This entry point is only called for monitoring requests that are not directly su
 \reqattrstart
 If supported by the \ac{PMIx} server library, then the library must not pass any supported attributes to the host environment. Any attributes provided by the client that are not directly supported by the server library must be passed to the host environment if it provides this module entry. In addition, the following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
@@ -2626,18 +2679,18 @@ Host environments are not required to support any specific monitoring attributes
 \optattrstart
 The following attributes may be implemented by a host environment.
 
-\pastePRIAttributeItem{PMIX_MONITOR_ID}
-\pastePRIAttributeItem{PMIX_MONITOR_CANCEL}
-\pastePRIAttributeItem{PMIX_MONITOR_APP_CONTROL}
-\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT}
-\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
-\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_SIZE}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_ACCESS}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_MODIFY}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_DROPS}
+\pasteAttributeItem{PMIX_MONITOR_ID}
+\pasteAttributeItem{PMIX_MONITOR_CANCEL}
+\pasteAttributeItem{PMIX_MONITOR_APP_CONTROL}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
+\pasteAttributeItem{PMIX_MONITOR_FILE}
+\pasteAttributeItem{PMIX_MONITOR_FILE_SIZE}
+\pasteAttributeItem{PMIX_MONITOR_FILE_ACCESS}
+\pasteAttributeItem{PMIX_MONITOR_FILE_MODIFY}
+\pasteAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
+\pasteAttributeItem{PMIX_MONITOR_FILE_DROPS}
 
 \optattrend
 
@@ -2685,8 +2738,8 @@ Returns \refconst{PMIX_SUCCESS}, \refconst{PMIX_ERR_NOT_SUPPORTED} indicating th
 \reqattrstart
 If the \ac{PMIx} library does not itself provide the requested credential, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \reqattrend
 
@@ -2754,8 +2807,8 @@ Returns one of the following:
 \reqattrstart
 If the \ac{PMIx} library does not itself validate the credential, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
@@ -2826,16 +2879,16 @@ Returns one of the following:
 \reqattrstart
 The following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
 Host environments that provide this module entry point are required to support the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_IOF_CACHE_SIZE}
-\pastePRRTEAttributeItem{PMIX_IOF_DROP_OLDEST}
-\pastePRRTEAttributeItem{PMIX_IOF_DROP_NEWEST}
+\pasteAttributeItem{PMIX_IOF_CACHE_SIZE}
+\pasteAttributeItem{PMIX_IOF_DROP_OLDEST}
+\pasteAttributeItem{PMIX_IOF_DROP_NEWEST}
 
 \reqattrend
 
@@ -2906,8 +2959,8 @@ Returns one of the following:
 \reqattrstart
 The following attributes are required to be included in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \reqattrend
 
@@ -2963,7 +3016,7 @@ Returns one of the following:
 \optattrstart
 The following attributes may be supported by a host environment.
 
-\pastePRIAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pasteAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
 \pasteAttributeItem{PMIX_GROUP_LOCAL_ONLY}
 \pasteAttributeItem{PMIX_GROUP_ENDPT_DATA}
 \pasteAttributeItem{PMIX_GROUP_OPTIONAL}
@@ -3031,10 +3084,10 @@ Returns one of the following:
 \reqattrstart
 The following directives are required to be supported by all hosts to aid users in identifying the fabric and (if applicable) the device to whom the operation references:
 
-\pastePRIAttributeItem{PMIX_FABRIC_VENDOR}
-\pastePRIAttributeItem{PMIX_FABRIC_IDENTIFIER}
-\pastePRIAttributeItem{PMIX_FABRIC_PLANE}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_INDEX}
+\pasteAttributeItem{PMIX_FABRIC_VENDOR}
+\pasteAttributeItem{PMIX_FABRIC_IDENTIFIER}
+\pasteAttributeItem{PMIX_FABRIC_PLANE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_INDEX}
 
 \reqattrend
 
