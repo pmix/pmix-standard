@@ -11,7 +11,7 @@
 \section{Process Sets}
 \label{chap:api_sets_groups:sets}
 
-A \ac{PMIx} \emph{Process Set} is a user-provided label associated with a given set of application processes. Definition of a \ac{PMIx} process set typically occurs at time of application execution - e.g., on a \ac{PRRTE} command line:
+A \ac{PMIx} \emph{Process Set} is a user-provided label associated with a given set of application processes. Processes can belong to multiple process \emph{sets} at a time. Definition of a \ac{PMIx} process set typically occurs at time of application execution - e.g., on a command line:
 
 \cspecificstart
 \begin{codepar}
@@ -25,9 +25,8 @@ Thus, process \emph{sets} differ from process \emph{groups} in several key ways:
 
 \begin{itemize}
     \item Process \emph{sets} have no implied relationship between their members - i.e., a process in a process set has no concept of a ``pset rank'' as it would in a process \emph{group}
-    \item Processes can only have one process \emph{set} identifier, but can simultaneously belong to multiple process \emph{groups}
     \item Process \emph{set} identifiers are considered job-level information set at launch. No \ac{PMIx} \ac{API} is provided by which a user can change the process \emph{set} value of a process on-the-fly. In contrast, \ac{PMIx} process \emph{groups} can only be defined dynamically by the application.
-    \item Process \emph{groups} can be used in calls to \ac{PMIx} operations. Members of process \emph{groups} that are involved in an operation are translated by their \ac{PMIx} server into their \emph{native} identifier prior to the operation being passed to the host environment. For example, an application can define a process group to consist of ranks 0 and 1 from the host-assigned namespace of \emph{210456}, identified by the group id of \emph{foo}. If the application subsequently calls the \refapi{PMIx_Fence} \ac{API} with a process identifier of \{foo, PMIX_RANK_WILDCARD\}, the \ac{PMIx} server will replace that identifier with an array consisting of \{210456, 0\} and \{210456, 1\} - the host-assigned identifers of the participating processes - prior to passing the request up to the host environment
+    \item Process \emph{groups} can be used in calls to \ac{PMIx} operations. Members of process \emph{groups} that are involved in an operation are translated by their \ac{PMIx} server into their \emph{native} identifier prior to the operation being passed to the host environment. For example, an application can define a process group to consist of ranks 0 and 1 from the host-assigned namespace of \emph{210456}, identified by the group id of \emph{foo}. If the application subsequently calls the \refapi{PMIx_Fence} \ac{API} with a process identifier of \{foo, PMIX_RANK_WILDCARD\}, the \ac{PMIx} server will replace that identifier with an array consisting of \{210456, 0\} and \{210456, 1\} - the host-assigned identifiers of the participating processes - prior to passing the request up to the host environment
     \item Process \emph{groups} can request that the host environment assign a unique \code{size_t} \ac{PGCID} to the group at time of group construction. An \ac{MPI} library may, for example, use the \ac{PGCID} as the \ac{MPI} communicator identifier for the group.
 \end{itemize}
 
@@ -42,7 +41,7 @@ The two concepts do, however, overlap in one specific area. Process \emph{groups
 \section{Process Groups}
 \label{chap:api_sets_groups:groups}
 
-\ac{PMIx} \emph{Groups} are defined as a collection of processes desiring a common, unique identifier for purposes such as passing events or participating in \ac{PMIx} fence operations. As with processes that assemble via \refapi{PMIx_Connect}, each member of the group is provided with both the job-level information of any other namespace represented in the group, and the contact information for all group members. However, \emph{groups} differ from \refapi{PMIx_Connect} assemblages in the following key areas:
+\ac{PMIx} \emph{Groups} are defined as a collection of processes desiring a common, unique identifier for operational purposes such as passing events or participating in \ac{PMIx} fence operations. As with processes that assemble via \refapi{PMIx_Connect}, each member of the group is provided with both the job-level information of any other namespace represented in the group, and the contact information for all group members. However, \emph{groups} differ from \refapi{PMIx_Connect} assemblages in the following key areas:
 
 \begin{itemize}
     \item Relation to the host environment
@@ -147,14 +146,14 @@ Returns one of the following:
 \reqattrstart
 The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries that support this operation:
 
-\pastePRIAttributeItem{PMIX_GROUP_LEADER}
-\pastePRIAttributeItem{PMIX_GROUP_OPTIONAL}
-\pastePRIAttributeItem{PMIX_GROUP_LOCAL_ONLY}
+\pasteAttributeItem{PMIX_GROUP_LEADER}
+\pasteAttributeItem{PMIX_GROUP_OPTIONAL}
+\pasteAttributeItem{PMIX_GROUP_LOCAL_ONLY}
 
 Host environments that support this operation are \textit{required} to provide the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
-\pastePRRTEAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
+\pasteAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pasteAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
 
 \reqattrend
 
@@ -253,14 +252,14 @@ If executed, the status returned in the provided callback function will be one o
 
 The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries that support this operation:
 
-\pastePRIAttributeItem{PMIX_GROUP_LEADER}
-\pastePRIAttributeItem{PMIX_GROUP_OPTIONAL}
-\pastePRIAttributeItem{PMIX_GROUP_LOCAL_ONLY}
+\pasteAttributeItem{PMIX_GROUP_LEADER}
+\pasteAttributeItem{PMIX_GROUP_OPTIONAL}
+\pasteAttributeItem{PMIX_GROUP_LOCAL_ONLY}
 
 Host environments that support this operation are \textit{required} to provide the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
-\pastePRRTEAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
+\pasteAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pasteAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
 
 \reqattrend
 
@@ -457,12 +456,12 @@ Returns one of the following:
 \reqattrstart
 The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries that support this operation:
 
-\pastePRIAttributeItem{PMIX_GROUP_OPTIONAL}
+\pasteAttributeItem{PMIX_GROUP_OPTIONAL}
 
 Host environments that support this operation are \textit{required} to provide the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
-\pastePRRTEAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
+\pasteAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pasteAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
 \reqattrend
 
 \optattrstart
@@ -551,12 +550,12 @@ If executed, the status returned in the provided callback function will be one o
 \reqattrstart
 The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries that support this operation:
 
-\pastePRIAttributeItem{PMIX_GROUP_OPTIONAL}
+\pasteAttributeItem{PMIX_GROUP_OPTIONAL}
 
 Host environments that support this operation are \textit{required} to provide the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
-\pastePRRTEAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
+\pasteAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pasteAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
 
 \reqattrend
 

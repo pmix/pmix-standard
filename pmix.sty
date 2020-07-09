@@ -104,6 +104,7 @@
 \usepackage{tikz}      % for flow charts, diagrams, arrows
 
 \usepackage{wrapfig}
+\usepackage{subcaption}  % for side-by-side figures
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Page formatting
@@ -242,7 +243,7 @@
 
 \newcommand{\declareconstitem}[1]{\item[\code{#1}] \index[index_const]{#1|indexfmt} \label{const:#1} \hspace{1em}}
 \newcommand{\declareconstitemvalue}[2]{\item[\code{#1}] \index[index_const]{#1|indexfmt} \hspace{0.25em} \code{#2}  \hspace{1em}}
-\newcommand{\declareconstitemDEP}[2]{\item[\code{#1} (Deprecated in PMIx #2)] \index[index_const]{#1|indexfmt} \label{const:#1} \hspace{1em}}
+\newcommand{\declareconstitemDEP}[1]{\item[\color{green!80!black}\code{#1}] \index[index_const]{#1|indexfmt} \label{const:#1} \hspace{1em}}
 \newcommand{\declareconstitemNEW}[1]{\item[\color{magenta}\code{#1}] \index[index_const]{#1|indexfmt} \label{const:#1} \hspace{1em}}
 
 
@@ -357,11 +358,46 @@
 \makeatother
 
 
+% Envars
+
+\newcommand{\declareEnvar}[2]{%
+    \code{#1}%
+    \index[index_envars]{#1|indexfmt} \label{envar:#1}%
+    \vspace{-1.3ex}%
+      \expandafter\begin{adjustwidth}{.95cm}{}%
+      \StdCopyEcho{#1}{#2}%
+    \end{adjustwidth}%
+  \vspace{-1.3ex}%
+}
+
+\newcommand{\declareNewEnvar}[2]{%
+   {\color{magenta}\code{#1}}%
+    \index[index_envars]{#1|indexfmt} \label{envar:#1}%
+    \vspace{-1.3ex}%
+      \expandafter\begin{adjustwidth}{.95cm}{}%
+      \StdCopyEcho{#1}{#2}%
+    \end{adjustwidth}%
+  \vspace{-1.3ex}%
+}
+
+\newcommand{\declareDepEnvar}[2]{%
+   {\color{green!80!black}\code{#1}}%
+    \index[index_envars]{#1@#1 \textbf{(Deprecated)}|indexdepfmt} \label{envar:#1}%
+    \vspace{-1.3ex}%
+      \expandafter\begin{adjustwidth}{.95cm}{}%
+      \StdCopyEcho{#1}{#2}%
+    \end{adjustwidth}%
+  \vspace{-1.3ex}%
+}
+
+\newcommand{\refEnvarItem}[1]{\index[index_envars]{#1} \hyperref[envar:#1]{\code{#1}} }
+\newcommand{\refenvar}[1]{\refEnvarItem{#1}}
+
 % Attributes
 %   \declareAttribute       Declare an attribute with a description
 %   \pasteAttributeItem     Paste the attribute description here
 %   \refAttributeItem       Reference the original definition of the attribute
-% 
+%
 
 \newcommand{\declareAttribute}[4]{%
     \code{#1} ~~\code{#2}~~(\code{#3})%
@@ -415,42 +451,6 @@
 }
 \newcommand{\refAttributeItem}[1]{\index[index_attribute]{#1} \hyperref[attr:#1]{\code{#1}} }
 \newcommand{\refattr}[1]{\refAttributeItem{#1}}
-
-\newcommand{\refPRIAttributeItem}[1]{\index[index_attribute]{#1} \hyperref[attr:#1]{\color{red}\code{#1}} }
-
-\newcommand{\pastePRIAttributeItemBegin}[1]{
-  \refPRIAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
-  \vspace{-1.3ex}
-   \expandafter
-   \begin{adjustwidth}{.95cm}{}
-    \StdPaste{#1}
-}
-\newcommand{\pastePRIAttributeItemEnd}{
-   \end{adjustwidth}
-}
-
-\newcommand{\pastePRIAttributeItem}[1]{
-    \pastePRIAttributeItemBegin{#1}
-    \pastePRIAttributeItemEnd{}
-}
-
-\newcommand{\refPRRTEAttributeItem}[1]{\index[index_attribute]{#1} \hyperref[attr:#1]{\color{green!60!black}\code{#1}} }
-
-\newcommand{\pastePRRTEAttributeItemBegin}[1]{
-  \refPRRTEAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
-  \vspace{-1.3ex}
-   \expandafter
-   \begin{adjustwidth}{.95cm}{}
-    \StdPaste{#1}
-}
-\newcommand{\pastePRRTEAttributeItemEnd}{
-   \end{adjustwidth}
-}
-
-\newcommand{\pastePRRTEAttributeItem}[1]{
-    \pastePRRTEAttributeItemBegin{#1}
-    \pastePRRTEAttributeItemEnd{}
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Code and placeholder semantic tagging.

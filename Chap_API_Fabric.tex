@@ -262,37 +262,37 @@ Note that only the \refarg{name} field is provided by the user - all other field
 
 \reqattrstart
 
-\pastePRIAttributeItem{PMIX_FABRIC_VENDOR}
-\pastePRIAttributeItem{PMIX_FABRIC_IDENTIFIER}
-\pastePRIAttributeItem{PMIX_FABRIC_NUM_VERTICES}
+\pasteAttributeItem{PMIX_FABRIC_VENDOR}
+\pasteAttributeItem{PMIX_FABRIC_IDENTIFIER}
+\pasteAttributeItem{PMIX_FABRIC_NUM_VERTICES}
 
 \reqattrend
 
 and may optionally contain one or more of the following:
 
 \optattrstart
-\pastePRIAttributeItem{PMIX_FABRIC_COST_MATRIX}
-\pastePRIAttributeItem{PMIX_FABRIC_GROUPS}
-\pastePRIAttributeItem{PMIX_FABRIC_DIMS}
-\pastePRIAttributeItem{PMIX_FABRIC_PLANE}
-\pastePRIAttributeItem{PMIX_FABRIC_SHAPE}
-\pastePRIAttributeItem{PMIX_FABRIC_SHAPE_STRING}
+\pasteAttributeItem{PMIX_FABRIC_COST_MATRIX}
+\pasteAttributeItem{PMIX_FABRIC_GROUPS}
+\pasteAttributeItem{PMIX_FABRIC_DIMS}
+\pasteAttributeItem{PMIX_FABRIC_PLANE}
+\pasteAttributeItem{PMIX_FABRIC_SHAPE}
+\pasteAttributeItem{PMIX_FABRIC_SHAPE_STRING}
 
 While unusual due to scaling issues, implementations may include an array of \refattr{PMIX_FABRIC_DEVICE} elements describing the vertex information for each \ac{NIC} in the system. Each element shall contain a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} values describing the device. Each array may contain one or more of the following (ordering is arbitrary):
 
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_NAME}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_ID}
-\pastePRIAttributeItem{PMIX_HOSTNAME}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_DRIVER}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_FIRMWARE}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_ADDRESS}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_MTU}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_SPEED}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_STATE}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_TYPE}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_BUS_TYPE}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_PCI_DEVID}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_NAME}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_ID}
+\pasteAttributeItem{PMIX_HOSTNAME}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_DRIVER}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_FIRMWARE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_ADDRESS}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_MTU}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_SPEED}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_STATE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_TYPE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_BUS_TYPE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_PCI_DEVID}
 
 \optattrend
 
@@ -492,9 +492,9 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx}
 \reqattrstart
 The following directives are required to be supported by all \ac{PMIx} libraries to aid users in identifying the fabric whose data is being sought:
 
-\pastePRIAttributeItem{PMIX_FABRIC_PLANE}
-\pastePRIAttributeItem{PMIX_FABRIC_IDENTIFIER}
-\pastePRIAttributeItem{PMIX_FABRIC_VENDOR}
+\pasteAttributeItem{PMIX_FABRIC_PLANE}
+\pasteAttributeItem{PMIX_FABRIC_IDENTIFIER}
+\pasteAttributeItem{PMIX_FABRIC_VENDOR}
 
 \reqattrend
 
@@ -743,27 +743,27 @@ Returns one of the following:
 Query information about a specified vertex (fabric device, or \ac{NIC}) in the system. The returned \refarg{status} indicates if requested data was found or not. The returned array of \refstruct{pmix_info_t} will contain information on the specified vertex - the exact contents will depend on the \ac{PMIx} implementation and the fabric vendor. At a minimum, it must contain sufficient information to uniquely identify the device within the system (ordering is arbitrary):
 
 \reqattrstart
-\pastePRIAttributeItemBegin{PMIX_HOSTNAME} The \refattr{PMIX_NODEID} may be returned in its place, or in addition to the hostname.
-\pastePRIAttributeItemEnd
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_NAME}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_BUS_TYPE}
-\pastePRIAttributeItemBegin{PMIX_FABRIC_DEVICE_PCI_DEVID} This item should be included if the device bus type is \ac{PCI} - the equivalent should be provided for any other bus type.
-\pastePRIAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_HOSTNAME} The \refattr{PMIX_NODEID} may be returned in its place, or in addition to the hostname.
+\pasteAttributeItemEnd
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_NAME}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_BUS_TYPE}
+\pasteAttributeItemBegin{PMIX_FABRIC_DEVICE_PCI_DEVID} This item should be included if the device bus type is \ac{PCI} - the equivalent should be provided for any other bus type.
+\pasteAttributeItemEnd
 
 \reqattrend
 
 The returned array may optionally contain one or more of the following:
 
 \optattrstart
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_ID}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_DRIVER}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_FIRMWARE}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_ADDRESS}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_MTU}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_SPEED}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_STATE}
-\pastePRIAttributeItem{PMIX_FABRIC_DEVICE_TYPE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_ID}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_DRIVER}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_FIRMWARE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_ADDRESS}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_MTU}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_SPEED}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_STATE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_TYPE}
 \optattrend
 
 The caller is responsible for releasing the returned array.

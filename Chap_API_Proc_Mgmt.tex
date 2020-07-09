@@ -101,57 +101,72 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the following attributes to those provided before passing the request to the host:
 
-\pastePRIAttributeItem{PMIX_SPAWNED}
-\pastePRIAttributeItem{PMIX_PARENT_ID}
-\pastePRIAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
-\pastePRIAttributeItem{PMIX_REQUESTOR_IS_TOOL}
+\pasteAttributeItem{PMIX_SPAWNED}
+\pasteAttributeItem{PMIX_PARENT_ID}
+\pasteAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
+\pasteAttributeItem{PMIX_REQUESTOR_IS_TOOL}
 
 \divider
 
 Host environments that implement support for \refapi{PMIx_Spawn} are required to pass the \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes to all \ac{PMIx} servers launching new child processes so those values can be returned to clients upon connection to the \ac{PMIx} server. In addition, they are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
 
-\pastePRRTEAttributeItem{PMIX_WDIR}
-\pastePRRTEAttributeItem{PMIX_SET_SESSION_CWD}
-\pastePRRTEAttributeItem{PMIX_PREFIX}
-\pastePRRTEAttributeItem{PMIX_HOST}
-\pastePRRTEAttributeItem{PMIX_HOSTFILE}
+\pasteAttributeItem{PMIX_WDIR}
+\pasteAttributeItem{PMIX_SET_SESSION_CWD}
+\pasteAttributeItem{PMIX_PREFIX}
+\pasteAttributeItem{PMIX_HOST}
+\pasteAttributeItem{PMIX_HOSTFILE}
 
 \reqattrend
 
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_ADD_HOSTFILE}
-\pastePRRTEAttributeItem{PMIX_ADD_HOST}
-\pastePRRTEAttributeItem{PMIX_PRELOAD_BIN}
-\pastePRRTEAttributeItem{PMIX_PRELOAD_FILES}
-\pastePRRTEAttributeItem{PMIX_PERSONALITY}
-\pastePRRTEAttributeItem{PMIX_MAPPER}
-\pastePRRTEAttributeItem{PMIX_DISPLAY_MAP}
-\pastePRRTEAttributeItem{PMIX_PPR}
-\pastePRRTEAttributeItem{PMIX_MAPBY}
-\pastePRRTEAttributeItem{PMIX_RANKBY}
-\pastePRRTEAttributeItem{PMIX_BINDTO}
-\pastePRRTEAttributeItem{PMIX_NON_PMI}
-\pastePRRTEAttributeItem{PMIX_STDIN_TGT}
-\pastePRRTEAttributeItem{PMIX_FWD_STDIN}
-\pastePRRTEAttributeItem{PMIX_FWD_STDOUT}
-\pastePRRTEAttributeItem{PMIX_FWD_STDERR}
-\pastePRRTEAttributeItem{PMIX_DEBUGGER_DAEMONS}
-\pastePRRTEAttributeItem{PMIX_TAG_OUTPUT}
-\pastePRRTEAttributeItem{PMIX_TIMESTAMP_OUTPUT}
-\pastePRRTEAttributeItem{PMIX_MERGE_STDERR_STDOUT}
-\pastePRRTEAttributeItem{PMIX_OUTPUT_TO_FILE}
-\pastePRRTEAttributeItem{PMIX_INDEX_ARGV}
-\pastePRRTEAttributeItem{PMIX_CPUS_PER_PROC}
-\pastePRRTEAttributeItem{PMIX_NO_PROCS_ON_HEAD}
-\pastePRRTEAttributeItem{PMIX_NO_OVERSUBSCRIBE}
-\pastePRRTEAttributeItem{PMIX_REPORT_BINDINGS}
-\pastePRRTEAttributeItem{PMIX_CPU_LIST}
-\pastePRRTEAttributeItem{PMIX_JOB_RECOVERABLE}
-\pastePRRTEAttributeItem{PMIX_JOB_CONTINUOUS}
-\pastePRRTEAttributeItem{PMIX_MAX_RESTARTS}
-\pastePRRTEAttributeItem{PMIX_NOTIFY_COMPLETION}
+\pasteAttributeItem{PMIX_ADD_HOSTFILE}
+\pasteAttributeItem{PMIX_ADD_HOST}
+\pasteAttributeItem{PMIX_PRELOAD_BIN}
+\pasteAttributeItem{PMIX_PRELOAD_FILES}
+\pasteAttributeItem{PMIX_PERSONALITY}
+\pasteAttributeItem{PMIX_MAPPER}
+\pasteAttributeItem{PMIX_DISPLAY_MAP}
+\pasteAttributeItem{PMIX_PPR}
+\pasteAttributeItem{PMIX_MAPBY}
+\pasteAttributeItem{PMIX_RANKBY}
+\pasteAttributeItem{PMIX_BINDTO}
+\pasteAttributeItem{PMIX_NON_PMI}
+\pasteAttributeItem{PMIX_STDIN_TGT}
+\pasteAttributeItem{PMIX_TAG_OUTPUT}
+\pasteAttributeItem{PMIX_TIMESTAMP_OUTPUT}
+\pasteAttributeItem{PMIX_MERGE_STDERR_STDOUT}
+\pasteAttributeItem{PMIX_OUTPUT_TO_FILE}
+\pasteAttributeItem{PMIX_INDEX_ARGV}
+\pasteAttributeItem{PMIX_CPUS_PER_PROC}
+\pasteAttributeItem{PMIX_NO_PROCS_ON_HEAD}
+\pasteAttributeItem{PMIX_NO_OVERSUBSCRIBE}
+\pasteAttributeItem{PMIX_REPORT_BINDINGS}
+\pasteAttributeItem{PMIX_CPU_LIST}
+\pasteAttributeItem{PMIX_JOB_RECOVERABLE}
+\pasteAttributeItem{PMIX_JOB_CONTINUOUS}
+\pasteAttributeItem{PMIX_MAX_RESTARTS}
+\pasteAttributeItem{PMIX_SET_ENVAR}
+\pasteAttributeItem{PMIX_UNSET_ENVAR}
+\pasteAttributeItem{PMIX_ADD_ENVAR}
+\pasteAttributeItem{PMIX_PREPEND_ENVAR}
+\pasteAttributeItem{PMIX_APPEND_ENVAR}
+\pasteAttributeItem{PMIX_FIRST_ENVAR}
+\pasteAttributeItem{PMIX_ALLOC_QUEUE}
+\pasteAttributeItem{PMIX_ALLOC_TIME}
+\pasteAttributeItem{PMIX_ALLOC_NUM_NODES}
+\pasteAttributeItem{PMIX_ALLOC_NODE_LIST}
+\pasteAttributeItem{PMIX_ALLOC_NUM_CPUS}
+\pasteAttributeItem{PMIX_ALLOC_NUM_CPU_LIST}
+\pasteAttributeItem{PMIX_ALLOC_CPU_LIST}
+\pasteAttributeItem{PMIX_ALLOC_MEM_SIZE}
+\pasteAttributeItem{PMIX_ALLOC_BANDWIDTH}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_QOS}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_TYPE}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_PLANE}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
 
 \optattrend
 
@@ -170,6 +185,11 @@ information so it can query job-level info without incurring any communication p
 \adviceuserstart
 Behavior of individual resource managers may differ, but it is expected that failure of any application process to start will result in termination/cleanup of all processes in the newly spawned job and return of an error code to the caller.
 \adviceuserend
+
+\adviceimplstart
+Tools may utilize \refapi{PMIx_Spawn} to start intermediate launchers as described in Section \ref{chap:api_tools:indirect}. For times where the tool is not attached to a \ac{PMIx} server, internal support for fork/exec of the specified applications would allow the tool to maintain a single code path for both the connected and disconnected cases. Inclusion of such support is recommended, but not required.
+\adviceimplend
+
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Spawn_nb}}
@@ -212,56 +232,72 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the following attributes to those provided before passing the request to the host:
 
-\pastePRIAttributeItem{PMIX_SPAWNED}
-\pastePRIAttributeItem{PMIX_PARENT_ID}
-\pastePRIAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
-\pastePRIAttributeItem{PMIX_REQUESTOR_IS_TOOL}
+\pasteAttributeItem{PMIX_SPAWNED}
+\pasteAttributeItem{PMIX_PARENT_ID}
+\pasteAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
+\pasteAttributeItem{PMIX_REQUESTOR_IS_TOOL}
 
 \divider
 
 Host environments that implement support for \refapi{PMIx_Spawn} are required to pass the \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes to all \ac{PMIx} servers launching new child processes so those values can be returned to clients upon connection to the \ac{PMIx} server. In addition, they are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
 
-\pastePRRTEAttributeItem{PMIX_WDIR}
-\pastePRRTEAttributeItem{PMIX_SET_SESSION_CWD}
-\pastePRRTEAttributeItem{PMIX_PREFIX}
-\pastePRRTEAttributeItem{PMIX_HOST}
-\pastePRRTEAttributeItem{PMIX_HOSTFILE}
+\pasteAttributeItem{PMIX_WDIR}
+\pasteAttributeItem{PMIX_SET_SESSION_CWD}
+\pasteAttributeItem{PMIX_PREFIX}
+\pasteAttributeItem{PMIX_HOST}
+\pasteAttributeItem{PMIX_HOSTFILE}
 
 \reqattrend
 
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_ADD_HOSTFILE}
-\pastePRRTEAttributeItem{PMIX_ADD_HOST}
-\pastePRRTEAttributeItem{PMIX_PRELOAD_BIN}
-\pastePRRTEAttributeItem{PMIX_PRELOAD_FILES}
-\pastePRRTEAttributeItem{PMIX_PERSONALITY}
-\pastePRRTEAttributeItem{PMIX_MAPPER}
-\pastePRRTEAttributeItem{PMIX_DISPLAY_MAP}
-\pastePRRTEAttributeItem{PMIX_PPR}
-\pastePRRTEAttributeItem{PMIX_MAPBY}
-\pastePRRTEAttributeItem{PMIX_RANKBY}
-\pastePRRTEAttributeItem{PMIX_BINDTO}
-\pastePRRTEAttributeItem{PMIX_NON_PMI}
-\pastePRRTEAttributeItem{PMIX_STDIN_TGT}
-\pastePRRTEAttributeItem{PMIX_FWD_STDIN}
-\pastePRRTEAttributeItem{PMIX_FWD_STDOUT}
-\pastePRRTEAttributeItem{PMIX_FWD_STDERR}
-\pastePRRTEAttributeItem{PMIX_DEBUGGER_DAEMONS}
-\pastePRRTEAttributeItem{PMIX_TAG_OUTPUT}
-\pastePRRTEAttributeItem{PMIX_TIMESTAMP_OUTPUT}
-\pastePRRTEAttributeItem{PMIX_MERGE_STDERR_STDOUT}
-\pastePRRTEAttributeItem{PMIX_OUTPUT_TO_FILE}
-\pastePRRTEAttributeItem{PMIX_INDEX_ARGV}
-\pastePRRTEAttributeItem{PMIX_CPUS_PER_PROC}
-\pastePRRTEAttributeItem{PMIX_NO_PROCS_ON_HEAD}
-\pastePRRTEAttributeItem{PMIX_NO_OVERSUBSCRIBE}
-\pastePRRTEAttributeItem{PMIX_REPORT_BINDINGS}
-\pastePRRTEAttributeItem{PMIX_CPU_LIST}
-\pastePRRTEAttributeItem{PMIX_JOB_RECOVERABLE}
-\pastePRRTEAttributeItem{PMIX_JOB_CONTINUOUS}
-\pastePRRTEAttributeItem{PMIX_MAX_RESTARTS}
+\pasteAttributeItem{PMIX_ADD_HOSTFILE}
+\pasteAttributeItem{PMIX_ADD_HOST}
+\pasteAttributeItem{PMIX_PRELOAD_BIN}
+\pasteAttributeItem{PMIX_PRELOAD_FILES}
+\pasteAttributeItem{PMIX_PERSONALITY}
+\pasteAttributeItem{PMIX_MAPPER}
+\pasteAttributeItem{PMIX_DISPLAY_MAP}
+\pasteAttributeItem{PMIX_PPR}
+\pasteAttributeItem{PMIX_MAPBY}
+\pasteAttributeItem{PMIX_RANKBY}
+\pasteAttributeItem{PMIX_BINDTO}
+\pasteAttributeItem{PMIX_NON_PMI}
+\pasteAttributeItem{PMIX_STDIN_TGT}
+\pasteAttributeItem{PMIX_TAG_OUTPUT}
+\pasteAttributeItem{PMIX_TIMESTAMP_OUTPUT}
+\pasteAttributeItem{PMIX_MERGE_STDERR_STDOUT}
+\pasteAttributeItem{PMIX_OUTPUT_TO_FILE}
+\pasteAttributeItem{PMIX_INDEX_ARGV}
+\pasteAttributeItem{PMIX_CPUS_PER_PROC}
+\pasteAttributeItem{PMIX_NO_PROCS_ON_HEAD}
+\pasteAttributeItem{PMIX_NO_OVERSUBSCRIBE}
+\pasteAttributeItem{PMIX_REPORT_BINDINGS}
+\pasteAttributeItem{PMIX_CPU_LIST}
+\pasteAttributeItem{PMIX_JOB_RECOVERABLE}
+\pasteAttributeItem{PMIX_JOB_CONTINUOUS}
+\pasteAttributeItem{PMIX_MAX_RESTARTS}
+\pasteAttributeItem{PMIX_SET_ENVAR}
+\pasteAttributeItem{PMIX_UNSET_ENVAR}
+\pasteAttributeItem{PMIX_ADD_ENVAR}
+\pasteAttributeItem{PMIX_PREPEND_ENVAR}
+\pasteAttributeItem{PMIX_APPEND_ENVAR}
+\pasteAttributeItem{PMIX_FIRST_ENVAR}
+\pasteAttributeItem{PMIX_ALLOC_QUEUE}
+\pasteAttributeItem{PMIX_ALLOC_TIME}
+\pasteAttributeItem{PMIX_ALLOC_NUM_NODES}
+\pasteAttributeItem{PMIX_ALLOC_NODE_LIST}
+\pasteAttributeItem{PMIX_ALLOC_NUM_CPUS}
+\pasteAttributeItem{PMIX_ALLOC_NUM_CPU_LIST}
+\pasteAttributeItem{PMIX_ALLOC_CPU_LIST}
+\pasteAttributeItem{PMIX_ALLOC_MEM_SIZE}
+\pasteAttributeItem{PMIX_ALLOC_BANDWIDTH}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_QOS}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_TYPE}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_PLANE}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS}
+\pasteAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
 
 \optattrend
 
@@ -334,7 +370,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
@@ -417,7 +453,7 @@ Returns one of the following:
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
@@ -471,7 +507,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
 
@@ -552,7 +588,7 @@ Returns one of the following:
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
 
@@ -564,240 +600,3 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 \descr
 
 Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect_nb} or its blocking version, \textit{and} the host environment has completed any required supporting operations. See the advice provided in the description for \refapi{PMIx_Disconnect} for more information.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{IO Forwarding}
-\label{chap:api_proc_mgmt:iof}
-
-This section defines functions by which tools (e.g., debuggers) can request forwarding of input/output to/from other processes. The term ``tool'' widely refers to non-computational programs executed by the user or system administrator to monitor or control a principal computational program. Tools almost always interact with either the host environment, user applications, or both to perform administrative and support functions. For example, a debugger tool might be used to remotely control the processes of a parallel application, monitoring their behavior on a step-by-step basis.
-
-Underlying the operation of many tools is a common need to forward stdin from the tool to targeted processes, and to return stdout/stderr from those processes for display on the user’s console. Historically, each tool developer was responsible for creating their own \ac{IO} forwarding subsystem. However, with the introduction of \ac{PMIx} as a standard mechanism for interacting between applications and the host environment, it has become possible to relieve tool developers of this burden.
-
-\advicermstart
-The responsibility of the host environment in forwarding of \ac{IO} falls into the following areas:
-
-\begin{itemize}
-    \item Capturing output from specified child processes
-    \item Forwarding that output to the host of the \ac{PMIx} server library that requested it
-    \item Delivering that payload to the \ac{PMIx} server library via the \refapi{PMIx_server_IOF_deliver} \ac{API} for final dispatch
-\end{itemize}
-
-It is the responsibility of the \ac{PMIx} library to buffer, format, and deliver the payload to the requesting client.
-\advicermend
-
-\adviceuserstart
-The forwarding of \ac{IO} via \ac{PMIx} requires that both the host environment and the tool support \ac{PMIx}, but does not impose any similar requirements on the application itself.
-\adviceuserend
-
-
-%%%%%%%%%%%
-\subsection{\code{PMIx_IOF_pull}}
-\declareapi{PMIx_IOF_pull}
-
-%%%%
-\summary
-
-Register to receive output forwarded from a set of remote processes.
-
-%%%%
-\format
-
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_IOF_pull(const pmix_proc_t procs[], size_t nprocs,
-              const pmix_info_t directives[], size_t ndirs,
-              pmix_iof_channel_t channel, pmix_iof_cbfunc_t cbfunc,
-              pmix_hdlr_reg_cbfunc_t regcbfunc, void *regcbdata)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{procs}{Array of proc structures identifying desired source processes (array of handles)}
-\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
-\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
-\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
-\argin{channel}{Bitmask of IO channels included in the request (\refstruct{pmix_iof_channel_t})}
-\argin{cbfunc}{Callback function for delivering relevant output (\refapi{pmix_iof_cbfunc_t} function reference)}
-\argin{regcbfunc}{Function to be called when registration is completed (\refapi{pmix_hdlr_reg_cbfunc_t} function reference)}
-\argin{regcbdata}{Data to be passed to the \refarg{regcbfunc} callback function (memory reference)}
-\end{arglist}
-
-If \refarg{regcbfunc} is \code{NULL}, the function call will be treated as a \emph{blocking} call. In this case, the returned status will be either (a) the IOF handler reference identifier if the value is greater than or equal to zero, or (b) a negative error code indicative of the reason for the failure.
-
-If the \refarg{regcbfunc} is non-\code{NULL}, the function call will be treated as a \emph{non-blocking} call and will return the following:
-
-\begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}. The IOF handler identifier will be returned in the callback
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed.
-\end{constantdesc}
-
-\reqattrstart
-The following attributes are required for \ac{PMIx} libraries that support \ac{IO} forwarding:
-
-\pastePRIAttributeItem{PMIX_IOF_CACHE_SIZE}
-\pastePRIAttributeItem{PMIX_IOF_DROP_OLDEST}
-\pastePRIAttributeItem{PMIX_IOF_DROP_NEWEST}
-
-\reqattrend
-
-\optattrstart
-The following attributes are optional for \ac{PMIx} libraries that support \ac{IO} forwarding:
-
-\pastePRIAttributeItem{PMIX_IOF_BUFFERING_SIZE}
-\pastePRIAttributeItem{PMIX_IOF_BUFFERING_TIME}
-\pastePRIAttributeItem{PMIX_IOF_TAG_OUTPUT}
-\pastePRIAttributeItem{PMIX_IOF_TIMESTAMP_OUTPUT}
-\pastePRIAttributeItem{PMIX_IOF_XML_OUTPUT}
-
-\optattrend
-
-%%%%
-\descr
-
-Register to receive output forwarded from a set of remote processes.
-
-\adviceuserstart
-Providing a \code{NULL} function pointer for the \refarg{cbfunc} parameter will cause output for the indicated channels to be written to their corresponding stdout/stderr file descriptors. Use of \refconst{PMIX_RANK_WILDCARD} to specify all processes in a given namespace is supported but should be used carefully due to bandwidth considerations.
-\adviceuserend
-
-%%%%%%%%%%%
-\subsection{\code{PMIx_IOF_deregister}}
-\declareapi{PMIx_IOF_deregister}
-
-%%%%
-\summary
-
-Deregister from output forwarded from a set of remote processes.
-
-%%%%
-\format
-
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_IOF_deregister(size_t iofhdlr,
-                    const pmix_info_t directives[], size_t ndirs,
-                    pmix_op_cbfunc_t cbfunc, void *cbdata)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{iofhdlr}{Registration number returned from the \refapi{pmix_hdlr_reg_cbfunc_t} callback from the call to \refapi{PMIx_IOF_pull} (\code{size_t})}
-\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
-\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
-\argin{cbfunc}{Callback function to be called when deregistration has been completed. (function reference)}
-\argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
-\end{arglist}
-
-If \refarg{cbfunc} is \code{NULL}, the function will be treated as a \emph{blocking} call and the result of the operation returned in the status code.
-
-If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{non-blocking} call and return one of the following:
-
-\begin{itemize}
-\item \refconst{PMIX_SUCCESS}, indicating that the request is being processed - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-\item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-\item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
-\end{itemize}
-
-The returned status code will be one of the following:
-
-\begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The IOF handler was successfully deregistered.
-\item \refconst{PMIX_ERR_BAD_PARAM} The provided \refarg{iofhdlr} was unrecognized.
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
-\end{constantdesc}
-
-%%%%
-\descr
-
-Deregister from output forwarded from a set of remote processes.
-
-\adviceimplstart
-Any currently buffered \ac{IO} should be flushed upon receipt of a deregistration request. All received \ac{IO} after receipt of the request shall be discarded.
-\adviceimplend
-
-
-%%%%%%%%%%%
-\subsection{\code{PMIx_IOF_push}}
-\declareapi{PMIx_IOF_push}
-
-%%%%
-\summary
-
-Push data collected locally (typically from stdin or a file) to stdin of the target recipients.
-
-%%%%
-\format
-
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_IOF_push(const pmix_proc_t targets[], size_t ntargets,
-              pmix_byte_object_t *bo,
-              const pmix_info_t directives[], size_t ndirs,
-              pmix_op_cbfunc_t cbfunc, void *cbdata)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{targets}{Array of proc structures identifying desired target processes (array of handles)}
-\argin{ntargets}{Number of elements in the \refarg{targets} array (integer)}
-\argin{bo}{Pointer to \refstruct{pmix_byte_object_t} containing the payload to be delivered (handle)}
-\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
-\argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
-\argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
-\argin{cbfunc}{Callback function to be called when operation has been completed. (\refapi{pmix_op_cbfunc_t} function reference)}
-\argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
-\end{arglist}
-
-If \refarg{cbfunc} is \code{NULL}, the function will be treated as a \emph{blocking} call and the result of the operation returned in the status code.
-
-If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{non-blocking} call and return one of the following:
-
-\begin{itemize}
-\item \refconst{PMIX_SUCCESS}, indicating that the request is being processed - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-\item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-\item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
-\end{itemize}
-
-The returned status code will be one of the following:
-
-\begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The provided data has been accepted for transmission - it is not indicative of the payload being delivered to any member of the provided \refarg{targets}
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
-\item a PMIx error constant indicating the nature of the error
-\end{constantdesc}
-
-\reqattrstart
-The following attributes are required for \ac{PMIx} libraries that support \ac{IO} forwarding:
-
-\pastePRIAttributeItem{PMIX_IOF_CACHE_SIZE}
-\pastePRIAttributeItem{PMIX_IOF_DROP_OLDEST}
-\pastePRIAttributeItem{PMIX_IOF_DROP_NEWEST}
-
-\reqattrend
-
-\optattrstart
-The following attributes are optional for \ac{PMIx} libraries that support \ac{IO} forwarding:
-
-\pastePRIAttributeItem{PMIX_IOF_BUFFERING_SIZE}
-\pastePRIAttributeItem{PMIX_IOF_BUFFERING_TIME}
-
-\optattrend
-
-%%%%
-\descr
-
-Push data collected locally (typically from stdin or a file) to stdin of the target recipients.
-
-\adviceuserstart
-Execution of the \refarg{cbfunc} callback function serves as notice that the \ac{PMIx} library no longer requires the caller to maintain the \refarg{bo} data object - it does \textit{not} indicate delivery of the payload to the targets. Use of \refconst{PMIX_RANK_WILDCARD} to specify all processes in a given namespace is supported but should be used carefully due to bandwidth considerations.
-\adviceuserend
-
-

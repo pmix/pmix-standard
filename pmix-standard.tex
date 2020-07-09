@@ -82,6 +82,7 @@
 \makeindex[intoc,columns=1,columnseprule=true,columnsep=15pt,name=index_const,title=Index of Constants] % 1 column because of long names
 \makeindex[intoc,columns=1,columnseprule=true,columnsep=15pt,name=index_attribute,title=Index of Attributes]
 \makeindex[intoc,columns=1,columnseprule=true,columnsep=15pt,name=index_struct,title=Index of Data Structures]
+\makeindex[intoc,columns=1,columnseprule=true,columnsep=15pt,name=index_envars,title=Index of Environmental Variables]
 
 
 %%%%%%%%%%%%%%%%%%%
@@ -120,6 +121,11 @@
 \acrodef{NIC}{Network Interface Card}
 \acrodef{PCI}{Peripheral Component Interconnect}
 \acrodef{MAC}{Media Access Control}
+\acrodef{TCP}{Transmission Control Protocol}
+\acrodef{UID}{User ID}
+\acrodef{GID}{Group ID}
+\acrodef{IL}{Intermediate Launcher}
+\acrodef{FEA}{Fork/Exec Agent}
 
 %%%%%%%%%%%%%%%%%%%
 
@@ -248,6 +254,9 @@
 
 	%\indexprologue{Constants}
 	\printindex[index_const]
+
+    %\indexprologue{Envars}
+    \printindex[index_envars]
 
 	%\indexprologue{Attributes}
 	\printindex[index_attribute]
