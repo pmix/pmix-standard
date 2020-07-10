@@ -4,13 +4,100 @@
 \chapter{Key/Value Management}
 \label{chap:api_kv_mgmt}
 
-Management of key-value pairs in \ac{PMIx} is a distributed responsibility. While the stated objective of the \ac{PMIx} community is to eliminate collective operations, it is recognized that the traditional method of posting/exchanging data must be supported until that objective can be met. This method relies on processes to discover and post their local information which is collected by the local PMIx server library. Global exchange of the posted information is then executed via a collective operation performed by the host \ac{SMS} servers. The \refapi{PMIx_Put} and \refapi{PMIx_Commit} \acp{API}, plus an attribute directing \refapi{PMIx_Fence} to globally collect the data posted by processes, are provided for this purpose.
+Key-value pairs are the primary way that information is shared through PMIx.  Information sharing 
+is possible between a PMIx server and clients and between clients.  
+Information is shared by exposing it to clients which gives those clients the ability to retrieve the 
+information if desired.  PMIx does not provide a mechanism to notify a client about the availability 
+of information.  
+
+This chapter presents two mechanism in which information can be shared between PMIx clients.  PMIx 
+provides a put/get mechanism which is intended to be a high-performance way for servers to share 
+key-value pairs with clients and for clients to share key-value pairs with other clients.  The semantics
+of this approach vary somewhat depending on where the data originated.  Those differences  
+are described in Section 
+%%% \reflabel{chap:api_kv_mgmt:access}.
+The put/get approach requires that a client know the identity of the provider of the data it requires.  
+PMIx also provides a publish/lookup machanism which is 
+intended for use when a client does not know the identity of the data provider.  Using this mechanism,
+there can only be one source, i.e. publisher, of a particular key at a time.  Together, the two
+mechanisms provide ways to share key-value pairs that satisfy most client needs.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Setting and Accessing Key/Value Pairs}
+\section{Put/Get and Put/Fence/Get Key-Value Sharing}
 \label{chap:api_kv_mgmt:access}
 
+In the Put/Get model of sharing data, key-values can be associated with one of the following realms:
+\begin{itemize}
+\item The session corresponding to a particular namespace or rank.
+\item The job containing a particular namespace or rank.
+\item The application containing a particular rank.
+\item The node a particular rank is executing on.
+\item A namespace.
+\item A rank.   
+\end{itemize}
+
+The key-value pairs associated with sessions, jobs, applications, nodes and namespaces can only be 
+established by the PMIx server.   Key-value pairs associated with a specific rank can be 
+established by either the PMIx server or by the rank.  Clients expose key-value pairs using PMIx_Put.
+The PMIx_Put call exposes data by associating it with the calling process' namespace and rank 
+within that namespace.  
+A PMIx call can retrieve rank specific data by specifying the namespace and rank of the desired client 
+using the pmix_proc_t parameter of PMIx_Get. 
+To retrieve key-values associated with entities other than a specific rank is done using a combination of 
+identifying a process or namespace and attributes.   The following table summarizes how to retrieve 
+data from the entities listed above:
+
+\begin{longtable}{ | p{1.5cm} | p{1cm} | p{3cm} | p{3.7cm} | p{3cm} |}
+       \caption{How to retrieve key-values from data realms} \\
+       \hline 
+       \textbf{realm} & \textbf{nspace} & \textbf{rank} & \textbf{info ATTRIBUTE} & \textbf{info value} \\ \hline
+       \endhead
+       Session     & yes & yes      & PMIX_SESSION_INFO & true (bool) \\ \hline
+       Job         & yes & WILDCARD & PMIX_JOB_INFO     & true (bool) \\ \hline
+       Application & yes & yes      & PMIX_APP_INFO     & true (bool) \\ \hline
+       Application &     &          & PMIX_APP_INFO     & true (bool) \\ 
+                   &     &          & PMIX_APPNUM       & app number (uint32_t) \\ \hline
+       Node        & yes & yes      & PMIX_NODE_INFO    & true (bool) \\ \hline
+       Node        &     &          & PMIX_NODE_INFO    & true (bool) \\
+                   &     &          & PMIX_HOSTNAME     & hostname (string) \\ \hline
+       Node        &     &          & PMIX_NODE_INFO    & true (bool) \\ 
+                   &     &          & PMIX_NODEID       & host number (uint32_t) \\ \hline
+      Namespace    & yes & WILDCARD &                   &  \\ \hline
+      Rank         & yes & yes      &                   &  \\ \hline
+\end{longtable}
+
+Examples of these access patterns are presented in 
+\ref{chap:api_kv:getex}.  These examples show how a key may exist in multiple realms, each with
+a unique and meaningful value appropriate to the context of that realm. 
+
+Keys established by the PMIx server should be prefaced with PMIX_.  Clients shall not call PMIx_Put 
+on keys with this prefix.  A PMIx server implementation may choose to establish implementation specific 
+keys that do not begin with PMIX_ but these should be well documented and use a common prefix when possible 
+to avoid collisions with clients and other implementations.  
+
+It is common practice in many PMIx clients to put and get data in phases.  To allow for high performance 
+implementations of this common access pattern, PMIx provides two mechanisms to allow for a high performance
+implementation.  The first mechanism is that all data put by the \refapi{PMIx_Put} remains in an uncommited 
+state until PMIx_Commit is called.  When PMIx_Commit is called all previously put key-value pairs become 
+visible through \refapi{PMIx_Get} calls.  
+This allows multiple key-value pairs to be effectively made available simultaneously and gives
+implementors the opportunity to make the individual \refapi{PMIx_Put} calls efficient local operations.
+The second mechanism is not a required but highly encouraged when performance is important.  
+The \refapi{Pmix_Fence} operation can be invoked with a hint 
+indicating that clients have finished putting data and will be making \refapi{PMIx_Get} calls 
+after the operation completes.  A high-quality implementation will recognize this hint and synchonize
+data across the members of the fence operation so that subsequent \refapi{PMIx_Get} calls can be 
+resolved expediently.  Clients can separate PMIx_Put/PMIx_Commit phases from PMIx_Get phases
+using a PMIx_Fence call with the PMIX_COLLECT_DATA hint to both synchronize the calling processes 
+and give implementations an opportunity to
+optimize the exchanging of committed key-value pairs.  
+%
+%% SOLT: TODO: I don't get how it works if you do a put/commit/fence/put/commit.  
+%% How will the remote side know to get % the updated data (the 2nd put)
+%% I suspect that in this case you have to do a fence.  I wonder if the non-fence method
+%% only works if the data is unavailable locally.  Once you have a copy, it doesn't know
+%% its out of date unless you do a fence???
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Put}}
