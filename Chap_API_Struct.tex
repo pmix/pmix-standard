@@ -1446,6 +1446,12 @@ typedef struct pmix_value \{
 \end{codepar}
 \cspecificend
 
+\adviceimplstart
+The PMIx implementation will support heterogeneous environments by properly converting binary values between host architectures.
+The PMIx implementation will properly pack/unpack \refstruct{pmix_value_t} data to accommodate such environments.
+The host \ac{SMS} is not involved in this action. 
+\adviceimplend
+
 %%%%%%%%%%%
 \subsection{Value structure support macros}
 The following macros are provided to support the \refstruct{pmix_value_t} structure.
@@ -4199,7 +4205,7 @@ The timeout parameter can help avoid ``hangs'' due to programming errors that pr
 
 %
 \declareAttribute{PMIX_IMMEDIATE}{"pmix.immediate"}{bool}{
-Specified operation should immediately return an error from the PMIx server if the requested data cannot be found - do not request it from the host \ac{RM}.
+Specified operation should immediately return an error if the requested data is not currently available to local \ac{PMIx} server - do not request it from the host \ac{RM} or other \ac{PMIx} servers.
 }
 
 %
@@ -4240,6 +4246,7 @@ Scope of the data to be found in a \refapi{PMIx_Get} call.
 %
 \declareAttribute{PMIX_OPTIONAL}{"pmix.optional"}{bool}{
 Look only in the client's local data store for the requested value - do not request data from the PMIx server if not found.
+Operation will return immediately if the key is not currently available to the client.
 }
 
 %

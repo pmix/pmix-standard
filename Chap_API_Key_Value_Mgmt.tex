@@ -1,127 +1,106 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Chapter: Key/Value Management
+% Chapter: key-value Management
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Key/Value Management}
+\chapter{Key-Value Management}
 \label{chap:api_kv_mgmt}
 
-Key-value pairs are the primary way that information is shared through PMIx.  Information sharing 
-is possible between a PMIx server and clients and between clients.  
-Information is shared by exposing it to clients which gives those clients the ability to retrieve the 
-information if desired.  PMIx does not provide a mechanism to notify a client about the availability 
-of information.  Information is conceptually "pulled" not "pushed". 
+In \ac{PMIx} key-value pairs are the primary way that information is shared between processes in the \ac{PMIx} universe.
+For example, \ac{PMIx} clients often access job-level key-value pairs created by the \ac{PMIx} server, and exchange
+process-level information between \ac{PMIx} clients using the APIs presented in this chapter.
+Additionally, \ac{PMIx} tools access information about \ac{PMIx} client jobs from the \ac{PMIx} server using the
+same set of interfaces.
 
-This chapter presents two mechanism in which information can be shared between PMIx clients.  PMIx 
-provides a put/get mechanism which is intended to be a high-performance way for servers to share 
-key-value pairs with clients and for clients to share key-value pairs with other clients.  The semantics
-of this approach vary somewhat depending on where the data originated.  Those differences  
-are described in \ref{chap:api_kv_mgmt:putget-overview}.
-The put/get approach requires that a client know the identity of the provider of the data it requires.  
-PMIx also provides a publish/lookup machanism which is 
-intended for use when a client does not know the identity of the data provider.  Using this mechanism,
-there can only be one source, i.e. publisher, of a particular key at a time.  Together, the two
-mechanisms provide ways to share key-value pairs that satisfy most client needs.
+This chapter describes two mechanisms for exchanging key-value pairs between processes in the \ac{PMIx} universe.
+Namely, process related and non-process related exchanges.
+\emph{Process related key-value exchanges} are described in detail in Section \ref{chap:api_kv_mgmt:putget-overview}.
+Generally, these operations are useful for advertising information specific about one process to other processes in the \ac{PMIx} universe.
+The process accessing this information must know the identity of the process providing the data.
+\emph{Non-process related key-value exchanges} are described in detail in Section \ref{chap:api_kv_mgmt:publish-overview}.
+Generally, these operations are useful for advertising information that is not necessarily specific to one process to other processes in the \ac{PMIx} universe.
+The process accessing this information does \emph{not} need to know the identity of the process that provided the data.
+
+\ac{PMIx} does not provide a mechanism to asynchronously notify a process about the availability of key-value information once it is made available by another process.
+However, the nonblocking accessor interfaces (e.g., \refapi{PMIx_Get_nb}, \refapi{PMIx_Lookup_nb}) can provide a sufficient degree of asynchronous notification on information availability, if desired.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Overview of Put/Get Key-Value Sharing}
+\section{Process Related Key-Value Exchange}
 \label{chap:api_kv_mgmt:putget-overview}
 
-In the put/get model of data sharing, key-values can be associated with one of the following realms:
-\begin{itemize}
-\item A session - specified by id or the session corresponding to a particular namespace 
-\item A job - identified by an id or the job corresponding to a particular namespace 
-\item The application containing a particular rank
-\item A node specified by name, id or by a rank executing on that node
-\item A namespace
-\item A rank
-\end{itemize}
+Process related key-value exchanges allow a \ac{PMIx} process to share information specific to itself, and access information specific to one or more processes in the \ac{PMIx} universe.
+The 'put/commit/get' exchange pattern is often used to exchange process related information.
+Optionally, a 'put/commit/fence/get' exchange pattern adds the 'fence' synchronization (and possible collective exchange) for applications that desire it.
+Commonly, these exchange patterns are used in a \declareterm{business card exchange}\emph{business card exchange} (a.k.a. \declareterm{modex exchange}\emph{modex exchange}) where one \ac{PMIx} client shares its connectivity information, then other \ac{PMIx} clients access that information to establish a connection with that client.
+In some environments that support ``instant-on'' all connectivity information for \ac{PMIx} clients is stored in the job-level information at process creation time and is accessible to the clients without the need to perform any additional key-value exchange.
 
-For example, one might wish to query the number of nodes used by an namespace, an application, or a session.
-Rather than defining three different keys, a single key is used but exists within the
-context of each of these realms.
+\ac{PMIx} clients can access available information associated with a namespace and/or a specific process in various data realms.
+For example, a client can access the number of nodes (\refattr{PMIX_NUM_NODES}) used by a session, job, or application.
+Rather than having three different attributes, a single attribute is used but with the data realm context of the query specified as additional attributes.
+Examples of these access patterns are presented in Section \ref{chap:api_kv:getex} and Table~\ref{tab:key-value-realms} summarizes how to access such data.
 
-The key-value pairs associated with sessions, jobs, applications, nodes and namespaces can only be 
-established by the PMIx server.   Key-value pairs associated with a specific rank can be 
-established by either the PMIx server or by the rank.  Clients expose key-value pairs using PMIx_Put.
-The PMIx_Put call exposes data by associating it with the calling process' namespace and rank 
-within that namespace.  
-A PMIx_get call can retrieve the data of a specific rank by passing in a pmix_proc_t parameter specifying 
-the namespace and rank of the desired client. 
-To retrieve key-values associated with entities other than a specific rank is done using a combination of 
-identifying a process or namespace and attributes.  Table 5.1
-%% SOLT: TODO:  How to get a reference to this table (don't use hard coded 5.1)
-summarizes how to retrieve data from the entities listed above.
+The key-value pairs at the session, job, application, node, and namespace levels can only be established by the \ac{PMIx} server.
+The key-value pairs at the process-level can be established by the \ac{PMIx} server or by the \ac{PMIx} client.
+Keys prefixed with ``\code{pmix}'' are reserved by \ac{PMIx} and may only be set by the \ac{PMIx} server when setting up the namespace.
+See Chapter~\ref{chap:api_server} for more details about the \ac{PMIx} server.
 
-\begin{longtable}{ | p{1.5cm} | p{1cm} | p{3cm} | p{3.7cm} | p{3cm} |}
-       \caption{How to retrieve key-values from data realms} \\
-       \hline 
-       \textbf{data realm} & \textbf{nspace} & \textbf{rank} & \textbf{attribute key} & \textbf{attribute value} \\ \hline
-       \endhead
-       Session     & target & WILDCARD & PMIX_SESSION_INFO & true (bool) \\ \hline
-       Session     &        &          & PMIX_SESSION_INFO & true (bool) \\ 
-       Session     &        &          & PMIX_SESSION_ID   & session id (uint32_t) \\ \hline
-       Job         & target & WILDCARD & PMIX_JOB_INFO     & true (bool) \\ \hline
-       Job         &        &          & PMIX_JOB_INFO     & true (bool) \\ 
-       Job         &        &          & PMIX_JOBID        & jobid (uint32_t) \\ \hline
-       Application & target & target   & PMIX_APP_INFO     & true (bool) \\ \hline
-       Application &        &          & PMIX_APP_INFO     & true (bool) \\ 
-                   &        &          & PMIX_APPNUM       & app number (uint32_t) \\ \hline
-       Node        & target & target   & PMIX_NODE_INFO    & true (bool) \\ \hline
-       Node        &        &          & PMIX_NODE_INFO    & true (bool) \\
-                   &        &          & PMIX_HOSTNAME     & hostname (string) \\ \hline
-       Node        &        &          & PMIX_NODE_INFO    & true (bool) \\ 
-                   &        &          & PMIX_NODEID       & host number (uint32_t) \\ \hline
-      Namespace    & target & WILDCARD &                   &  \\ \hline
-      Rank         & target & target   &                   &  \\ \hline
-\end{longtable}
+\ac{PMIx} clients can share key-value pairs associated with themselves by using the \refapi{PMIx_Put} function.
+The \refapi{PMIx_Put} function automatically associates the key-value pair with the calling process, thus making it specific to that process.
+A client may call \refapi{PMIx_Put} as many times as necessary and the data is not available to other processes until explicitly committed.
+A client must call \refapi{PMIx_Commit} to make accessible all key-value pairs previously put by this process to all other processes in the \ac{PMIx} universe.
+This put and commit pattern provides implementors the opportunity to make individual \refapi{PMIx_Put} calls efficient local operations, and then make the whole set of key-value pairs accessible in a single step.
 
-Examples of these access patterns are presented in 
-\ref{chap:api_kv:getex}.  These examples show how a key may exist in multiple realms, each with
-a unique and meaningful value appropriate to the context of that realm. 
+\ac{PMIx} clients can access the key-value pairs associated with any process in the \ac{PMIx} universe (including the calling process) by passing the specific process name of the target process to the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions.
+The \ac{PMIx} server local to the calling process will retrieve that key-value pair from the \ac{PMIx} server associated with the target process.
+Clients can also access session, job, application, node, and namespace level information by using the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions as shown in Section \ref{chap:api_kv:getex} and summarized in Table~\ref{tab:key-value-realms}.
+If the key-value pair is not available, the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions will not complete, by default, until that key-value pair becomes available.
+Additional attributes can be passed to control this behavior.
 
-Keys established by the PMIx server should be prefaced with PMIX_.  Clients shall not call PMIx_Put 
-on keys with this prefix.  A PMIx server implementation may choose to establish implementation specific 
-keys that do not begin with PMIX_ but these should be well documented and use a common prefix when possible 
-to avoid collisions with clients and other implementations.  
+Optionally, \ac{PMIx} clients can use the \refapi{PMIx_Fence} and \refapi{PMIx_Fence_nb} functions to synchronize a set of processes.
+In its default form, the fence operation acts as a barrier between the processes and does not exchange data.
+The fence operation can be useful between the commit and get phases to let all or a subset of processes know that the put data is ready to be accessed.
+Additionally, the clients can pass the \refattr{PMIX_COLLECT_DATA} attribute to request that the \refapi{PMIx_Fence} and \refapi{PMIx_Fence_nb} functions exchange all committed data between all involved servers during the synchronization operation.
+This will make local to each remote process the data put by other processes resulting in faster resolution of \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} function calls at the cost of a synchronous data exchange and associated memory footprint expansion.
+For applications were most or all processes access most or all other key-value pairs this attribute may be beneficial.
+For applications were a small subset access another small subset's key-value pairs this attribute may not be beneficial.
+As such, \ac{PMIx} does not require the use of \refapi{PMIx_Fence} or \refapi{PMIx_Fence_nb} functions nor the associated data collection attribute to provide applications with the necessary flexibility to meet their performance requirements.
 
-It is common practice in many PMIx clients to put and get data in phases.  To allow for high performance 
-implementations of this common access pattern, PMIx provides two mechanisms to allow for a high performance
-implementation.  The first mechanism is that all data put by the \refapi{PMIx_Put} remains in an uncommited 
-state until PMIx_Commit is called.  When PMIx_Commit is called all previously put key-value pairs become 
-visible through \refapi{PMIx_Get} calls.  
-This allows multiple key-value pairs to be effectively made available simultaneously and gives
-implementors the opportunity to make the individual \refapi{PMIx_Put} calls efficient local operations.
-The second mechanism is not a required but highly encouraged when performance is important.  
-The \refapi{PMIx_Fence} operation can be invoked with a hint 
-indicating that clients have finished putting data and will be making \refapi{PMIx_Get} calls 
-after the operation completes.  A high-quality implementation will recognize this hint and synchonize
-data across the members of the fence operation so that subsequent \refapi{PMIx_Get} calls can be 
-resolved expediently.  Clients can separate PMIx_Put/PMIx_Commit phases from PMIx_Get phases
-using a PMIx_Fence call with the PMIX_COLLECT_DATA hint to both synchronize the calling processes 
-and give implementations an opportunity to
-optimize the exchanging of committed key-value pairs.  
+
+% Hursey: The below text should go to the server specific chapter
+% A PMIx server implementation may choose to establish implementation specific 
+% keys that do not begin with PMIX_ but these should be well documented and use a common prefix when possible 
+% to avoid collisions with clients and other implementations.  
+
+
 %
 %% SOLT: TODO: I don't get how it works if you do a put/commit/fence/put/commit.  
 %% How will the remote side know to get % the updated data (the 2nd put)
 %% I suspect that in this case you have to do a fence.  I wonder if the non-fence method
 %% only works if the data is unavailable locally.  Once you have a copy, it doesn't know
 %% its out of date unless you do a fence???
+%
+%% Hursey: In this case new data is available at the commit.
+%% If it is a new key then the PMIx server will issue the dmodex to access the remote information
+%% on the PMIx_Get call.
+%% If it is an existing key that the remote side updated then I'm not sure how the PMIx server
+%% knows that it has an 'old' copy of the data one the other site commits it...
+%
 
 %%%%%%%%%%%
+\subsection{Putting Key-Value Pairs}
 
-\section{Putting Key/Value Pairs}
+\ac{PMIx} clients can share key-value pairs associated with themselves by using \refapi{PMIx_Put}.
+Alternatively, \ac{PMIx} clients can store key-value pairs associated with other processes but accessible only by the caller by using \refapi{PMIx_Store_internal}.
 
-Key-value pairs are generally stored using \refapi{PMIx_Put}.  In this section we present the 
-details of the \refapi{PMIx_Put} call as well as a specialized alternative for storing data which is only
-accessible by the caller, \refapi{PMIx_Store_internal}.
 
-\subsection{\code{PMIx_Put}}
+%%%%%%%%%%%
+\subsubsection{\code{PMIx_Put}}
 \declareapi{PMIx_Put}
 
 %%%%
 \summary
 
-Submit a key/value pair to be staged for committing into the client's namespace.
+Submit a key-value pair to be staged for committing into the caller's namespace.
 
 %%%%
 \format
@@ -137,9 +116,9 @@ PMIx_Put(pmix_scope_t scope,
 \cspecificend
 
 \begin{arglist}
-\argin{scope}{Distribution scope of the provided value (handle)}
-\argin{key}{key (\refstruct{pmix_key_t})}
-\argin{value}{Reference to a \refstruct{pmix_value_t} structure (handle)}
+\argin{scope}{Distribution scope of the provided value (\refstruct{pmix_scope_t} handle)}
+\argin{key}{key with which to access the value (\refstruct{pmix_key_t} handle}
+\argin{value}{value to store (\refstruct{pmix_value_t} handle)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
@@ -147,39 +126,31 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Submit a key/value pair to be staged for committing into the client's namespace.
-The client's \ac{PMIx} library will cache the information locally until \refapi{PMIx_Commit} is called.
+Submit a key-value pair to be staged for committing into the calling process' namespace.
+The \ac{PMIx} library will stage the information locally until \refapi{PMIx_Commit} is called.
 
 When committed, the provided \refarg{scope} is used to determine the set of processes which can access
-the key-value.
-The \refstruct{pmix_scope_t} values are defined in \specrefstruct{pmix_scope_t}.
+the key-value pair.
 Implementations may support different scope values, but all implementations must support at 
-least \code{PMIX_GLOBAL}, which places no restriction on the ranks which can access the key-values.
+least \code{PMIX_GLOBAL}, which places no restriction on the ranks which can access the key-value pair.
 
-The \refstruct{pmix_value_t} structure supports many common data types and in any case can always store data as unformatted binary values.
-PMIx implementations will support heterogeneous environments by properly converting binary values between host architectures.  The implementation is required to store the value so that the value and any memory it references
-can be deallocated after the \refapi{PMIx_Put} call returns.
+Keys starting with a string of ``\code{pmix}'' are exclusively reserved by the \ac{PMIx} standard for use by the PMIx implementation and must not be used in calls to \refapi{PMIx_Put}.
+Thus, applications must never use a ``PMIX_'' prefixed attribute as the key in a call to \refapi{PMIx_Put}.
 
-\adviceimplstart
-The PMIx implementation will properly pack/unpack data to accommodate heterogeneous environments. The host \ac{SMS} is not involved in this action. The \refarg{value} argument must be copied - the caller is free to release it following return from the function.
-\adviceimplend
+The implementation is required to store the \refarg{value} so that the \refarg{value} and any memory it references can be deallocated after the \refapi{PMIx_Put} call returns.
+Thus, the caller is free to release and/or modify the \refarg{value} once the call to \refapi{PMIx_Put} has completed.
 
-\adviceuserstart
-The value is copied by the PMIx client library. Thus, the application is free to release and/or modify the value once the call to \refapi{PMIx_Put} has completed.
+The \refstruct{pmix_value_t} structure supports many common data types including unformatted binary values and supports properly converting binary values between host architectures.
 
-Note that keys starting with a string of ``\code{pmix}'' are exclusively reserved by the \ac{PMIx} standard for use by the PMIx implementation and must not be used in calls to \refapi{PMIx_Put}. Thus, applications should never use a ``PMIX_'' attribute as the key in a call to \refapi{PMIx_Put}.
-\adviceuserend
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Store_internal}}
+\subsubsection{\code{PMIx_Store_internal}}
 \declareapi{PMIx_Store_internal}
 
 %%%%
 \summary
 
-Store some data locally for retrieval by other areas of the proc.
-%% SOLT: TODO:  This is so bad.  We need a detailed explanation or deprecate or don't include in 5.0.
-
+Store a key-value pair data about a specific process locally to the calling process for later retrieval by only the calling process.
 
 %%%%
 \format
@@ -195,9 +166,9 @@ PMIx_Store_internal(const pmix_proc_t *proc,
 \cspecificend
 
 \begin{arglist}
-\argin{proc}{process reference (handle)}
-\argin{key}{key to retrieve (string)}
-\argin{val}{Value to store (handle)}
+\argin{proc}{process reference or \code{NULL} for the calling process (\refstruct{pmix_proc_t} handle)}
+\argin{key}{key with which to access the value (\refstruct{pmix_key_t} handle}
+\argin{value}{value to store (\refstruct{pmix_value_t} handle)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
@@ -205,18 +176,35 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Store some data locally for retrieval by other areas of the proc.
-This is data that has only internal scope - it will never be ``pushed'' externally.
+Store a key-value pair about a specific process locally to the calling process for later retrieval by other areas of the calling process.
+This is data that has only internal scope meaning that it will never be ``pushed'' externally.
+The key-value pair is accessible by the calling process by using the \refapi{PMIx_Get} or \refapi{PMIx_Get_nb} calls.
+A \refapi{PMIx_Commit} call is not required.
+
+\adviceuserstart
+Passing either \code{NULL} or the calling process' information for \refarg{proc} to \refapi{PMIx_Store_internal} is the same as calling \refapi{PMIx_Put} with the \refconst{PMIX_INTERNAL} \refarg{scope}.
+
+The need for a \refapi{PMIx_Store_internal} separate from \refapi{PMIx_Put} is when the caller passes \refapi{PMIx_Store_internal} the process name of another process with which the caller needs to associate data possibly not obtained via \ac{PMIx}.
+The \refapi{PMIx_Put} function always associates the key-value pair with the calling process.
+The \refapi{PMIx_Store_internal} function associates the key-value pair with the process specified as an argument.
+\adviceuserend
 
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Commit}}
+\subsection{Committing Key-Value Pairs}
+
+The \ac{PMIx} process can locally stage key-value pairs with one or more calls to \refapi{PMIx_Put}.
+Those key-value pairs can only become accessible by other \ac{PMIx} processes after the process commits the data.
+
+
+%%%%%%%%%%%
+\subsubsection{\code{PMIx_Commit}}
 \declareapi{PMIx_Commit}
 
 %%%%
 \summary
 
-Make all key-values previously staged with \refapi{PMIx_Put} accessible to other clients.
+Make all key-value pairs previously staged with \refapi{PMIx_Put} accessible to other processes in the \ac{PMIx} universe.
 
 %%%%
 \format
@@ -233,47 +221,70 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-An implementation will begin the process of making all key-values previously staged 
-with \refapi{PMIx_Put} accessible to other clients.  
-Completion of the call guarantees that other clients will not wait indefintely before observing the 
-committed key-value pair.   
-Successful completion of the PMIx_Commit call does not imply that all clients blocking in a PMIx_Get call
-will have returned successfully completed, nor does it guarantee that another rank calling 
-PMIx_Get with the PMIX_IMMEDIATE attribute 
-will successfully return the committed key-value.  It is valid for an implementation 
-to asynchronously distribute the data within the system as needed to make it available to all ranks.  
+Successful completion of the \refapi{PMIx_Commit} function indicates that all key-value pairs previously staged with \refapi{PMIx_Put} become accessible to other processes in the \ac{PMIx} universe.
+The key-value pairs are pushed to the local \ac{PMIx} server.
+
+Completion of this function guarantees that other \ac{PMIx} clients will not wait indefinitely before observing the committed key-value pair from the calling process if that key-value pair is part of the commit action.
+If the key-value pair is not part of the commit action the \ac{PMIx} client will still continue to wait for they key-value pair to become available unless an additional directive is provided in the \refapi{PMIx_Get} or \refapi{PMIx_Get_nb} function.
+
+% HURSEY: Is the app guaranteed that when the call completes that the data is available to other processes?
+% Is there a race condition here:
+% Proc A               Proc B
+% --------------------|---------------
+% PMIx_Put(k,v)
+% PMIx_Commit()
+% -send out-of-band sync-
+%                     | PMIx_Get(TIMEOUT=1)
+%
+%
+% PMIX_OPTIONAL will return right away if the key is not currently available to the client.
+% PMIX_IMMEDIATE goes up to the local server to request it - it should then return if the key isn't there. It should not request the info from the local host.
+
 
 \adviceuserstart
 Note that this call is inherently not thread safe.  An application with multiple threads making PMIx calls
-must coordinate to ensure that a thread does not unintentionally commit values put by other threads. 
-The local PMIx server may cache the information locally - i.e., the committed data may not be 
-remotely communicated during the \refapi{PMIx_Commit}.
+may need to coordinate to ensure that a thread does not unintentionally commit values put by other threads before
+they are ready to be made available.
+\adviceuserend
+
+\adviceimplstart
+The local \ac{PMIx} server may cache the information locally - i.e., the committed data might not be 
+remotely communicated during the \refapi{PMIx_Commit} operation.
 %% SOLT: TODO:  This part I don't understand.  If this is true, then the non-fence method of using put/get 
 %% has no guarantee of ever working.
 %% Availability of the data upon completion of \refapi{PMIx_Commit} is therefore implementation-dependent.
-\adviceuserend
+%
+% Hursey: Is there an upcall into the server when the client calls PMIx_Commit? If not then how would it know when/what to circulate?
+It is valid for a \ac{PMIx} server to asynchronously distribute the data within the system as needed to make it available where needed.  
+\adviceimplend
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Exchanging Key/Value Pairs}
+\subsection{Exchanging Key-Value Pairs and Process Synchronization}
 \label{chap:api_kv_mgmt:exchange}
 
-Although the use of PMIx_Fence is not required to lookup key-values, it is a vital component of a 
-high-performance approach to exchanging key-values in a large system.  
-A large system may experience a prohibitively large number of point-to-point
-data messages if the PMIx_Fence operation is not used to synchronize and exchange data using a collective 
-operation which allows the PMIx implementation to use more effecient collective data exchange algorithms.
+After the \refapi{PMIx_Commit} the key-value pairs put by a process are available to other processes in the \ac{PMIx} universe depending on the individual scope of the key-value pairs.
+Without further coordination, a process will access this information by sending on-demand requests to the target \ac{PMIx} server for the key-value pair.
 
-Therefore, although PMIx_Fence can and is often used a simple way to synchronize ranks, it is presented
-in this chapter due to its key roll in the put/get framework for sharing key-value pairs.
+Some applications may need to synchronize all or a subset of processes in a namespace to coordinate access to the committed key-value pairs.
+For example, an application may need to guarantee that processes only start accessing the key-value pairs after the \refapi{PMIx_Commit} operation has completed.
+Additionally, some application may want to request the exchange of all of the committed key-value pairs during that synchronization operation.
+Doing so would speed up subsequent \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} calls at the expense of a collective data exchange and possibly a larger memory footprint.
+
+As such the fence operations defined in this section are not a required part of the process related key-value exchange in \ac{PMIx}.
+However, some applications may find it helpful to use these operations between the \refapi{PMIx_Commit} and subsequent \refapi{PMIx_Get}/ \refapi{PMIx_Get_nb} calls.
+
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Fence}}
+\subsubsection{\code{PMIx_Fence}}
+\label{chap:api_kv_mgmt:fence}
 \declareapi{PMIx_Fence}
 
 %%%%
 \summary
 
-Execute a blocking barrier across the processes identified in the specified array, collecting information posted via \refapi{PMIx_Put} as directed.
+Execute a blocking barrier across the processes identified in the specified array.
+If directed, key-value pairs previously committed by participating processes will be exchanged during the collective operation.
 
 %%%%
 \format
@@ -288,9 +299,9 @@ PMIx_Fence(const pmix_proc_t procs[], size_t nprocs,
 \cspecificend
 
 \begin{arglist}
-\argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
+\argin{procs}{NULL or an ordered array of processes over which to synchronize (array of \refstruct{pmix_proc_t} handles)}
 \argin{nprocs}{Number of element in the \refarg{procs} array (integer)}
-\argin{info}{Array of info structures (array of handles)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t} handles)}
 \argin{ninfo}{Number of element in the \refarg{info} array (integer)}
 \end{arglist}
 
@@ -313,35 +324,35 @@ The following attributes are optional for host environments:
 \optattrend
 
 \adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+It is recommend that an implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
+
+Note that \ac{PMIx} implementations may choose to implement an optimization for the case where only the calling process is involved in the fence operation by immediately returning \refconst{PMIX_OPERATION_SUCCEEDED} from the client's call in lieu of passing the fence operation to a \ac{PMIx} server. Fence operations involving more than just the calling process must be communicated to the \ac{PMIx} server for proper execution of the included barrier behavior.
+
+Similarly, fence operations that involve only processes that are clients of the same \ac{PMIx} server may be resolved by that server without referral to its host environment as no inter-node coordination is required.
 \adviceimplend
 
 %%%%
 \descr
 
-Passing a \code{NULL} pointer as the \refarg{procs} parameter indicates that the fence is to span all processes in the client's namespace.
-Each provided \refstruct{pmix_proc_t} struct can pass \refconst{PMIX_RANK_WILDCARD} to indicate that all processes in the given namespace are participating.
+Execute a blocking barrier across the processes identified in the specified array.
+The caller must be included in the set of processes over which the fence applies.
+Passing a \code{NULL} pointer as the \refarg{procs} parameter indicates that the fence is to span all processes in the calling processes namespace.
+Each provided \refstruct{pmix_proc_t} struct can pass \refconst{PMIX_RANK_WILDCARD} to indicate that all processes in the specified namespace are participating.
+Multiple fence operations may be outstanding as long as the \refarg{procs} parameter is unique between each of the outstanding fence operations.
 
 The \refarg{info} array is used to pass user requests regarding the fence operation.
+The default behavior for \refapi{PMIx_Fence} is to synchronize only and not exchange the key-value pairs.
+The caller may add the \refattr{PMIX_COLLECT_DATA} attribute to the \refarg{info} array to request that the key-value pairs be collectively exchanged during the fence operation.
 
-Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence} is to not collect the data.
-
-\adviceimplstart
-\refapi{PMIx_Fence} and its non-blocking form are both \emph{collective} operations. Accordingly, the \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
-\adviceimplend
-
-\advicermstart
-The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
-\advicermend
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Fence_nb}}
+\subsubsection{\code{PMIx_Fence_nb}}
 \declareapi{PMIx_Fence_nb}
 
 %%%%
 \summary
 
-Execute a nonblocking \refapi{PMIx_Fence} across the processes identified in the specified array of processes, collecting information posted via \refapi{PMIx_Put} as directed.
+Execute a nonblocking \refapi{PMIx_Fence} across the processes identified in the specified array of processes.
 
 %%%%
 \format
@@ -357,11 +368,11 @@ PMIx_Fence_nb(const pmix_proc_t procs[], size_t nprocs,
 \cspecificend
 
 \begin{arglist}
-\argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
+\argin{procs}{NULL or an ordered array of processes over which to synchronize (array of \refstruct{pmix_proc_t} handles)}
 \argin{nprocs}{Number of element in the \refarg{procs} array (integer)}
-\argin{info}{Array of info structures (array of handles)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t} handles)}
 \argin{ninfo}{Number of element in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function (function reference)}
+\argin{cbfunc}{Callback function (\refapi{pmix_op_cbfunc_t} function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
@@ -384,43 +395,37 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pastePRIAttributeItemBegin{PMIX_TIMEOUT}
+See Advice to Implementers in Section~\ref{chap:api_kv_mgmt:fence}.
+\pastePRIAttributeItemEnd
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
 \pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-
-Note that \ac{PMIx} libraries may choose to implement an optimization for the case where only the calling process is involved in the fence operation by immediately returning \refconst{PMIX_OPERATION_SUCCEEDED} from the client's call in lieu of passing the fence operation to a \ac{PMIx} server. Fence operations involving more than just the calling process must be communicated to the \ac{PMIx} server for proper execution of the included barrier behavior.
-
-Similarly, fence operations that involve only processes that are clients of the same \ac{PMIx} server may be resolved by that server without referral to its host environment as no inter-node coordination is required.
-\adviceimplend
 
 %%%%
 \descr
 
 Nonblocking \refapi{PMIx_Fence} routine.
 Note that the function will return an error if a \code{NULL} callback function is given.
-
-Note that for scalability reasons, the default behavior for \refapi{PMIx_Fence_nb} is to not collect the data.
-
 See the \refapi{PMIx_Fence} description for further details.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Retrieving Key/Value Pairs}
-\label{chap:api_kv_mgmt:retrieve}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Accessing Key-Value Pairs}
+\label{chap:api_kv_mgmt:retrieve}
+
+\ac{PMIx} clients can access key-value pairs by using \refapi{PMIx_Get}.
+This includes, but may not be limited to, key-value pairs pre-established by the \ac{PMIx} server in the job-level information, key-value pairs previously \refapi{PMIx_Put} by other processes in a namespace, or key-value pairs previously locally stored by this process with \refapi{PMIx_Store_internal}.
+
 %%%%%%%%%%%
-\subsection{\code{PMIx_Get}}
+\subsubsection{\code{PMIx_Get}}
 \declareapi{PMIx_Get}
 
 %%%%
 \summary
 
-Retrieve a key/value pair from the client's namespace.
+Retrieve a key-value pair from the \ac{PMIx} data store.
 
 %%%%
 \format
@@ -436,11 +441,11 @@ PMIx_Get(const pmix_proc_t *proc, const pmix_key_t key,
 \cspecificend
 
 \begin{arglist}
-\argin{proc}{process reference (handle)}
-\argin{key}{key to retrieve (\refstruct{pmix_key_t})}
-\argin{info}{Array of info structures (array of handles)}
-\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
-\argout{val}{value (handle)}
+\argin{proc}{process reference (\refstruct{pmix_proc_t} handle)}
+\argin{key}{key to retrieve (\refstruct{pmix_key_t} handle)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t} handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argout{val}{value associated with the key (\refstruct{pmix_value_t} handle)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
@@ -464,32 +469,26 @@ and indicate that the address provided for the return value points to a statical
 \optattrstart
 The following attributes are optional for host environments:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pastePRIAttributeItemBegin{PMIX_TIMEOUT}
+See Advice to Implementers in Section~\ref{chap:api_kv_mgmt:fence}.
+\pastePRIAttributeItemEnd
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between delivery of the data by the host environment versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
 
 %%%%
 \descr
 
-Retrieve information for the specified \refarg{key} as published by the process identified in the given \refstruct{pmix_proc_t}, returning a pointer to the value in the given address.
+% Description from https://github.com/pmix/pmix-standard/pull/253
 
-This is a blocking operation - the caller will block until either the specified data becomes available from the specified rank in the \refarg{proc} structure or the operation times out should the \refattr{PMIX_TIMEOUT} attribute have been given.
-The caller is responsible for freeing all memory associated with the returned \refarg{value} when no longer required.
+Retrieve information for the specified \refarg{key} associated with the process identified in the given \refstruct{pmix_proc_t}, returning a pointer to the value in the given address. In general, data posted by a process via \refapi{PMIx_Put} and data that refers directly to a process-related value must be retrieved by specifying the rank of the target process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD}, as illustrated in \ref{chap:api_kv:getex}. See \ref{api:struct:attributes:retrieval} for an explanation regarding use of the \emph{level} attributes, and \refapi{PMIx_server_register_nspace} for a description of the available information.
+
+This is a blocking operation - the caller will block until either the specified data becomes available from the specified rank in the \refarg{proc} structure, the operation times out should the \refattr{PMIX_TIMEOUT} attribute have been given, or the \refattr{PMIX_OPTIONAL} or the \refattr{PMIX_IMMEDIATE} conditions are met. The caller is responsible for freeing all memory associated with the returned \refarg{value} when no longer required.
 
 The \refarg{info} array is used to pass user requests regarding the get operation.
 
-\adviceuserstart
-Information provided by the \ac{PMIx} server at time of process start is accessed by providing the namespace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. The list of data referenced in this way is maintained on the \ac{PMIx} web site at \url{https://pmix.org/support/faq/wildcard-rank-access/} but includes items such as the number of processes in the namespace (\refattr{PMIX_JOB_SIZE}), total available slots in the allocation (\refattr{PMIX_UNIV_SIZE}), and the number of nodes in the allocation (\refattr{PMIX_NUM_NODES}).
-
-Data posted by a process via \refapi{PMIx_Put} needs to be retrieved by specifying the rank of the posting process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD} when the information being retrieved refers to something non-rank specific (e.g., number of processes on a node, number of processes in a job), and using the rank of the relevant process when requesting information that is rank-specific (e.g., the \ac{URI} of the process, or the node upon which it is executing). Each subsection of Section \ref{api:struct:attributes} indicates the appropriate rank value for referencing the defined attribute.
-\adviceuserend
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Get_nb}}
+\subsubsection{\code{PMIx_Get_nb}}
 \declareapi{PMIx_Get_nb}
 
 %%%%
@@ -511,11 +510,11 @@ PMIx_Get_nb(const pmix_proc_t *proc, const char key[],
 \cspecificend
 
 \begin{arglist}
-\argin{proc}{process reference (handle)}
-\argin{key}{key to retrieve (string)}
-\argin{info}{Array of info structures (array of handles)}
+\argin{proc}{process reference (\refstruct{pmix_proc_t} handle)}
+\argin{key}{key to retrieve (\refstruct{pmix_key_t} handle)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t} handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function (function reference)}
+\argin{cbfunc}{Callback function (\refapi{pmix_value_cbfunc_t} function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
@@ -554,34 +553,88 @@ and indicate that user takes responsibility for properly releasing memory on the
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
+\pastePRIAttributeItemBegin{PMIX_TIMEOUT}
+See Advice to Implementers in Section~\ref{chap:api_kv_mgmt:fence}.
+\pastePRIAttributeItemEnd
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between delivery of the data by the host environment versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
 
 %%%%
 \descr
 
+% Description from https://github.com/pmix/pmix-standard/pull/253
+
 The callback function will be executed once the specified data becomes available from the identified process and retrieved by the local server.
-The \argref{info} array is used as described by the \refapi{PMIx_Get} routine.
-
-\adviceuserstart
-Information provided by the \ac{PMIx} server at time of process start is accessed by providing the namespace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. Attributes referenced in this way are identified in \ref{api:struct:attributes} but includes items such as the number of processes in the namespace (\refattr{PMIX_JOB_SIZE}), total available slots in the allocation (\refattr{PMIX_UNIV_SIZE}), and the number of nodes in the allocation (\refattr{PMIX_NUM_NODES}).
-
-In general, data posted by a process via \refapi{PMIx_Put} and data that refers directly to a process-related value needs to be retrieved by specifying the rank of the posting process. All other information is retrievable using a rank of \refconst{PMIX_RANK_WILDCARD}, as illustrated in \ref{chap:api_kv:getex}. See \ref{api:struct:attributes:retrieval} for an explanation regarding use of the \emph{level} attributes.
-\adviceuserend
+See \refapi{PMIx_Get} for a full description.
 
 
 %%%%%%%%%%%
-\subsection{Accessing information: examples}
+\subsection{Accessing Key-Value Pairs: Examples}
 \label{chap:api_kv:getex}
 
 This section provides examples illustrating methods for accessing information at various levels. The intent of the examples is not to provide comprehensive coding guidance, but rather to illustrate how \refapi{PMIx_Get} can be used to obtain information on a \refterm{session}, \refterm{job}, \refterm{application}, process, and node.
+Table~\ref{tab:key-value-realms} summarizes how to access such data often by either using the namespace identifier, or an identifier unique to the realm of data (e.g., \refattr{PMIX_JOBID}).
 
-\subsubsection{Session-level information}
+%--------------------
+\begin{table}[htb]
+\centering
+\begin{tabular}{| l | l | l |}
+       \hline 
+       \textbf{Namespace} / \textbf{Rank} & \textbf{Attribute Key} & \textbf{Attribute Value} \\
+       \hline
+       \hline
+       \multicolumn{3}{|l|}{\textbf{Session-level Information}} \\
+       \hline
+       target / \refconst{PMIX_RANK_WILDCARD} & \refattr{PMIX_SESSION_INFO} & true (bool) \\
+       \hline
+       (\emph{ignored})  & \refattr{PMIX_SESSION_INFO} & true (bool) \\
+                         & \refattr{PMIX_SESSION_ID}   & session ID (uint32_t) \\
+       \hline
+       \hline
+       \multicolumn{3}{|l|}{\textbf{Job-level Information}} \\
+       \hline
+       target / \refconst{PMIX_RANK_WILDCARD} & \refattr{PMIX_JOB_INFO}     & true (bool) \\
+       \hline
+       (\emph{ignored})  & \refattr{PMIX_JOB_INFO}     & true (bool) \\
+                         & \refattr{PMIX_JOBID}        & job ID (uint32_t) \\
+       \hline
+       \hline
+       \multicolumn{3}{|l|}{\textbf{Application-level Information}} \\
+       \hline
+       target / target   & \refattr{PMIX_APP_INFO}     & true (bool) \\
+       \hline
+       (\emph{ignored})  & \refattr{PMIX_APP_INFO}     & true (bool) \\ 
+                         & \refattr{PMIX_APPNUM}       & app number (uint32_t) \\
+       \hline
+       \hline
+       \multicolumn{3}{|l|}{\textbf{Node-level Information}} \\
+       \hline
+       target / target   & \refattr{PMIX_NODE_INFO}    & true (bool) \\
+       \hline
+       (\emph{ignored})  & \refattr{PMIX_NODE_INFO}    & true (bool) \\
+                         & \refattr{PMIX_HOSTNAME}     & hostname (string) \\
+       \hline
+       (\emph{ignored})  & \refattr{PMIX_NODE_INFO}    & true (bool) \\
+                         & \refattr{PMIX_NODEID}       & host ID (uint32_t) \\
+       \hline
+       \hline
+       \multicolumn{3}{|l|}{\textbf{Namespace-level Information}} \\
+       \hline
+       target / \refconst{PMIX_RANK_WILDCARD} &   (\emph{N/A})                & (\emph{N/A}) \\
+       \hline
+       \hline
+       \multicolumn{3}{|l|}{\textbf{Process-level Information}} \\
+       \hline
+       target / target   &    (\emph{N/A})               & (\emph{N/A}) \\
+       \hline
+\end{tabular}
+\caption{Methods of accessing key-value pairs from different data realms}
+\label{tab:key-value-realms}
+\end{table}
+%--------------------
+
+%%%%
+\littleheader{Session-level information}
 
 The \refapi{PMIx_Get} \ac{API} does not include an argument for specifying the \refterm{session} associated with the information being requested. Information regarding the session containing the requestor can be obtained by the following methods:
 
@@ -606,8 +659,8 @@ PMIx_Init(&myproc, NULL, 0);
 PMIX_PROC_LOAD(&wildcard, myproc.nspace, PMIX_RANK_WILDCARD);
 rc = PMIx_Get(&wildcard, PMIX_UNIV_SIZE, NULL, 0, &value);
 
-/* get the #nodes in our session */
-PMIX_INFO_LOAD(&info, PMIX_SESSION_INFO, true, PMIX_BOOL);
+/* get the #nodes in our session (NULL indicates 'true') */
+PMIX_INFO_LOAD(&info, PMIX_SESSION_INFO, NULL, PMIX_BOOL);
 rc = PMIx_Get(&wildcard, PMIX_NUM_NODES, &info, 1, &value);
 \end{codepar}
 \cspecificend
@@ -625,15 +678,16 @@ uint32_t sid;
 /* initialize the client library */
 PMIx_Init(&myproc, NULL, 0);
 
-/* get the #nodes in a different session */
+/* get the #nodes in a different session (NULL indicates 'true') */
 sid = 12345;
-PMIX_INFO_LOAD(&info[0], PMIX_SESSION_INFO, true, PMIX_BOOL);
+PMIX_INFO_LOAD(&info[0], PMIX_SESSION_INFO, NULL, PMIX_BOOL);
 PMIX_INFO_LOAD(&info[1], PMIX_SESSION_ID, &sid, PMIX_UINT32);
 rc = PMIx_Get(&myproc, PMIX_NUM_NODES, info, 2, &value);
 \end{codepar}
 \cspecificend
 
-\subsubsection{Job-level information}
+%%%%
+\littleheader{Job-level information}
 
 Information regarding a job can be obtained by the following methods:
 
@@ -658,14 +712,15 @@ PMIx_Init(&myproc, NULL, 0);
 PMIX_PROC_LOAD(&wildcard, myproc.nspace, PMIX_RANK_WILDCARD);
 rc = PMIx_Get(&wildcard, PMIX_JOB_NUM_APPS, NULL, 0, &value);
 
-/* get the #nodes in our job */
-PMIX_INFO_LOAD(&info, PMIX_JOB_INFO, true, PMIX_BOOL);
+/* get the #nodes in our job (NULL indicates 'true') */
+PMIX_INFO_LOAD(&info, PMIX_JOB_INFO, NULL, PMIX_BOOL);
 rc = PMIx_Get(&wildcard, PMIX_NUM_NODES, &info, 1, &value);
 \end{codepar}
 \cspecificend
 
 
-\subsubsection{Application-level information}
+%%%%
+\littleheader{Application-level information}
 
 Information regarding an application can be obtained by the following methods:
 
@@ -708,20 +763,40 @@ rc = PMIx_Get(&otherproc, PMIX_NUM_NODES, &info, 1, &value);
 
 /* alternatively, we can directly ask for the #nodes in
  * the second application in our job, again remembering that
- * application numbers start with zero */
+ * application numbers start with zero (NULL indicates 'true') */
 appnum = 1;
-PMIX_INFO_LOAD(&appinfo[0], PMIX_APP_INFO, true, PMIX_BOOL);
+PMIX_INFO_LOAD(&appinfo[0], PMIX_APP_INFO, NULL, PMIX_BOOL);
 PMIX_INFO_LOAD(&appinfo[1], PMIX_APPNUM, &appnum, PMIX_UINT32);
 rc = PMIx_Get(&myproc, PMIX_NUM_NODES, appinfo, 2, &value);
 
 \end{codepar}
 \cspecificend
 
-\subsubsection{Process-level information}
+%%%%
+\littleheader{Process-level information}
 
 Process-level information is accessed by providing the namespace and rank of the target process. In the absence of any directive as to the level of information being requested, the \ac{PMIx} library will always return the process-level value.
 
-\subsubsection{Node-level information}
+Example requests are shown below:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info;
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc, peerproc;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the hostname of the remote process rank 42 */
+PMIX_PROC_LOAD(&peerproc, myproc.nspace, 42);
+rc = PMIx_Get(&peerproc, PMIX_HOSTNAME, NULL, 0, &value);
+\end{codepar}
+\cspecificend
+
+%%%%
+\littleheader{Node-level information}
 
 Information regarding a node within the system can be obtained by the following methods:
 
@@ -747,8 +822,8 @@ PMIx_Init(&myproc, NULL, 0);
 /* get the #procs on our node */
 rc = PMIx_Get(&myproc, PMIX_NODE_SIZE, NULL, 0, &value);
 
-/* get the #slots on another node */
-PMIX_INFO_LOAD(&info[0], PMIX_NODE_INFO, true, PMIX_BOOL);
+/* get the #slots on another node (NULL indicates 'true') */
+PMIX_INFO_LOAD(&info[0], PMIX_NODE_INFO, NULL, PMIX_BOOL);
 PMIX_INFO_LOAD(&info[1], PMIX_HOSTNAME, "remotehost", PMIX_STRING);
 rc = PMIx_Get(&myproc, PMIX_MAX_PROCS, info, 2, &value);
 
@@ -756,35 +831,34 @@ rc = PMIx_Get(&myproc, PMIX_MAX_PROCS, info, 2, &value);
 \cspecificend
 
 \adviceuserstart
-An explanation of the use of \refapi{PMIx_Get} versus \refapi{PMIx_Query_info_nb} is provided in \ref{chap:api_job_mgmt:query}.
+An explanation of the use of \refapi{PMIx_Get} versus \refapi{PMIx_Query_info_nb} is provided in Section~\ref{chap:api_job_mgmt:query}.
 \adviceuserend
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Overview of Publish/Lookup Key-Value Sharing}
+\section{Non-Process Related Key-Value Management}
 \label{chap:api_kv_mgmt:publish-overview}
 
-TODO: give an overview
+Non-process related key-value exchanges allow a \ac{PMIx} process to share information that is not necessarily specific itself for access by other processes in the \ac{PMIx} universe.
+A \ac{PMIx} process can publish a key-value pair for general consumption by using the \refapi{PMIx_Publish} and \refapi{PMIx_Publish_nb} functions.
+Other \ac{PMIx} processes can access the key-value pair by using the \refapi{PMIx_Lookup} and \refapi{PMIx_Lookup_nb} functions by knowing only the \emph{key} without the knowledge of the specific process that published the data.
+Additionally, a \ac{PMIx} process can unpublish a key-value pair that it previously published by using the \refapi{PMIx_Unpublish} and \refapi{PMIx_Unpublish_nb} functions.
 
-\adviceimplstart
-\ac{PMIx} libraries that support any of the functions in this section are required to support \textit{all} of them.
-\adviceimplend
-
-\advicermstart
-Host environments that support any of the functions in this section are required to support \textit{all} of them.
-\advicermend
+The biggest difference between the 'put/commit/get' and the 'publish/lookup' exchange models is in whether the publisher needs to associated with the data and known to the accessor of the data.
+Often applications will use the 'put/commit/get' model for exchanging information at naturally synchronous points in their executions.
+Alternatively, applications will use the 'publish/lookup' model for exchanging information that may or may not be needed by other processes at some future time.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Publishing Data}
+\subsection{Publishing Data}
 \label{chap:api_kv_mgmt:publish}
 
-TODO: Overview of publishing
-
-The APIs defined in this section publish data from one client that can be later exchanged and looked up by another client.
+\ac{PMIx} clients can share one or more key-value pairs by using the \refapi{PMIx_Publish} and \refapi{PMIx_Publish_nb} functions.
+The publisher of the data is stored with the data, but accessors of the data are not required to know the identity of the publisher to access the key-value pair(s).
 
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Publish}}
+\subsubsection{\code{PMIx_Publish}}
 \declareapi{PMIx_Publish}
 
 %%%%
@@ -804,42 +878,46 @@ PMIx_Publish(const pmix_info_t info[], size_t ninfo)
 \cspecificend
 
 \begin{arglist}
-\argin{info}{Array of info structures (array of handles)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t} handles)}
 \argin{ninfo}{Number of element in the \refarg{info} array (integer)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that published the info.
-
-\reqattrend
-
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
-\pastePRRTEAttributeItem{PMIX_PERSISTENCE}
+\pastePRIAttributeItemBegin{PMIX_TIMEOUT}
+See Advice to Implementers in Section~\ref{chap:api_kv_mgmt:fence}.
+\pastePRIAttributeItemEnd
+\pastePRIAttributeItemBegin{PMIX_RANGE}
+The default is \refconst{PMIX_RANGE_SESSION}.
+\pastePRIAttributeItemEnd
+\pastePRIAttributeItemBegin{PMIX_PERSISTENCE}
+The default is \refconst{PMIX_PERSIST_APP}.
+\pastePRIAttributeItemEnd
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
 
 %%%%
 \descr
 
 Publish the data in the \refarg{info} array for subsequent lookup.
+The \code{info.key} and \code{info.value} fields are used to store the key-value pair for each array element.
+In addition to key-value pairs for publication, all attributes must be specified in the \refarg{info} array and apply to all of the data being published in this operation.
+There is no ordering requirement for the key-value pairs in the \refarg{info} array.
+It is erroneous to pass multiple ranges or persistence designations in the same \refapi{PMIx_Publish} or \refapi{PMIx_Publish_nb} operation.
+
 By default, the data will be published into the \refconst{PMIX_RANGE_SESSION} range and with \refconst{PMIX_PERSIST_APP} persistence.
-Changes to those values, and any additional directives, can be included in the \refstruct{pmix_info_t} array. Attempts to access the data by processes outside of the provided data range will be rejected. The persistence parameter instructs the server as to how long the data is to be retained.
+Meaning that any process in the same session may access the data until the application terminates.
+% SOLT: I don't think that is really the best way to put it.  It's not that they will be rejected, they will simply be looking in a different context and will not find this data in that context.
+Attempts to access the data by processes outside of the provided data range will be rejected.
 
-The blocking form will block until the server confirms that the data has been sent to the \ac{PMIx} server and that it has obtained confirmation from its host \ac{SMS} daemon that the data is ready to be looked up. Data is copied into the backing key-value data store, and therefore the \refarg{info} array can be released upon return from the blocking function call.
-
-\adviceuserstart
 Publishing duplicate keys is permitted provided they are published to different ranges.
-\adviceuserend
+To update the value associated with a published key, the key must first be unpublished, then published again with the new value.
+
+The \refapi{PMIx_Publish} and \refapi{PMIx_Publish_nb} functions will not complete until the data has been persistently stored by the \ac{PMIx} server and it is available for lookup by other \ac{PMIx} processes in the specified \refattr{PMIX_RANGE}.
+After successful completion, the \refarg{info} array can be released.
 
 \adviceimplstart
 Implementations should, to the best of their ability, detect duplicate keys being posted on the same data range and protect the
@@ -847,7 +925,7 @@ user from unexpected behavior by returning the \refconst{PMIX_ERR_DUPLICATE_KEY}
 \adviceimplend
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Publish_nb}}
+\subsubsection{\code{PMIx_Publish_nb}}
 \declareapi{PMIx_Publish_nb}
 
 %%%%
@@ -868,9 +946,9 @@ PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo,
 \cspecificend
 
 \begin{arglist}
-\argin{info}{Array of info structures (array of handles)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t} handles)}
 \argin{ninfo}{Number of element in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbfunc}{Callback function (\refapi{pmix_op_cbfunc_t} function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
@@ -882,40 +960,38 @@ Returns one of the following:
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
 
-\reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that published the info.
-
-\reqattrend
 
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
-\pastePRRTEAttributeItem{PMIX_PERSISTENCE}
+\pastePRIAttributeItemBegin{PMIX_TIMEOUT}
+See Advice to Implementers in Section~\ref{chap:api_kv_mgmt:fence}.
+\pastePRIAttributeItemEnd
+\pastePRIAttributeItemBegin{PMIX_RANGE}
+The default is \refconst{PMIX_RANGE_SESSION}.
+\pastePRIAttributeItemEnd
+\pastePRIAttributeItemBegin{PMIX_PERSISTENCE}
+The default is \refconst{PMIX_PERSIST_APP}.
+\pastePRIAttributeItemEnd
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
 
 %%%%
 \descr
 
-Nonblocking \refapi{PMIx_Publish} routine. The non-blocking form will return immediately, executing the callback when the \ac{PMIx} server receives confirmation from its host \ac{SMS} daemon.
-
-Note that the function will return an error if a \code{NULL} callback function is given, and that the \refarg{info} array must be maintained until the callback is provided.
+Nonblocking \refapi{PMIx_Publish} function. The non-blocking form will return immediately. The callback will executed once the data has been persistently stored by the \ac{PMIx} server and it is available for lookup by other \ac{PMIx} processes in the specified \refattr{PMIX_RANGE}.
+Note that the function will return an error if a \code{NULL} callback function is given, and that the \refarg{info} array must be maintained until the callback is executed. See \refapi{PMIx_Publish} for a full description.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Lookup Data}
+\subsection{Lookup Data}
 \label{chap:api_kv_mgmt:lookup}
 
-TODO: Overview of Looking up data 
+\ac{PMIx} clients can access key-value pairs previously published by using the \refapi{PMIx_Lookup} and \refapi{PMIx_Lookup_nb} functions.
+To access pushed key-value pairs the caller only needs to know the key(s) and not the identity of the publisher.
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Lookup}}
+\subsubsection{\code{PMIx_Lookup}}
 \declareapi{PMIx_Lookup}
 
 %%%%
@@ -936,60 +1012,57 @@ PMIx_Lookup(pmix_pdata_t data[], size_t ndata,
 \cspecificend
 
 \begin{arglist}
-\arginout{data}{Array of publishable data structures (array of handles)}
+\arginout{data}{Array of publishable data structures (array of \refstruct{pmix_pdata_t} handles)}
 \argin{ndata}{Number of elements in the \refarg{data} array (integer)}
-\argin{info}{Array of info structures (array of handles)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t} handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the info.
-
-\reqattrend
-
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
+\pastePRIAttributeItemBegin{PMIX_TIMEOUT}
+See Advice to Implementers in Section~\ref{chap:api_kv_mgmt:fence}.
+\pastePRIAttributeItemEnd
+\pastePRIAttributeItemBegin{PMIX_RANGE}
+The default is \refconst{PMIX_RANGE_SESSION}.
+\pastePRIAttributeItemEnd
 \pastePRRTEAttributeItem{PMIX_WAIT}
 
 \optattrend
 
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
 %%%%
 \descr
 
-Lookup information published by this or another process.
+Lookup published key-value pair(s) specified in the \refarg{data} array.
 By default, the search will be conducted across the \refconst{PMIX_RANGE_SESSION} range.
-Changes to the range, and any additional directives, can be provided in the \refstruct{pmix_info_t} array. Data is returned provided the following conditions are met:
+Attributes, such as \refattr{PMIX_RANGE}, must be specified in the \refarg{info} array.
 
+Data is returned via the \refarg{data} array provided that all of the following conditions are met:
 \begin{itemize}
-    \item the requesting process resides within the range specified by the publisher. For example, data published to \refconst{PMIX_RANGE_LOCAL} can only be discovered by a process executing on the same node
-    \item the provided key matches the published key within that data range
-    \item the data was published by a process with corresponding user and/or group IDs as the one looking up the data. There currently is no option to override this behavior - such an option may become available later via an appropriate \refstruct{pmix_info_t} directive.
+    \item the requesting process resides within the range specified by the publisher. For example, data published to \refconst{PMIX_RANGE_LOCAL} can only be discovered by a process executing on the same node.
+    \item the provided key matches the published key within that data range.
+    \item the data was published by a process with corresponding user and/or group IDs as the one looking up the data. There currently is no option to override this behavior.
+    % - such an option may become available later via an appropriate \refstruct{pmix_info_t} directive.
 \end{itemize}
 
 The \argref{data} parameter consists of an array of \refstruct{pmix_pdata_t} struct with the keys specifying the requested information.
-Data will be returned for each key in the associated \refarg{value} struct.
+Data will be returned for each key in the associated \code{value} field of the \refstruct{pmix_pdata_t} struct.
 Any key that cannot be found will return with a data type of \refconst{PMIX_UNDEF}.
 The function will return \refconst{PMIX_SUCCESS} if any values can be found, so the caller must check each data element to ensure it was returned.
 
-The proc field in each \refstruct{pmix_pdata_t} struct will contain the namespace/rank of the process that published the data.
+The \code{proc} field in each \refstruct{pmix_pdata_t} struct will contain the namespace and rank of the process that published the data.
 
 \adviceuserstart
-Although this is a blocking function, it will not wait by default for the requested data to be published.
+Although this is a blocking function, it will not wait, by default, for the requested data to be published.
 Instead, it will block for the time required by the server to lookup its current data and return any found items.
 Thus, the caller is responsible for ensuring that data is published prior to executing a lookup, using \refattr{PMIX_WAIT} to instruct the server to wait for the data to be published, or for retrying until the requested data is found.
 \adviceuserend
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Lookup_nb}}
+\subsubsection{\code{PMIx_Lookup_nb}}
 \declareapi{PMIx_Lookup_nb}
 
 %%%%
@@ -1011,10 +1084,10 @@ PMIx_Lookup_nb(char **keys,
 \cspecificend
 
 \begin{arglist}
-\argin{keys}{Array to be provided to the callback (array of strings)}
-\argin{info}{Array of info structures (array of handles)}
+\argin{keys}{Array of keys to lookup (array of strings)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t} handles)}
 \argin{ninfo}{Number of element in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function (handle)}
+\argin{cbfunc}{Callback function (\refapi{pmix_lookup_cbfunc_t} handle)}
 \argin{cbdata}{Callback data to be provided to the callback function (pointer)}
 \end{arglist}
 
@@ -1025,44 +1098,44 @@ Returns one of the following:
     \item a PMIx error constant indicating an error in the input - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
 
-
-\reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the info.
-
-\reqattrend
-
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
+\pastePRIAttributeItemBegin{PMIX_TIMEOUT}
+See Advice to Implementers in Section~\ref{chap:api_kv_mgmt:fence}.
+\pastePRIAttributeItemEnd
+\pastePRIAttributeItemBegin{PMIX_RANGE}
+The default is \refconst{PMIX_RANGE_SESSION}.
+\pastePRIAttributeItemEnd
 \pastePRRTEAttributeItem{PMIX_WAIT}
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
 
 
 %%%%
 \descr
 
 Non-blocking form of the \refapi{PMIx_Lookup} function.
-Data for the provided NULL-terminated \refarg{keys} array will be returned in the provided callback function.
-As with \refapi{PMIx_Lookup}, the default behavior is to not wait for data to be published.
-The \refarg{info} array can be used to modify the behavior as previously described by \refapi{PMIx_Lookup}. Both the \refarg{info} and \refarg{keys} arrays must be maintained until the callback is provided.
+Data for the provided NULL-terminated \refarg{keys} array will be returned in the specified \refapi{pmix_lookup_cbfunc_t} callback function.
+Both the \refarg{info} and \refarg{keys} arrays must be maintained until the callback is executed.
+See \refapi{PMIx_Publish} for a full description.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Unpublish Data}
+\label{chap:api_kv_mgmt:unpublish}
+
+The \ac{PMIx} client that published a key-value pair can later unpublish that key by using the \refapi{PMIx_Unpublish} and \refapi{PMIx_Unpublish_nb} functions.
 
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Unpublish}}
+\subsubsection{\code{PMIx_Unpublish}}
 \declareapi{PMIx_Unpublish}
 
 %%%%
 \summary
 
-Unpublish data posted by this process using the given keys.
+Unpublish key-value pairs previously published by the calling process.
 
 %%%%
 \format
@@ -1077,43 +1150,39 @@ PMIx_Unpublish(char **keys,
 \cspecificend
 
 \begin{arglist}
-\argin{info}{Array of info structures (array of handles)}
+\argin{keys}{Array of keys to unpublish (array of strings)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t} handles)}
 \argin{ninfo}{Number of element in the \refarg{info} array (integer)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the operation.
-
-\reqattrend
-
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
+\pastePRIAttributeItemBegin{PMIX_TIMEOUT}
+See Advice to Implementers in Section~\ref{chap:api_kv_mgmt:fence}.
+\pastePRIAttributeItemEnd
+\pastePRIAttributeItemBegin{PMIX_RANGE}
+The default is \refconst{PMIX_RANGE_SESSION}.
+\pastePRIAttributeItemEnd
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
 
 %%%%
 \descr
 
-Unpublish data posted by this process using the given \refarg{keys}.
-The function will block until the data has been removed by the server (i.e., it is safe to publish that key again).
-A value of \code{NULL} for the \refarg{keys} parameter instructs the server to remove all data published by this process.
+Unpublish one or more key-value pairs previously published by the calling process.
+The \refapi{PMIx_Unpublish} and \refapi{PMIx_Unpublish_nb} functions will not complete until the data has been made inaccessible by the \ac{PMIx} server.
+After successful completion of an unpublish call it is safe to publish the key again.
+A value of \code{NULL} for the \refarg{keys} parameter instructs the server to remove all data previously published by this process.
 
 By default, the range is assumed to be \refconst{PMIX_RANGE_SESSION}.
-Changes to the range, and any additional directives, can be provided in the \refarg{info} array.
+The \refarg{info} array can be used to override this default and specify any other attributes.
 
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_Unpublish_nb}}
+\subsubsection{\code{PMIx_Unpublish_nb}}
 \declareapi{PMIx_Unpublish_nb}
 
 %%%%
@@ -1135,10 +1204,10 @@ PMIx_Unpublish_nb(char **keys,
 \cspecificend
 
 \begin{arglist}
-\argin{keys}{(array of strings)}
-\argin{info}{Array of info structures (array of handles)}
+\argin{keys}{Array of keys to unpublish (array of strings)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t} handles)}
 \argin{ninfo}{Number of element in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbfunc}{Callback function (\refapi{pmix_op_cbfunc_t} function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
@@ -1150,29 +1219,128 @@ Returns one of the following:
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
 
-\reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the operation.
-
-\reqattrend
-
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_TIMEOUT}
-\pastePRRTEAttributeItem{PMIX_RANGE}
+\pastePRIAttributeItemBegin{PMIX_TIMEOUT}
+See Advice to Implementers in Section~\ref{chap:api_kv_mgmt:fence}.
+\pastePRIAttributeItemEnd
+\pastePRIAttributeItemBegin{PMIX_RANGE}
+The default is \refconst{PMIX_RANGE_SESSION}.
+\pastePRIAttributeItemEnd
 
 \optattrend
 
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
 
 %%%%
 \descr
 
 Non-blocking form of the \refapi{PMIx_Unpublish} function.
-The callback function will be executed once the server confirms removal of the specified data. The \refarg{info} array must be maintained until the callback is provided.
+The callback function will be executed once the data has been made inaccessible by the \ac{PMIx} server.
+The \refarg{info} array must be maintained until the callback is executed.
+See \refapi{PMIx_Unpublish} for a full description.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Publish/Lookup Examples}
+\label{chap:api_kv_mgmt:publookex}
+
+
+This section provides examples of using the 'publish/lookup' method for accessing non-process related key-values between \ac{PMIx} clients.
+The intent of the examples in this section is not to provide comprehensive coding guidance, but rather to illustrate how \refapi{PMIx_Publish} can be used to share key-value pairs between \ac{PMIx} processes.
+
+%%%%
+\littleheader{Publishing key-value pairs}
+
+This example publishes two keys.
+Some error checking has been removed for brevity.
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t *info;
+pmix_status_t rc;
+pmix_proc_t myproc;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+PMIX_INFO_CREATE(info, 2);
+
+/* Create the first key-value pair */
+strncpy(info[0].key, "FOOBAR", PMIX_MAX_KEYLEN);
+info[0].value.type = PMIX_UINT8;
+info[0].value.data.uint8 = 1;
+
+/* Create the second key-value pair */
+strncpy(info[1].key, "PANDA", PMIX_MAX_KEYLEN);
+info[1].value.type = PMIX_SIZE;
+info[1].value.data.size = 123456;
+
+/* Publish both keys */
+rc = PMIx_Publish(info, 2);
+
+PMIX_INFO_FREE(info, 2);
+\end{codepar}
+\cspecificend
+
+%%%%
+\littleheader{Looking up key-value pairs}
+
+This example accesses one of the two keys published in the previous example.
+Some error checking has been removed for brevity.
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t *info;
+pmix_pdata_t *pdata;
+pmix_status_t rc;
+pmix_proc_t myproc;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+PMIX_PDATA_CREATE(pdata, 1);
+
+/* Request the first key by name */
+strncpy(pdata[0].key, "FOOBAR", PMIX_MAX_KEYLEN);
+
+/* lookup the key */
+rc = PMIx_Lookup(pdata, 1, NULL, 0);
+
+printf("Process \%s rank \%d: Published the key-value pair \%s=\%d",
+       pdata[0].proc.nspace, pdata[0].proc.rank,
+       pdata[0].key, pdata[0].value.data.uint8);
+
+PMIX_PDATA_FREE(pdata, 1);
+\end{codepar}
+\cspecificend
+
+%%%%
+\littleheader{Unpublish key-value pairs}
+
+This example unpublishes one of the two keys.
+Some error checking has been removed for brevity.
+
+\cspecificstart
+\begin{codepar}
+char **keys;
+pmix_status_t rc;
+pmix_proc_t myproc;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* NULL terminated array of keys to unpublish */
+keys = (char**)malloc(2 * sizeof(char*));
+keys[0] = "PANDA";
+keys[1] = NULL;
+
+/* Unpublish the key */
+rc = PMIx_Unpublish(keys, NULL, 0);
+
+free(keys);
+\end{codepar}
+\cspecificend
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
