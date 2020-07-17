@@ -311,9 +311,9 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 %%%%
 \descr
 
-A tool may call \refapi{PMIx_tool_init} with the \refattr{PMIX_TOOL_DO_NOT_CONNECT} attribute in which case they can use this function to connect to a specific server.
-Additionally, a tool may use this function to switch connection from the current \ac{PMIx} server to another one
-Closes the connection, if existing, to a server and establishes a connection to the specified server.
+A tool may call \refapi{PMIx_tool_init} with the \refattr{PMIX_TOOL_DO_NOT_CONNECT} attribute in which case they can use this function to connect to a specific server by using one of the server identifying attributes (e.g., \refattr{PMIX_SERVER_URI}).
+Additionally, a tool may use this function to switch connection from the current \ac{PMIx} server to a different \ac{PMIx} server.
+This function will close the connection, if existing, to a server and establishe a connection to the specified server.
 This function can be called at any time by a \ac{PMIx} tool to shift connections between servers.
 The process identifier assigned to this tool is returned in the provided \refstruct{pmix_proc_t} struct.
 Passing a value of \code{NULL} for this parameter is allowed if the user wishes solely to connect to the \ac{PMIx} server and does not require return of the identifier at that time.
