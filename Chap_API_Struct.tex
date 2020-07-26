@@ -103,6 +103,7 @@ Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the actual va
 \adviceuserend
 
 \subsubsection{General Error Constants}
+\label{api:struct:generrors}
 
 These are general constants originally defined in versions 1 and 2 of the PMIx Standard.
 
@@ -116,9 +117,6 @@ General Error
 %
 \declareconstitem{PMIX_ERR_SILENT}
 Silent error
-%
-\declareconstitem{PMIX_ERR_DEBUGGER_RELEASE}
-Error in debugger release
 %
 \declareconstitem{PMIX_ERR_PROC_RESTART}
 Fault tolerance: Error in process restart
@@ -302,7 +300,61 @@ Process terminated without calling \refapi{PMIx_Finalize}, or was a member of an
 %
 \end{constantdesc}
 
+\subsubsection{Job-Related Error Constants}
+\label{api:struct:joberrors}
+
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_ERR_JOB_FAILED_TO_START}
+At least one process in the job failed to start
+%
+\declareconstitem{PMIX_ERR_JOB_APP_NOT_EXECUTABLE}
+A specified application executable is does not have execution permissions
+%
+\declareconstitem{PMIX_ERR_JOB_NO_EXE_SPECIFIED}
+No executable was specified in a spawn request
+%
+\declareconstitem{PMIX_ERR_JOB_FAILED_TO_MAP}
+The \ac{RM} was unable to map (i.e., assign locations) the processes in the job
+%
+\declareconstitem{PMIX_ERR_JOB_CANCELLED}
+The submitted job was canceled prior to launch
+%
+\declareconstitem{PMIX_ERR_JOB_FAILED_TO_LAUNCH}
+The job failed to launch
+%
+\declareconstitem{PMIX_ERR_JOB_ABORTED}
+The job was aborted due to at least one process calling \refapi{PMIx_Abort}
+%
+\declareconstitem{PMIX_ERR_JOB_KILLED_BY_CMD}
+The job was killed in response to a user command
+%
+\declareconstitem{PMIX_ERR_JOB_ABORTED_BY_SIG}
+The job was killed in response to a signal (e.g., \code{SIGTERM} or \code{SIGKILL})
+%
+\declareconstitem{PMIX_ERR_JOB_TERM_WO_SYNC}
+The job was killed due to at least one process terminating without first calling \refapi{PMIx_Finalize}
+%
+\declareconstitem{PMIX_ERR_JOB_SENSOR_BOUND_EXCEEDED}
+The job was killed due to at least one process exceeding a monitor threshold
+%
+\declareconstitem{PMIX_ERR_JOB_NEVER_LAUNCHED}
+The job was never launched
+%
+\declareconstitem{PMIX_ERR_JOB_NON_ZERO_TERM}
+The job was killed due to at least one process exiting with a non-zero status
+%
+\declareconstitem{PMIX_ERR_JOB_ALLOC_FAILED}
+The job was unable to obtain an allocation
+%
+\declareconstitem{PMIX_ERR_JOB_CANNOT_LAUNCH}
+The resources required by the job within the given allocation are busy, thus preventing the job from being launched
+%
+\end{constantdesc}
+
+
 \subsubsection{Operational Error Constants}
+\label{api:struct:operrors}
 
 \begin{constantdesc}
 %
@@ -338,16 +390,6 @@ An OpenMP parallel code region has been entered
 %
 \declareconstitemNEW{PMIX_OPENMP_PARALLEL_EXITED}
 An OpenMP parallel code region has completed
-%
-\declareconstitemNEW{PMIX_LAUNCH_DIRECTIVE}
-Launcher directives have been received from a PMIx-enabled tool
-%
-\declareconstitemNEW{PMIX_LAUNCHER_READY}
-Application launcher (e.g., mpiexec) is ready to receive directives from a PMIx-enabled tool
-
-%
-\declareconstitemNEW{PMIX_LAUNCH_COMPLETE}
-A job has been launched - the nspace of the launched job will be included in the notification
 
 %
 \declareconstitemNEW{PMIX_OPERATION_IN_PROGRESS}
@@ -434,23 +476,27 @@ The data returned by \refapi{PMIx_Get} contains values that required dynamic mem
 \end{constantdesc}
 
 \subsubsection{Job-related constants}
+\label{api:struct:jobconst}
 
-The following constants indicate that a session or job has started and normally completed:
+The following constants indicate that a session or job has started and completed:
 
 \begin{constantdesc}
 
 %
 \declareconstitemNEW{PMIX_EVENT_JOB_START}
-The job has started
+The first process in the job has been spawned - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
+%
+\declareconstitemNEW{PMIX_LAUNCH_COMPLETE}
+All processes in the job have been spawned - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
 %
 \declareconstitemNEW{PMIX_EVENT_JOB_END}
-The job has normally terminated
+All processes in the job have terminated - includes \refattr{PMIX_EVENT_TIMESTAMP} when the last process terminated as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
 %
 \declareconstitemNEW{PMIX_EVENT_SESSION_START}
-The session has started
+The allocation has been instantiated and is ready for use - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_SESSION_ID} of the allocation. This event is issued after any system-controlled prologue has completed, but before any user-specified actions are taken.
 %
 \declareconstitemNEW{PMIX_EVENT_SESSION_END}
-The session has normally terminated
+The allocation has terminated - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_SESSION_ID} of the allocation. This event is issued after any user-specified actions have completed, but before any system-controlled epilogue is performed.
 
 \end{constantdesc}
 
@@ -502,6 +548,7 @@ The job was aborted due to receipt of a system event
 
 
 \subsubsection{System error constants}
+\label{api:struct:syserrors}
 
 \begin{constantdesc}
 %
@@ -539,6 +586,7 @@ Event handler: Action complete
 
 %%%%%%%%%%%
 \subsubsection{User-Defined Error Constants}
+\label{api:struct:usererrors}
 
 \ac{PMIx} establishes an error code boundary for constants defined in the \ac{PMIx} standard. Negative values larger than this (and any positive values greater than zero) are guaranteed not to conflict with \ac{PMIx} values.
 
@@ -1027,6 +1075,49 @@ Process exited with a non-zero status
 %
 \declareconstitem{PMIX_PROC_STATE_FAILED_TO_LAUNCH}
 Unable to launch process
+%
+\end{constantdesc}
+
+
+%%%%%%%%%%%
+\subsection{Job State Structure}
+\label{api:struct:jobstate}
+\declarestruct{pmix_job_state_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_job_state_t} structure is a \code{uint8_t} type for job state values. The following constants can be used to set a variable of the type \refstruct{pmix_job_state_t}. All values were originally defined in version 4 of the standard unless otherwise marked.
+
+\adviceuserstart
+The fine-grained nature of the following constants may exceed the ability of an \ac{RM} to provide updated job state values during the job lifetime. This is particularly true of states in the launch process, and for short-lived jobs.
+\adviceuserend
+
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_JOB_STATE_UNDEF}
+Undefined job state
+%
+\declareconstitem{PMIX_JOB_STATE_PREPPED}
+Job is ready to be launched
+%
+\declareconstitem{PMIX_JOB_STATE_LAUNCH_UNDERWAY}
+Job launch procedure is in progress
+%
+\declareconstitem{PMIX_JOB_STATE_RUNNING}
+Job is running
+%
+\declareconstitem{PMIX_JOB_STATE_SUSPENDED}
+Job has been suspended
+%
+\declareconstitem{PMIX_JOB_STATE_CONNECTED}
+All processes in the job have connected to their \ac{PMIx} server
+%
+\declareconstitem{PMIX_JOB_STATE_TERMINATED}
+The job has terminated and is no longer running - typically will
+be accompanied by the job exit status in response to a query
+%
+\declareconstitem{PMIX_JOB_STATE_TERMINATED_WITH_ERROR}
+The job has terminated and is no longer running - typically will
+be accompanied by the job-related error code in response to a query
 %
 \end{constantdesc}
 
@@ -3478,89 +3569,6 @@ Server is acting as a gateway for PMIx requests that cannot be serviced on backe
 
 
 %%%%%%%%%%%
-\subsection{Tool-related attributes}
-\label{api:struct:attributes:tool}
-
-These attributes are defined to assist PMIx-enabled tools to connect with the PMIx server by passing them into the \refapi{PMIx_tool_init} \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
-
-
-%
-\declareAttribute{PMIX_TOOL_NSPACE}{"pmix.tool.nspace"}{char*}{
-Name of the namespace to use for this tool.
-}
-
-%
-\declareAttribute{PMIX_TOOL_RANK}{"pmix.tool.rank"}{uint32_t}{
-Rank of this tool.
-}
-
-%
-\declareAttribute{PMIX_SERVER_PIDINFO}{"pmix.srvr.pidinfo"}{pid_t}{
-\ac{PID} of the target PMIx server for a tool.
-}
-
-%
-\declareAttribute{PMIX_CONNECT_TO_SYSTEM}{"pmix.cnct.sys"}{bool}{
-The requestor requires that a connection be made only to a local, system-level PMIx server.
-}
-
-%
-\declareAttribute{PMIX_CONNECT_SYSTEM_FIRST}{"pmix.cnct.sys.first"}{bool}{
-Preferentially, look for a system-level PMIx server first.
-}
-
-%
-\declareAttribute{PMIX_SERVER_URI}{"pmix.srvr.uri"}{char*}{
-\ac{URI} of the PMIx server to be contacted.
-}
-
-%
-\declareAttribute{PMIX_SERVER_HOSTNAME}{"pmix.srvr.host"}{char*}{
-Host where target PMIx server is located.
-}
-
-%
-\declareAttribute{PMIX_CONNECT_MAX_RETRIES}{"pmix.tool.mretries"}{uint32_t}{
-Maximum number of times to try to connect to PMIx server.
-}
-
-%
-\declareAttribute{PMIX_CONNECT_RETRY_DELAY}{"pmix.tool.retry"}{uint32_t}{
-Time in seconds between connection attempts to a PMIx server.
-}
-
-%
-\declareAttribute{PMIX_TOOL_DO_NOT_CONNECT}{"pmix.tool.nocon"}{bool}{
-The tool wants to use internal PMIx support, but does not want to connect to a PMIx server.
-}
-
-%
-\declareAttribute{PMIX_RECONNECT_SERVER}{"pmix.tool.recon"}{bool}{
-Tool is requesting to change server connections
-}
-
-%
-\declareAttribute{PMIX_LAUNCHER}{"pmix.tool.launcher"}{bool}{
-Tool is a launcher and needs rendezvous files created
-}
-
-%
-\declareNewAttribute{PMIX_TOOL_ATTACHMENT_FILE}{"pmix.tool.attach"}{char*}{
-File containing connection info to be used for attaching to server
-}
-
-%
-\declareNewAttribute{PMIX_LAUNCHER_RENDEZVOUS_FILE}{"pmix.tool.lncrnd"}{char*}{
-Pathname of file where the tool is to store its connection info
-}
-
-%
-\declareNewAttribute{PMIX_TOOL_CONNECT_OPTIONAL}{"pmix.tool.conopt"}{bool}{
-Tool shall connect to a server if available, but otherwise continue to operate unconnected
-}
-
-
-%%%%%%%%%%%
 \subsection{Identification attributes}
 \label{api:struct:attributes:ident}
 
@@ -3602,8 +3610,8 @@ User-assigned name for the process set containing the given process.
 }
 
 %
-\declareNewAttribute{PMIX_REINCARNATION }{"pmix.reinc"}{uint32_t}{
-Number of times this process has been instantiated - i.e., tracks the number of times it has been restarted
+\declareNewAttribute{PMIX_REINCARNATION}{"pmix.reinc"}{uint32_t}{
+Number of times this process has been re-instantiated - i.e, a value of zero indicates that the process has never failed and been restarted.
 }
 
 %%%%%%%%%%%
@@ -3756,7 +3764,7 @@ These attributes are used to define process attributes and are referenced by the
 
 %
 \declareAttribute{PMIX_CPUSET}{"pmix.cpuset"}{char*}{
-hwloc\footnote{\url{https://www.open-mpi.org/projects/hwloc/}} bitmap to be applied to the process upon launch.
+HWLOC\footnote{\url{https://www.open-mpi.org/projects/hwloc/}} bitmap applied to the process upon launch.
 }
 
 %
@@ -3766,7 +3774,7 @@ Security credential assigned to the process.
 
 %
 \declareAttribute{PMIX_SPAWNED}{"pmix.spawned"}{bool}{
-\code{true} if this process resulted from a call to \refapi{PMIx_Spawn}.
+\code{true} if this process resulted from a call to \refapi{PMIx_Spawn}. Lack of inclusion (i.e., a return status of \refconst{PMIX_ERR_NOT_FOUND}) corresponds to a value of \code{false} for this attribute.
 }
 
 %
@@ -3810,7 +3818,7 @@ These attributes are used to describe information about relative ranks as assign
 
 %
 \declareAttribute{PMIX_CLUSTER_ID}{"pmix.clid"}{char*}{
-A string name for the cluster this proc is executing on
+A string name for the cluster this allocation is on
 }
 
 %
@@ -3820,12 +3828,12 @@ Process identifier
 
 %
 \declareAttribute{PMIX_NSPACE}{"pmix.nspace"}{char*}{
-Namespace of the job.
+Namespace of the job - may be a numerical value expressed as a string, but is often a non-numerical string carrying information solely of use to the system.
 }
 
 %
 \declareAttribute{PMIX_JOBID}{"pmix.jobid"}{char*}{
-Job identifier assigned by the scheduler.
+Job identifier assigned by the scheduler - may be identical to the namespace, but is often a numerical value expressed as a string (e.g., "12345.3").
 }
 
 %
@@ -3885,7 +3893,7 @@ Lowest rank in this application within this job - referenced using \refconst{PMI
 
 %
 \declareAttribute{PMIX_SESSION_ID}{"pmix.session.id"}{uint32_t}{
-Session identifier - referenced using \refconst{PMIX_RANK_WILDCARD}.
+Session identifier assigned by the scheduler - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
@@ -3895,7 +3903,7 @@ Comma-delimited list of nodes running processes for the specified namespace - re
 
 %
 \declareAttribute{PMIX_ALLOCATED_NODELIST}{"pmix.alist"}{char*}{
-Comma-delimited list of all nodes in this allocation regardless of whether or not they currently host processes - referenced using \refconst{PMIX_RANK_WILDCARD}.
+Comma-delimited list or regular expression of all nodes in this allocation regardless of whether or not they currently host processes - referenced using \refconst{PMIX_RANK_WILDCARD}.
 }
 
 %
@@ -3997,7 +4005,12 @@ Provide an array of \refstruct{pmix_info_t} containing job-level information. Th
 
 %
 \declareNewAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, are must to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
+Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, must to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
+}
+
+%
+\declareNewAttribute{PMIX_PROC_INFO_ARRAY}{"pmix.pdata"}{pmix_data_array_t}{
+Provide an array of \refstruct{pmix_info_t} containing process-level information. The \refattr{PMIX_RANK} and \refattr{PMIX_NSPACE} attributes, or the \refattr{PMIX_PROCID} attribute, are required to be included in the array when the array is not included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the process is ambiguous. All three may be included if desired. When the array is included in some broader structure that identifies the job, then only the \refattr{PMIX_RANK} or the \refattr{PMIX_PROCID} attribute must be included (the others are optional).
 }
 
 %
@@ -4030,12 +4043,12 @@ These attributes are used to describe the size of various dimensions of the PMIx
 
 %
 \declareAttribute{PMIX_UNIV_SIZE}{"pmix.univ.size"}{uint32_t}{
-Number of allocated slots in a session - each slot may or may not be occupied by an executing process. Note that this attribute is the equivalent to the combination of \refattr{PMIX_SESSION_INFO_ARRAY} with the \refattr{PMIX_MAX_PROCS} entry in the array - it is included in the Standard for historical reasons.
+Number of allocated slots in a session - each slot may or may not be occupied by an executing process. Note that this attribute is equivalent to providing the \refattr{PMIX_MAX_PROCS} entry in the \refattr{PMIX_SESSION_INFO_ARRAY} array - it is included in the Standard for historical reasons.
 }
 
 %
 \declareAttribute{PMIX_JOB_SIZE}{"pmix.job.size"}{uint32_t}{
-Total number of processes in this job across all contained applications. Note that this value can be different from \refattr{PMIX_MAX_PROCS}. For example, users may choose to subdivide an allocation (running several jobs in parallel within it), and dynamic programming models may support adding and removing processes from a running \refterm{job} on-they-fly. In the latter case, \ac{PMIx} events must be used to notify processes within the job that the job size has changed.
+Total number of processes in this job across all contained applications. Note that this value can be different from \refattr{PMIX_MAX_PROCS}. For example, users may choose to subdivide an allocation (running several jobs in parallel within it), and dynamic programming models may support adding and removing processes from a running \refterm{job} on-the-fly. In the latter case, \ac{PMIx} events must be used to notify processes within the job that the job size has changed.
 }
 
 %
@@ -4219,11 +4232,6 @@ If \code{true}, indicates that the requested choice of algorithm is mandatory.
 }
 
 %
-\declareAttribute{PMIX_NOTIFY_COMPLETION}{"pmix.notecomp"}{bool}{
-Notify the parent process upon termination of child job.
-}
-
-%
 \declareAttribute{PMIX_RANGE}{"pmix.range"}{pmix_data_range_t}{
 Value for calls to publish/lookup/unpublish or for monitoring event notifications.
 }
@@ -4293,7 +4301,7 @@ Registration is for this namespace only, do not copy job data - this attribute i
 
 %
 \declareAttribute{PMIX_PROC_DATA}{"pmix.pdata"}{pmix_data_array_t}{
-Array of process data. Starts with rank, then contains more data.
+Deprecated in favor of the \refattr{PMIX_PROC_INFO_ARRAY} attribute
 }
 
 %
@@ -4441,6 +4449,10 @@ Do not generate an event when this job normally terminates.
 Text message suitable for output by recipient - e.g., describing the cause of the event
 }
 
+%
+\declareNewAttribute{PMIX_EVENT_TIMESTAMP}{"pmix.evtstamp"}{time_t}{
+System time when the associated event occurred.
+}
 
 %%%%%%%%%%%
 \subsection{Fault tolerance attributes}
@@ -4572,38 +4584,7 @@ Spawned processes will not call \refapi{PMIx_Init}.
 
 %
 \declareAttribute{PMIX_STDIN_TGT}{"pmix.stdin"}{uint32_t}{
-Spawned process rank that is to receive \code{stdin}.
-}
-
-%
-\declareAttribute{PMIX_FWD_STDIN}{"pmix.fwd.stdin"}{bool}{
-Forward this process's \code{stdin} to the designated process.
-}
-
-%
-\declareAttribute{PMIX_FWD_STDOUT}{"pmix.fwd.stdout"}{bool}{
-Forward \code{stdout} from spawned processes to this process.
-}
-
-%
-\declareAttribute{PMIX_FWD_STDERR}{"pmix.fwd.stderr"}{bool}{
-Forward \code{stderr} from spawned processes to this process.
-}
-
-%
-\declareAttribute{PMIX_FWD_STDDIAG}{"pmix.fwd.stddiag"}{bool}{
-If a diagnostic channel exists, forward any output on it from the spawned processes to this process (typically used by a tool)
-}
-
-%
-\declareAttribute{PMIX_DEBUGGER_DAEMONS}{"pmix.debugger"}{bool}{
-Spawned application consists of debugger daemons.
-}
-
-%
-\declareAttribute{PMIX_COSPAWN_APP}{"pmix.cospawn"}{bool}{
-Designated application is to be spawned as a disconnected job.
-Meaning that it is not part of the ``comm_world'' of the parent process.
+Spawned process rank that is to receive any forwarded \code{stdin}.
 }
 
 %
@@ -4711,6 +4692,21 @@ Report process states in timeout report from a job
 Consolidated argv passed to the spawn command for the given process (e.g., "./myapp arg1 arg2 arg3")
 }
 
+%
+\declareNewAttribute{PMIX_NOTIFY_JOB_EVENTS}{"pmix.note.jev"}{bool}{
+Requests that the \ac{PMIx} server provide the requester with the \refconst{PMIX_EVENT_JOB_START}, \refconst{PMIX_LAUNCH_COMPLETE}, and \refconst{PMIX_EVENT_JOB_END} events. Each event is to include at least the namespace of the corresponding job and a \refattr{PMIX_EVENT_TIMESTAMP} indicating the time the event occurred. Note that these events can be captured and processed by registering a default event handler instead of individual handlers and then processing the events based on the returned status code. Another common method is to register one event handler for all job-related events, with a separate handler for non-job events - see \refapi{PMIx_Register_event_handler} for details.
+}
+
+%
+\declareAttribute{PMIX_NOTIFY_COMPLETION}{"pmix.notecomp"}{bool}{
+Requests that the \ac{PMIx} generate the \refconst{PMIX_EVENT_JOB_END} event for normal or abnormal termination of the spawned job. The event shall include the returned status code for the corresponding job and a \refattr{PMIX_EVENT_TIMESTAMP} indicating the time the termination occurred.
+}
+
+%
+\declareNewAttribute{PMIX_LOG_JOB_EVENTS}{"pmix.log.jev"}{bool}{
+Requests that the \ac{PMIx} server log the \refconst{PMIX_EVENT_JOB_START}, \refconst{PMIX_LAUNCH_COMPLETE}, and \refconst{PMIX_EVENT_JOB_END} events using \refapi{PMIx_Log} instead of generating \ac{PMIx} events, subject to the logging attributes of Section \ref{api:struct:attributes:log}
+}
+
 %%%%%%%%%%%
 \subsection{Query attributes}
 \label{api:struct:attributes:query}
@@ -4752,18 +4748,18 @@ Request a comma-delimited list of scheduler queues. NO QUALIFIERS
 }
 
 %
-\declareAttribute{PMIX_QUERY_QUEUE_STATUS}{"pmix.qry.qst"}{TBD}{
-Status of a specified scheduler queue. SUPPORTED QUALIFIERS: \refattr{PMIX_ALLOC_QUEUE} naming specific queue whose status is being requested
+\declareAttribute{PMIX_QUERY_QUEUE_STATUS}{"pmix.qry.qst"}{char*}{
+Returns status of a specified scheduler queue, expressed as a string. SUPPORTED QUALIFIERS: \refattr{PMIX_ALLOC_QUEUE} naming specific queue whose status is being requested
 }
 
 %
 \declareAttribute{PMIX_QUERY_PROC_TABLE}{"pmix.qry.ptable"}{char*}{
-Input namespace of the job whose information is being requested returns (\refstruct{pmix_data_array_t}) an array of \refstruct{pmix_proc_info_t}. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose process table is being queried
+Returns a (\refstruct{pmix_data_array_t}) array of \refstruct{pmix_proc_info_t}, one entry for each process in the specified namespace, ordered by process job rank. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose process table is being queried
 }
 
 %
 \declareAttribute{PMIX_QUERY_LOCAL_PROC_TABLE}{"pmix.qry.lptable"}{char*}{
-Input namespace of the job whose information is being requested returns (\refstruct{pmix_data_array_t}) an array of \refstruct{pmix_proc_info_t} for processes in job on same node. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose process table is being queried
+Returns a (\refstruct{pmix_data_array_t}) array of \refstruct{pmix_proc_info_t}, one entry for each process in the specified namespace executing on the same node as the requester, ordered by process job rank. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose process table is being queried
 }
 
 %
@@ -4836,7 +4832,7 @@ Return an array of \refstruct{pmix_info_t}, each element itself containing an ar
 \subsection{Log attributes}
 \label{api:struct:attributes:log}
 
-Attributes used to describe \refapi{PMIx_Log_nb} behavior - these are values passed to the \refapi{PMIx_Log_nb} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
+Attributes used to describe \refapi{PMIx_Log} behavior - these are values passed to the \refapi{PMIx_Log} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_LOG_SOURCE}{"pmix.log.source"}{pmix_proc_t*}{
@@ -4958,53 +4954,6 @@ Log the provided information to the host environment's job record
 
 
 %%%%%%%%%%%
-\subsection{Debugger attributes}
-\label{api:struct:attributes:debugger}
-
-Attributes used to assist debuggers - these are values that can be passed to the \refapi{PMIx_Spawn} or \refapi{PMIx_Init} \acp{API}. Some may be accessed using the \refapi{PMIx_Get} \ac{API} with the \refconst{PMIX_RANK_WILDCARD} rank.
-
-%
-\declareAttribute{PMIX_DEBUG_STOP_ON_EXEC}{"pmix.dbg.exec"}{bool}{
-Passed to \refapi{PMIx_Spawn} to indicate that the specified application is being spawned under debugger, and that the launcher is to pause the resulting application processes on first instruction for debugger attach.
-}
-
-%
-\declareAttribute{PMIX_DEBUG_STOP_IN_INIT}{"pmix.dbg.init"}{bool}{
-Passed to \refapi{PMIx_Spawn} to indicate that the specified application is being spawned under debugger, and that the \ac{PMIx} client library is to pause the resulting application processes during \refapi{PMIx_Init} until debugger attach and release.
-}
-
-%
-\declareAttribute{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
-Passed to \refapi{PMIx_Spawn} to indicate that the specified application is being spawned under debugger, and that the resulting application processes are to pause at some application-determined location until debugger attach and release.
-}
-
-%
-\declareAttribute{PMIX_DEBUG_JOB}{"pmix.dbg.job"}{char*}{
-Namespace of the job to be debugged - provided to the debugger upon launch.
-}
-
-%
-\declareAttribute{PMIX_DEBUG_WAITING_FOR_NOTIFY}{"pmix.dbg.waiting"}{bool}{
-Job to be debugged is waiting for a release - this is not a value accessed using the \refapi{PMIx_Get} \ac{API}.
-}
-
-%
-\declareAttribute{PMIX_DEBUG_JOB_DIRECTIVES}{"pmix.dbg.jdirs"}{pmix_data_array_t*}{
-Array of job-level directives
-}
-
-%
-\declareAttribute{PMIX_DEBUG_APP_DIRECTIVES}{"pmix.dbg.adirs"}{pmix_data_array_t*}{
-Array of app-level directives
-}
-
-%
-\declareNewAttribute{PMIX_DEBUG_TARGET}{"pmix.dbg.tgt"}{pmix_proc_t*}{
-Identifier of process(es) to be debugged
-}
-
-
-%%%%%%%%%%%
 \subsection{Resource manager attributes}
 \label{api:struct:attributes:rm}
 
@@ -5076,37 +5025,37 @@ A string identifier (provided by the host environment) for the resulting allocat
 
 %
 \declareNewAttribute{PMIX_ALLOC_QUEUE}{"pmix.alloc.queue"}{char*}{
-Name of the \ac{WLM} queue being referenced.
+Name of the \ac{WLM} queue to which the allocation request is to be directed, or the queue being referenced in a query.
 }
 
 %
 \declareAttribute{PMIX_ALLOC_NUM_NODES}{"pmix.alloc.nnodes"}{uint64_t}{
-The number of nodes.
+The number of nodes being requested in an allocation request
 }
 
 %
 \declareAttribute{PMIX_ALLOC_NODE_LIST}{"pmix.alloc.nlist"}{char*}{
-Regular expression of the specific nodes.
+Regular expression of the specific nodes being requested in an allocation request
 }
 
 %
 \declareAttribute{PMIX_ALLOC_NUM_CPUS}{"pmix.alloc.ncpus"}{uint64_t}{
-Number of cpus.
+Number of cpus being requested in an allocation request.
 }
 
 %
 \declareAttribute{PMIX_ALLOC_NUM_CPU_LIST}{"pmix.alloc.ncpulist"}{char*}{
-Regular expression of the number of cpus for each node.
+Regular expression of the number of cpus for each node being requested in an allocation request.
 }
 
 %
 \declareAttribute{PMIX_ALLOC_CPU_LIST}{"pmix.alloc.cpulist"}{char*}{
-Regular expression of the specific cpus indicating the cpus involved.
+Regular expression of the specific cpus  being requested in an allocation request.
 }
 
 %
 \declareAttribute{PMIX_ALLOC_MEM_SIZE}{"pmix.alloc.msize"}{float}{
-Number of Megabytes.
+Number of Megabytes[base2] of memory (per process) being requested in an allocation request.
 }
 
 %
@@ -5129,7 +5078,7 @@ The type of the included value depends upon the fabric support. For example, a T
 
 %
 \declareAttribute{PMIX_ALLOC_BANDWIDTH}{"pmix.alloc.bw"}{float}{
-Mbits/sec.
+Fabric bandwidth (in Megabits[base2]/sec) for the job being requested in an allocation request.
 }
 
 %
@@ -5139,12 +5088,12 @@ Changed to \refattr{PMIX_ALLOC_FABRIC_QOS}
 
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_QOS}{"pmix.alloc.netqos"}{char*}{
-Quality of service level.
+Fabric quality of service level for the job being requested in an allocation request.
 }
 
 %
 \declareAttribute{PMIX_ALLOC_TIME}{"pmix.alloc.time"}{uint32_t}{
-Time in seconds.
+Total session time (in seconds) being requested in an allocation request.
 }
 
 %
@@ -5153,7 +5102,7 @@ Changed to \refattr{PMIX_ALLOC_FABRIC_TYPE}
 }
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_TYPE}{"pmix.alloc.nettype"}{char*}{
-Type of desired transport (e.g., \var{``tcp''}, \var{``udp''})
+Type of desired transport (e.g., \var{``tcp''}, \var{``udp''}) being requested in an allocation request.
 }
 
 %
@@ -5162,7 +5111,7 @@ Changed to \refattr{PMIX_ALLOC_FABRIC_PLANE}
 }
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_PLANE}{"pmix.alloc.netplane"}{char*}{
-ID string for the NIC (aka \textit{plane}) to be used for this allocation (e.g., CIDR for Ethernet)
+ID string for the NIC (aka \textit{plane}) to be used for the requested allocation (e.g., CIDR for Ethernet)
 }
 
 %
@@ -5171,7 +5120,7 @@ Changed to \refattr{PMIX_ALLOC_FABRIC_ENDPTS}
 }
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
-Number of endpoints to allocate per process
+Number of endpoints to allocate per process in the job
 }
 
 %
@@ -5180,7 +5129,7 @@ Changed to \refattr{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
 }
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
-Number of endpoints to allocate per node
+Number of endpoints to allocate per node for the job
 }
 
 %
@@ -5189,7 +5138,7 @@ Changed to \refattr{PMIX_ALLOC_FABRIC_SEC_KEY}
 }
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
-Fabric security key
+Fabric security key for the spawned job
 }
 
 
@@ -5400,69 +5349,6 @@ string identifier of the credential type.
 Blob containing crypto key
 }
 
-
-%%%%%%%%%%%
-\subsection{IO Forwarding attributes}
-\label{api:struct:attributes:security}
-
-\versionMarker{3.0}
-Attributes used to control IO forwarding behavior
-
-%
-\declareAttribute{PMIX_IOF_CACHE_SIZE}{"pmix.iof.csize"}{uint32_t}{
-The requested size of the server cache in bytes for each specified channel. By default, the server is allowed (but not required) to drop all bytes received beyond the max size.
-}
-
-%
-\declareAttribute{PMIX_IOF_DROP_OLDEST}{"pmix.iof.old"}{bool}{
-In an overflow situation, drop the oldest bytes to make room in the cache.
-}
-
-%
-\declareAttribute{PMIX_IOF_DROP_NEWEST}{"pmix.iof.new"}{bool}{
-In an overflow situation, drop any new bytes received until room becomes available in the cache (default).
-}
-
-%
-\declareAttribute{PMIX_IOF_BUFFERING_SIZE}{"pmix.iof.bsize"}{uint32_t}{
-Controls grouping of IO on the specified channel(s) to avoid being called every time a bit of IO arrives. The library will execute the callback whenever the specified number of bytes becomes available. Any remaining buffered data will be ``flushed'' upon call to deregister the respective channel.
-}
-
-%
-\declareAttribute{PMIX_IOF_BUFFERING_TIME}{"pmix.iof.btime"}{uint32_t}{
-Max time in seconds to buffer IO before delivering it. Used in conjunction with buffering size, this
-prevents IO from being held indefinitely while waiting for another payload to arrive.
-}
-
-%
-\declareAttribute{PMIX_IOF_COMPLETE}{"pmix.iof.cmp"}{bool}{
-Indicates whether or not the specified IO channel has been closed by the source.
-}
-
-%
-\declareNewAttribute{PMIX_IOF_PUSH_STDIN}{"pmix.iof.stdin"}{bool}{
-Used by a tool to request that the \ac{PMIx} library collect the tool's stdin and forward it to the processes specified in the \refapi{PMIx_IOF_push} call
-}
-
-%
-\declareNewAttribute{PMIX_IOF_STOP}{"pmix.iof.stop"}{bool}{
-Stop forwarding the specified channel(s)
-}
-
-%
-\declareAttribute{PMIX_IOF_TAG_OUTPUT}{"pmix.iof.tag"}{bool}{
-Tag output with the channel it comes from.
-}
-
-%
-\declareAttribute{PMIX_IOF_TIMESTAMP_OUTPUT}{"pmix.iof.ts"}{bool}{
-Timestamp output
-}
-
-%
-\declareAttribute{PMIX_IOF_XML_OUTPUT}{"pmix.iof.xml"}{bool}{
-Format output in \ac{XML}
-}
 
 %%%%%%%%%%%
 \subsection{Application setup attributes}
@@ -6485,6 +6371,21 @@ const char*
 PMIx_IOF_channel_string(pmix_iof_channel_t channel);
 \end{codepar}
 \cspecificend
+
+%%%%
+\summary
+\declareapi{PMIx_Job_state_string}
+
+String representation of a \refstruct{pmix_job_state_t}.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+const char*
+PMIx_Job_state_string(pmix_job_state_t state);
+\end{codepar}
+\cspecificend
+
 
 
 %%%%

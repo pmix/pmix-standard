@@ -137,39 +137,39 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries that support this \ac{API} are required to support the following attributes:
 
-\pastePRIAttributeItem{PMIX_QUERY_REFRESH_CACHE}
-\pastePRIAttributeItem{PMIX_SESSION_INFO}
-\pastePRIAttributeItem{PMIX_JOB_INFO}
-\pastePRIAttributeItem{PMIX_APP_INFO}
-\pastePRIAttributeItem{PMIX_NODE_INFO}
-\pastePRIAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
-\pastePRIAttributeItemBegin{PMIX_NSPACE} Specifies the namespace of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
-\pastePRIAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
-\pastePRIAttributeItem{PMIX_QUERY_ATTRIBUTE_SUPPORT}
-\pastePRIAttributeItem{PMIX_CLIENT_ATTRIBUTES}
-\pastePRIAttributeItem{PMIX_SERVER_ATTRIBUTES}
-\pastePRIAttributeItem{PMIX_HOST_ATTRIBUTES}
-\pastePRIAttributeItem{PMIX_TOOL_ATTRIBUTES}
+\pasteAttributeItem{PMIX_QUERY_REFRESH_CACHE}
+\pasteAttributeItem{PMIX_SESSION_INFO}
+\pasteAttributeItem{PMIX_JOB_INFO}
+\pasteAttributeItem{PMIX_APP_INFO}
+\pasteAttributeItem{PMIX_NODE_INFO}
+\pasteAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_NSPACE} Specifies the namespace of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
+\pasteAttributeItem{PMIX_QUERY_ATTRIBUTE_SUPPORT}
+\pasteAttributeItem{PMIX_CLIENT_ATTRIBUTES}
+\pasteAttributeItem{PMIX_SERVER_ATTRIBUTES}
+\pasteAttributeItem{PMIX_HOST_ATTRIBUTES}
+\pasteAttributeItem{PMIX_TOOL_ATTRIBUTES}
 
 Note that inclusion of the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.
 
-\ac{PMIx} libraries are not required to directly support any other attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+\ac{PMIx} libraries are not required to directly support any other attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
 \divider
 
 Host environments that support this operation are required to support the following attributes as qualifiers to the request:
 
-\pastePRRTEAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
 
-\pastePRRTEAttributeItemBegin{PMIX_NSPACE} Specifies the namespace of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_NSPACE} Specifies the namespace of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
 
-\pastePRRTEAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
 
 \reqattrend
 
@@ -178,23 +178,23 @@ Note that inclusion of the \refattr{PMIX_PROCID} directive and either the \refat
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_QUERY_NAMESPACES}
-\pastePRRTEAttributeItem{PMIX_QUERY_JOB_STATUS}
+\pasteAttributeItem{PMIX_QUERY_NAMESPACES}
+\pasteAttributeItem{PMIX_QUERY_JOB_STATUS}
 \pasteAttributeItem{PMIX_QUERY_QUEUE_LIST}
 \pasteAttributeItem{PMIX_QUERY_QUEUE_STATUS}
-\pastePRRTEAttributeItem{PMIX_QUERY_PROC_TABLE}
-\pastePRRTEAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
-\pastePRRTEAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
-\pastePRRTEAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
-\pastePRRTEAttributeItem{PMIX_QUERY_MEMORY_USAGE}
-\pastePRRTEAttributeItem{PMIX_QUERY_REPORT_AVG}
-\pastePRRTEAttributeItem{PMIX_QUERY_REPORT_MINMAX}
+\pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_MEMORY_USAGE}
+\pasteAttributeItem{PMIX_QUERY_REPORT_AVG}
+\pasteAttributeItem{PMIX_QUERY_REPORT_MINMAX}
 \pasteAttributeItem{PMIX_QUERY_ALLOC_STATUS}
-\pastePRRTEAttributeItem{PMIX_TIME_REMAINING}
-\pastePRRTEAttributeItemBegin{PMIX_SERVER_URI} Requests the URI of the specified \ac{PMIx} server's \ac{PMIx} connection. Defaults to requesting the information for the local \ac{PMIx} server.
-\pastePRRTEAttributeItemEnd
-\pastePRRTEAttributeItemBegin{PMIX_PROC_URI} Requests the URI of the specified \ac{PMIx} server's out-of-band connection. Defaults to requesting the information for the local \ac{PMIx} server.
-\pastePRRTEAttributeItemEnd
+\pasteAttributeItem{PMIX_TIME_REMAINING}
+\pasteAttributeItemBegin{PMIX_SERVER_URI} Requests the URI of the specified \ac{PMIx} server's \ac{PMIx} connection. Defaults to requesting the information for the local \ac{PMIx} server.
+\pasteAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_PROC_URI} Requests the URI of the specified \ac{PMIx} server's out-of-band connection. Defaults to requesting the information for the local \ac{PMIx} server.
+\pasteAttributeItemEnd
 
 \optattrend
 
@@ -261,62 +261,62 @@ If executed, the status returned in the provided callback function will be one o
 \reqattrstart
 \ac{PMIx} libraries that support this \ac{API} are required to support the following attributes:
 
-\pastePRIAttributeItem{PMIX_QUERY_REFRESH_CACHE}
-\pastePRIAttributeItem{PMIX_SESSION_INFO}
-\pastePRIAttributeItem{PMIX_JOB_INFO}
-\pastePRIAttributeItem{PMIX_APP_INFO}
-\pastePRIAttributeItem{PMIX_NODE_INFO}
-\pastePRIAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
-\pastePRIAttributeItemBegin{PMIX_NSPACE} Specifies the namespace of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
-\pastePRIAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
-\pastePRIAttributeItem{PMIX_QUERY_ATTRIBUTE_SUPPORT}
-\pastePRIAttributeItem{PMIX_CLIENT_ATTRIBUTES}
-\pastePRIAttributeItem{PMIX_SERVER_ATTRIBUTES}
-\pastePRIAttributeItem{PMIX_HOST_ATTRIBUTES}
-\pastePRIAttributeItem{PMIX_TOOL_ATTRIBUTES}
+\pasteAttributeItem{PMIX_QUERY_REFRESH_CACHE}
+\pasteAttributeItem{PMIX_SESSION_INFO}
+\pasteAttributeItem{PMIX_JOB_INFO}
+\pasteAttributeItem{PMIX_APP_INFO}
+\pasteAttributeItem{PMIX_NODE_INFO}
+\pasteAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_NSPACE} Specifies the namespace of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
+\pasteAttributeItem{PMIX_QUERY_ATTRIBUTE_SUPPORT}
+\pasteAttributeItem{PMIX_CLIENT_ATTRIBUTES}
+\pasteAttributeItem{PMIX_SERVER_ATTRIBUTES}
+\pasteAttributeItem{PMIX_HOST_ATTRIBUTES}
+\pasteAttributeItem{PMIX_TOOL_ATTRIBUTES}
 
 Note that inclusion of the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.
 
-\ac{PMIx} libraries are not required to directly support any other attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+\ac{PMIx} libraries are not required to directly support any other attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
 \divider
 
 Host environments that support this operation are required to support the following attributes as qualifiers to the request:
 
-\pastePRRTEAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_PROCID} Specifies the process ID whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
 
-\pastePRRTEAttributeItemBegin{PMIX_NSPACE} Specifies the namespace of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_NSPACE} Specifies the namespace of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
 
-\pastePRRTEAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute. Only required when the request is for information on a specific process.
-\pastePRIAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_RANK} Specifies the rank of the process whose information is being requested - e.g., a query asking for the \refattr{PMIX_LOCAL_RANK} of a specified process. Must be accompanied by the \refattr{PMIX_NSPACE} attribute. Only required when the request is for information on a specific process.
+\pasteAttributeItemEnd
 
 Note that inclusion of the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.
 
 \optattrstart
 The following attributes are optional for host environments that support this operation:
 
-\pastePRRTEAttributeItem{PMIX_QUERY_NAMESPACES}
-\pastePRRTEAttributeItem{PMIX_QUERY_JOB_STATUS}
+\pasteAttributeItem{PMIX_QUERY_NAMESPACES}
+\pasteAttributeItem{PMIX_QUERY_JOB_STATUS}
 \pasteAttributeItem{PMIX_QUERY_QUEUE_LIST}
 \pasteAttributeItem{PMIX_QUERY_QUEUE_STATUS}
-\pastePRRTEAttributeItem{PMIX_QUERY_PROC_TABLE}
-\pastePRRTEAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
-\pastePRRTEAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
-\pastePRRTEAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
-\pastePRRTEAttributeItem{PMIX_QUERY_MEMORY_USAGE}
-\pastePRRTEAttributeItem{PMIX_QUERY_REPORT_AVG}
-\pastePRRTEAttributeItem{PMIX_QUERY_REPORT_MINMAX}
+\pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
+\pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_MEMORY_USAGE}
+\pasteAttributeItem{PMIX_QUERY_REPORT_AVG}
+\pasteAttributeItem{PMIX_QUERY_REPORT_MINMAX}
 \pasteAttributeItem{PMIX_QUERY_ALLOC_STATUS}
-\pastePRRTEAttributeItem{PMIX_TIME_REMAINING}
-\pastePRRTEAttributeItemBegin{PMIX_SERVER_URI} Requests the URI of the specified \ac{PMIx} server's \ac{PMIx} connection. Defaults to requesting the information for the local \ac{PMIx} server.
-\pastePRRTEAttributeItemEnd
-\pastePRRTEAttributeItemBegin{PMIX_PROC_URI} Requests the URI of the specified \ac{PMIx} server's out-of-band connection. Defaults to requesting the information for the local \ac{PMIx} server.
-\pastePRRTEAttributeItemEnd
+\pasteAttributeItem{PMIX_TIME_REMAINING}
+\pasteAttributeItemBegin{PMIX_SERVER_URI} Requests the URI of the specified \ac{PMIx} server's \ac{PMIx} connection. Defaults to requesting the information for the local \ac{PMIx} server.
+\pasteAttributeItemEnd
+\pasteAttributeItemBegin{PMIX_PROC_URI} Requests the URI of the specified \ac{PMIx} server's out-of-band connection. Defaults to requesting the information for the local \ac{PMIx} server.
+\pasteAttributeItemEnd
 
 \optattrend
 
@@ -424,7 +424,7 @@ Returns one of the following:
 \end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
 \divider
 
@@ -517,7 +517,7 @@ Returns one of the following:
 \end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
 \divider
 
@@ -608,24 +608,24 @@ Returns one of the following:
 \end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
 \divider
 
 Host environments that implement support for this operation are required to support the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_ID}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_PAUSE}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_RESUME}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_KILL}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_SIGNAL}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_TERMINATE}
-\pastePRRTEAttributeItem{PMIX_REGISTER_CLEANUP}
-\pastePRRTEAttributeItem{PMIX_REGISTER_CLEANUP_DIR}
-\pastePRRTEAttributeItem{PMIX_CLEANUP_RECURSIVE}
-\pastePRRTEAttributeItem{PMIX_CLEANUP_EMPTY}
-\pastePRRTEAttributeItem{PMIX_CLEANUP_IGNORE}
-\pastePRRTEAttributeItem{PMIX_CLEANUP_LEAVE_TOPDIR}
+\pasteAttributeItem{PMIX_JOB_CTRL_ID}
+\pasteAttributeItem{PMIX_JOB_CTRL_PAUSE}
+\pasteAttributeItem{PMIX_JOB_CTRL_RESUME}
+\pasteAttributeItem{PMIX_JOB_CTRL_KILL}
+\pasteAttributeItem{PMIX_JOB_CTRL_SIGNAL}
+\pasteAttributeItem{PMIX_JOB_CTRL_TERMINATE}
+\pasteAttributeItem{PMIX_REGISTER_CLEANUP}
+\pasteAttributeItem{PMIX_REGISTER_CLEANUP_DIR}
+\pasteAttributeItem{PMIX_CLEANUP_RECURSIVE}
+\pasteAttributeItem{PMIX_CLEANUP_EMPTY}
+\pasteAttributeItem{PMIX_CLEANUP_IGNORE}
+\pasteAttributeItem{PMIX_CLEANUP_LEAVE_TOPDIR}
 
 \reqattrend
 
@@ -696,24 +696,24 @@ Returns one of the following:
 \end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
 \divider
 
 Host environments that implement support for this operation are required to support the following attributes:
 
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_ID}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_PAUSE}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_RESUME}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_KILL}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_SIGNAL}
-\pastePRRTEAttributeItem{PMIX_JOB_CTRL_TERMINATE}
-\pastePRRTEAttributeItem{PMIX_REGISTER_CLEANUP}
-\pastePRRTEAttributeItem{PMIX_REGISTER_CLEANUP_DIR}
-\pastePRRTEAttributeItem{PMIX_CLEANUP_RECURSIVE}
-\pastePRRTEAttributeItem{PMIX_CLEANUP_EMPTY}
-\pastePRRTEAttributeItem{PMIX_CLEANUP_IGNORE}
-\pastePRRTEAttributeItem{PMIX_CLEANUP_LEAVE_TOPDIR}
+\pasteAttributeItem{PMIX_JOB_CTRL_ID}
+\pasteAttributeItem{PMIX_JOB_CTRL_PAUSE}
+\pasteAttributeItem{PMIX_JOB_CTRL_RESUME}
+\pasteAttributeItem{PMIX_JOB_CTRL_KILL}
+\pasteAttributeItem{PMIX_JOB_CTRL_SIGNAL}
+\pasteAttributeItem{PMIX_JOB_CTRL_TERMINATE}
+\pasteAttributeItem{PMIX_REGISTER_CLEANUP}
+\pasteAttributeItem{PMIX_REGISTER_CLEANUP_DIR}
+\pasteAttributeItem{PMIX_CLEANUP_RECURSIVE}
+\pasteAttributeItem{PMIX_CLEANUP_EMPTY}
+\pasteAttributeItem{PMIX_CLEANUP_IGNORE}
+\pasteAttributeItem{PMIX_CLEANUP_LEAVE_TOPDIR}
 
 \reqattrend
 
@@ -798,20 +798,20 @@ Returns one of the following:
 \end{itemize}
 
 \optattrstart
-The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the requesting process:
+The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the requesting process:
 
-\pastePRIAttributeItem{PMIX_MONITOR_ID}
-\pastePRIAttributeItem{PMIX_MONITOR_CANCEL}
-\pastePRIAttributeItem{PMIX_MONITOR_APP_CONTROL}
-\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT}
-\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
-\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_SIZE}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_ACCESS}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_MODIFY}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_DROPS}
+\pasteAttributeItem{PMIX_MONITOR_ID}
+\pasteAttributeItem{PMIX_MONITOR_CANCEL}
+\pasteAttributeItem{PMIX_MONITOR_APP_CONTROL}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
+\pasteAttributeItem{PMIX_MONITOR_FILE}
+\pasteAttributeItem{PMIX_MONITOR_FILE_SIZE}
+\pasteAttributeItem{PMIX_MONITOR_FILE_ACCESS}
+\pasteAttributeItem{PMIX_MONITOR_FILE_MODIFY}
+\pasteAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
+\pasteAttributeItem{PMIX_MONITOR_FILE_DROPS}
 
 \optattrend
 
@@ -873,20 +873,20 @@ Returns one of the following:
 \end{itemize}
 
 \optattrstart
-The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refPRIAttributeItem{PMIX_USERID} and the \refPRIAttributeItem{PMIX_GRPID} attributes of the requesting process:
+The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the requesting process:
 
-\pastePRIAttributeItem{PMIX_MONITOR_ID}
-\pastePRIAttributeItem{PMIX_MONITOR_CANCEL}
-\pastePRIAttributeItem{PMIX_MONITOR_APP_CONTROL}
-\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT}
-\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
-\pastePRIAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_SIZE}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_ACCESS}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_MODIFY}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
-\pastePRIAttributeItem{PMIX_MONITOR_FILE_DROPS}
+\pasteAttributeItem{PMIX_MONITOR_ID}
+\pasteAttributeItem{PMIX_MONITOR_CANCEL}
+\pasteAttributeItem{PMIX_MONITOR_APP_CONTROL}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
+\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
+\pasteAttributeItem{PMIX_MONITOR_FILE}
+\pasteAttributeItem{PMIX_MONITOR_FILE_SIZE}
+\pasteAttributeItem{PMIX_MONITOR_FILE_ACCESS}
+\pasteAttributeItem{PMIX_MONITOR_FILE_MODIFY}
+\pasteAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
+\pasteAttributeItem{PMIX_MONITOR_FILE_DROPS}
 
 \optattrend
 
@@ -967,36 +967,36 @@ Return codes are one of the following:
 \reqattrstart
 If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
 Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes:
 
-\pastePRIAttributeItem{PMIX_LOG_STDERR}
-\pastePRIAttributeItem{PMIX_LOG_STDOUT}
-\pastePRIAttributeItem{PMIX_LOG_SYSLOG}
-\pastePRIAttributeItem{PMIX_LOG_LOCAL_SYSLOG}
-\pastePRIAttributeItem{PMIX_LOG_GLOBAL_SYSLOG}
-\pastePRIAttributeItem{PMIX_LOG_SYSLOG_PRI}
-\pastePRIAttributeItem{PMIX_LOG_ONCE}
+\pasteAttributeItem{PMIX_LOG_STDERR}
+\pasteAttributeItem{PMIX_LOG_STDOUT}
+\pasteAttributeItem{PMIX_LOG_SYSLOG}
+\pasteAttributeItem{PMIX_LOG_LOCAL_SYSLOG}
+\pasteAttributeItem{PMIX_LOG_GLOBAL_SYSLOG}
+\pasteAttributeItem{PMIX_LOG_SYSLOG_PRI}
+\pasteAttributeItem{PMIX_LOG_ONCE}
 
 \reqattrend
 
 \optattrstart
 The following attributes are optional for host environments or \ac{PMIx} libraries that support this operation:
 
-\pastePRIAttributeItem{PMIX_LOG_SOURCE}
-\pastePRIAttributeItem{PMIX_LOG_TIMESTAMP}
-\pastePRIAttributeItem{PMIX_LOG_GENERATE_TIMESTAMP}
-\pastePRIAttributeItem{PMIX_LOG_TAG_OUTPUT}
-\pastePRIAttributeItem{PMIX_LOG_TIMESTAMP_OUTPUT}
-\pastePRIAttributeItem{PMIX_LOG_XML_OUTPUT}
-\pastePRRTEAttributeItem{PMIX_LOG_EMAIL}
-\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_ADDR}
-\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
-\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_MSG}
+\pasteAttributeItem{PMIX_LOG_SOURCE}
+\pasteAttributeItem{PMIX_LOG_TIMESTAMP}
+\pasteAttributeItem{PMIX_LOG_GENERATE_TIMESTAMP}
+\pasteAttributeItem{PMIX_LOG_TAG_OUTPUT}
+\pasteAttributeItem{PMIX_LOG_TIMESTAMP_OUTPUT}
+\pasteAttributeItem{PMIX_LOG_XML_OUTPUT}
+\pasteAttributeItem{PMIX_LOG_EMAIL}
+\pasteAttributeItem{PMIX_LOG_EMAIL_ADDR}
+\pasteAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
+\pasteAttributeItem{PMIX_LOG_EMAIL_MSG}
 \pasteAttributeItem{PMIX_LOG_JOB_RECORD}
 \pasteAttributeItem{PMIX_LOG_GLOBAL_DATASTORE}
 
@@ -1054,36 +1054,36 @@ Return codes are one of the following:
 \reqattrstart
 If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
 
-\pastePRIAttributeItem{PMIX_USERID}
-\pastePRIAttributeItem{PMIX_GRPID}
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
 
 \divider
 
 Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes:
 
-\pastePRIAttributeItem{PMIX_LOG_STDERR}
-\pastePRIAttributeItem{PMIX_LOG_STDOUT}
-\pastePRIAttributeItem{PMIX_LOG_SYSLOG}
-\pastePRIAttributeItem{PMIX_LOG_LOCAL_SYSLOG}
-\pastePRIAttributeItem{PMIX_LOG_GLOBAL_SYSLOG}
-\pastePRIAttributeItem{PMIX_LOG_SYSLOG_PRI}
-\pastePRIAttributeItem{PMIX_LOG_ONCE}
+\pasteAttributeItem{PMIX_LOG_STDERR}
+\pasteAttributeItem{PMIX_LOG_STDOUT}
+\pasteAttributeItem{PMIX_LOG_SYSLOG}
+\pasteAttributeItem{PMIX_LOG_LOCAL_SYSLOG}
+\pasteAttributeItem{PMIX_LOG_GLOBAL_SYSLOG}
+\pasteAttributeItem{PMIX_LOG_SYSLOG_PRI}
+\pasteAttributeItem{PMIX_LOG_ONCE}
 
 \reqattrend
 
 \optattrstart
 The following attributes are optional for host environments or \ac{PMIx} libraries that support this operation:
 
-\pastePRIAttributeItem{PMIX_LOG_SOURCE}
-\pastePRIAttributeItem{PMIX_LOG_TIMESTAMP}
-\pastePRIAttributeItem{PMIX_LOG_GENERATE_TIMESTAMP}
-\pastePRIAttributeItem{PMIX_LOG_TAG_OUTPUT}
-\pastePRIAttributeItem{PMIX_LOG_TIMESTAMP_OUTPUT}
-\pastePRIAttributeItem{PMIX_LOG_XML_OUTPUT}
-\pastePRRTEAttributeItem{PMIX_LOG_EMAIL}
-\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_ADDR}
-\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
-\pastePRRTEAttributeItem{PMIX_LOG_EMAIL_MSG}
+\pasteAttributeItem{PMIX_LOG_SOURCE}
+\pasteAttributeItem{PMIX_LOG_TIMESTAMP}
+\pasteAttributeItem{PMIX_LOG_GENERATE_TIMESTAMP}
+\pasteAttributeItem{PMIX_LOG_TAG_OUTPUT}
+\pasteAttributeItem{PMIX_LOG_TIMESTAMP_OUTPUT}
+\pasteAttributeItem{PMIX_LOG_XML_OUTPUT}
+\pasteAttributeItem{PMIX_LOG_EMAIL}
+\pasteAttributeItem{PMIX_LOG_EMAIL_ADDR}
+\pasteAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
+\pasteAttributeItem{PMIX_LOG_EMAIL_MSG}
 \pasteAttributeItem{PMIX_LOG_JOB_RECORD}
 \pasteAttributeItem{PMIX_LOG_GLOBAL_DATASTORE}
 
