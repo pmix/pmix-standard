@@ -15,3 +15,5 @@ datetime-defaults.sty
 datetime.sty
 check-openpmix
 figs/~$drawings.pptx
+*.loc
+*.soc
