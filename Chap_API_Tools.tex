@@ -170,12 +170,12 @@ Tool is a launcher and needs to create rendezvous files
 The following environmental variables are used during \refapi{PMIx_tool_init} to control various rendezvous-related operations when the tool is started manually (e.g., on a command line) or by a fork/exec-like operation.
 
 %
-\declareNewEnvar{PMIX_LAUNCHER_PAUSE_FOR_TOOL}{
+\declareEnvarNEW{PMIX_LAUNCHER_PAUSE_FOR_TOOL}{
 Upon completing \refapi{PMIx_server_init}, the spawned launcher is to generate the \refconst{PMIX_LAUNCHER_READY} event and then pause until the spawning tool can connect to it and provide directives.
 }
 
 %
-\declareNewEnvar{PMIX_LAUNCHER_RENDEZVOUS_FILE}{
+\declareEnvarNEW{PMIX_LAUNCHER_RENDEZVOUS_FILE}{
 Pathname of file where the launcher is to store its connection information so that the spawning tool can connect to it.
 }
 
@@ -227,27 +227,27 @@ The tool wants to use internal PMIx support, but does not want to connect to a P
 }
 
 %
-\declareNewAttribute{PMIX_TOOL_CONNECT_OPTIONAL}{"pmix.tool.conopt"}{bool}{
+\declareAttributeNEW{PMIX_TOOL_CONNECT_OPTIONAL}{"pmix.tool.conopt"}{bool}{
 The tool shall connect to a server if available, but otherwise continue to operate unconnected
 }
 
 %
-\declareDepAttribute{PMIX_RECONNECT_SERVER}{"pmix.tool.recon"}{bool}{
+\declareAttributeDEP{PMIX_RECONNECT_SERVER}{"pmix.tool.recon"}{bool}{
 Tool is requesting to change server connections - superseded by the \refapi{PMIx_tool_connect_to_server} \ac{API}
 }
 
 %
-\declareNewAttribute{PMIX_TOOL_ATTACHMENT_FILE}{"pmix.tool.attach"}{char*}{
+\declareAttributeNEW{PMIX_TOOL_ATTACHMENT_FILE}{"pmix.tool.attach"}{char*}{
 Pathname of file containing connection information to be used for attaching to a specific server
 }
 
 %
-\declareNewAttribute{PMIX_LAUNCHER_RENDEZVOUS_FILE}{"pmix.tool.lncrnd"}{char*}{
+\declareAttributeNEW{PMIX_LAUNCHER_RENDEZVOUS_FILE}{"pmix.tool.lncrnd"}{char*}{
 Pathname of file where the launcher is to store its connection information so that the spawning tool can connect to it.
 }
 
 %
-\declareNewAttribute{PMIX_PRIMARY_SERVER}{"pmix.pri.srvr"}{bool}{
+\declareAttributeNEW{PMIX_PRIMARY_SERVER}{"pmix.pri.srvr"}{bool}{
 The server to which the tool is connecting shall be designated the \emph{primary} server once connection has been accomplished.
 }
 
@@ -408,22 +408,22 @@ Requests that the diagnostic channel of the spawned processes be forwarded to th
 }
 
 %
-\declareNewAttribute{PMIX_NOHUP}{"pmix.nohup"}{bool}{
+\declareAttributeNEW{PMIX_NOHUP}{"pmix.nohup"}{bool}{
 Any processes started on behalf of the calling tool (or the specified namespace, if such specification is included in the list of attributes) should continue after the tool disconnects from its server
 }
 
 %
-\declareNewAttribute{PMIX_LAUNCHER_DAEMON}{"pmix.lnch.dmn"}{char*}{
+\declareAttributeNEW{PMIX_LAUNCHER_DAEMON}{"pmix.lnch.dmn"}{char*}{
 Path to executable that is to be used as the backend daemon for the launcher. This replaces the launcher's own daemon with the specified executable. Note that the user is therefore responsible for ensuring compatibility of the specified executable and the host launcher.
 }
 
 %
-\declareNewAttribute{PMIX_FORKEXEC_AGENT}{"pmix.frkex.agnt"}{char*}{
+\declareAttributeNEW{PMIX_FORKEXEC_AGENT}{"pmix.frkex.agnt"}{char*}{
 Path to executable that the launcher's backend daemons are to fork/exec in place of the actual application processes. The fork/exec agent shall connect back (as a \ac{PMIx} tool) to the launcher's daemon to receive its spawn instructions, and is responsible for starting the actual application process it replaced. See Section \ref{api:tools:debugger:agent} for details.
 }
 
 %
-\declareNewAttribute{PMIX_EXEC_AGENT}{"pmix.exec.agnt"}{char*}{
+\declareAttributeNEW{PMIX_EXEC_AGENT}{"pmix.exec.agnt"}{char*}{
 Path to executable that the launcher's backend daemons are to fork/exec in place of the actual application processes. The launcher's daemon shall pass the full command line of the application on the command line of the exec agent, which shall not connect back to the launcher's daemon. The exec agent is responsible for exec'ing the specified application process in its own place. See Section \ref{api:tools:debugger:agent} for details
 }
 
@@ -588,15 +588,15 @@ Requests that output be marked with the time at which the data was received by t
 Requests that output be formatted in \ac{XML}
 }
 
-\declareNewAttribute{PMIX_IOF_PUSH_STDIN}{"pmix.iof.stdin"}{bool}{
+\declareAttributeNEW{PMIX_IOF_PUSH_STDIN}{"pmix.iof.stdin"}{bool}{
 Requests that the \ac{PMIx} library collect the \code{stdin} of the requester and forward it to the processes specified in the \refapi{PMIx_IOF_push} call. All collected data is sent to the same targets until \code{stdin} is closed, or a subsequent call to \refapi{PMIx_IOF_push} is made that includes the \refattr{PMIX_IOF_COMPLETE} attribute indicating that forwarding of \code{stdin} is to be terminated.
 }
 
-\declareNewAttribute{PMIX_IOF_COPY}{"pmix.iof.cpy"}{bool}{
+\declareAttributeNEW{PMIX_IOF_COPY}{"pmix.iof.cpy"}{bool}{
 Requests that the host environment deliver a copy of the specified output stream(s) to the tool, letting the stream(s) continue to also be delivered to the default location. This allows the tool to tap into the output stream(s) without redirecting it from its current final destination
 }
 
-\declareNewAttribute{PMIX_IOF_REDIRECT}{"pmix.iof.redir"}{bool}{
+\declareAttributeNEW{PMIX_IOF_REDIRECT}{"pmix.iof.redir"}{bool}{
 Requests that the host environment intercept the specified output stream(s) and deliver it to the requesting tool instead of its current final destination. This might be used, for example, during a debugging procedure to avoid injection of debugger-related output into the application’s results file. The original output stream(s) destination is restored upon termination of the tool
 }
 
@@ -749,12 +749,12 @@ Included in either the \emph{pmix_info_t} array in a \refstruct{pmix_app_t} desc
 }
 
 %
-\declareDepAttribute{PMIX_DEBUG_JOB}{"pmix.dbg.job"}{char*}{
+\declareAttributeDEP{PMIX_DEBUG_JOB}{"pmix.dbg.job"}{char*}{
 Namespace of the job to be debugged - provided to the debugger upon launch (replaced by \refattr{PMIX_DEBUG_TARGET})
 }
 
 %
-\declareNewAttribute{PMIX_DEBUG_TARGET}{"pmix.dbg.tgt"}{pmix_proc_t*}{
+\declareAttributeNEW{PMIX_DEBUG_TARGET}{"pmix.dbg.tgt"}{pmix_proc_t*}{
 Identifier of process(es) to be debugged - a rank of \refconst{PMIX_RANK_WILDCARD} indicates that all processes in the specified namespace are to be included
 }
 
@@ -769,12 +769,12 @@ Designated application is to be spawned as a disconnected job - i.e., the launch
 }
 
 %
-\declareNewAttribute{PMIX_DEBUG_DAEMONS_PER_PROC}{"pmix.dbg.dpproc"}{uint16_t}{
+\declareAttributeNEW{PMIX_DEBUG_DAEMONS_PER_PROC}{"pmix.dbg.dpproc"}{uint16_t}{
 Number of debugger daemons to be spawned per application process. The launcher is to pass the identifier of the namespace to be debugged by including the \refattr{PMIX_DEBUG_TARGET} attribute in the daemon's job-level information. The debugger daemons spawned on a given node are responsible for self-determining their specific target process(es).
 }
 
 %
-\declareNewAttribute{PMIX_DEBUG_DAEMONS_PER_NODE}{"pmix.dbg.dpnd"}{uint16_t}{
+\declareAttributeNEW{PMIX_DEBUG_DAEMONS_PER_NODE}{"pmix.dbg.dpnd"}{uint16_t}{
 Number of debugger daemons to be spawned on each node where the target job is executing. The launcher is to pass the identifier of the namespace to be debugged by including the \refattr{PMIX_DEBUG_TARGET} attribute in the daemon's job-level information. The debugger daemons spawned on a given node are responsible for self-determining their specific target process(es).
 }
 

@@ -605,7 +605,84 @@ Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called on
 \section{Process Locality}
 \label{chap:api_proc_mgmt:locality}
 
-The relative locality of processes is often used to optimize their interactions. \ac{PMIx} provides a means by which the host environment can communicate the locality of a given process using the \refapi{PMIx_generate_locality_string} to generate an abstracted representation of that value. This allows the client to parse the locality string with a method of its choice that may differ from the one used by the server to generate it.
+The relative locality of processes is often used to optimize their interactions with the hardware and other processes. \ac{PMIx} provides a means by which the host environment can communicate the locality of a given process using the \refapi{PMIx_generate_locality_string} to generate an abstracted representation of that value. This provides a human-readable format and allows the client to parse the locality string with a method of its choice that may differ from the one used by the server that generated it.
+
+
+%%%%%%%%%%%
+\subsection{\code{Locality datatypes}}
+
+The following datatypes are associated with process locality.
+
+%%%%%%%
+\subsubsection{Relative locality of two processes}
+\declarestruct{pmix_locality_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_locality_t} datatype is a \code{uint16_t} bitmask that defines the relative locality of two processes on a node. The following constants represent specific bits in the mask and can be used to test a locality value using standard bit-test methods.
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_LOCALITY_UNKNOWN}
+All bits are set to zero, indicating that the relative locality of the two processes is unknown
+%
+\declareconstitemNEW{PMIX_LOCALITY_NONLOCAL}
+The two processes do not share any common locations
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_HWTHREAD}
+The two processes share at least one hardware thread
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_CORE}
+The two processes share at least one core
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_L1CACHE}
+The two processes share at least an L1 cache
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_L2CACHE}
+The two processes share at least an L2 cache
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_L3CACHE}
+The two processes share at least an L3 cache
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_PACKAGE}
+The two processes share at least a package
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_NODE}
+The two processes are executing on the same node
+
+
+\end{constantdesc}
+
+
+Implementers and vendors may choose to extend these definitions as needed to describe a particular system.
+
+
+%%%%%%%%%%%
+\subsection{\code{Locality keys}}
+
+%
+\declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
+String describing a process's bound location - referenced using the process's rank.
+The string is of the form:\\
+\code{NM\%s:SK\%s:L3\%s:L2\%s:L1\%s:CR\%s:HT\%s}\\
+Where the \code{\%s} is replaced with an integer index or inclusive range for hwloc.
+\code{NM} identifies the numa node(s).
+\code{SK} identifies the socket(s).
+\code{L3} identifies the L3 cache(s).
+\code{L2} identifies the L2 cache(s).
+\code{L1} identifies the L1 cache(s).
+\code{CR} identifies the cores(s).
+\code{HT} identifies the hardware thread(s).
+If your architecture does not have the specified hardware designation then it can be omitted from the signature.
+\\
+For example: \code{NM0:SK0:L30-4:L20-4:L10-4:CR0-4:HT0-39}.\\
+This means numa node \code{0}, socket \code{0}, L3 caches \code{0,1,2,3,4}, L2 caches \code{0-4}, L1 caches \code{0-4}, cores \code{0,1,2,3,4}, and hardware threads \code{0-39}.
+}
+
+%
+\declareAttributeDEP{PMIX_LOCALITY}{"pmix.loc"}{\refstruct{pmix_locality_t}}{
+Relative locality of the specified process to the requester, expressed as a bitmask as per the description in the \refstruct{pmix_locality_t} section. This value is unique to the requesting process and thus cannot be communicated by the server as part of the job-level information. Its use has therefore been deprecated and the key will be removed in a future release.
+}
+
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_get_relative_locality}}
@@ -635,7 +712,7 @@ PMIx_get_relative_locality(const char *locality1,
 \arginout{locality}{Location where the relative locality bitmask is to be constructed (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{locality} was successfully loaded, or an appropriate \ac{PMIx} error
+Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{locality} was successfully loaded, or an appropriate \ac{PMIx} error constant.
 
 %%%%
 \descr

@@ -370,7 +370,7 @@
   \vspace{-1.3ex}%
 }
 
-\newcommand{\declareNewEnvar}[2]{%
+\newcommand{\declareEnvarNEW}[2]{%
    {\color{magenta}\code{#1}}%
     \index[index_envars]{#1|indexfmt} \label{envar:#1}%
     \vspace{-1.3ex}%
@@ -380,7 +380,7 @@
   \vspace{-1.3ex}%
 }
 
-\newcommand{\declareDepEnvar}[2]{%
+\newcommand{\declareEnvarDEP}[2]{%
    {\color{green!80!black}\code{#1}}%
     \index[index_envars]{#1@#1 \textbf{(Deprecated)}|indexdepfmt} \label{envar:#1}%
     \vspace{-1.3ex}%
@@ -411,7 +411,7 @@
   \vspace{-1.3ex}%
 }
 
-\newcommand{\declareNewAttribute}[4]{%
+\newcommand{\declareAttributeNEW}[4]{%
    {\color{magenta}\code{#1}} ~~\code{#2}~~(\code{#3})%
     \index[index_attribute]{#1|indexfmt} \label{attr:#1}%
     \StdCopy{str:#1}{\code{#2}}%
@@ -423,7 +423,7 @@
   \vspace{-1.3ex}%
 }
 
-\newcommand{\declareDepAttribute}[4]{%
+\newcommand{\declareAttributeDEP}[4]{%
    {\color{green!80!black}\code{#1}} ~~\code{#2}~~(\code{#3})%
     \index[index_attribute]{#1@#1 \textbf{(Deprecated)}|indexdepfmt} \label{attr:#1}%
     \StdCopy{str:#1}{\code{#2}}%

@@ -9,6 +9,46 @@ The \ac{RM} daemon that hosts the \ac{PMIx} server library interacts with that l
 Second, the host can provide a set of callback functions by which the \ac{PMIx} server library can pass requests upward for servicing by the host. These include notifications of client connection and finalize, as well as requests by clients for information and/or services that the \ac{PMIx} server library does not itself provide.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Server datatypes}
+\label{chap:api_init:serverdt}
+
+%%%%%%%%%%%
+\subsection{Cpuset Structure}
+\declarestruct{pmix_cpuset_t}
+
+The \refstruct{pmix_cpuset_t} structure contains a character string identifying the source of the bitmap (e.g., "hwloc") and a pointer to the corresponding implementation-specific structure (e.g., \code{hwloc_cpuset_t}).
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_cpuset \{
+    char *source;
+    void *bitmap;
+\} pmix_cpuset_t;
+\end{codepar}
+\cspecificend
+
+\subsection{Cpuset support macros}
+The following macros support the \refstruct{pmix_cpuset_t} structure.
+
+\subsubsection{Initialize the cpuset structure}
+\declaremacro{PMIX_CPUSET_CONSTRUCT}
+
+Initialize the \refstruct{pmix_cpuset_t} fields
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_CPUSET_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_cpuset_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Server Initialization and Finalization}
 \label{chap:api_init:server}
 

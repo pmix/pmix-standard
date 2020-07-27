@@ -70,7 +70,7 @@ Nodes with multiple fabric devices can also have those devices configured as mul
 The following macros are provided to support the \refstruct{pmix_coord_t} structure.
 
 %%%%
-\subsubsection{Initialize the \refstruct{pmix_coord_t} structure}
+\subsubsection{Initialize the coord structure}
 \declaremacro{PMIX_COORD_CONSTRUCT}
 
 Initialize the \refstruct{pmix_coord_t} fields
@@ -87,7 +87,7 @@ PMIX_COORD_CONSTRUCT(m)
 \end{arglist}
 
 %%%%
-\subsubsection{Destruct the \refstruct{pmix_coord_t} structure}
+\subsubsection{Destruct the coord structure}
 \declaremacro{PMIX_COORD_DESTRUCT}
 
 Destruct the \refstruct{pmix_coord_t} fields
@@ -104,7 +104,7 @@ PMIX_COORD_DESTRUCT(m)
 \end{arglist}
 
 %%%%
-\subsubsection{Create a \refstruct{pmix_coord_t} array}
+\subsubsection{Create a coord array}
 \declaremacro{PMIX_COORD_CREATE}
 
 Allocate and initialize a \refstruct{pmix_coord_t} array
@@ -122,7 +122,7 @@ PMIX_COORD_CREATE(m, n)
 \end{arglist}
 
 %%%%
-\subsubsection{Release a \refstruct{pmix_coord_t} array}
+\subsubsection{Release a coord array}
 \declaremacro{PMIX_COORD_FREE}
 
 Release an array of \refstruct{pmix_coord_t} structures
@@ -297,7 +297,7 @@ While unusual due to scaling issues, implementations may include an array of \re
 \optattrend
 
 %%%%
-\subsubsection{Initialize the \refstruct{pmix_fabric_t} structure}
+\subsubsection{Initialize the fabric structure}
 \declaremacro{PMIX_FABRIC_CONSTRUCT}
 
 Initialize the \refstruct{pmix_fabric_t} fields
@@ -319,133 +319,133 @@ PMIX_FABRIC_CONSTRUCT(m)
 
 The following attributes are used by the library supporting the system's \ac{WLM} to either access or return fabric-related information (e.g., as part of the \refstruct{pmix_fabric_t} structure).
 
-\declareNewAttribute{PMIX_SERVER_SCHEDULER}{"pmix.srv.sched"}{bool}{
+\declareAttributeNEW{PMIX_SERVER_SCHEDULER}{"pmix.srv.sched"}{bool}{
 Server requests access to \ac{WLM}-supporting features - passed solely to the \refapi{PMIx_server_init} \ac{API} to indicate that the library is to be initialized for scheduler support.
 }
 
-\declareNewAttribute{PMIX_FABRIC_COST_MATRIX}{"pmix.fab.cm"}{pointer}{
+\declareAttributeNEW{PMIX_FABRIC_COST_MATRIX}{"pmix.fab.cm"}{pointer}{
 Pointer to a two-dimensional array of point-to-point relative communication costs expressed as \code{uint16_t} values
 }
 
-\declareNewAttribute{PMIX_FABRIC_GROUPS}{"pmix.fab.grps"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_GROUPS}{"pmix.fab.grps"}{string}{
 A string delineating the group membership of nodes in the system, where each fabric group consists of the group number followed by a colon and a comma-delimited list of nodes in that group, with the groups delimited by semi-colons (e.g., 0:node000,node002,node004,node006;1:node001,node003,node005,node007)
 }
 
 The following attributes may be returned by calls to the scheduler-related \acp{API} or in response to queries (e.g., \refapi{PMIx_Get} or \refapi{PMIx_Query_info}) made by processes or tools.
 
-\declareNewAttribute{PMIX_FABRIC_VENDOR}{"pmix.fab.vndr"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_VENDOR}{"pmix.fab.vndr"}{string}{
 Name of fabric vendor (e.g., Amazon, Mellanox, Cray, Intel)
 }
 
-\declareNewAttribute{PMIX_FABRIC_IDENTIFIER}{"pmix.fab.id"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_IDENTIFIER}{"pmix.fab.id"}{string}{
 An identifier for the fabric (e.g., MgmtEthernet, Slingshot-11, OmniPath-1)
 }
 
-\declareNewAttribute{PMIX_FABRIC_INDEX}{"pmix.fab.idx"}{size_t}{
+\declareAttributeNEW{PMIX_FABRIC_INDEX}{"pmix.fab.idx"}{size_t}{
 The index of the fabric as returned in \refstruct{pmix_fabric_t}
 }
 
-\declareNewAttribute{PMIX_FABRIC_NUM_VERTICES}{"pmix.fab.nverts"}{size_t}{
+\declareAttributeNEW{PMIX_FABRIC_NUM_VERTICES}{"pmix.fab.nverts"}{size_t}{
 Total number of \acp{NIC} in the system - corresponds to the number of vertices (i.e., rows and columns) in the cost matrix
 }
 
 %
-\declareNewAttribute{PMIX_FABRIC_COORDINATE}{"pmix.fab.coord"}{pmix_data_array_t}{
+\declareAttributeNEW{PMIX_FABRIC_COORDINATE}{"pmix.fab.coord"}{pmix_data_array_t}{
 Fabric coordinate(s) of the specified process in the view and/or plane provided by the requester. If only one \ac{NIC} has been assigned to the specified process, then the array will contain only one address. Otherwise, the array will contain the coordinates of all \acp{NIC} available to the process in order of least to greatest distance from the process (\acp{NIC} equally distant from the process will be listed in arbitrary order).
 }
 
 %
-\declareNewAttribute{PMIX_FABRIC_VIEW}{"pmix.fab.view"}{pmix_coord_view_t}{
+\declareAttributeNEW{PMIX_FABRIC_VIEW}{"pmix.fab.view"}{pmix_coord_view_t}{
 Fabric coordinate view to be used for the requested coordinate - see \refstruct{pmix_coord_view_t} for the list of accepted values.
 }
 
 %
-\declareNewAttribute{PMIX_FABRIC_DIMS}{"pmix.fab.dims"}{uint32_t}{
+\declareAttributeNEW{PMIX_FABRIC_DIMS}{"pmix.fab.dims"}{uint32_t}{
 Number of dimensions in the specified fabric plane/view. If no plane is specified in a request, then the dimensions of all planes in the system will be returned as a \refstruct{pmix_data_array_t} containing an array of \code{uint32_t} values. Default is to provide dimensions in \emph{logical} view.
 }
 
 %
-\declareNewAttribute{PMIX_FABRIC_PLANE}{"pmix.fab.plane"}{char*}{
+\declareAttributeNEW{PMIX_FABRIC_PLANE}{"pmix.fab.plane"}{char*}{
 ID string of a fabric plane (e.g., CIDR for Ethernet). When used as a modifier in a request for information, specifies the plane whose information is to be returned. When used directly in a request, returns a \refstruct{pmix_data_array_t} of string identifiers for all fabric planes in the system.
 }
 
 %
-\declareNewAttribute{PMIX_FABRIC_SWITCH}{"pmix.fab.switch"}{char*}{
+\declareAttributeNEW{PMIX_FABRIC_SWITCH}{"pmix.fab.switch"}{char*}{
 ID string of a fabric switch. When used as a modifier in a request for information, specifies the switch whose information is to be returned. When used directly in a request, returns a \refstruct{pmix_data_array_t} of string identifiers for all fabric switches in the system.
 }
 
 %
-\declareNewAttribute{PMIX_FABRIC_ENDPT}{"pmix.fab.endpt"}{pmix_data_array_t}{
+\declareAttributeNEW{PMIX_FABRIC_ENDPT}{"pmix.fab.endpt"}{pmix_data_array_t}{
 Fabric endpoints for a specified process. As multiple endpoints may be assigned to a given process (e.g., in the case where multiple \acp{NIC} are associated with a package to which the process is bound), the returned values will be provided in a \refstruct{pmix_data_array_t} - the returned data type of the individual values in the array varies by fabric provider.
 }
 
 %
-\declareNewAttribute{PMIX_FABRIC_SHAPE}{"pmix.fab.shape"}{pmix_data_array_t*}{
+\declareAttributeNEW{PMIX_FABRIC_SHAPE}{"pmix.fab.shape"}{pmix_data_array_t*}{
 The size of each dimension in the specified fabric plane/view, returned in a \refstruct{pmix_data_array_t} containing an array of \code{uint32_t} values. The size is defined as the number of elements present in that dimension - e.g., the number of \acp{NIC} in one dimension of a physical view of a fabric plane. If no plane is specified, then the shape of each plane in the system will be returned in an array of fabric shapes. Default is to provide the shape in \emph{logical} view.
 }
 
-\declareNewAttribute{PMIX_FABRIC_SHAPE_STRING}{"pmix.fab.shapestr"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_SHAPE_STRING}{"pmix.fab.shapestr"}{string}{
 Network shape expressed as a string (e.g., "10x12x2").
 }
 
-\declareNewAttribute{PMIX_SWITCH_PEERS}{"pmix.speers"}{string}{
+\declareAttributeNEW{PMIX_SWITCH_PEERS}{"pmix.speers"}{string}{
 Comma-delimited string of peers that share the same switch as the process specified in the call to \refapi{PMIx_Get}. Single-NIC environments will return a string. Multi-NIC environments will return an array of results, each element consisting of an array containing the \refattr{PMIX_FABRIC_DEVICE_INDEX} of the local \ac{NIC} and the list of peers sharing the switch to which that \ac{NIC} is connected.}
 
 The following attributes are used to describe devices (a.k.a., \acp{NIC}) attached to the fabric.
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE}{"pmix.fabdev"}{\refstruct{pmix_data_array_t}}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE}{"pmix.fabdev"}{\refstruct{pmix_data_array_t}}{
 An array of \refstruct{pmix_info_t} describing a particular fabric device (\ac{NIC}).
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_INDEX}{"pmix.fabdev.idx"}{\code{uint32_t}}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_INDEX}{"pmix.fabdev.idx"}{\code{uint32_t}}{
 System-unique index of a particular fabric device (\ac{NIC}).
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_NAME}{"pmix.fabdev.nm"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_NAME}{"pmix.fabdev.nm"}{string}{
 The operating system name associated with the device. This may be a logical fabric interface name (e.g. eth0 or eno1) or an absolute filename.
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_VENDOR}{"pmix.fabdev.vndr"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_VENDOR}{"pmix.fabdev.vndr"}{string}{
 Indicates the name of the vendor that distributes the NIC.
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_BUS_TYPE}{"pmix.fabdev.btyp"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_BUS_TYPE}{"pmix.fabdev.btyp"}{string}{
 The type of bus to which the device is attached (e.g., "PCI", "GEN-Z").
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_ID}{"pmix.fabdev.devid"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_ID}{"pmix.fabdev.devid"}{string}{
 This is a vendor-provided identifier for the device or product.
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_DRIVER}{"pmix.fabdev.driver"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_DRIVER}{"pmix.fabdev.driver"}{string}{
 The name of the driver associated with the device
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_FIRMWARE}{"pmix.fabdev.fmwr"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_FIRMWARE}{"pmix.fabdev.fmwr"}{string}{
 The device’s firmware version
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_ADDRESS}{"pmix.fabdev.addr"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_ADDRESS}{"pmix.fabdev.addr"}{string}{
 The primary link-level address associated with the \ac{NIC}, such as a \ac{MAC} address. If multiple addresses are available, only one will be reported.
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_MTU}{"pmix.fabdev.mtu"}{size_t}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_MTU}{"pmix.fabdev.mtu"}{size_t}{
 The maximum transfer unit of link level frames or packets, in bytes.
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_SPEED}{"pmix.fabdev.speed"}{size_t}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_SPEED}{"pmix.fabdev.speed"}{size_t}{
 The active link data rate, given in bits per second.
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_STATE}{"pmix.fabdev.state"}{\refstruct{pmix_link_state_t}}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_STATE}{"pmix.fabdev.state"}{\refstruct{pmix_link_state_t}}{
 The last available physical port state. Possible values are \refconst{PMIX_LINK_STATE_UNKNOWN}, \refconst{PMIX_LINK_DOWN}, and \refconst{PMIX_LINK_UP}, to indicate if the port state is unknown or not applicable (unknown), inactive (down), or active (up).
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_TYPE}{"pmix.fabdev.type"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_TYPE}{"pmix.fabdev.type"}{string}{
 Specifies the type of fabric interface currently active on the device, such as Ethernet or InfiniBand.
 }
 
-\declareNewAttribute{PMIX_FABRIC_DEVICE_PCI_DEVID}{"pmix.fabdev.pcidevid"}{string}{
+\declareAttributeNEW{PMIX_FABRIC_DEVICE_PCI_DEVID}{"pmix.fabdev.pcidevid"}{string}{
 A node-level unique identifier for a \ac{PCI} device. Provided only if the device is located on a \ac{PCI} bus. The identifier is constructed as a four-part tuple delimited by colons comprised of the \ac{PCI} 16-bit domain, 8-bit bus, 8-bit device, and 8-bit function IDs, each expressed in zero-extended hexadecimal form. Thus, an example identifier might be "abc1:0f:23:01". The combination of node identifier (\refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID}) and \refattr{PMIX_FABRIC_DEVICE_PCI_DEVID} shall be unique within the system.
 }
 
