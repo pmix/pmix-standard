@@ -26,7 +26,7 @@ command line:
 \end{codepar}
 \cspecificend
 
-In this example, the processes in the first application will be labeled with a \refattr{PMIX_PSET_NAMES} attribute of \emph{ocean} while those in the second application will be labeled with an \emph{ice} value. During the execution, application processes could lookup the process set attribute for any other process using \refapi{PMIx_Get}. Alternatively, other executing applications could utilize the \refapi{PMIx_Query_info_nb} \ac{API} to obtain the number of declared process sets in the system, a list of their names, and other information about them. In other words, the \emph{process set} identifier provides a label by which an application can derive information about a process and its application - it does \emph{not}, however, confer any operational function.
+In this example, the processes in the first application will be labeled with a \refattr{PMIX_PSET_NAMES} attribute of \emph{ocean} while those in the second application will be labeled with an \emph{ice} value. During the execution, application processes could lookup the process set attribute for any process using \refapi{PMIx_Get}. Alternatively, other executing applications could utilize the \refapi{PMIx_Query_info} \acp{API} to obtain the number of declared process sets in the system, a list of their names, and other information about them. In other words, the \emph{process set} identifier provides a label by which an application can derive information about a process and its application - it does \emph{not}, however, confer any operational function.
 
 Host environments can create or delete process sets at any time, as well as
 add and delete members from existing process sets, through the
@@ -57,12 +57,12 @@ Process \emph{sets} differ from process \emph{groups} in several key ways:
     change a process \emph{set} membership. In contrast, \ac{PMIx} process
     \emph{groups} can only be defined dynamically by the application.
 
-    \item Process \emph{groups} can be used in calls to \ac{PMIx} operations. Members of process \emph{groups} that are involved in an operation are translated by their \ac{PMIx} server into their \emph{native} identifier prior to the operation being passed to the host environment. For example, an application can define a process group to consist of ranks 0 and 1 from the host-assigned namespace of \emph{210456}, identified by the group id of \emph{foo}. If the application subsequently calls the \refapi{PMIx_Fence} \ac{API} with a process identifier of \{foo, PMIX_RANK_WILDCARD\}, the \ac{PMIx} server will replace that identifier with an array consisting of \{210456, 0\} and \{210456, 1\} - the host-assigned identifiers of the participating processes - prior to passing the request up to the host environment
+    \item Process \emph{groups} can be used in calls to \ac{PMIx} operations. Members of process \emph{groups} that are involved in an operation are translated by their \ac{PMIx} server into their \emph{native} identifier prior to the operation being passed to the host environment. For example, an application can define a process group to consist of ranks 0 and 1 from the host-assigned namespace of \emph{210456}, identified by the group id of \emph{foo}. If the application subsequently calls the \refapi{PMIx_Fence} \ac{API} with a process identifier of \{foo, PMIX_RANK_WILDCARD\}, the \ac{PMIx} server will replace that identifier with an array consisting of \{210456, 0\} and \{210456, 1\} - the host-assigned identifiers of the participating processes - prior to processing the request
 
     \item Process \emph{groups} can request that the host environment assign a unique \code{size_t} \ac{PGCID} to the group at time of group construction. An \ac{MPI} library may, for example, use the \ac{PGCID} as the \ac{MPI} communicator identifier for the group.
 \end{itemize}
 
-The two concepts do, however, overlap in one specific area in that they both
+The two concepts do, however, overlap in that they both
 involve collections of processes. Users desiring to create a process group
 based on a process set could, for example, obtain the membership array of the
 process set and use that as input to \refapi{PMIx_Group_construct}, perhaps
@@ -99,7 +99,7 @@ deleted from the system.
 \subsection{Process Set Attributes}
 
 \versionMarker{4.0}
-Several attributes are provided for querying the system regarding process sets.
+Several attributes are provided for querying the system regarding process sets using the \refapi{PMIx_Query_info} \acp{API}.
 
 %
 \declareAttributeNEW{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
@@ -119,36 +119,13 @@ Return a \refstruct{pmix_data_array_t} of \refstruct{pmix_proc_t} containing
 the members of the specified process set.
 }
 
+\vspace{\baselineskip}
 In addition, a process can request (via \refapi{PMIx_Get}) the process sets to which a given process (including itself) belongs:
 
 %
 \declareAttributeNEW{PMIX_PSET_NAMES}{"pmix.pset.nm"}{pmix_data_array_t*}{
 Returns an array of \code{char*} string names of the process sets in which the given process is a member.
 }
-
-%%%%%%%%%%%
-\subsection{Process Set Constants}
-
-\versionMarker{4.0}
-The \ac{PMIx} server is required to notify all local clients of changes to
-process set membership, including the creation of new process sets as well as
-their complete deletion. Client processes wishing to receive such
-notifications must register for one or more of the following events:
-
-\begin{constantdesc}
-%
-\declareconstitemNEW{PMIX_PROCESS_SET_DEFINE}
-The host environment has defined a new process set, or has added members to
-an existing process set.
-%
-\declareconstitemNEW{PMIX_PROCESS_SET_DELETE}
-The host environment has removed members from an existing process set. If all
-members of the set have been removed, then the set definition has been
-deleted from the system.
-%
-\end{constantdesc}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,62 +169,150 @@ The reliance on \ac{PMIx} events in the \ac{PMIx} Group concept dictates that pr
 \adviceuserend
 
 
-%%%%%%%%%%%
-\subsection{Group Operation Constants}
-\declarestruct{pmix_group_operation_t}
+\subsection{Process Group Events}
 
 \versionMarker{4.0}
-The \refstruct{pmix_group_operation_t} structure is an enumerated type for specifying group operations. All values were originally defined in version 4 of the standard unless otherwise marked.
+Asynchronous process group operations rely heavily on \ac{PMIx} events.  The following events have been defined for that purpose.
 
 \begin{constantdesc}
-%
-\declareconstitemNEW{PMIX_GROUP_DECLINE}
-Decline an invitation to join a \ac{PMIx} group - provided for readability of user code
-%
-\declareconstitemNEW{PMIX_GROUP_ACCEPT}
-Accept an invitation to join a \ac{PMIx} group - provided for readability of user code
-%
-\declareconstitemNEW{PMIX_GROUP_CONSTRUCT}
-Construct a group composed of the specified processes - used by a \ac{PMIx} server library to direct host operation
-%
-\declareconstitemNEW{PMIX_GROUP_DESTRUCT}
-Destruct the specified group - used by a \ac{PMIx} server library to direct host operation
-%
-\end{constantdesc}
 
+%
+\declareconstitemNEW{PMIX_GROUP_INVITED}
+The process has been invited to join a \ac{PMIx} Group - the identifier of the group and the ID's of other invited (or already joined) members will be included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_LEFT}
+A process has asynchronously left a \ac{PMIx} Group - the process identifier of the departing process will in included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_MEMBER_FAILED}
+A member of a \ac{PMIx} Group has abnormally terminated (i.e., without formally leaving the group prior to termination) - the process identifier of the failed process will be included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_INVITE_ACCEPTED}
+A process has accepted an invitation to join a \ac{PMIx} Group - the identifier of the group being joined will be included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_INVITE_DECLINED}
+A process has declined an invitation to join a \ac{PMIx} Group - the identifier of the declined group will be included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_INVITE_FAILED}
+An invited process failed or terminated prior to responding to the invitation - the identifier of the failed process will be included in the notification.
+
+%
+\declareconstitemNEW{PMIX_GROUP_MEMBERSHIP_UPDATE}
+The membership of a \ac{PMIx} group has changed - the identifiers of the revised membership will be included in the notification.
+
+%
+\declareconstitemNEW{PMIX_GROUP_CONSTRUCT_ABORT}
+Any participant in a \ac{PMIx} group construct operation that returns \refconst{PMIX_GROUP_CONSTRUCT_ABORT} from the \emph{leader failed} event handler will cause all participants to receive an event notifying them of that status. Similarly, the leader may elect to abort the procedure by either returning this error code from the handler assigned to the \refconst{PMIX_GROUP_INVITE_ACCEPTED} or \refconst{PMIX_GROUP_INVITE_DECLINED} codes, or by generating an event for the abort code. Abort events will be sent to all invited or existing members of the group.
+
+%
+\declareconstitemNEW{PMIX_GROUP_CONSTRUCT_COMPLETE}
+The group construct operation has completed - the final membership will be included in the notification.
+
+%
+\declareconstitemNEW{PMIX_GROUP_LEADER_FAILED}
+The current \emph{leader} of a group including this process has abnormally terminated - the group identifier will be included in the notification.
+
+%
+\declareconstitemNEW{PMIX_GROUP_LEADER_SELECTED}
+A new \emph{leader} of a group including this process has been selected - the identifier of the new leader will be included in the notification
+
+%
+\declareconstitemNEW{PMIX_GROUP_CONTEXT_ID_ASSIGNED}
+A new \ac{PGCID} has been assigned by the host environment to a group that includes this process - the group identifier will be included in the notification.
+
+\end{constantdesc}
 
 %%%%%%%%%%%
 \subsection{Process Group Attributes}
 
 \versionMarker{4.0}
-Several attributes are provided for querying the system regarding process
-groups.
+Attributes for querying the system regarding process groups include:
 
 %
 \declareAttributeNEW{PMIX_QUERY_NUM_GROUPS}{"pmix.qry.pgrpnum"}{size_t}{
 Return the number of process groups defined in the specified range (defaults
-to session).
+to session). OPTIONAL QUALIFERS: \refattr{PMIX_RANGE}
 }
 
 %
 \declareAttributeNEW{PMIX_QUERY_GROUP_NAMES}{"pmix.qry.pgrp"}{pmix_data_array_t*}{
 Return a \refstruct{pmix_data_array_t} containing an array of string names of
-the process groups defined in the specified range (defaults to session).
+the process groups defined in the specified range (defaults to session). OPTIONAL QUALIFERS: \refattr{PMIX_RANGE}
 }
 
 %
 \declareAttributeNEW{PMIX_QUERY_GROUP_MEMBERSHIP}{"pmix.qry.pgrpmems"}{pmix_data_array_t*}{
 Return a \refstruct{pmix_data_array_t} of \refstruct{pmix_proc_t} containing
-the members of the specified process group.
+the members of the specified process group. REQUIRED QUALIFIERS: \refattr{PMIX_GROUP_ID}.
 }
 
+\vspace{\baselineskip}
+The following attributes are used as directives in \ac{PMIx} Group operations:
+
+\declareAttributeNEW{PMIX_GROUP_ID}{"pmix.grp.id"}{char*}{
+User-provided group identifier - as the group identifier may be used in
+\ac{PMIx} operations, the user is required to ensure that the provided ID is unique within the scope of the host environment (e.g., by including some user-specific or application-specific prefix or suffix to the string)
+}
+
+%
+\declareAttributeNEW{PMIX_GROUP_LEADER}{"pmix.grp.ldr"}{bool}{
+This process is the leader of the group
+}
+
+%
+\declareAttributeNEW{PMIX_GROUP_OPTIONAL}{"pmix.grp.opt"}{bool}{
+Participation is optional - do not return an error if any of the specified processes terminate without having joined. The default is false
+}
+
+%
+\declareAttributeNEW{PMIX_GROUP_NOTIFY_TERMINATION}{"pmix.grp.notterm"}{bool}{
+Notify remaining members when another member terminates without first leaving the group.
+}
+
+%
+\declareAttributeNEW{PMIX_GROUP_FT_COLLECTIVE}{"pmix.grp.ftcoll"}{bool}{
+Adjust internal tracking on-the-fly for terminated processes during a \ac{PMIx} group collective operation.
+}
+
+%
+\declareAttributeNEW{PMIX_GROUP_MEMBERSHIP}{"pmix.grp.mbrs"}{pmix_data_array_t*}{
+Array \refstruct{pmix_proc_t} identifiers identifying the members of the specified group.
+}
+
+%
+\declareAttributeNEW{PMIX_GROUP_ASSIGN_CONTEXT_ID}{"pmix.grp.actxid"}{bool}{
+Requests that the \ac{RM} assign a new context identifier to the newly created group. The identifier is an unsigned, \code{size_t} value that the \ac{RM} guarantees to be unique across the range specified in the request. Thus, the value serves as a means of identifying the group within that range. If no range is specified, then the request defaults to \refconst{PMIX_RANGE_SESSION}.
+}
+
+%
+\declareAttributeNEW{PMIX_GROUP_LOCAL_ONLY}{"pmix.grp.lcl"}{bool}{
+Group operation only involves local processes. \ac{PMIx} implementations are \textit{required} to automatically scan an array of group members for local vs remote processes - if only local processes are detected, the implementation need not execute a global collective for the operation unless a context ID has been requested from the host environment. This can result in significant time savings. This attribute can be used to optimize the operation by indicating whether or not only local processes are represented, thus allowing the implementation to bypass the scan.
+}
+
+\vspace{\baselineskip}
+The following attributes are used to return information at the conclusion of a \ac{PMIx} Group operation and/or in event notifications:
+
+%
+\declareAttributeNEW{PMIX_GROUP_CONTEXT_ID}{"pmix.grp.ctxid"}{size_t}{
+Context identifier assigned to the group by the host \ac{RM}.
+}
+
+%
+\declareAttributeNEW{PMIX_GROUP_ENDPT_DATA}{"pmix.grp.endpt"}{pmix_byte_object_t}{
+Data collected during group construction to ensure communication between group members is supported upon completion of the operation.
+}
+
+\vspace{\baselineskip}
 In addition, a process can request (via \refapi{PMIx_Get}) the process groups to which a given process (including itself) belongs:
 
 %
 \declareAttributeNEW{PMIX_GROUP_NAMES}{"pmix.pgrp.nm"}{pmix_data_array_t*}{
 Returns an array of \code{char*} string names of the process groups in which the given process is a member.
 }
-
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Group_construct}}
@@ -296,8 +361,9 @@ The following attributes are \textit{required} to be supported by all \ac{PMIx} 
 \pasteAttributeItem{PMIX_GROUP_LEADER}
 \pasteAttributeItem{PMIX_GROUP_OPTIONAL}
 \pasteAttributeItem{PMIX_GROUP_LOCAL_ONLY}
+\pasteAttributeItem{PMIX_GROUP_FT_COLLECTIVE}
 
-Host environments that support this operation are \textit{required} to provide the following attributes:
+Host environments that support this operation are \textit{required} to support the following attributes:
 
 \pasteAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
 \pasteAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
@@ -310,11 +376,6 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
 
 %%%%
 \descr
@@ -402,6 +463,7 @@ The following attributes are \textit{required} to be supported by all \ac{PMIx} 
 \pasteAttributeItem{PMIX_GROUP_LEADER}
 \pasteAttributeItem{PMIX_GROUP_OPTIONAL}
 \pasteAttributeItem{PMIX_GROUP_LOCAL_ONLY}
+\pasteAttributeItem{PMIX_GROUP_FT_COLLECTIVE}
 
 Host environments that support this operation are \textit{required} to provide the following attributes:
 
@@ -416,11 +478,6 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
 
 %%%%
 \descr
@@ -473,11 +530,6 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
 
 %%%%
 \descr
@@ -549,11 +601,6 @@ The following attributes are optional for host environments that support this op
 
 \optattrend
 
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
-
 %%%%
 \descr
 
@@ -604,6 +651,7 @@ Returns one of the following:
 The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries that support this operation:
 
 \pasteAttributeItem{PMIX_GROUP_OPTIONAL}
+\pasteAttributeItem{PMIX_GROUP_FT_COLLECTIVE}
 
 Host environments that support this operation are \textit{required} to provide the following attributes:
 
@@ -617,11 +665,6 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
 
 %%%%
 \descr
@@ -698,6 +741,7 @@ If executed, the status returned in the provided callback function will be one o
 The following attributes are \textit{required} to be supported by all \ac{PMIx} libraries that support this operation:
 
 \pasteAttributeItem{PMIX_GROUP_OPTIONAL}
+\pasteAttributeItem{PMIX_GROUP_FT_COLLECTIVE}
 
 Host environments that support this operation are \textit{required} to provide the following attributes:
 
@@ -712,10 +756,6 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
 
 %%%%
 \descr
@@ -740,7 +780,7 @@ Accept an invitation to join a \ac{PMIx} process group
 pmix_status_t
 PMIx_Group_join(const char grp[],
                 const pmix_proc_t *leader,
-                pmix_group_operation_t opt,
+                pmix_group_opt_t opt,
                 const pmix_info_t directives[], size_t ndirs,
                 pmix_info_t **results, size_t *nresult)
 \end{codepar}
@@ -749,7 +789,7 @@ PMIx_Group_join(const char grp[],
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
 \argin{leader}{Process that generated the invitation (handle)}
-\argin{opt}{Accept or decline flag (\refstruct{pmix_group_operation_t})}
+\argin{opt}{Accept or decline flag (\refstruct{pmix_group_opt_t})}
 \argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
 \arginout{results}{Pointer to a location where the array of \refstruct{pmix_info_t} describing the results of the operation is to be returned (pointer to handle)}
@@ -775,11 +815,6 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_TIMEOUT}
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
 
 %%%%
 \descr
@@ -815,7 +850,7 @@ Non-blocking form of \refapi{PMIx_Group_join}
 pmix_status_t
 PMIx_Group_join_nb(const char grp[],
                    const pmix_proc_t *leader,
-                   pmix_group_operation_t opt,
+                   pmix_group_opt_t opt,
                    const pmix_info_t directives[], size_t ndirs,
                    pmix_info_cbfunc_t cbfunc, void *cbdata)
 \end{codepar}
@@ -824,7 +859,7 @@ PMIx_Group_join_nb(const char grp[],
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
 \argin{leader}{Process that generated the invitation (handle)}
-\argin{opt}{Accept or decline flag (\refstruct{pmix_group_operation_t})}
+\argin{opt}{Accept or decline flag (\refstruct{pmix_group_opt_t})}
 \argin{directives}{Array of \refstruct{pmix_info_t} structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
 \argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
@@ -861,14 +896,27 @@ The following attributes are optional for host environments that support this op
 
 \optattrend
 
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
 %%%%
 \descr
 
 Non-blocking version of the \refapi{PMIx_Group_join} operation. The callback function will be called once all invited members of the group (or their substitutes) have executed either \refapi{PMIx_Group_join} or \refapi{PMIx_Group_join_nb}.
+
+%%%%%%%%%%%
+\subsubsection{Group accept/decline directives}
+\declarestruct{pmix_group_opt_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_group_opt_t} type is a \code{uint8_t} value used with the \refapi{PMIx_Group_join} \ac{API} to indicate \emph{accept} or \emph{decline} of the invitation - these are provided for readability of user code:
+
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_GROUP_DECLINE}
+Decline the invitation
+%
+\declareconstitem{PMIX_GROUP_ACCEPT}
+Accept the invitation.
+%
+\end{constantdesc}
 
 
 %%%%%%%%%%%

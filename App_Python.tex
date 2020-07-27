@@ -72,18 +72,22 @@ Table~\ref{app:python:ctopy} lists the correspondence between datatypes in the t
         \refstruct{pmix_proc_state_t} & PMIX_PROC_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
         \refstruct{pmix_proc_info_t} & PMIX_PROC_INFO & \{'proc': \{'nspace': nspace, 'rank': rank\}, 'hostname': hostname, 'executable': executable, 'pid': pid, 'exitcode': exitcode, 'state': state\} & \refarg{proc} is a Python \refpy{proc} dictionary; \refarg{hostname} and \refarg{executable} are Python strings; and \refarg{pid}, \refarg{exitcode}, and \refarg{state} are Python integers \\ \hline
         \refstruct{pmix_data_array_t} & PMIX_DATA_ARRAY & \pylabel{array}\{'type': type, 'array': array\} & \refarg{type} is the \ac{PMIx} type of object in the array and \refarg{array} is a Python \emph{list} containing the individual array elements. Note that \refarg{array} can consist of \emph{any} \ac{PMIx} types, including (for example) a Python \refpy{info} object that itself contains an \refpy{array} value \\ \hline
-        \refstruct{pmix_info_directives_t}  & PMIX_INFO_DIRECTIVES & \pylabel{info directives}integer & value shall be limited to the \code{uint32_t} range \\ \hline
+        \refstruct{pmix_info_directives_t}  & PMIX_INFO_DIRECTIVES & \pylabel{info directives}bitarray & 32-bit array \\ \hline
         \refstruct{pmix_alloc_directive_t} & PMIX_ALLOC_DIRECTIVE & \pylabel{allocdir}integer & value shall be limited to the \code{uint8_t} range \\ \hline
-        \refstruct{pmix_iof_channel_t} & PMIX_IOF_CHANNEL & \pylabel{channel}integer & value shall be limited to the \code{uint16_t} range \\ \hline
+        \refstruct{pmix_iof_channel_t} & PMIX_IOF_CHANNEL & \pylabel{channel}bitarray & 16-bit array \\ \hline
         \refstruct{pmix_envar_t} & PMIX_ENVAR & \{'envar': envar, 'value': value, 'separator': separator\} & \refarg{envar} and \refarg{value} are Python strings, and \refarg{separator} a single-character Python string \\ \hline
         \refstruct{pmix_value_t} & PMIX_VALUE & \pylabel{value}\{'value': value, 'val_type': type\} & \refarg{type} is the \ac{PMIx} datatype of \refarg{value}, and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype  \\ \hline
-        \refstruct{pmix_info_t} & PMIX_INFO & \pylabel{info}\{'key': key, 'flags': flags, value': value, 'val_type': type\} & \refarg{key} is a Python string \refpy{key}, \refarg{flags} is a bitmask of \refpy{info directives}, \refarg{type} is the \ac{PMIx} datatype of \refarg{value}, and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype \\ \hline
+        \refstruct{pmix_info_t} & PMIX_INFO & \pylabel{info}\{'key': key, 'flags': flags, value': value, 'val_type': type\} & \refarg{key} is a Python string \refpy{key}, \refarg{flags} is an \refpy{info directives} value, \refarg{type} is the \ac{PMIx} datatype of \refarg{value}, and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype \\ \hline
         \refstruct{pmix_pdata_t} & PMIX_PDATA & \pylabel{pdata}\{'proc': \{'nspace': nspace, 'rank': rank\}, 'key': key, 'value': value, 'val_type': type\} & \refarg{proc} is a Python \refpy{proc} dictionary; \refarg{key} is a Python string \refpy{key}; \refarg{type} is the \ac{PMIx} datatype of \refarg{value}; and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype  \\ \hline
         \refstruct{pmix_app_t} & PMIX_APP & \pylabel{app}\{'cmd': cmd, 'argv': [argv], 'env': [env], 'maxprocs': maxprocs, 'info': [info]\} & \refarg{cmd} is a Python string; \refarg{argv} and \refarg{env} are Python \emph{lists} containing Python strings; \refarg{maxprocs} is an integer; and \refarg{info} is a Python \emph{list} of \refpy{info} values   \\ \hline
         \refstruct{pmix_query_t} & PMIX_QUERY & \pylabel{query}\{'keys': [keys], 'qualifiers': [info]\} & \refarg{keys} is a Python \emph{list} of Python strings, and \refarg{qualifiers} is a Python \emph{list} of \refpy{info} values \\ \hline
         \refstruct{pmix_regattr_t} & PMIX_REGATTR & \pylabel{regattr}\{'name': name, 'key': key, 'type': type, 'info': [info], 'description': [desc]\} & \refarg{name} and \refarg{string} are Python strings; \refarg{type} is the \ac{PMIx} datatype for the attribute's value; \refarg{info} is a Python \emph{list} of \refpy{info} values; and \refarg{description} is a list of Python strings describing the attribute  \\ \hline
-        \refstruct{pmix_link_state_t} & PMIX_LINK_STATE& integer & value shall be limited to the \code{uint8_t} range \\ \hline
-        \hline
+        \refstruct{pmix_coord_t} & PMIX_COORD & \pylabel{coord}\{'fabric': fabric, 'plane': plane, 'view': view, 'coord': [coords]\} & \refarg{fabric} and \refarg{plane} are Python strings; \refarg{view} is the \refstruct{pmix_coord_view_t} of the coordinate; and \refarg{coord} is a list of integer coordinates, one for each dimension of the fabric \\ \hline
+        \refstruct{pmix_job_state_t} & PMIX_JOB_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_link_state_t} & PMIX_LINK_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_cpuset_t} & N/A & \pylabel{cpuset}\{'source': source, 'cpus': bitmap\} & \refarg{source} is a string name of the library that created the cpuset; and \refarg{cpus} is a bitarray containing the cpuset \\ \hline
+        \refstruct{pmix_locality_t} & N/A & \pylabel{locality}bitarray & 16-bit array containing the relative locality of the specified local process \\ \hline
+        \refstruct{pmix_fabric_t} & N/A & \pylabel{fabric}\{'name': name, 'index': idx, 'info': [info]\} & \refarg{name} is the string name assigned to the fabric; \refarg{index} is the integer ID assigned to the fabric; \refarg{info} is a list of \refpy{info} describing the fabric \\ \hline
     \end{longtable}
 \end{small}
 \end{landscape}
@@ -145,14 +149,14 @@ Callback function for delivering forwarded \ac{IO} to a process
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def iofcbfunc(iofhdlr:integer, channel:integer,
+def iofcbfunc(iofhdlr:integer, channel:bitarray,
               source:dict, payload:dict, info:list)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
 \argin{iofhdlr}{Registration number of the handler being invoked (integer)}
-\argin{channel}{Python \refpy{channel} bitmask identifying the channel the data arrived on (integer)}
+\argin{channel}{Python \refpy{channel} 16-bit bitarray identifying the channel the data arrived on (bitarray)}
 \argin{source}{Python \refpy{proc} identifying the namespace/rank of the process that generated the data (dict)}
 \argin{payload}{Python \refpy{byteobject} containing the data (dict)}
 \argin{info}{List of Python \refpy{info} provided by the source containing metadata about the payload. This could include \refattr{PMIX_IOF_COMPLETE} (list)}
@@ -220,12 +224,13 @@ Notify the host server that a client connected to this server.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-def clientconnected(proc:dict is not None)
+def clientconnected2(proc:dict is not None, info:list)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
 \argin{proc}{Python \refpy{proc} identifying the namespace/rank of the process that connected (dict)}
+\argin{info}{list of Python \refpy{info} containing information about the process (list)}
 \end{arglist}
 
 Returns:
@@ -233,7 +238,7 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the connection should be rejected (integer)
 \end{itemize}
 
-See \refapi{pmix_server_client_connected_fn_t} for details
+See \refapi{pmix_server_client_connected2_fn_t} for details
 
 %%%%%%%%%%%
 \subsubsection{Client Finalized}
@@ -1092,6 +1097,7 @@ def fabric(args:dict is not None)
 \argin{args}{Python dictionary containing:
    \begin{itemize}
         \item 'source': Python \refpy{proc} of requesting process (dict)
+        \item 'index': Identifier of the fabric being operated upon (integer)
         \item 'op': Operation host is to perform on the specified fabric (integer)
         \item 'directives': Optional list of Python \refpy{info} containing directives (list)
     \end{itemize}}
@@ -1964,7 +1970,8 @@ the provided group identifier
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,info = myclient.construct_group(grp:string, members:list, directives:list)
+rc,info = myclient.construct_group(grp:string,
+                        members:list, directives:list)
 \end{codepar}
 \pyspecificend
 
@@ -2000,7 +2007,8 @@ Explicitly invite specified processes to join a group
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,info = myclient.group_invite(grp:string, members:list, directives:list)
+rc,info = myclient.group_invite(grp:string,
+                        members:list, directives:list)
 \end{codepar}
 \pyspecificend
 
@@ -2036,7 +2044,9 @@ Respond to an invitation to join a group that is being asynchronously constructe
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,info = myclient.group_join(grp:string, leader:dict, opt:integer, directives:list)
+rc,info = myclient.group_join(grp:string,
+                        leader:dict, opt:integer,
+                        directives:list)
 \end{codepar}
 \pyspecificend
 
@@ -2141,7 +2151,8 @@ Register an event handler to report events.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,id = myclient.register_event_handler(codes:list, directives:list, cbfunc)
+rc,id = myclient.register_event_handler(codes:list,
+                        directives:list, cbfunc)
 \end{codepar}
 \pyspecificend
 
@@ -2237,7 +2248,7 @@ Register for access to fabric-related information, including communication cost 
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,fabricinfo = myserver.fabric_register(directives:list)
+rc,idx,fabricinfo = myclient.fabric_register(directives:list)
 \end{codepar}
 \pyspecificend
 
@@ -2250,6 +2261,7 @@ Returns:
 
 \begin{itemize}
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{idx} - Index of the registered fabric (integer)
     \item \refarg{fabricinfo} - List of Python \refpy{info} containing fabric info (list)
 \end{itemize}
 
@@ -2269,10 +2281,14 @@ Update fabric-related information, including communication cost matrix.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,fabricinfo = myserver.fabric_update()
+rc,fabricinfo = myclient.fabric_update(idx:integer)
 \end{codepar}
 \pyspecificend
 
+
+\begin{arglist}
+\argin{idx}{Index of the registered fabric (list)}
+\end{arglist}
 
 Returns:
 
@@ -2297,10 +2313,14 @@ Deregister fabric
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc = myserver.fabric_deregister()
+rc = myclient.fabric_deregister(idx:integer)
 \end{codepar}
 \pyspecificend
 
+
+\begin{arglist}
+\argin{idx}{Index of the registered fabric (list)}
+\end{arglist}
 
 Returns:
 
@@ -2324,10 +2344,16 @@ Given a communication cost matrix index for a specified fabric, return an array 
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,nicinfo = myserver.fabric_get_vertex_info(index:integer)
+rc,nicinfo = myclient.fabric_get_vertex_info(fabric:integer,
+                        vertex:integer)
 \end{codepar}
 \pyspecificend
 
+
+\begin{arglist}
+\argin{fabric}{Index of the registered fabric (list)}
+\argin{fabric}{Index of the vertex within that fabric (list)}
+\end{arglist}
 
 Returns:
 
@@ -2352,11 +2378,12 @@ Given info describing a given vertex, return the corresponding communication cos
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,index = myserver.fabric_get_device_index(info:list)
+rc,index = myclient.fabric_get_device_index(fabric:integer, info:list)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
+\argin{fabric}{Index of the registered fabric (list)}
 \argin{info}{List of Python \refpy{info} containing vertex description (list)}
 \end{arglist}
 
@@ -2369,6 +2396,65 @@ Returns:
 
 
 See \refapi{PMIx_Fabric_get_device_index} for details
+
+
+%%%%%%%%%%%
+\subsection{Client.load_topology}
+\declareapibinding{PMIxClient.load_topology}{PMIx_Load_topology}{Python}
+
+\summary
+Load the local hardware topology into the \ac{PMIx} library
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myclient.load_topology()
+\end{codepar}
+\pyspecificend
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_Load_topology} for details - note that the topology loaded into the \ac{PMIx} library may be utilized by \ac{PMIx} and other libraries, but is not accessible by Python
+
+
+%%%%%%%%%%%
+\subsection{Client.get_relative_locality}
+\declareapibinding{PMIxClient.get_relative_locality}{PMIx_Get_relative_locality}{Python}
+
+\summary
+Get the relative locality of two local processes
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,locality = myclient.get_relative_locality(loc1:str, loc2:str)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{loc1}{Locality string of a process (str)}
+\argin{loc2}{Locality string of a process (str)}
+\end{arglist}
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{locality} - \refpy{locality} bitarray containing the relative locality of the two processes (bitarray)
+\end{itemize}
+
+
+See \refapi{PMIx_Get_relative_locality} for details
 
 
 %%%%%%%%%%%
@@ -2541,12 +2627,12 @@ Pretty-print string representation of \refstruct{pmix_info_directives_t}.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rep = myclient.info_directives_string(directives:integer)
+rep = myclient.info_directives_string(directives:bitarray)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{directives}{\ac{PMIx} info directives value (integer)}
+\argin{directives}{\ac{PMIx} \refpy{info directives} value (bitarray)}
 \end{arglist}
 
 Returns:
@@ -2634,12 +2720,12 @@ Pretty-print string representation of \refstruct{pmix_iof_channel_t}.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rep = myclient.iof_channel_string(channel:integer)
+rep = myclient.iof_channel_string(channel:bitarray)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{channel}{\ac{PMIx} IOF channel value (integer)}
+\argin{channel}{\ac{PMIx} IOF \refpy{channel} value (bitarray)}
 \end{arglist}
 
 Returns:
@@ -3287,6 +3373,101 @@ Returns:
 
 See \refapi{PMIx_server_deliver_inventory} for details
 
+%%%%%%%%%%%
+\subsection{Server.generate_locality_string}
+\declareapibinding{PMIxServer.generate_locality_string}{PMIx_server_generate_locality_string}{Python}
+
+\summary
+Generate a \ac{PMIx} locality string from a given cpuset
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,locality = myserver.generate_locality_string(cpuset:\refpy{cpuset})
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{cpuset} - Python \refpy{cpuset} identifying the \acp{PU} (\refpy{cpuset})
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{locality} - string representation of the locality corresponding to the provided \refarg{cpuset} (str)
+\end{itemize}
+
+
+See \refapi{PMIx_server_generate_locality_string} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.define_process_set}
+\declareapibinding{PMIxServer.define_process_set}{PMIx_server_define_process_set}{Python}
+
+\summary
+Add members to a \ac{PMIx} process set
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.define_process_set(members:list, name:str)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{members} - List of Python \refpy{proc} dictionaries identifying the processes to be added to the process set (list)
+\argin{name} - Name of the process set (str)
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_server_define_process_set} for details
+
+
+%%%%%%%%%%%
+\subsection{Server.delete_process_set}
+\declareapibinding{PMIxServer.delete_process_set}{PMIx_server_delete_process_set}{Python}
+
+\summary
+Delete members from a \ac{PMIx} process set
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.delete_process_set(members:list, name:str)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{members} - List of Python \refpy{proc} dictionaries identifying the processes to be removed from the process set (list)
+\argin{name} - Name of the process set (str)
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_server_delete_process_set} for details
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -3299,7 +3480,9 @@ The tool Python class inherits the Python "server" class as its parent. Thus, it
 \subsection{Tool.init}
 \declareapibinding{PMIxTool.init}{PMIx_tool_init}{Python}
 
-\summary Initialize the \ac{PMIx} tool library after obtaining a new PMIxTool object
+\summary
+
+Initialize the \ac{PMIx} tool library after obtaining a new PMIxTool object
 
 \format
 
@@ -3330,7 +3513,9 @@ See \refapi{PMIx_tool_init} for description of all relevant attributes and behav
 \subsection{Tool.finalize}
 \declareapibinding{PMIxTool.finalize}{PMIx_tool_finalize}{Python}
 
-\summary Finalize the PMIx tool library, closing the connection to the server.
+\summary
+
+Finalize the PMIx tool library, closing the connection to the server.
 
 \format
 
@@ -3353,8 +3538,39 @@ See \refapi{PMIx_tool_finalize} for description of all relevant attributes and b
 
 
 %%%%%%%%%%%
-\subsection{Tool.connect_to_server}
-\declareapibinding{PMIxTool.connect_to_server}{PMIx_tool_connect_to_server}{Python}
+\subsection{Tool.disconnect}
+\declareapibinding{PMIxTool.disconnect}{PMIx_tool_disconnect}{Python}
+
+\summary
+
+Disconnect the \ac{PMIx} tool from the specified server connection while leaving the tool library initialized.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = mytool.disconnect(server:dict)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{server}{Process identifier of server from which the tool is to be disconnected (\refpy{proc})}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+
+See \refapi{PMIx_tool_disconnect} for details
+
+
+%%%%%%%%%%%
+\subsection{Tool.attach_to_server}
+\declareapibinding{PMIxTool.attach_to_server}{PMIx_tool_attach_to_server}{Python}
 
 \summary
 Switch connection from the current \ac{PMIx} server to another one, or initialize a connection to a specified server.
@@ -3365,7 +3581,7 @@ Switch connection from the current \ac{PMIx} server to another one, or initializ
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,proc = mytool.connect_to_server(info:list)
+rc,proc,server = mytool.connect_to_server(info:list)
 \end{codepar}
 \pyspecificend
 
@@ -3378,11 +3594,40 @@ Returns:
 
 \begin{itemize}
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{proc} - a Python \refpy{proc} (dict)
+    \item \refarg{proc} - a Python \refpy{proc} containing the tool's identifier (dict)
+    \item \refarg{server} - a Python \refpy{proc} containing the identifier of the server to which the tool attached (dict)
 \end{itemize}
 
 
-See \refapi{PMIx_tool_connect_to_server} for description of all relevant attributes and behaviors
+See \refapi{PMIx_tool_attach_to_server} for details
+
+
+%%%%%%%%%%%
+\subsection{Tool.get_servers}
+\declareapibinding{PMIxTool.get_servers}{PMIx_tool_get_servers}{Python}
+
+\summary
+Get a list containing the \refpy{proc} process identifiers of all servers to which the tool is currently connected.
+
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,servers = mytool.get_servers()
+\end{codepar}
+\pyspecificend
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{servers} - a list of Python \refpy{proc} containing the identifiers of the servers to which the tool is currently attached (dict)
+\end{itemize}
+
+
+See \refapi{PMIx_tool_get_servers} for details
 
 
 %%%%%%%%%%%
@@ -3400,7 +3645,8 @@ Register to receive output forwarded from a remote process.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,id = mytool.iof_pull(sources:list, channel:integer, directives:list, cbfunc)
+rc,id = mytool.iof_pull(sources:list, channel:integer,
+                        directives:list, cbfunc)
 \end{codepar}
 \pyspecificend
 

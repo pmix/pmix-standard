@@ -73,7 +73,7 @@ pmix_status_t
 PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes,
                             pmix_info_t info[], size_t ninfo,
                             pmix_notification_fn_t evhdlr,
-                            pmix_evhdlr_reg_cbfunc_t cbfunc,
+                            pmix_hdlr_reg_cbfunc_t cbfunc,
                             void *cbdata);
 \end{codepar}
 \cspecificend
@@ -84,7 +84,7 @@ PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes,
 \argin{info}{Array of info structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
 \argin{evhdlr}{Event handler to be called \refapi{pmix_notification_fn_t} (function reference)}
-\argin{cbfunc}{Callback function \refapi{pmix_evhdlr_reg_cbfunc_t} (function reference)}
+\argin{cbfunc}{Callback function \refapi{pmix_hdlr_reg_cbfunc_t} (function reference)}
 \argin{cbdata}{Data to be passed to the cbfunc callback function (memory reference)}
 \end{arglist}
 
@@ -93,10 +93,12 @@ If \refarg{cbfunc} is \code{NULL}, the function call will be treated as a \emph{
 
 If the \refarg{cbfunc} is non-\code{NULL}, the function call will be treated as a \emph{non-blocking} call and will return the following:
 
-\begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}. The event handler identifier will be returned in the callback
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}. The result of the registration operation shall be returned in the provided callback function along with the assigned event handler identifier.
+\item \refconst{PMIX_ERR_EVENT_REGISTRATION} indicating that the registration
+has failed for an undetermined reason.
 \item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed.
-\end{constantdesc}
+\end{itemize}
 
 The callback function must not be executed prior to returning from the \ac{API}, and no events corresponding to this registration may be delivered prior to the completion of the registration callback function (\refarg{cbfunc}).
 
@@ -118,24 +120,13 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 
 \divider
 
-Host environments that implement support for \ac{PMIx} event notification are required to support the following attributes:
+Host environments that implement support for \ac{PMIx} event notification are required to support the following attributes when registering handlers - these attributes are used to direct that the handler should be invoked only when the event affects the indicated process(es):
 
 \pasteAttributeItem{PMIX_EVENT_AFFECTED_PROC}
 \pasteAttributeItem{PMIX_EVENT_AFFECTED_PROCS}
 
 \reqattrend
 
-\optattrstart
-Host environments that support \ac{PMIx} event notification \textit{may} offer notifications for environmental events impacting the job and for \ac{SMS} events relating to the job. The following attributes are optional for host environments that suppport this operation:
-
-\pasteAttributeItem{PMIX_EVENT_TERMINATE_SESSION}
-\pasteAttributeItem{PMIX_EVENT_TERMINATE_JOB}
-\pasteAttributeItem{PMIX_EVENT_TERMINATE_NODE}
-\pasteAttributeItem{PMIX_EVENT_TERMINATE_PROC}
-\pasteAttributeItem{PMIX_EVENT_ACTION_TIMEOUT}
-\pasteAttributeItem{PMIX_EVENT_SILENT_TERMINATION}
-
-\optattrend
 
 %%%%
 \descr
@@ -150,6 +141,248 @@ In order to avoid potential conflicts, users are advised to only define codes th
 \adviceuserstart
 As previously stated, upon completing its work, and prior to returning, each handler \textit{must} call the event handler completion function provided when it was invoked (including a status code plus any information to be passed to later handlers) so that the chain can continue being progressed. An event handler can terminate all further progress along the chain by passing the \refconst{PMIX_EVENT_ACTION_COMPLETE} status to the completion callback function. Note that the parameters passed to the event handler (e.g., the \refarg{info} and \refarg{results} arrays) will cease to be valid once the completion function has been called - thus, any information in the incoming parameters that will be referenced following the call to the completion function must be copied.
 \adviceuserend
+
+%%%%%%%%%%%
+\subsection{Event registration constants}
+\label{api:struct:constants:event}
+
+\begin{constantdesc}
+
+%
+\declareconstitem{PMIX_ERR_EVENT_REGISTRATION}
+Error in event registration
+
+\end{constantdesc}
+
+%%%%%%%%%%%
+\subsection{System events}
+\label{api:struct:sys:event}
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_EVENT_SYS_BASE}
+Mark the beginning of a dedicated range of constants for system event reporting.
+%
+\declareconstitemNEW{PMIX_EVENT_NODE_DOWN}
+A node has gone down - the identifier of the affected node will be included in the notification
+%
+\declareconstitemNEW{PMIX_EVENT_NODE_OFFLINE}
+A node has been marked as \emph{offline} - the identifier of the affected node will be included in the notification
+%
+\declareconstitemNEW{PMIX_EVENT_SYS_OTHER}
+Mark the end of a dedicated range of constants for system event reporting.
+
+\end{constantdesc}
+
+\littleheader{Detect system event constant}
+\declaremacro{PMIX_SYSTEM_EVENT}
+
+Test a given event constant to see if it falls within the dedicated range of constants for system event reporting.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_SYSTEM_EVENT(a)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{a}{Error constant to be checked (\refstruct{pmix_status_t})}
+\end{arglist}
+
+Returns \code{true} if the provided values falls within the dedicated range of events for system event reporting
+
+%%%%%%%%%%%
+\subsection{Event handler registration and notification attributes}
+\label{api:struct:attributes:event}
+
+Attributes to support event registration and notification.
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_NAME}{"pmix.evname"}{char*}{
+String name identifying this handler.
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_FIRST}{"pmix.evfirst"}{bool}{
+Invoke this event handler before any other handlers.
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_LAST}{"pmix.evlast"}{bool}{
+Invoke this event handler after all other handlers have been called.
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_FIRST_IN_CATEGORY}{"pmix.evfirstcat"}{bool}{
+Invoke this event handler before any other handlers in this category.
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_LAST_IN_CATEGORY}{"pmix.evlastcat"}{bool}{
+Invoke this event handler after all other handlers in this category have been called.
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_BEFORE}{"pmix.evbefore"}{char*}{
+Put this event handler immediately before the one specified in the \code{(char*)} value.
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_AFTER}{"pmix.evafter"}{char*}{
+Put this event handler immediately after the one specified in the \code{(char*)} value.
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_PREPEND}{"pmix.evprepend"}{bool}{
+Prepend this handler to the precedence list within its category.
+}
+
+%
+\declareAttribute{PMIX_EVENT_HDLR_APPEND}{"pmix.evappend"}{bool}{
+Append this handler to the precedence list within its category.
+}
+
+%
+\declareAttribute{PMIX_EVENT_CUSTOM_RANGE}{"pmix.evrange"}{pmix_data_array_t*}{
+Array of \refstruct{pmix_proc_t} defining range of event notification.
+}
+
+%
+\declareAttribute{PMIX_EVENT_AFFECTED_PROC}{"pmix.evproc"}{pmix_proc_t}{
+The single process that was affected.
+}
+
+%
+\declareAttribute{PMIX_EVENT_AFFECTED_PROCS}{"pmix.evaffected"}{pmix_data_array_t*}{
+Array of \refstruct{pmix_proc_t} defining affected processes.
+}
+
+%
+\declareAttribute{PMIX_EVENT_NON_DEFAULT}{"pmix.evnondef"}{bool}{
+Event is not to be delivered to default event handlers.
+}
+
+%
+\declareAttribute{PMIX_EVENT_RETURN_OBJECT}{"pmix.evobject"}{void *}{
+Object to be returned whenever the registered callback function \code{cbfunc} is invoked.
+The object will only be returned to the process that registered it.
+}
+
+%
+\declareAttribute{PMIX_EVENT_DO_NOT_CACHE}{"pmix.evnocache"}{bool}{
+Instruct the \ac{PMIx} server not to cache the event.
+}
+
+%
+\declareAttribute{PMIX_EVENT_PROXY}{"pmix.evproxy"}{pmix_proc_t*}{
+\ac{PMIx} server that sourced the event
+}
+
+%
+\declareAttribute{PMIX_EVENT_TEXT_MESSAGE}{"pmix.evtext"}{char*}{
+Text message suitable for output by recipient - e.g., describing the cause of the event
+}
+
+%
+\declareAttributeNEW{PMIX_EVENT_TIMESTAMP}{"pmix.evtstamp"}{time_t}{
+System time when the associated event occurred.
+}
+
+\subsubsection{Fault tolerance event attributes}
+\label{api:struct:attributes:ft}
+
+The following attributes may be used by the host environment when providing an event notification as qualifiers indicating the action it intends to take in response to the event:
+
+%
+\declareAttribute{PMIX_EVENT_TERMINATE_SESSION}{"pmix.evterm.sess"}{bool}{
+The \ac{RM} intends to terminate this session.
+}
+
+%
+\declareAttribute{PMIX_EVENT_TERMINATE_JOB}{"pmix.evterm.job"}{bool}{
+The \ac{RM} intends to terminate this job.
+}
+
+%
+\declareAttribute{PMIX_EVENT_TERMINATE_NODE}{"pmix.evterm.node"}{bool}{
+The \ac{RM} intends to terminate all processes on this node.
+}
+
+%
+\declareAttribute{PMIX_EVENT_TERMINATE_PROC}{"pmix.evterm.proc"}{bool}{
+The \ac{RM} intends to terminate just this process.
+}
+
+%
+\declareAttribute{PMIX_EVENT_ACTION_TIMEOUT}{"pmix.evtimeout"}{int}{
+The time in seconds before the \ac{RM} will execute the indicated operation
+}
+
+%%%%%%%%%%%
+\subsection{Notification Function}
+\declareapi{pmix_notification_fn_t}
+
+%%%%
+\summary
+
+The \refapi{pmix_notification_fn_t} is called by \ac{PMIx} to deliver notification of an event.
+
+\adviceuserstart
+The \ac{PMIx} \textit{ad hoc} v1.0 Standard defined an error notification function with an identical name, but different signature than the v2.0 Standard described below. The \textit{ad hoc} v1.0 version was removed from the v2.0 Standard is not included in this document to avoid confusion.
+\adviceuserend
+
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_notification_fn_t)
+    (size_t evhdlr_registration_id,
+     pmix_status_t status,
+     const pmix_proc_t *source,
+     pmix_info_t info[], size_t ninfo,
+     pmix_info_t results[], size_t nresults,
+     pmix_event_notification_cbfunc_fn_t cbfunc,
+     void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{evhdlr_registration_id}{Registration number of the handler being called (\code{size_t})}
+\argin{status}{Status associated with the operation (\refstruct{pmix_status_t})}
+\argin{source}{Identifier of the process that generated the event (\refstruct{pmix_proc_t})}. If the source is the \ac{SMS}, then the nspace will be empty and the rank will be PMIX_RANK_UNDEF
+\argin{info}{Information describing the event (\refstruct{pmix_info_t})}. This argument will be NULL if no additional information was provided by the event generator.
+\argin{ninfo}{Number of elements in the info array (\code{size_t})}
+\argin{results}{Aggregated results from prior event handlers servicing this event (\refstruct{pmix_info_t})}. This argument will be \code{NULL} if this is the first handler servicing the event, or if no prior handlers provided results.
+\argin{nresults}{Number of elements in the results array (\code{size_t})}
+\argin{cbfunc}{\refapi{pmix_event_notification_cbfunc_fn_t} callback function to be executed upon completion of the handler's operation and prior to handler return (function reference)}.
+\argin{cbdata}{Callback data to be passed to cbfunc (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Note that different \acp{RM} may provide differing levels of support for event notification to application processes. Thus, the \refarg{info} array may be \code{NULL} or may contain detailed information of the event. It is the responsibility of the application to parse any provided info array for defined key-values if it so desires.
+
+\adviceuserstart
+Possible uses of the \refarg{info} array include:
+
+\begin{itemize}
+\item for the host \ac{RM} to alert the process as to planned actions, such as aborting the session, in response to the reported event
+
+\item provide a timeout for alternative action to occur, such as for the application to request an alternate response to the event
+\end{itemize}
+
+For example, the \ac{RM} might alert the application to the failure of a node that resulted in termination of several processes, and indicate that the overall session will be aborted unless the application requests an alternative behavior in the next 5 seconds. The application then has time to respond with a checkpoint request, or a request to recover from the failure by obtaining replacement nodes and restarting from some earlier checkpoint.
+
+Support for these options is left to the discretion of the host \ac{RM}. Info keys are included in the common definitions above but may be augmented by environment vendors.
+\adviceuserend
+
+\advicermstart
+On the server side, the notification function is used to inform the \ac{PMIx} server library's host of a detected event in the \ac{PMIx} server library. Events generated by \ac{PMIx} clients are communicated to the \ac{PMIx} server library, but will be relayed to the host via the \refapi{pmix_server_notify_event_fn_t} function pointer, if provided.
+\advicermend
+
+
 
 %%%%%%%%%%%
 \subsection{\code{PMIx_Deregister_event_handler}}
@@ -191,11 +424,11 @@ If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{n
 
 The returned status code will be one of the following:
 
-\begin{constantdesc}
+\begin{itemize}
 \item \refconst{PMIX_SUCCESS} The event handler was successfully deregistered.
 \item \refconst{PMIX_ERR_BAD_PARAM} The provided \refarg{evhdlr_ref} was unrecognized.
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification.
-\end{constantdesc}
+\end{itemize}
 
 %%%%
 \descr
@@ -241,18 +474,21 @@ If \refarg{cbfunc} is \code{NULL}, the function will be treated as a \emph{block
 
 If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{non-blocking} call and return one of the following:
 
-\begin{constantdesc}
+\begin{itemize}
 \item \refconst{PMIX_SUCCESS} The notification request is valid and is being processed. The callback function will be called when the process-local operation is complete and will provide the resulting status of that operation. Note that this does \textit{not} reflect the success or failure of delivering the event to any recipients. The callback function must not be executed prior to returning from the \ac{API}.
 \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
 \item \refconst{PMIX_ERR_BAD_PARAM} The request contains at least one incorrect entry that prevents it from being processed. The callback function will \textit{not} be called.
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification, or in the case of a \ac{PMIx} server calling the API, the range extended beyond the local node and the host \ac{SMS} environment does not support event notification. The callback function will \textit{not} be called.
-\end{constantdesc}
+\end{itemize}
 
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
 
 \pasteAttributeItem{PMIX_EVENT_NON_DEFAULT}
 \pasteAttributeItem{PMIX_EVENT_CUSTOM_RANGE}
+\pasteAttributeItem{PMIX_EVENT_DO_NOT_CACHE}
+\pasteAttributeItem{PMIX_EVENT_PROXY}
+\pasteAttributeItem{PMIX_EVENT_TEXT_MESSAGE}
 
 \divider
 
@@ -262,6 +498,17 @@ Host environments that implement support for \ac{PMIx} event notification are re
 \pasteAttributeItem{PMIX_EVENT_AFFECTED_PROCS}
 
 \reqattrend
+
+\optattrstart
+Host environments that support \ac{PMIx} event notification may offer notifications for environmental events impacting the job and for \ac{SMS} events relating to the job. The following attributes may optionally be included to indicate the host environment's intended response to the event:
+
+\pasteAttributeItem{PMIX_EVENT_TERMINATE_SESSION}
+\pasteAttributeItem{PMIX_EVENT_TERMINATE_JOB}
+\pasteAttributeItem{PMIX_EVENT_TERMINATE_NODE}
+\pasteAttributeItem{PMIX_EVENT_TERMINATE_PROC}
+\pasteAttributeItem{PMIX_EVENT_ACTION_TIMEOUT}
+
+\optattrend
 
 %%%%
 \descr
@@ -279,5 +526,59 @@ have been queued, but may not yet have been transmitted. The caller is required 
 data until the callback function has been executed --- the sole purpose of the callback function is to indicate when the input data is no longer required.
 \adviceuserend
 
+%%%%%%%%%%%
+\subsection{Notification Handler Completion Callback Function}
+\declareapi{pmix_event_notification_cbfunc_fn_t}
+
+%%%%
+\summary
+
+The \refapi{pmix_event_notification_cbfunc_fn_t} is called by event handlers to indicate completion of their operations.
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_event_notification_cbfunc_fn_t)
+    (pmix_status_t status,
+     pmix_info_t *results, size_t nresults,
+     pmix_op_cbfunc_t cbfunc, void *thiscbdata,
+     void *notification_cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{status}{Status returned by the event handler's operation (\refstruct{pmix_status_t})}
+\argin{results}{Results from this event handler's operation on the event (\refstruct{pmix_info_t})}
+\argin{nresults}{Number of elements in the results array (\code{size_t})}
+\argin{cbfunc}{\refapi{pmix_op_cbfunc_t} function to be executed when \ac{PMIx} completes processing the callback (function reference)}
+\argin{thiscbdata}{Callback data that was passed in to the handler (memory reference)}
+\argin{cbdata}{Callback data to be returned when \ac{PMIx} executes cbfunc (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Define a callback by which an event handler can notify the \ac{PMIx} library that it has completed its response to the notification. The handler is \textit{required} to execute this callback so the library can determine if additional handlers need to be called. The handler shall return \refconst{PMIX_EVENT_ACTION_COMPLETE} if no further action is required. The return status of each event handler and any returned \refstruct{pmix_info_t} structures will be added to the \refarg{results} array of \refstruct{pmix_info_t} passed to any subsequent event handlers to help guide their operation.
+
+If non-\code{NULL}, the provided callback function will be called to allow the event handler to release the provided info array and execute any other required cleanup operations.
+
+
+\subsubsection{Completion Callback Function Status Codes}
+
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_EVENT_NO_ACTION_TAKEN}
+Event handler: No action taken
+%
+\declareconstitem{PMIX_EVENT_PARTIAL_ACTION_TAKEN}
+Event handler: Partial action taken
+%
+\declareconstitem{PMIX_EVENT_ACTION_DEFERRED}
+Event handler: Action deferred
+%
+\declareconstitem{PMIX_EVENT_ACTION_COMPLETE}
+Event handler: Action complete
+%
+\end{constantdesc}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

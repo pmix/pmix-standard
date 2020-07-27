@@ -1,0 +1,667 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Chapter: Reserved Keys
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Reserved Keys}
+\label{chap:api_rsvd_keys}
+
+
+\emph{Reserved} keys are keys whose string representation begin with a prefix of
+\code{"pmix"}. By definition, reserved keys are provided by the host
+environment and the \ac{PMIx} server and required to be available at client
+start of execution. \ac{PMIx} clients and tools are therefore prohibited from
+posting reserved keys using the \refapi{PMIx_Put} \ac{API}.
+
+\ac{PMIx} implementations may choose to define their own
+custom-prefixed keys which may adhere to either the \emph{reserved} or the \emph{non-reserved} retrieval rules at the discretion of the implementation. Implementations may choose to provide such custom keys at client start of execution, but this is not required.
+
+Host environments may also opt to define their own custom keys. However, \ac{PMIx} implementations are unlikely to recognize such host-defined keys and will therefore treat them according to the \emph{non-reserved} rules described in Chapter \ref{chap:nrkeys}. Users
+are advised to check both the local \ac{PMIx} implementation and host environment documentation
+for a list of any custom prefixes they must avoid, and to learn of any non-standard keys that may require special handling.
+
+
+\section{Data realms}
+\label{api:struct:attributes:retrieval}
+
+\ac{PMIx} information spans a wide range of topics and sources. In some cases,
+there are multiple overlapping sources for the same type of data - e.g., the
+session, job, and application can each provide information on the number of
+nodes involved in their respective area. In order to resolve the ambiguity,
+\ac{PMIx} introduced the concept of a \declareterm{data realm}\declareterm{realm}\declareterm{realms}\emph{data realm}
+that identifies the scope to which the referenced data applies. Thus, reference
+to an attribute that isn't specific to a realm (e.g., the
+\refattr{PMIX_NUM_NODES} attribute) must be accompanied by a corresponding
+attribute identifying the realm to which the request pertains if it differs
+from the default.
+
+\ac{PMIx} has defined five \emph{data realms} to resolve the ambiguities, as
+captured in the following attributes used in \refapi{PMIx_Get} for retrieving
+information from each of the realms:
+
+%
+\declareAttribute{PMIX_SESSION_INFO}{"pmix.ssn.info"}{bool}{
+Return information regarding the session realm of the target process.
+}
+
+%
+\declareAttribute{PMIX_JOB_INFO}{"pmix.job.info"}{bool}{
+Return information regarding the job realm corresponding to the namespace in
+the target process' identifier.
+}
+
+%
+\declareAttribute{PMIX_APP_INFO}{"pmix.app.info"}{bool}{
+Return information regarding the application realm to which the target process
+belongs - the namespace of the target process serves to identify the job
+containing the target application. If information about an application other
+than the one containing the target process is desired, then the attribute array
+must contain a \refattr{PMIX_APPNUM} attribute identifying the desired target
+application - this is useful when the requesting process knows there are
+multiple applications, but doesn't know which processes belong to which
+application.
+}
+
+\declareAttribute{PMIX_PROC_INFO}{"pmix.proc.info"}{bool}{
+Return information regarding the target process. This attribute is technically
+not required as the \refapi{PMIx_Get} \ac{API} specifically identifies the
+target process in its parameters. However, it is included here for
+completeness.
+}
+
+%
+\declareAttribute{PMIX_NODE_INFO}{"pmix.node.info"}{bool}{
+Return information from the node realm regarding the node upon which the specified process is executing. If information about
+a node other than the one containing the specified process is desired, then
+the attribute array must also contain either the \refattr{PMIX_NODEID} or
+\refattr{PMIX_HOSTNAME} attribute identifying the desired target - this is useful when the requesting process wants to know something about a specific node, but isn't sure what processes might be executing upon it.
+}
+
+\adviceuserstart
+If information about a session other than the one containing the requesting
+process is desired, then the attribute array must contain a
+\refattr{PMIX_SESSION_ID} attribute identifying the desired target session.
+This is required as many environments only guarantee unique namespaces within a
+session, and not across sessions.
+\adviceuserend
+
+The \ac{PMIx} server has corresponding attributes the host can use to specify the realm of information that it provides during namespace registration (see Section \ref{chap:api_server:assemble}).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Session realm attributes}
+
+If information about a session other than the one containing the requesting
+process is desired, then the \refarg{info} array passed to \refapi{PMIx_Get}
+must contain a \refattr{PMIX_SESSION_ID} attribute identifying the desired
+target session. This is required as many environments only guarantee unique
+namespaces within a session, and not across sessions.
+
+Note that the \refarg{proc} argument of \refapi{PMIx_Get} is ignored when
+referencing session-related information.
+
+Session-level information includes the following attributes:
+
+%
+\declareAttribute{PMIX_SESSION_ID}{"pmix.session.id"}{uint32_t}{
+Session identifier assigned by the scheduler.
+}
+
+%
+\declareAttribute{PMIX_CLUSTER_ID}{"pmix.clid"}{char*}{
+A string name for the cluster this allocation is on
+}
+
+%
+\declareAttribute{PMIX_UNIV_SIZE}{"pmix.univ.size"}{uint32_t}{
+Number of allocated slots in a session - each slot may or may not be occupied
+by an executing process. Note that this attribute is equivalent to
+the \refattr{PMIX_MAX_PROCS} attributed combined with \refattr{PMIX_SESSION_INFO}
+array - it is included in the Standard for historical reasons.
+}
+
+%
+\declareAttribute{PMIX_TMPDIR}{"pmix.tmpdir"}{char*}{
+Full path to the top-level temporary directory assigned to the session.
+}
+
+%
+\declareAttribute{PMIX_TDIR_RMCLEAN}{"pmix.tdir.rmclean"}{bool}{
+Resource Manager will cleanup assigned temporary directory trees.
+}
+
+\vspace{\baselineskip}
+
+The following attributes are used to describe the \ac{RM} - these are values assigned by the host environment to the session:
+
+%
+\declareAttribute{PMIX_RM_NAME}{"pmix.rm.name"}{char*}{
+String name of the \ac{RM}.
+}
+
+%
+\declareAttribute{PMIX_RM_VERSION}{"pmix.rm.version"}{char*}{
+\ac{RM} version string.
+}
+
+\vspace{\baselineskip}
+
+The remaining session-related information can only be retrieved by including the \refattr{PMIX_SESSION_INFO} attribute in the \refarg{info} array passed to \refapi{PMIx_Get}:
+
+\declareAttribute{PMIX_ALLOCATED_NODELIST}{"pmix.alist"}{char*}{
+Comma-delimited list or regular expression of all nodes in the specified realm regardless of whether or not they currently host processes.
+}
+
+%
+\declareAttributeNEW{PMIX_NUM_ALLOCATED_NODES}{"pmix.num.anodes"}{uint32_t}{
+Number of nodes in the specified realm regardless of whether or not they currently host processes.
+}
+
+%
+\declareAttribute{PMIX_MAX_PROCS}{"pmix.max.size"}{uint32_t}{
+Maximum number of processes that can be executed in the specified realm.
+Typically, this is a constraint imposed by a scheduler or by user settings in a
+hostfile or other resource description.
+}
+
+\declareAttribute{PMIX_NODE_LIST}{"pmix.nlist"}{char*}{
+Comma-delimited list of nodes currently hosting processes in the specified realm.
+}
+%
+\declareAttribute{PMIX_NUM_SLOTS}{"pmix.num.slots"}{uint32_t}{
+Number of slots allocated in the specified realm. Note that this attribute is
+the equivalent to \refattr{PMIX_MAX_PROCS} -
+it is included in the Standard for historical reasons.
+}
+
+%
+\declareAttributeNEW{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
+Number of nodes currently hosting processes in the specified realm.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Job realm attributes}
+\label{chap:res:jrealm}
+
+Job-related information is retrieved by including the namespace of the target
+job and a rank of \refconst{PMIX_RANK_WILDCARD} in the \refarg{proc} argument
+passed to \refapi{PMIx_Get}. If desired for code clarity, the caller can also
+include the \refattr{PMIX_JOB_INFO} attribute in the \refarg{info} array,
+though this is not required. If information is requested about a namespace in
+a session other than the one containing the requesting process, then the
+\refarg{info} array must contain a \refattr{PMIX_SESSION_ID} attribute
+identifying the desired target session. This is required as
+many environments only guarantee unique namespaces within a session, and not
+across sessions.
+
+Job-level information includes the following attributes:
+
+%
+\declareAttribute{PMIX_NSPACE}{"pmix.nspace"}{char*}{
+Namespace of the job - may be a numerical value expressed as a string, but is often a non-numerical string carrying information solely of use to the system.
+}
+
+%
+\declareAttribute{PMIX_JOBID}{"pmix.jobid"}{char*}{
+Job identifier assigned by the scheduler to the specified job - may be identical to the namespace, but is often a numerical value expressed as a string (e.g., "12345.3").
+}
+
+%
+\declareAttribute{PMIX_NPROC_OFFSET}{"pmix.offset"}{pmix_rank_t}{
+Starting global rank of the specified job.
+}
+
+%
+\pasteAttributeItemBegin{PMIX_MAX_PROCS}In this context, this is the maximum number of processes that can be executed in the specified job, which may be a subset of the number allocated to the overall session
+\pasteAttributeItemEnd{}
+
+%
+\pasteAttributeItemBegin{PMIX_NUM_SLOTS}In this context, this is the number of
+slots assigned to the specified job, which may be a subset of the slots
+allocated to the overall session. Jobs may reserve a subset of their assigned
+slots for dynamic operations such as \refapi{PMIx_Spawn} - i.e., not all slots
+may be occupied by executing processes from this job at a given point in time.
+\pasteAttributeItemEnd{}
+
+%
+\pasteAttributeItemBegin{PMIX_NUM_NODES}In this context, this is the number of
+nodes currently hosting processes in the specified job, which may be a subset
+of the nodes allocated to the overall session. Jobs may reserve a subset of
+their assigned nodes for dynamic operations such as \refapi{PMIx_Spawn} -
+i.e., not all nodes may have executing processes from this job at a given
+point in time.
+\pasteAttributeItemEnd{}
+
+\pasteAttributeItemBegin{PMIX_NODE_LIST}In this context, this is the comma-delimited list of nodes currently hosting processes in the specified job.
+\pasteAttributeItemEnd{}
+
+%
+\declareAttributeNEW{PMIX_CMD_LINE}{"pmix.cmd.line"}{char*}{
+Command line used to execute the specified job (e.g., "mpirun -n 2 --map-by foo ./myapp : -n 4 ./myapp2")
+}
+
+
+%
+\declareAttribute{PMIX_NSDIR}{"pmix.nsdir"}{char*}{
+Full path to the temporary directory assigned to the specified job, under \refattr{PMIX_TMPDIR}.
+}
+
+%
+\declareAttribute{PMIX_LOCALLDR}{"pmix.lldr"}{pmix_rank_t}{
+Lowest rank within the specified job on the node (defaults to current node in absence of \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} qualifier)
+}
+
+%
+\declareAttribute{PMIX_JOB_SIZE}{"pmix.job.size"}{uint32_t}{
+Total number of processes in the specified job across all contained applications. Note that this value can be different from \refattr{PMIX_MAX_PROCS}. For example, users may choose to subdivide an allocation (running several jobs in parallel within it), and dynamic programming models may support adding and removing processes from a running \refterm{job} on-the-fly. In the latter case, \ac{PMIx} events may be used to notify processes within the job that the job size has changed.
+}
+
+%
+\declareAttribute{PMIX_JOB_NUM_APPS}{"pmix.job.napps"}{uint32_t}{
+Number of applications in the specified job.
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Application realm attributes}
+\label{chap:res:aprealm}
+
+Application-related information can only be retrieved by including the
+\refattr{PMIX_APP_INFO} attribute in the \refarg{info} array passed to
+\refapi{PMIx_Get}. If the \refattr{PMIX_APPNUM} qualifier is given, then the
+query shall return the corresponding value for the given application within the
+namespace specified in the \refarg{proc} argument of the query (a \code{NULL}
+value for the \refarg{proc} argument equates to the namespace of the caller).
+If the \refattr{PMIX_APPNUM} qualifier is not included, then the retrieval
+shall default to the application containing the specified process. If the rank
+of the specified process is \refconst{PMIX_RANK_WILDCARD},
+then the application number shall default to that of the calling process if the
+namespace is its own job, or a value of zero if the namespace is that of a
+different job.
+
+Application-level information includes the following attributes:
+
+\pasteAttributeItem{PMIX_APPNUM}
+
+%
+\pasteAttributeItemBegin{PMIX_NUM_NODES}In this context, this is the number of
+nodes currently hosting processes in the specified application, which may be a
+subset of the nodes allocated to the overall session.
+\pasteAttributeItemEnd{}
+
+%
+\declareAttribute{PMIX_APPLDR}{"pmix.aldr"}{pmix_rank_t}{
+Lowest rank in the specified application.
+}
+
+%
+\declareAttribute{PMIX_APP_SIZE}{"pmix.app.size"}{uint32_t}{
+Number of processes in the specified application, regardless of their execution state - i.e., this number may include processes that either failed to start or have already terminated.
+}
+
+%
+\declareAttributeNEW{PMIX_APP_ARGV}{"pmix.app.argv"}{char*}{
+Consolidated argv passed to the spawn command for the given application (e.g., "./myapp arg1 arg2 arg3")
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Process realm attributes}
+\label{chap:res:prealm}
+
+Process-related information is retrieved by referencing the namespace
+and rank of the target process in the call to \refapi{PMIx_Get}. If information
+is requested about a process in a session other than the one containing the
+requesting process, then an attribute identifying the target session must be
+provided. This is required as many environments only guarantee unique
+namespaces within a session, and not across sessions.
+
+Process-level information includes the following attributes:
+
+%
+\declareAttribute{PMIX_APPNUM}{"pmix.appnum"}{uint32_t}{
+The application number within the job in which the specified process is a member.
+}
+
+%
+\declareAttribute{PMIX_RANK}{"pmix.rank"}{pmix_rank_t}{
+Process rank within the job, starting from zero
+}
+
+%
+\declareAttribute{PMIX_GLOBAL_RANK}{"pmix.grank"}{pmix_rank_t}{
+Rank of the specified process spanning across all jobs in this session,
+starting with zero. Note that no ordering of the jobs is implied when computing
+this value. As jobs can start and end at random times, this is defined as a
+continually growing number - i.e., it is not dynamically adjusted as individual
+jobs and processes are started or terminated. }
+
+%
+\declareAttribute{PMIX_APP_RANK}{"pmix.apprank"}{pmix_rank_t}{
+Rank of the specified process within its application.
+}
+
+%
+\declareAttribute{PMIX_PARENT_ID}{"pmix.parent"}{pmix_proc_t}{
+Process identifier of the parent process of the specified process - typically
+used to identify the application process that caused the job containing the
+specified process to be spawned (e.g., the process that called \refapi{PMIx_Spawn})
+}
+
+%
+\declareAttribute{PMIX_EXIT_CODE}{"pmix.exit.code"}{int}{
+Exit code returned when the specified process terminated
+}
+
+%
+\declareAttribute{PMIX_PROCID}{"pmix.procid"}{pmix_proc_t}{
+Process identifier. Used as a key in \refapi{PMIx_Get} to retrieve the
+caller's own
+process identifier in a portion of the program that doesn't have access
+to the memory location in which it was originally stored (e.g., due to a
+call to \refapi{PMIx_Init}). The process identifier in the \refapi{PMIx_Get} call is ignored in this instance.
+}
+
+%
+\declareAttribute{PMIX_LOCAL_RANK}{"pmix.lrank"}{uint16_t}{
+Rank of the specified process on its node - refers to the numerical location (starting from zero) of the process on its node when counting only those processes from the same job that share the node, ordered by their overall rank within that job.
+}
+
+%
+\declareAttribute{PMIX_NODE_RANK}{"pmix.nrank"}{uint16_t}{
+Rank of the specified process on its node spanning all jobs- refers to the numerical location (starting from zero) of the process on its node when counting all processes (regardless of job) that share the node, ordered by their overall rank within the job. The value represents a snapshot in time when the specified process was started on its node and is not dynamically adjusted as processes from other jobs are started or terminated on the node.
+}
+
+%
+\declareAttributeNEW{PMIX_PACKAGE_RANK}{"pmix.pkgrank"}{uint16_t}{
+Rank of the specified process on the package where this process resides - refers to the numerical location (starting from zero) of the process on its package when counting only those processes from the same job that share the package, ordered by their overall rank within that job. Note that processes that are not bound to \acp{PU} within a single specific package cannot have a package rank.
+}
+
+%
+\declareAttribute{PMIX_PROC_PID}{"pmix.ppid"}{pid_t}{
+Operating system \ac{PID} of specified process.
+}
+
+%
+\declareAttribute{PMIX_PROCDIR}{"pmix.pdir"}{char*}{
+Full path to the subdirectory under \refattr{PMIX_NSDIR} assigned to the specified process.
+}
+
+%
+\declareAttribute{PMIX_CPUSET}{"pmix.cpuset"}{char*}{
+A string representation of the \ac{PU} binding bitmap applied to the process upon launch. The string shall begin with the name of the library that generated it (e.g., "hwloc") followed by a colon and the bitmap string itself.
+}
+
+%
+\declareAttribute{PMIX_CREDENTIAL}{"pmix.cred"}{char*}{
+Security credential assigned to the process.
+}
+
+%
+\declareAttribute{PMIX_SPAWNED}{"pmix.spawned"}{bool}{
+\code{true} if this process resulted from a call to \refapi{PMIx_Spawn}. Lack of inclusion (i.e., a return status of \refconst{PMIX_ERR_NOT_FOUND}) corresponds to a value of \code{false} for this attribute.
+}
+
+%
+\declareAttributeNEW{PMIX_REINCARNATION}{"pmix.reinc"}{uint32_t}{
+Number of times this process has been re-instantiated - i.e, a value of zero indicates that the process has never been restarted.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Node realm keys}
+\label{chap:res:nrealm}
+
+Information regarding the local node can be retrieved by directly requesting the node realm key in the call to \refapi{PMIx_Get} - the keys for node-related information are not shared across other realms. The target process identifier will be ignored for keys that are not dependent upon it. Information about a node other than the local node can be retrieved by specifying the
+\refattr{PMIX_NODE_INFO} attribute in the \refarg{info} array along with
+either the \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} qualifiers for
+the node of interest.
+
+Node-level information includes the following keys:
+
+%
+\declareAttribute{PMIX_HOSTNAME}{"pmix.hname"}{char*}{
+Name of the host, as returned by the \code{gethostname} utility or its equivalent
+}
+
+%
+\declareAttributeNEW{PMIX_HOSTNAME_ALIASES}{"pmix.alias"}{char*}{
+Comma-delimited list of names by which the target node is known.
+}
+
+%
+\declareAttributeNEW{PMIX_HOSTNAME_KEEP_FQDN}{"pmix.fqdn"}{bool}{
+\acp{FQDN} are being retained by the \ac{PMIx} library
+}
+
+%
+\declareAttribute{PMIX_NODEID}{"pmix.nodeid"}{uint32_t}{
+Node identifier expressed as the node's index (beginning at zero) in an array of nodes within the active session. The value must be unique and directly correlate to the \refattr{PMIX_HOSTNAME} of the node - i.e., users can interchangeably reference the same location using either the \refattr{PMIX_HOSTNAME} or corresponding \refattr{PMIX_NODEID}.
+}
+
+%
+\declareAttribute{PMIX_NODE_SIZE}{"pmix.node.size"}{uint32_t}{
+Number of processes across all jobs that are executing upon the node.
+}
+
+\vspace{\baselineskip}
+
+The following attributes only return information regarding the \emph{caller's} node - any node-related qualifiers shall be ignored. In addition, these attributes require specification of the namespace in the target process identifier except where noted - the value of the rank is ignored in all cases.
+
+%
+\declareAttribute{PMIX_LOCAL_PEERS}{"pmix.lpeers"}{char*}{
+Comma-delimited list of ranks that are executing on the local node within the specified namespace - shortcut for \refapi{PMIx_Resolve_peers} for the local node.
+}
+
+%
+\declareAttribute{PMIX_LOCAL_PROCS}{"pmix.lprocs"}{pmix_proc_t array}{
+Array of \refstruct{pmix_proc_t} of all processes executing on the local node  - shortcut for \refapi{PMIx_Resolve_peers} for the local node and a \code{NULL} namespace argument. The process identifier is ignored for this attribute.
+}
+
+%
+\declareAttribute{PMIX_LOCAL_CPUSETS}{"pmix.lcpus"}{pmix_data_array_t}{
+A \refstruct{pmix_data_array_t} array of string representations of the \ac{PU} binding bitmaps applied to each local \refterm{peer} on the caller's node upon launch. Each string shall begin with the name of the library that generated it (e.g., "hwloc") followed by a colon and the bitmap string itself. The array shall be in the same order as the processes returned by \refattr{PMIX_LOCAL_PEERS} for that namespace.
+}
+
+%
+\declareAttribute{PMIX_LOCAL_SIZE}{"pmix.local.size"}{uint32_t}{
+Number of processes in the specified job or application realm on the caller's node. Defaults to job realm unless the \refattr{PMIX_APP_INFO} and the \refattr{PMIX_APPNUM} qualifiers are given.
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Retrieval rules for reserved keys}
+\label{chap:rkeys:retrules}
+
+The retrieval rules for reserved keys are relatively simple as the keys are
+required, by definition, to be available when the client begins execution.
+Accordingly, \refapi{PMIx_Get} for a reserved key first checks the local
+\ac{PMIx} Client cache (per the data realm rules of the prior section) for the target key. If the information is not found,
+then the \refconst{PMIX_ERR_NOT_FOUND} error constant is returned unless the
+target process belongs to a different namespace from that of the requester.
+
+In the case where the target and requester's namespaces differ, then the
+request is forwarded to the local \ac{PMIx} server. Upon receiving the
+request, the server shall check its data storage for the specified namespace.
+If it already knows about this namespace, then it shall attempt to lookup the
+specified key, returning the value if it is found or the
+\refconst{PMIX_ERR_NOT_FOUND} error constant.
+
+If the server does not have a copy of the information for the specified
+namespace, then the server shall take one of the following actions:
+\begin{enumerate}
+    \item If the request included the \refattr{PMIX_IMMEDIATE} attribute, then
+    the server will respond to the client with the
+    \refconst{PMIX_ERR_NOT_FOUND} status
+
+    \item If the host has provided the \ac{DBCX} module function interface
+    (\refapi{pmix_server_dmodex_req_fn_t}), then the server shall pass the
+    request to its host for servicing. The host is responsible for identifying
+    a source of information on the specified namespace and retrieving it. The
+    host is required to retrieve \emph{all} of the information regarding the target namespace
+    and return it to the requesting server in anticipation of follow-on
+    requests. If the host cannot retrieve the
+    namespace information, then it must respond with the \refconst{PMIX_ERR_NOT_FOUND} error constant unless the \refattr{PMIX_TIMEOUT} is given and reached (in which case, the host must respond with the \refconst{PMIX_ERR_TIMEOUT} constant).
+
+    Once the the \ac{PMIx} server receives the namespace information, the server shall search it (again adhering to the prior data realm rules) for the requested key, returning the value if it is found or the \refconst{PMIX_ERR_NOT_FOUND} error constant.
+
+    \item If the host does not support the \ac{DBCX} interface, then the
+    server will respond to the client with the \refconst{PMIX_ERR_NOT_FOUND}
+    status
+\end{enumerate}
+
+%%%%%%%%%%%
+\subsection{Accessing information: examples}
+\label{chap:api_kv:getex}
+
+This section provides examples illustrating methods for accessing information from the various realms. The intent of the examples is not to provide comprehensive coding guidance, but rather to further illustrate the use of \refapi{PMIx_Get} for obtaining information on a \refterm{session}, \refterm{job}, \refterm{application}, process, and node.
+
+\subsubsection{Session-level information}
+
+The \refapi{PMIx_Get} \ac{API} does not include an argument for specifying the \refterm{session} associated with the information being requested. Thus, requests for keys that are not specifically for session-level information must be accompanied by the \refattr{PMIX_SESSION_INFO} qualifier.
+
+Example requests are shown below:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info;
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc, wildcard;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the #slots in our session */
+PMIX_PROC_LOAD(&wildcard, myproc.nspace, PMIX_RANK_WILDCARD);
+rc = PMIx_Get(&wildcard, PMIX_UNIV_SIZE, NULL, 0, &value);
+
+/* get the #nodes in our session */
+PMIX_INFO_LOAD(&info, PMIX_SESSION_INFO, NULL, PMIX_BOOL);
+rc = PMIx_Get(&wildcard, PMIX_NUM_NODES, &info, 1, &value);
+\end{codepar}
+\cspecificend
+
+Information regarding a different session can be requested by adding the \refattr{PMIX_SESSION_ID} attribute identifying the target session. In this case, the \refarg{proc} argument to \refapi{PMIx_Get} will be ignored:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info[2];
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc;
+uint32_t sid;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the #nodes in a different session */
+sid = 12345;
+PMIX_INFO_LOAD(&info[0], PMIX_SESSION_INFO, NULL, PMIX_BOOL);
+PMIX_INFO_LOAD(&info[1], PMIX_SESSION_ID, &sid, PMIX_UINT32);
+rc = PMIx_Get(NULL, PMIX_NUM_NODES, info, 2, &value);
+\end{codepar}
+\cspecificend
+
+\subsubsection{Job-level information}
+
+Information regarding a job can be obtained by the methods detailed in Section \ref{chap:res:jrealm}. Example requests are shown below:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info;
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc, wildcard;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the #apps in our job */
+PMIX_PROC_LOAD(&wildcard, myproc.nspace, PMIX_RANK_WILDCARD);
+rc = PMIx_Get(&wildcard, PMIX_JOB_NUM_APPS, NULL, 0, &value);
+
+/* get the #nodes in our job */
+PMIX_INFO_LOAD(&info, PMIX_JOB_INFO, NULL, PMIX_BOOL);
+rc = PMIx_Get(&wildcard, PMIX_NUM_NODES, &info, 1, &value);
+\end{codepar}
+\cspecificend
+
+
+\subsubsection{Application-level information}
+
+Information regarding an application can be obtained by the methods described in Section \ref{chap:res:aprealm}. Example requests are shown below:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info;
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc, otherproc;
+uint32_t appsize, appnum;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the #processes in our application */
+rc = PMIx_Get(&myproc, PMIX_APP_SIZE, NULL, 0, &value);
+appsize = value->data.uint32;
+
+/* get the #nodes in an application containing "otherproc".
+ * For this use-case, assume that we are in the first application
+ * and we want the #nodes in the second application - use the
+ * rank of the first process in that application, remembering
+ * that ranks start at zero */
+PMIX_PROC_LOAD(&otherproc, myproc.nspace, appsize);
+
+/* Since "otherproc" refers to a process in the second application,
+ * we can simply mark that we want the info for this key from the
+ * application realm */
+PMIX_INFO_LOAD(&info, PMIX_APP_INFO, NULL, PMIX_BOOL);
+rc = PMIx_Get(&otherproc, PMIX_NUM_NODES, &info, 1, &value);
+
+/* alternatively, we can directly ask for the #nodes in
+ * the second application in our job, again remembering that
+ * application numbers start with zero. Since we are asking
+ * for application realm information about a specific appnum
+ * within our own namespace, the process identifier can be NULL */
+appnum = 1;
+PMIX_INFO_LOAD(&appinfo[0], PMIX_APP_INFO, NULL, PMIX_BOOL);
+PMIX_INFO_LOAD(&appinfo[1], PMIX_APPNUM, &appnum, PMIX_UINT32);
+rc = PMIx_Get(NULL, PMIX_NUM_NODES, appinfo, 2, &value);
+
+\end{codepar}
+\cspecificend
+
+\subsubsection{Process-level information}
+
+Process-level information is accessed by providing the namespace and rank of the target process. In the absence of any directive as to the level of information being requested, the \ac{PMIx} library will always return the process-level value. See Section \ref{chap:res:prealm} for details.
+
+\subsubsection{Node-level information}
+
+Information regarding a node within the system can be obtained by the methods described in Section \ref{chap:res:nrealm}. Example requests are shown below:
+
+\cspecificstart
+\begin{codepar}
+pmix_info_t info[2];
+pmix_value_t *value;
+pmix_status_t rc;
+pmix_proc_t myproc, otherproc;
+uint32_t nodeid;
+
+/* initialize the client library */
+PMIx_Init(&myproc, NULL, 0);
+
+/* get the #procs on our node */
+rc = PMIx_Get(&myproc, PMIX_NODE_SIZE, NULL, 0, &value);
+
+/* get the #slots on another node */
+PMIX_INFO_LOAD(&info[0], PMIX_NODE_INFO, NULL, PMIX_BOOL);
+PMIX_INFO_LOAD(&info[1], PMIX_HOSTNAME, "remotehost", PMIX_STRING);
+rc = PMIx_Get(NULL, PMIX_MAX_PROCS, info, 2, &value);
+
+/* get the total #procs on the remote node - note that we don't
+ * actually need to include the "PMIX_NODE_INFO" attribute here,
+ * but (a) it does no harm and (b) it allowed us to simply reuse
+ * the prior info array
+rc = PMIx_Get(NULL, PMIX_NODE_SIZE, info, 2, &value);
+
+\end{codepar}
+\cspecificend
+

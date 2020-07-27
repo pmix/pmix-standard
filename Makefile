@@ -7,10 +7,14 @@ default: pmix-standard.pdf
 CHAPTERS= \
 	TitlePage.tex \
 	Chap_Introduction.tex \
+	Chap_Revisions.tex \
 	Chap_Terms.tex \
-	Chap_API_Init.tex \
 	Chap_API_Struct.tex \
-	Chap_API_Key_Value_Mgmt.tex \
+	Chap_API_Init.tex \
+	Chap_API_Sync_Access.tex \
+	Chap_API_Reserved_Keys.tex \
+	Chap_API_NonReserved_Keys.tex \
+	Chap_API_Publish.tex \
 	Chap_API_Proc_Mgmt.tex \
 	Chap_API_Job_Mgmt.tex \
 	Chap_API_Event.tex \

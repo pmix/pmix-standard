@@ -4,8 +4,8 @@
 \chapter{Data Structures and Types}
 \label{chap:struct}
 
-This chapter defines PMIx standard data structures (along with macros for convenient use), types, and constants.
-These apply to all consumers of the PMIx interface.
+This chapter defines \ac{PMIx} standard data structures (along with macros for convenient use), types, and constants.
+These apply to all consumers of the \ac{PMIx} interface.
 Where necessary for clarification, the description of, for example, an attribute may be copied from this chapter into a section where it is used.
 
 A PMIx implementation may define additional attributes beyond those specified in this document.
@@ -13,7 +13,7 @@ A PMIx implementation may define additional attributes beyond those specified in
 \adviceimplstart
 Structures, types, and macros in the \ac{PMIx} Standard are defined in terms of the C-programming language. Implementers wishing to support other languages should provide the equivalent definitions in a language-appropriate manner.
 
-If a PMIx implementation chooses to define additional attributes they should avoid using the \code{PMIX} prefix in their name or starting the attribute string with a \textit{pmix} prefix.
+If a PMIx implementation chooses to define additional attributes they should avoid using the \code{"PMIX"} prefix in their name or starting the attribute string with a \code{"pmix"} prefix.
 This helps the end user distinguish between what is defined by the PMIx standard and what is specific to that PMIx implementation, and avoids potential conflicts with attributes defined by the standard.
 \adviceimplend
 
@@ -55,8 +55,10 @@ generate an error as the static string had not been allocated.
 
 \adviceuserend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Constants}
+\label{chap:struct:const}
 
 \ac{PMIx} defines a few values that are used throughout the standard to set the size of fixed arrays or as a means of identifying values with special meaning.
 The community makes every attempt to minimize the number of such definitions.
@@ -78,10 +80,6 @@ a space of size \refconst{PMIX_MAX_NSLEN}+1 to allow room for the \code{NULL} te
 %
 \declareconstitem{PMIX_MAX_KEYLEN}
 Maximum key string length as an integer.
-%
-\declareconstitemNEW{PMIX_APP_WILDCARD}
-A value to indicate that the user wants the data for the given key from every application that posted that key, or that the given value applies to all applications within the given nspace.
-
 \end{constantdesc}
 
 \adviceimplstart
@@ -89,16 +87,27 @@ A value to indicate that the user wants the data for the given key from every ap
 a space of size \refconst{PMIX_MAX_KEYLEN}+1 to allow room for the \code{NULL} terminator
 \adviceimplend
 
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_APP_WILDCARD}
+A value to indicate that the user wants the data for the given key from every application that posted that key, or that the given value applies to all applications within the given namespace.
+\end{constantdesc}
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{PMIx Error Constants}
 \label{api:struct:errors}
 \declarestruct{pmix_status_t}
 
-The \refstruct{pmix_status_t} structure is an \code{int} type for return status.
+The \refstruct{pmix_status_t} structure is an \code{int} type for return status. The tables shown in this section define the possible values for \refstruct{pmix_status_t}.
+PMIx errors are required to always be negative, with \code{0} reserved for \refconst{PMIX_SUCCESS}. Values in the list that were deprecated in later standards are denoted as such. Values added to the list in this version of the standard are shown in \textbf{\color{magenta}magenta}.
 
-The tables shown in this section define the possible values for \refstruct{pmix_status_t}.
-PMIx errors are required to always be negative, with 0 reserved for \refconst{PMIX_SUCCESS}. Values in the list that were deprecated in later standards are denoted as such. Values added to the list in this version of the standard are shown in \textbf{\color{magenta}magenta}.
+Constants represent values that can be returned from or passed into \ac{PMIx}
+\acp{API}. These are distinct from \ac{PMIx} \emph{events} in that they are
+not values that can be registered against event handlers. In general, the two
+types of constants are distinguished by inclusion of an "ERR" in the name of
+error constants versus an "EVENT" in events, though there are exceptions (e.g,
+the \refconst{PMIX_SUCCESS} constant).
 
 \adviceimplstart
 A PMIx implementation must define all of the constants defined in this section, even if they will never return the specific value to the caller.
@@ -108,10 +117,7 @@ A PMIx implementation must define all of the constants defined in this section, 
 Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the actual value of any \ac{PMIx} error constant is left to the \ac{PMIx} library implementer. Thus, users are advised to always refer to constant by name, and not a specific implementation's value, for portability between implementations and compatibility across library versions.
 \adviceuserend
 
-\subsubsection{General Error Constants}
-\label{api:struct:generrors}
-
-These are general constants originally defined in versions 1 and 2 of the PMIx Standard.
+The following values are general constants used in a variety of places.
 
 \begin{constantdesc}
 %
@@ -121,89 +127,61 @@ Success
 \declareconstitem{PMIX_ERROR}
 General Error
 %
-\declareconstitem{PMIX_ERR_SILENT}
-Silent error
-%
-\declareconstitem{PMIX_ERR_PROC_RESTART}
-Fault tolerance: Error in process restart
-%
-\declareconstitem{PMIX_ERR_PROC_CHECKPOINT}
-Fault tolerance: Error in process checkpoint
-%
-\declareconstitem{PMIX_ERR_PROC_MIGRATE}
-Fault tolerance: Error in process migration
-%
-\declareconstitem{PMIX_ERR_PROC_ABORTED}
-Process was aborted
-%
-\declareconstitem{PMIX_ERR_PROC_REQUESTED_ABORT}
-Process is already requested to abort
-%
-\declareconstitem{PMIX_ERR_PROC_ABORTING}
-Process is being aborted
-%
-\declareconstitem{PMIX_ERR_SERVER_FAILED_REQUEST}
-Failed to connect to the server
-%
-\declareconstitem{PMIX_EXISTS}
-Requested operation would overwrite an existing value
+\declareconstitemNEW{PMIX_ERR_EXISTS}
+Requested operation would overwrite an existing value - typically returned
+when an operation would overwrite an existing file or directory
 %
 \declareconstitem{PMIX_ERR_INVALID_CRED}
 Invalid security credentials
-%
-\declareconstitem{PMIX_ERR_HANDSHAKE_FAILED}
-Connection handshake failed
-%
-\declareconstitem{PMIX_ERR_READY_FOR_HANDSHAKE}
-Ready for handshake
 %
 \declareconstitem{PMIX_ERR_WOULD_BLOCK}
 Operation would block
 %
 \declareconstitem{PMIX_ERR_UNKNOWN_DATA_TYPE}
-Unknown data type
-%
-\declareconstitem{PMIX_ERR_PROC_ENTRY_NOT_FOUND}
-Process not found
+The data type specified in an input to the \ac{PMIx} library is not recognized
+by the implementation.
 %
 \declareconstitem{PMIX_ERR_TYPE_MISMATCH}
-Invalid type
+The data type found in an object does not match the expected data type
+as specified in the \ac{API} call - e.g., a request to unpack a
+\refconst{PMIX_BOOL} value from a buffer that does not contain a value of
+that type in the current unpack location.
 %
 \declareconstitem{PMIX_ERR_UNPACK_INADEQUATE_SPACE}
-Inadequate space to unpack data
+Inadequate space to unpack data - the number of values in the buffer exceeds
+the specified number to unpack
+%
+\declareconstitem{PMIX_ERR_UNPACK_READ_PAST_END_OF_BUFFER}
+Unpacking past the end of the provided buffer - the number of values in the
+buffer is less than the specified number to unpack, or a request was made to
+unpack a buffer beyond the buffer's end
 %
 \declareconstitem{PMIX_ERR_UNPACK_FAILURE}
-Unpack failed
+The unpack operation failed for an unspecified reason
 %
 \declareconstitem{PMIX_ERR_PACK_FAILURE}
-Pack failed
-%
-\declareconstitem{PMIX_ERR_PACK_MISMATCH}
-Pack mismatch
+The pack operation failed for an unspecified reason
 %
 \declareconstitem{PMIX_ERR_NO_PERMISSIONS}
-No permissions
+The user lacks permissions to execute the specified operation
 %
 \declareconstitem{PMIX_ERR_TIMEOUT}
-Timeout expired
+Either a user-specified or system-internal timeout expired
 %
 \declareconstitem{PMIX_ERR_UNREACH}
-Unreachable
-%
-\declareconstitem{PMIX_ERR_IN_ERRNO}
-Error defined in \code{errno}
+The specified target server or client process is not reachable - i.e., a
+suitable connection either has not been or can not be made.
 %
 \declareconstitem{PMIX_ERR_BAD_PARAM}
-Bad parameter
+An incorrect parameter was passed to a \ac{PMIx} \ac{API}
 %
 \declareconstitem{PMIX_ERR_RESOURCE_BUSY}
-Resource busy
+Resource busy - typically seen when an attempt to establish a connection
+to another process (e.g., a \ac{PMIx} server) cannot be made due to a
+communication failure
 %
 \declareconstitem{PMIX_ERR_OUT_OF_RESOURCE}
 Resource exhausted
-%
-\declareconstitem{PMIX_ERR_DATA_VALUE_NOT_FOUND}
-Data value not found
 %
 \declareconstitem{PMIX_ERR_INIT}
 Error during initialization
@@ -211,428 +189,60 @@ Error during initialization
 \declareconstitem{PMIX_ERR_NOMEM}
 Out of memory
 %
-\declareconstitem{PMIX_ERR_INVALID_ARG}
-Invalid argument
-%
-\declareconstitem{PMIX_ERR_INVALID_KEY}
-Invalid key
-%
-\declareconstitem{PMIX_ERR_INVALID_KEY_LENGTH}
-Invalid key length
-%
-\declareconstitem{PMIX_ERR_INVALID_VAL}
-Invalid value
-%
-\declareconstitem{PMIX_ERR_INVALID_VAL_LENGTH}
-Invalid value length
-%
-\declareconstitem{PMIX_ERR_INVALID_LENGTH}
-Invalid argument length
-%
-\declareconstitem{PMIX_ERR_INVALID_NUM_ARGS}
-Invalid number of arguments
-%
-\declareconstitem{PMIX_ERR_INVALID_ARGS}
-Invalid arguments
-%
-\declareconstitem{PMIX_ERR_INVALID_NUM_PARSED}
-Invalid number parsed
-%
-\declareconstitem{PMIX_ERR_INVALID_KEYVALP}
-Invalid key/value pair
-%
-\declareconstitem{PMIX_ERR_INVALID_SIZE}
-Invalid size
-%
-\declareconstitem{PMIX_ERR_INVALID_NAMESPACE}
-Invalid namespace
-%
-\declareconstitem{PMIX_ERR_SERVER_NOT_AVAIL}
-Server is not available
-%
 \declareconstitem{PMIX_ERR_NOT_FOUND}
-Not found
+The requested information was not found.
 %
 \declareconstitem{PMIX_ERR_NOT_SUPPORTED}
-Not supported
-%
-\declareconstitem{PMIX_ERR_NOT_IMPLEMENTED}
-Not implemented
+The requested operation is not supported by either the \ac{PMIx} implementation
+or the host environment.
 %
 \declareconstitem{PMIX_ERR_COMM_FAILURE}
-Communication failure
+Communication failure - a message failed to be sent or received, but the
+connection remains intact
 %
-\declareconstitem{PMIX_ERR_UNPACK_READ_PAST_END_OF_BUFFER}
-Unpacking past the end of the buffer provided
-%
-\declareconstitemNEW{PMIX_ERR_CONFLICTING_CLEANUP_DIRECTIVES}
-Conflicting directives given for job/process cleanup
-%
-\declareconstitem{PMIX_ERR_LOST_CONNECTION_TO_SERVER}
-Lost connection to server
-%
-\declareconstitem{PMIX_ERR_LOST_PEER_CONNECTION}
-Lost connection to peer
-%
-\declareconstitem{PMIX_ERR_LOST_CONNECTION_TO_CLIENT}
-Lost connection to client
-%
-\declareconstitem{PMIX_QUERY_PARTIAL_SUCCESS}
-Query partial success (used by query system)
-%
-\declareconstitem{PMIX_NOTIFY_ALLOC_COMPLETE}
-Notify that allocation is complete
-%
-\declareconstitem{PMIX_JCTRL_CHECKPOINT}
-Job control: Monitored by PMIx client to trigger checkpoint operation
-%
-\declareconstitem{PMIX_JCTRL_CHECKPOINT_COMPLETE}
-Job control: Sent by PMIx client and monitored by PMIx server to notify that requested checkpoint operation has completed.
-%
-\declareconstitem{PMIX_JCTRL_PREEMPT_ALERT}
-Job control: Monitored by PMIx client to detect an \ac{RM} intending to preempt the job.
-%
-\declareconstitem{PMIX_MONITOR_HEARTBEAT_ALERT}
-Job monitoring: Heartbeat alert
-%
-\declareconstitem{PMIX_MONITOR_FILE_ALERT}
-Job monitoring: File alert
-%
-\declareconstitem{PMIX_PROC_TERMINATED}
-Process terminated - can be either normal or abnormal termination
-%
-\declareconstitem{PMIX_ERR_INVALID_TERMINATION}
-Process terminated without calling \refapi{PMIx_Finalize}, or was a member of an assemblage formed via \refapi{PMIx_Connect} and terminated or called \refapi{PMIx_Finalize} without first calling \refapi{PMIx_Disconnect} (or its non-blocking form) from that assemblage.
-%
-\end{constantdesc}
-
-\subsubsection{Job-Related Error Constants}
-\label{api:struct:joberrors}
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_ERR_JOB_FAILED_TO_START}
-At least one process in the job failed to start
-%
-\declareconstitem{PMIX_ERR_JOB_APP_NOT_EXECUTABLE}
-A specified application executable is does not have execution permissions
-%
-\declareconstitem{PMIX_ERR_JOB_NO_EXE_SPECIFIED}
-No executable was specified in a spawn request
-%
-\declareconstitem{PMIX_ERR_JOB_FAILED_TO_MAP}
-The \ac{RM} was unable to map (i.e., assign locations) the processes in the job
-%
-\declareconstitem{PMIX_ERR_JOB_CANCELLED}
-The submitted job was canceled prior to launch
-%
-\declareconstitem{PMIX_ERR_JOB_FAILED_TO_LAUNCH}
-The job failed to launch
-%
-\declareconstitem{PMIX_ERR_JOB_ABORTED}
-The job was aborted due to at least one process calling \refapi{PMIx_Abort}
-%
-\declareconstitem{PMIX_ERR_JOB_KILLED_BY_CMD}
-The job was killed in response to a user command
-%
-\declareconstitem{PMIX_ERR_JOB_ABORTED_BY_SIG}
-The job was killed in response to a signal (e.g., \code{SIGTERM} or \code{SIGKILL})
-%
-\declareconstitem{PMIX_ERR_JOB_TERM_WO_SYNC}
-The job was killed due to at least one process terminating without first calling \refapi{PMIx_Finalize}
-%
-\declareconstitem{PMIX_ERR_JOB_SENSOR_BOUND_EXCEEDED}
-The job was killed due to at least one process exceeding a monitor threshold
-%
-\declareconstitem{PMIX_ERR_JOB_NEVER_LAUNCHED}
-The job was never launched
-%
-\declareconstitem{PMIX_ERR_JOB_NON_ZERO_TERM}
-The job was killed due to at least one process exiting with a non-zero status
-%
-\declareconstitem{PMIX_ERR_JOB_ALLOC_FAILED}
-The job was unable to obtain an allocation
-%
-\declareconstitem{PMIX_ERR_JOB_CANNOT_LAUNCH}
-The resources required by the job within the given allocation are busy, thus preventing the job from being launched
-%
-\end{constantdesc}
-
-
-\subsubsection{Operational Error Constants}
-\label{api:struct:operrors}
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_ERR_EVENT_REGISTRATION}
-Error in event registration
-%
-\declareconstitemDEP{PMIX_ERR_JOB_TERMINATED}
-Changed to \refconst{PMIX_EVENT_JOB_END}
-%
-\declareconstitem{PMIX_ERR_UPDATE_ENDPOINTS}
-Error updating endpoints
-%
-\declareconstitem{PMIX_MODEL_DECLARED}
-Model declared
-%
-\declareconstitem{PMIX_GDS_ACTION_COMPLETE}
-The \ac{GDS} action has completed
+\declareconstitemNEW{PMIX_ERR_LOST_CONNECTION}
+Lost connection between server and client or tool.
 %
 \declareconstitem{PMIX_ERR_INVALID_OPERATION}
-The requested operation is supported by the implementation and host environment, but fails to meet a requirement (e.g., requesting to \textit{disconnect} from processes without first \textit{connecting} to them).
-
-\declareconstitemNEW{PMIX_PROC_HAS_CONNECTED}
-A tool or client has connected to the \ac{PMIx} server
+The requested operation is supported by the implementation and host environment, but fails to meet a requirement (e.g., requesting to \textit{disconnect} from processes without first \textit{connecting} to them, inclusion of conflicting directives, or a request to perform an operation that conflicts with an ongoing one).
 %
-\declareconstitemNEW{PMIX_CONNECT_REQUESTED}
-Connection has been requested by a PMIx-based tool
-%
-\declareconstitemNEW{PMIX_MODEL_RESOURCES}
-Resource usage by a programming model has changed
-%
-\declareconstitemNEW{PMIX_OPENMP_PARALLEL_ENTERED}
-An OpenMP parallel code region has been entered
-%
-\declareconstitemNEW{PMIX_OPENMP_PARALLEL_EXITED}
-An OpenMP parallel code region has completed
-
-%
-\declareconstitemNEW{PMIX_OPERATION_IN_PROGRESS}
-A requested operation is already in progress
+\declareconstitem{PMIX_OPERATION_IN_PROGRESS}
+A requested operation is already in progress - the duplicate request
+shall therefore be ignored
 %
 \declareconstitem{PMIX_OPERATION_SUCCEEDED}
 The requested operation was performed atomically - no callback function will be executed
 %
 \declareconstitemNEW{PMIX_ERR_PARTIAL_SUCCESS}
 The operation is considered successful but not all elements of the operation were concluded (e.g., some members of a group construct operation chose not to participate)
-
-%
-\declareconstitemNEW{PMIX_ERR_DUPLICATE_KEY}
-The provided key has already been published on a different data range
-
-%
-\declareconstitemNEW{PMIX_ERR_INVALID_OPERATION}
-The requested operation is not valid - this can possibly indicate the inclusion of conflicting directives or a request to perform an operation that conflicts with an ongoing one.
-
-%
-\declareconstitemNEW{PMIX_GROUP_INVITED}
-The process has been invited to join a \ac{PMIx} Group - the identifier of the group and the ID's of other invited (or already joined) members will be included in the notification
-
-%
-\declareconstitemNEW{PMIX_GROUP_LEFT}
-A process has asynchronously left a \ac{PMIx} Group - the process identifier of the departing process will in included in the notification
-
-%
-\declareconstitemNEW{PMIX_GROUP_MEMBER_FAILED}
-A member of a \ac{PMIx} Group has abnormally terminated (i.e., without formally leaving the group prior to termination) - the process identifier of the failed process will in included in the notification
-
-%
-\declareconstitemNEW{PMIX_GROUP_INVITE_ACCEPTED}
-A process has accepted an invitation to join a \ac{PMIx} Group - the identifier of the group being joined will be included in the notification
-
-%
-\declareconstitemNEW{PMIX_GROUP_INVITE_DECLINED}
-A process has declined an invitation to join a \ac{PMIx} Group - the identifier of the declined group will be included in the notification
-
-%
-\declareconstitemNEW{PMIX_GROUP_INVITE_FAILED}
-An invited process failed or terminated prior to responding to the invitation - the identifier of the failed process will be included in the notification.
-
-%
-\declareconstitemNEW{PMIX_GROUP_MEMBERSHIP_UPDATE}
-The membership of a \ac{PMIx} group has changed - the identifiers of the revised membership will be included in the notification.
-
-%
-\declareconstitemNEW{PMIX_GROUP_CONSTRUCT_ABORT}
-Any participant in a \ac{PMIx} group construct operation that returns \refconst{PMIX_GROUP_CONSTRUCT_ABORT} from the \emph{leader failed} event handler will cause all participants to receive an event notifying them of that status. Similarly, the leader may elect to abort the procedure by either returning this error code from the handler assigned to the \refconst{PMIX_GROUP_INVITE_ACCEPTED} or \refconst{PMIX_GROUP_INVITE_DECLINED} codes, or by generating an event for the abort code. Abort events will be sent to all invited or existing members of the group.
-
-%
-\declareconstitemNEW{PMIX_GROUP_CONSTRUCT_COMPLETE}
-The group construct operation has completed - the final membership will be included in the notification.
-
-%
-\declareconstitemNEW{PMIX_GROUP_LEADER_FAILED}
-The current \emph{leader} of a group including this process has abnormally terminated - the group identifier will be included in the notification.
-
-%
-\declareconstitemNEW{PMIX_GROUP_LEADER_SELECTED}
-A new \emph{leader} of a group including this process has been selected - the identifier of the new leader will be included in the notification
-
-%
-\declareconstitemNEW{PMIX_GROUP_CONTEXT_ID_ASSIGNED}
-A new \ac{PGCID} has been assigned by the host environment to a group that includes this process - the group identifier will be included in the notification.
-
-%
-\declareconstitemNEW{PMIX_ERR_REPEAT_ATTR_REGISTRATION}
-The attributes for an identical function have already been registered at the specified level (host, server, or client)
-
-%
-\declareconstitemNEW{PMIX_ERR_IOF_FAILURE}
-An \ac{IO} forwarding operation failed - the affected channel will be included in the notification
-
-%
-\declareconstitemNEW{PMIX_ERR_IOF_COMPLETE}
-\ac{IO} forwarding of the standard input for this process has completed - i.e., the stdin file descriptor has closed
-
-%
-\declareconstitemNEW{PMIX_ERR_GET_MALLOC_REQD}
-The data returned by \refapi{PMIx_Get} contains values that required dynamic memory allocations (i.e., "malloc"), despite a request for static pointers to the values in the key-value store. User is responsible for releasing the memory when done with the information.
-
-\end{constantdesc}
-
-\subsubsection{Job-related constants}
-\label{api:struct:jobconst}
-
-The following constants indicate that a session or job has started and completed:
-
-\begin{constantdesc}
-
-%
-\declareconstitemNEW{PMIX_EVENT_JOB_START}
-The first process in the job has been spawned - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
-%
-\declareconstitemNEW{PMIX_LAUNCH_COMPLETE}
-All processes in the job have been spawned - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
-%
-\declareconstitemNEW{PMIX_EVENT_JOB_END}
-All processes in the job have terminated - includes \refattr{PMIX_EVENT_TIMESTAMP} when the last process terminated as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
-%
-\declareconstitemNEW{PMIX_EVENT_SESSION_START}
-The allocation has been instantiated and is ready for use - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_SESSION_ID} of the allocation. This event is issued after any system-controlled prologue has completed, but before any user-specified actions are taken.
-%
-\declareconstitemNEW{PMIX_EVENT_SESSION_END}
-The allocation has terminated - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_SESSION_ID} of the allocation. This event is issued after any user-specified actions have completed, but before any system-controlled epilogue is performed.
-
-\end{constantdesc}
-
-The next set of constants are used to indicate that a job has abnormally terminated and to convey some information as to the cause:
-
-\begin{constantdesc}
-
-%
-\declareconstitemNEW{PMIX_ERR_JOB_APP_NOT_EXECUTABLE}
-The specified application executable either could not be found, or lacks execution privileges.
-%
-\declareconstitemNEW{PMIX_ERR_JOB_NO_EXE_SPECIFIED}
-The job request did not specify an executable.
-%
-\declareconstitemNEW{PMIX_ERR_JOB_FAILED_TO_MAP}
-The launcher was unable to map the processes for the specified job request.
-%
-\declareconstitemNEW{PMIX_ERR_JOB_CANCELED}
-The job was canceled by the host environment
-%
-\declareconstitemNEW{PMIX_ERR_JOB_FAILED_TO_LAUNCH}
-One or more processes in the job request failed to launch
-%
-\declareconstitemNEW{PMIX_ERR_JOB_ABORTED}
-One or more processes in the job called abort, causing the job to be terminated
-%
-\declareconstitemNEW{PMIX_ERR_JOB_KILLED_BY_CMD}
-The job was killed by user command
-%
-\declareconstitemNEW{PMIX_ERR_JOB_ABORTED_BY_SIG}
-The job was aborted due to receipt of an error signal (e.g., SIGKILL)
-%
-\declareconstitemNEW{PMIX_ERR_JOB_TERM_WO_SYNC}
-The job was terminated due to one or more processes exiting without first calling \refapi{PMIx_Finalize}
-%
-\declareconstitemNEW{PMIX_ERR_JOB_SENSOR_BOUND_EXCEEDED}
-The job was terminated due to one or more processes exceeding a specified sensor limit
-%
-\declareconstitemNEW{PMIX_ERR_JOB_NON_ZERO_TERM}
-The job was terminated due to one or more processes exiting with a non-zero status
-%
-\declareconstitemNEW{PMIX_ERR_JOB_ALLOC_FAILED}
-The job request could not be executed due to failure to obtain the specified allocation
-%
-\declareconstitemNEW{PMIX_ERR_JOB_ABORTED_BY_SYS_EVENT}
-The job was aborted due to receipt of a system event
-
-\end{constantdesc}
-
-
-\subsubsection{System error constants}
-\label{api:struct:syserrors}
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_ERR_SYS_BASE}
-Mark the beginning of a dedicated range of constants for system event reporting.
-%
-\declareconstitem{PMIX_ERR_NODE_DOWN}
-A node has gone down - the identifier of the affected node will be included in the notification
-%
-\declareconstitem{PMIX_ERR_NODE_OFFLINE}
-A node has been marked as \emph{offline} - the identifier of the affected node will be included in the notification
-%
-\declareconstitem{PMIX_ERR_SYS_OTHER}
-Mark the end of a dedicated range of constants for system event reporting.
-\end{constantdesc}
-%
-
-\subsubsection{Event handler error constants}
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_EVENT_NO_ACTION_TAKEN}
-Event handler: No action taken
-%
-\declareconstitem{PMIX_EVENT_PARTIAL_ACTION_TAKEN}
-Event handler: Partial action taken
-%
-\declareconstitem{PMIX_EVENT_ACTION_DEFERRED}
-Event handler: Action deferred
-%
-\declareconstitem{PMIX_EVENT_ACTION_COMPLETE}
-Event handler: Action complete
 %
 \end{constantdesc}
 
-%%%%%%%%%%%
-\subsubsection{User-Defined Error Constants}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{User-Defined Error and Event Constants}
 \label{api:struct:usererrors}
 
-\ac{PMIx} establishes an error code boundary for constants defined in the \ac{PMIx} standard. Negative values larger than this (and any positive values greater than zero) are guaranteed not to conflict with \ac{PMIx} values.
+\ac{PMIx} establishes a boundary for constants defined in the \ac{PMIx} standard. Negative values larger (i.e., more negative) than this (and any positive values greater than zero) are guaranteed not to conflict with \ac{PMIx} values.
 
 \begin{constantdesc}
 %
 \declareconstitem{PMIX_EXTERNAL_ERR_BASE}
-A starting point for user-level defined error constants.
-Negative values lower than this are guaranteed not to conflict with \ac{PMIx} values.
+A starting point for user-level defined error and event constants.
+Negative values that are more negative than the defined constant are guaranteed not to conflict with \ac{PMIx} values.
 Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} constant and not a specific value as the value of the constant may change.
 %
 \end{constantdesc}
 
-%%%%%%%%%%%
-\subsection{Macros for use with PMIx constants}
-
-\subsubsection{Detect system event constant}
-\declaremacro{PMIX_SYSTEM_EVENT}
-
-Test a given error constant to see if it falls within the dedicated range of constants for system event reporting.
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_SYSTEM_EVENT(a)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{a}{Error constant to be checked (\refstruct{pmix_status_t})}
-\end{arglist}
-
-Returns \code{true} if the provided values falls within the dedicated range of constants for system event reporting
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Types}
 
-This section defines various data types used by the PMIx APIs. The version of the standard in which a particular data type was introduced is shown in the margin.
+This section defines various data types used by the \ac{PMIx} APIs. The version of the standard in which a particular data type was introduced is shown in the margin.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Key Structure}
 \declarestruct{pmix_key_t}
 
@@ -653,7 +263,12 @@ References to keys in \ac{PMIx} v1 were defined simply as an array of characters
 Passing a \refstruct{pmix_key_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_key_t)} and instead rely on the \refconst{PMIX_MAX_KEYLEN} constant.
 \adviceuserend
 
-\subsubsection{Check key macro}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Key support macros}
+
+The following macros are provided for convenience when working with \ac{PMIx} keys.
+
+\littleheader{Check key macro}
 \declaremacro{PMIX_CHECK_KEY}
 
 Compare the key in a \refstruct{pmix_info_t} to a given value
@@ -672,7 +287,7 @@ PMIX_CHECK_KEY(a, b)
 
 Returns \code{true} if the key matches the given value
 
-\subsubsection{Load key macro}
+\littleheader{Load key macro}
 \declaremacro{PMIX_LOAD_KEY}
 
 Load a key into a \refstruct{pmix_info_t}
@@ -691,7 +306,7 @@ PMIX_LOAD_KEY(a, b)
 
 No return value.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Namespace Structure}
 \declarestruct{pmix_nspace_t}
 
@@ -712,7 +327,12 @@ References to namespace values in \ac{PMIx} v1 were defined simply as an array o
 Passing a \refstruct{pmix_nspace_t} value to the standard \textit{sizeof} utility can result in compiler warnings of incorrect returned value. Users are advised to avoid using \textit{sizeof(pmix_nspace_t)} and instead rely on the \refconst{PMIX_MAX_NSLEN} constant.
 \adviceuserend
 
-\subsubsection{Check namespace macro}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Namespace support macros}
+
+The following macros are provided for convenience when working with \ac{PMIx} namespace structures.
+
+\littleheader{Check namespace macro}
 \declaremacro{PMIX_CHECK_NSPACE}
 
 Compare the string in a \refstruct{pmix_nspace_t} to a given value
@@ -731,7 +351,7 @@ PMIX_CHECK_NSPACE(a, b)
 
 Returns \code{true} if the namespace matches the given value
 
-\subsubsection{Load namespace macro}
+\littleheader{Load namespace macro}
 \declaremacro{PMIX_LOAD_NSPACE}
 
 Load a namespace into a \refstruct{pmix_nspace_t}
@@ -751,7 +371,7 @@ PMIX_LOAD_NSPACE(a, b)
 No return value.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Rank Structure}
 \declarestruct{pmix_rank_t}
 
@@ -791,7 +411,7 @@ Define an upper boundary for valid rank values.
 \end{constantdesc}
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Process Structure}
 \declarestruct{pmix_proc_t}
 
@@ -808,10 +428,11 @@ typedef struct pmix_proc \{
 \end{codepar}
 \cspecificend
 
-\subsection{Process structure support macros}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Process structure support macros}
 The following macros are provided to support the \refstruct{pmix_proc_t} structure.
 
-\subsubsection{Initialize the proc structure}
+\littleheader{Initialize the proc structure}
 \declaremacro{PMIX_PROC_CONSTRUCT}
 
 Initialize the \refstruct{pmix_proc_t} fields
@@ -827,7 +448,7 @@ PMIX_PROC_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_proc_t})}
 \end{arglist}
 
-\subsubsection{Destruct the proc structure}
+\littleheader{Destruct the proc structure}
 \declaremacro{PMIX_PROC_DESTRUCT}
 
 Destruct the \refstruct{pmix_proc_t} fields
@@ -844,7 +465,7 @@ PMIX_PROC_DESTRUCT(m)
 
 There is nothing to release here as the fields in \refstruct{pmix_proc_t} are all declared \emph{static}. However, the macro is provided for symmetry in the code and for future-proofing should some allocated field be included some day.
 
-\subsubsection{Create a proc array}
+\littleheader{Create a proc array}
 \declaremacro{PMIX_PROC_CREATE}
 
 Allocate and initialize an array of \refstruct{pmix_proc_t} structures
@@ -862,7 +483,7 @@ PMIX_PROC_CREATE(m, n)
 \end{arglist}
 
 
-\subsubsection{Free a proc structure}
+\littleheader{Free a proc structure}
 \declaremacro{PMIX_PROC_RELEASE}
 
 Release a \refstruct{pmix_proc_t} structure
@@ -878,7 +499,7 @@ PMIX_PROC_RELEASE(m)
 \argin{m}{Pointer to a \refstruct{pmix_proc_t} structure (handle)}
 \end{arglist}
 
-\subsubsection{Free a proc array}
+\littleheader{Free a proc array}
 \declaremacro{PMIX_PROC_FREE}
 
 Release an array of \refstruct{pmix_proc_t} structures
@@ -895,7 +516,7 @@ PMIX_PROC_FREE(m, n)
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
-\subsubsection{Load a proc structure}
+\littleheader{Load a proc structure}
 \declaremacro{PMIX_PROC_LOAD}
 
 Load values into a \refstruct{pmix_proc_t}
@@ -915,7 +536,7 @@ PMIX_PROC_LOAD(m, n, r)
 
 No return value. Deprecated in favor of \refmacro{PMIX_LOAD_PROCID}
 
-\subsubsection{Compare identifiers}
+\littleheader{Compare identifiers}
 \declaremacro{PMIX_CHECK_PROCID}
 
 Compare two \refstruct{pmix_proc_t} identifiers
@@ -940,7 +561,7 @@ Returns \code{true} if the two structures contain matching namespaces and:
 \end{itemize}
 
 
-\subsubsection{Load a procID structure}
+\littleheader{Load a procID structure}
 \declaremacro{PMIX_LOAD_PROCID}
 
 Load values into a \refstruct{pmix_proc_t}
@@ -958,7 +579,7 @@ PMIX_LOAD_PROCID(m, n, r)
 \argin{r}{Rank to be assigned (\refstruct{pmix_rank_t})}
 \end{arglist}
 
-\subsubsection{Construct a multi-cluster namespace}
+\littleheader{Construct a multi-cluster namespace}
 \declaremacro{PMIX_MULTICLUSTER_NSPACE_CONSTRUCT}
 
 Construct a multi-cluster identifier containing a cluster ID and a namespace
@@ -978,7 +599,7 @@ PMIX_MULTICLUSTER_NSPACE_CONSTRUCT(m, n, r)
 
 Combined length of the cluster identifier and namespace must be less than \refconst{PMIX_MAX_NSLEN}-2.
 
-\subsubsection{Parse a multi-cluster namespace}
+\littleheader{Parse a multi-cluster namespace}
 \declaremacro{PMIX_MULTICLUSTER_NSPACE_PARSE}
 
 Parse a multi-cluster identifier into its cluster ID and namespace parts
@@ -997,16 +618,16 @@ PMIX_MULTICLUSTER_NSPACE_PARSE(m, n, r)
 \end{arglist}
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Process State Structure}
 \label{api:struct:processstate}
 \declarestruct{pmix_proc_state_t}
 
 \versionMarker{2.0}
-The \refstruct{pmix_proc_state_t} structure is a \code{uint8_t} type for process state values. The following constants can be used to set a variable of the type \refstruct{pmix_proc_state_t}. All values were originally defined in version 2 of the standard unless otherwise marked.
+The \refstruct{pmix_proc_state_t} structure is a \code{uint8_t} type for process state values. The following constants can be used to set a variable of the type \refstruct{pmix_proc_state_t}.
 
 \adviceuserstart
-The fine-grained nature of the following constants may exceed the ability of an \ac{RM} to provide updated process state values during the process lifetime. This is particularly true of states in the launch process, and for short-lived processes.
+The fine-grained nature of the following constants may exceed the ability of an \ac{RM} to provide updated process state values during the process lifetime. This is particularly true of states for short-lived processes.
 \adviceuserend
 
 \begin{constantdesc}
@@ -1085,50 +706,7 @@ Unable to launch process
 \end{constantdesc}
 
 
-%%%%%%%%%%%
-\subsection{Job State Structure}
-\label{api:struct:jobstate}
-\declarestruct{pmix_job_state_t}
-
-\versionMarker{4.0}
-The \refstruct{pmix_job_state_t} structure is a \code{uint8_t} type for job state values. The following constants can be used to set a variable of the type \refstruct{pmix_job_state_t}. All values were originally defined in version 4 of the standard unless otherwise marked.
-
-\adviceuserstart
-The fine-grained nature of the following constants may exceed the ability of an \ac{RM} to provide updated job state values during the job lifetime. This is particularly true of states in the launch process, and for short-lived jobs.
-\adviceuserend
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_JOB_STATE_UNDEF}
-Undefined job state
-%
-\declareconstitem{PMIX_JOB_STATE_PREPPED}
-Job is ready to be launched
-%
-\declareconstitem{PMIX_JOB_STATE_LAUNCH_UNDERWAY}
-Job launch procedure is in progress
-%
-\declareconstitem{PMIX_JOB_STATE_RUNNING}
-Job is running
-%
-\declareconstitem{PMIX_JOB_STATE_SUSPENDED}
-Job has been suspended
-%
-\declareconstitem{PMIX_JOB_STATE_CONNECTED}
-All processes in the job have connected to their \ac{PMIx} server
-%
-\declareconstitem{PMIX_JOB_STATE_TERMINATED}
-The job has terminated and is no longer running - typically will
-be accompanied by the job exit status in response to a query
-%
-\declareconstitem{PMIX_JOB_STATE_TERMINATED_WITH_ERROR}
-The job has terminated and is no longer running - typically will
-be accompanied by the job-related error code in response to a query
-%
-\end{constantdesc}
-
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Process Information Structure}
 \declarestruct{pmix_proc_info_t}
 
@@ -1155,13 +733,13 @@ typedef struct pmix_proc_info \{
 \cspecificend
 
 
-%%%%%%%%%%%
-\subsection{Process Information Structure support macros}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Process information structure support macros}
 
 The following macros are provided to support the \refstruct{pmix_proc_info_t} structure.
 
 %%%%
-\subsubsection{Initialize the process information structure}
+\littleheader{Initialize the process information structure}
 \declaremacro{PMIX_PROC_INFO_CONSTRUCT}
 
 Initialize the \refstruct{pmix_proc_info_t} fields
@@ -1178,7 +756,7 @@ PMIX_PROC_INFO_CONSTRUCT(m)
 \end{arglist}
 
 %%%%
-\subsubsection{Destruct the process information structure}
+\littleheader{Destruct the process information structure}
 \declaremacro{PMIX_PROC_INFO_DESTRUCT}
 
 Destruct the \refstruct{pmix_proc_info_t} fields
@@ -1195,7 +773,7 @@ PMIX_PROC_INFO_DESTRUCT(m)
 \end{arglist}
 
 %%%%
-\subsubsection{Create a process information array}
+\littleheader{Create a process information array}
 \declaremacro{PMIX_PROC_INFO_CREATE}
 
 Allocate and initialize a \refstruct{pmix_proc_info_t} array
@@ -1213,7 +791,7 @@ PMIX_PROC_INFO_CREATE(m, n)
 \end{arglist}
 
 %%%%
-\subsubsection{Free a process information structure}
+\littleheader{Free a process information structure}
 \declaremacro{PMIX_PROC_INFO_RELEASE}
 
 Release a \refstruct{pmix_proc_info_t} structure
@@ -1230,7 +808,7 @@ PMIX_PROC_INFO_RELEASE(m)
 \end{arglist}
 
 %%%%
-\subsubsection{Free a process information array}
+\littleheader{Free a process information array}
 \declaremacro{PMIX_PROC_INFO_FREE}
 
 Release an array of \refstruct{pmix_proc_info_t} structures
@@ -1248,252 +826,53 @@ PMIX_PROC_INFO_FREE(m, n)
 \end{arglist}
 
 
-%%%%%%%
-\subsection{Scope of Put Data}
-\declarestruct{pmix_scope_t}
-
-\versionMarker{1.0}
-The \refstruct{pmix_scope_t} structure is a \code{uint8_t} type that defines the scope for data passed to \refapi{PMIx_Put}.
-The following constants can be used to set a variable of the type \refstruct{pmix_scope_t}. All definitions were introduced in version 1 of the standard unless otherwise marked.
-
-Specific implementations may support different scope values, but all implementations must support at least \refconst{PMIX_GLOBAL}.
-If a scope value is not supported, then the \refapi{PMIx_Put} call must return \refconst{PMIX_ERR_NOT_SUPPORTED}.
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_SCOPE_UNDEF}
-Undefined scope
-%
-\declareconstitem{PMIX_LOCAL}
-The data is intended only for other application processes on the same node.
-Data marked in this way will not be included in data packages sent to remote requestors --- i.e., it is only available to processes on the local node.
-%
-\declareconstitem{PMIX_REMOTE}
-The data is intended solely for applications processes on remote nodes.
-Data marked in this way will not be shared with other processes on the same node --- i.e., it is only available to  processes on remote nodes.
-%
-\declareconstitem{PMIX_GLOBAL}
-The data is to be shared with all other requesting processes, regardless of location.
-%
-\versionMarker{2.0}
-\declareconstitem{PMIX_INTERNAL}
-The data is intended solely for this process and is not shared with other processes.
-%
-\end{constantdesc}
-
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Job State Structure}
 \label{api:struct:jobstate}
 \declarestruct{pmix_job_state_t}
 
 \versionMarker{4.0}
-The \refstruct{pmix_job_state_t} structure is a \code{uint8_t} type for job state values. The following constants can be used to set a variable of the type \refstruct{pmix_job_state_t}. All values were originally defined in version 4 of the standard unless otherwise marked.
+The \refstruct{pmix_job_state_t} structure is a \code{uint8_t} type for job state values. The following constants can be used to set a variable of the type \refstruct{pmix_job_state_t}.
 
 \adviceuserstart
-The fine-grained nature of the following constants may exceed the ability of an \ac{RM} to provide updated job state values during the job lifetime. This is particularly true of states in the launch process, and for short-lived jobs.
+The fine-grained nature of the following constants may exceed the ability of an \ac{RM} to provide updated job state values during the job lifetime. This is particularly true for short-lived jobs.
 \adviceuserend
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_JOB_STATE_UNDEF}
+\declareconstitemNEW{PMIX_JOB_STATE_UNDEF}
 Undefined job state
 %
-\declareconstitem{PMIX_JOB_STATE_PREPPED}
-Job is ready to be launched
+\declareconstitemNEW{PMIX_JOB_STATE_AWAITING_ALLOC}
+Job is waiting for resources to be allocated to it
 %
-\declareconstitem{PMIX_JOB_STATE_LAUNCH_UNDERWAY}
+\declareconstitemNEW{PMIX_JOB_STATE_LAUNCH_UNDERWAY}
 Job launch is underway
 %
-\declareconstitem{PMIX_JOB_STATE_RUNNING}
-All processes in the job have been spawned
+\declareconstitemNEW{PMIX_JOB_STATE_RUNNING}
+All processes in the job have been spawned and are executing
 %
-\declareconstitem{PMIX_JOB_STATE_SUSPENDED}
+\declareconstitemNEW{PMIX_JOB_STATE_SUSPENDED}
 All processes in the job have been suspended
 %
-\declareconstitem{PMIX_JOB_STATE_CONNECTED}
+\declareconstitemNEW{PMIX_JOB_STATE_CONNECTED}
 All processes in the job have connected to their \ac{PMIx} server
 %
-\declareconstitem{PMIX_JOB_STATE_UNTERMINATED}
+\declareconstitemNEW{PMIX_JOB_STATE_UNTERMINATED}
 Define a ``boundary'' between the terminated states and \refconst{PMIX_JOB_STATE_TERMINATED} so users can easily and quickly determine if a job is still running or not.
 Any value less than this constant means that the job has not terminated.
 %
-\declareconstitem{PMIX_JOB_STATE_TERMINATED}
+\declareconstitemNEW{PMIX_JOB_STATE_TERMINATED}
 All processes in the job have terminated and are no longer running - typically will be accompanied by the job exit status in response to a query
 %
-\declareconstitem{PMIX_JOB_STATE_TERMINATED_WITH_ERROR}
+\declareconstitemNEW{PMIX_JOB_STATE_TERMINATED_WITH_ERROR}
 Define a boundary so users can easily and quickly determine if a job abnormally terminated - typically will be accompanied by a job-related error code in response to a query
 Any value above this constant means that the job terminated abnormally.
 %
 \end{constantdesc}
 
 
-%%%%%%%%%%%
-\subsection{Range of Published Data}
-\declarestruct{pmix_data_range_t}
-
-\versionMarker{1.0}
-The \refstruct{pmix_data_range_t} structure is a \code{uint8_t} type that defines a range for data \textit{published} via functions other than \refapi{PMIx_Put} - e.g., the \refapi{PMIx_Publish} \ac{API}.
-The following constants can be used to set a variable of the type \refstruct{pmix_data_range_t}. Several values were initially defined in version 1 of the standard but subsequently renamed and other values added in version 2. Thus, all values shown below are as they were defined in version 2 except where noted.
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_RANGE_UNDEF}
-Undefined range
-%
-\declareconstitem{PMIX_RANGE_RM}
-Data is intended for the host resource manager.
-%
-\declareconstitem{PMIX_RANGE_LOCAL}
-Data is only available to processes on the local node.
-%
-\declareconstitem{PMIX_RANGE_NAMESPACE}
-Data is only available to processes in the same namespace.
-%
-\declareconstitem{PMIX_RANGE_SESSION}
-Data is only available to all processes in the session.
-%
-\declareconstitem{PMIX_RANGE_GLOBAL}
-Data is available to all processes.
-%
-\declareconstitem{PMIX_RANGE_CUSTOM}
-Range is specified in the \refstruct{pmix_info_t} associated with this call.
-%
-\declareconstitem{PMIX_RANGE_PROC_LOCAL}
-Data is only available to this process.
-%
-\declareconstitem{PMIX_RANGE_INVALID}
-Invalid value
-%
-\end{constantdesc}
-
-\adviceuserstart
-The names of the \refstruct{pmix_data_range_t} values changed between version 1 and version 2 of the standard, thereby breaking backward compatibility
-\adviceuserend
-
-%%%%%%%%%%%
-\subsection{Data Persistence Structure}
-\declarestruct{pmix_persistence_t}
-
-\versionMarker{1.0}
-The \refstruct{pmix_persistence_t} structure is a \code{uint8_t} type that defines the policy for data published by clients via the \refapi{PMIx_Publish} \ac{API}.
-The following constants can be used to set a variable of the type \refstruct{pmix_persistence_t}. All definitions were introduced in version 1 of the standard unless otherwise marked.
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_PERSIST_INDEF}
-Retain data until specifically deleted.
-%
-\declareconstitem{PMIX_PERSIST_FIRST_READ}
-Retain data until the first access, then the data is deleted.
-%
-\declareconstitem{PMIX_PERSIST_PROC}
-Retain data until the publishing process terminates.
-%
-\declareconstitem{PMIX_PERSIST_APP}
-Retain data until the application terminates.
-%
-\declareconstitem{PMIX_PERSIST_SESSION}
-Retain data until the session/allocation terminates.
-%
-\declareconstitem{PMIX_PERSIST_INVALID}
-Invalid value
-%
-\end{constantdesc}
-
-%%%%%%%%%%%
-\subsection{Data Array Structure}
-\declarestruct{pmix_data_array_t}
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_data_array {
-    pmix_data_type_t type;
-    size_t size;
-    void *array;
-} pmix_data_array_t;
-\end{codepar}
-\cspecificend
-
-The \refstruct{pmix_data_array_t} structure is used to pass arrays of related values. Any \ac{PMIx} data type (including complex structures) can be included in the array.
-
-%%%%%%%%%%%
-\subsection{Data array structure support macros}
-The following macros are provided to support the \refstruct{pmix_data_array_t} structure.
-
-\subsubsection{Initialize the data array structure}
-\declaremacro{PMIX_DATA_ARRAY_CONSTRUCT}
-
-Initialize the \refstruct{pmix_data_array_t} fields, allocating memory for the array itself.
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_ARRAY_CONSTRUCT(m, n, t)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_data_array_t})}
-\argin{n}{Number of elements in the array (\code{size_t})}
-\argin{t}{\ac{PMIx} data type for the array elements (\refstruct{pmix_data_type_t})}
-\end{arglist}
-
-\subsubsection{Destruct the data array structure}
-\declaremacro{PMIX_DATA_ARRAY_DESTRUCT}
-
-Destruct the \refstruct{pmix_data_array_t} fields, releasing the array's memory.
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_ARRAY_DESTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_data_array_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Create and initialize a data array object}
-\declaremacro{PMIX_DATA_ARRAY_CREATE}
-
-Allocate and initialize a \refstruct{pmix_data_array_t} structure and initialize it, allocating memory for the array itself as well.
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_ARRAY_CREATE(m, n, t)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{m}{Address where the pointer to the \refstruct{pmix_data_array_t} structure shall be stored (handle)}
-\argin{n}{Number of elements in the array (\code{size_t})}
-\argin{t}{\ac{PMIx} data type for the array elements (\refstruct{pmix_data_type_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%
-\subsubsection{Free a data array object}
-\declaremacro{PMIX_DATA_ARRAY_FREE}
-
-Release a \refstruct{pmix_data_array_t} structure, including releasing the array's memory.
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_ARRAY_FREE(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the \refstruct{pmix_data_array_t} structure (handle)}
-\end{arglist}
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Value Structure}
 \declarestruct{pmix_value_t}
 
@@ -1543,11 +922,11 @@ typedef struct pmix_value \{
 \end{codepar}
 \cspecificend
 
-%%%%%%%%%%%
-\subsection{Value structure support macros}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Value structure support macros}
 The following macros are provided to support the \refstruct{pmix_value_t} structure.
 
-\subsubsection{Initialize the value structure}
+\littleheader{Initialize the value structure}
 \declaremacro{PMIX_VALUE_CONSTRUCT}
 
 Initialize the \refstruct{pmix_value_t} fields
@@ -1563,7 +942,7 @@ PMIX_VALUE_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_value_t})}
 \end{arglist}
 
-\subsubsection{Destruct the value structure}
+\littleheader{Destruct the value structure}
 \declaremacro{PMIX_VALUE_DESTRUCT}
 
 Destruct the \refstruct{pmix_value_t} fields
@@ -1580,7 +959,7 @@ PMIX_VALUE_DESTRUCT(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create a value array}
+\littleheader{Create a value array}
 \declaremacro{PMIX_VALUE_CREATE}
 
 Allocate and initialize an array of \refstruct{pmix_value_t} structures
@@ -1599,7 +978,7 @@ PMIX_VALUE_CREATE(m, n)
 
 
 %%%%%%%%%%%
-\subsubsection{Free a value structure}
+\littleheader{Free a value structure}
 \declaremacro{PMIX_VALUE_RELEASE}
 
 Release a \refstruct{pmix_value_t} structure
@@ -1616,7 +995,7 @@ PMIX_VALUE_RELEASE(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Free a value array}
+\littleheader{Free a value array}
 \declaremacro{PMIX_VALUE_FREE}
 
 Release an array of \refstruct{pmix_value_t} structures
@@ -1634,11 +1013,8 @@ PMIX_VALUE_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Load a value structure}
+\littleheader{Load a value structure}
 \declaremacro{PMIX_VALUE_LOAD}
-
-%%%%
-\summary
 
 Load data into a \refstruct{pmix_value_t} structure.
 
@@ -1655,9 +1031,6 @@ PMIX_VALUE_LOAD(v, d, t);
 \argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-%%%%
-\descr
-
 This macro simplifies the loading of data into a \refstruct{pmix_value_t} by correctly assigning values to the structure's fields.
 
 \adviceuserstart
@@ -1665,11 +1038,8 @@ The data will be copied into the \refstruct{pmix_value_t} - thus, any data store
 \adviceuserend
 
 %%%%%%%%%%%
-\subsubsection{Unload a value structure}
+\littleheader{Unload a value structure}
 \declaremacro{PMIX_VALUE_UNLOAD}
-
-%%%%
-\summary
 
 Unload data from a \refstruct{pmix_value_t} structure.
 
@@ -1687,22 +1057,15 @@ PMIX_VALUE_UNLOAD(r, v, d, t);
 \arginout{t}{Pointer to return the data type of the unloaded value (handle)}
 \end{arglist}
 
-%%%%
-\descr
-
 This macro simplifies the unloading of data from a \refstruct{pmix_value_t}.
 
 \adviceuserstart
 Memory will be allocated and the data will be in the \refstruct{pmix_value_t} returned - the source \refstruct{pmix_value_t} will not be altered.
 \adviceuserend
 
-
 %%%%%%%%%%%
-\subsubsection{Transfer data between value structures}
+\littleheader{Transfer data between value structures}
 \declaremacro{PMIX_VALUE_XFER}
-
-%%%%
-\summary
 
 Transfer the data value between two \refstruct{pmix_value_t} structures.
 
@@ -1719,18 +1082,14 @@ PMIX_VALUE_XFER(r, d, s);
 \argin{s}{Pointer to the \refstruct{pmix_value_t} source (handle)}
 \end{arglist}
 
-%%%%
-\descr
-
 This macro simplifies the transfer of data between two \refstruct{pmix_value_t} structures, ensuring that all fields are properly copied.
 
 \adviceuserstart
 The data will be copied into the destination \refstruct{pmix_value_t} - thus, any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
 \adviceuserend
 
-
 %%%%%%%%%%%
-\subsubsection{Retrieve a numerical value from a value struct}
+\littleheader{Retrieve a numerical value from a value struct}
 \declaremacro{PMIX_VALUE_GET_NUMBER}
 
 Retrieve a numerical value from a \refstruct{pmix_value_t} structure
@@ -1751,7 +1110,7 @@ PMIX_VALUE_GET_NUMBER(s, m, n, t)
 
 Sets the provided variable equal to the numerical value contained in the given \refstruct{pmix_value_t}, returning success if the data type of the value matches the expected type and \refconst{PMIX_ERR_BAD_PARAM} if it doesn't
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Info Structure}
 \label{chap:struct:info}
 \declarestruct{pmix_info_t}
@@ -1770,10 +1129,10 @@ typedef struct pmix_info_t \{
 \cspecificend
 
 %%%%%%%%%%%
-\subsection{Info structure support macros}
+\subsubsection{Info structure support macros}
 The following macros are provided to support the \refstruct{pmix_info_t} structure.
 
-\subsubsection{Initialize the info structure}
+\littleheader{Initialize the info structure}
 \declaremacro{PMIX_INFO_CONSTRUCT}
 
 Initialize the \refstruct{pmix_info_t} fields
@@ -1789,7 +1148,7 @@ PMIX_INFO_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-\subsubsection{Destruct the info structure}
+\littleheader{Destruct the info structure}
 \declaremacro{PMIX_INFO_DESTRUCT}
 
 Destruct the \refstruct{pmix_info_t} fields
@@ -1806,7 +1165,7 @@ PMIX_INFO_DESTRUCT(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create an info array}
+\littleheader{Create an info array}
 \declaremacro{PMIX_INFO_CREATE}
 
 Allocate and initialize an array of info structures
@@ -1825,7 +1184,7 @@ PMIX_INFO_CREATE(m, n)
 
 
 %%%%%%%%%%%
-\subsubsection{Free an info array}
+\littleheader{Free an info array}
 \declaremacro{PMIX_INFO_FREE}
 
 Release an array of \refstruct{pmix_info_t} structures
@@ -1843,7 +1202,7 @@ PMIX_INFO_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Load key and value data into a info struct}
+\littleheader{Load key and value data into a info struct}
 \declaremacro{PMIX_INFO_LOAD}
 
 \versionMarker{1.0}
@@ -1867,7 +1226,7 @@ Both key and data will be copied into the \refstruct{pmix_info_t} - thus, the ke
 \adviceuserend
 
 %%%%%%%%%%%
-\subsubsection{Copy data between info structures}
+\littleheader{Copy data between info structures}
 \declaremacro{PMIX_INFO_XFER}
 
 Copy all data (including key, value, and directives) between two \refstruct{pmix_info_t} structures.
@@ -1892,7 +1251,7 @@ All data (including key, value, and directives) will be copied into the destinat
 
 
 %%%%%%%%%%%
-\subsubsection{Test a boolean info struct}
+\littleheader{Test a boolean info struct}
 \declaremacro{PMIX_INFO_TRUE}
 
 A special macro for checking if a boolean \refstruct{pmix_info_t} is \code{true}
@@ -1910,12 +1269,12 @@ PMIX_INFO_TRUE(m)
 
 A \refstruct{pmix_info_t} structure is considered to be of type \refconst{PMIX_BOOL} and value \code{true} if:
 
-\begin{itemize}
+\begin{compactitemize}
     \item the structure reports a type of \refconst{PMIX_UNDEF}, or
     \item the structure reports a type of \refconst{PMIX_BOOL} and the data flag is \code{true}
-\end{itemize}
+\end{compactitemize}
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Info Type Directives}
 \declarestruct{pmix_info_directives_t}
 
@@ -1924,10 +1283,10 @@ The \refstruct{pmix_info_directives_t} structure is a \code{uint32_t} type that 
 By default, the values in the \refstruct{pmix_info_t} array passed to a PMIx are \emph{optional}.
 
 \adviceuserstart
-A PMIx implementation or PMIx-enabled \ac{RM} may ignore any \refstruct{pmix_info_t} value passed to a \ac{PMIx} \ac{API} if it is not explicitly marked as \refconst{PMIX_INFO_REQD}.
-This is because the values specified default to optional, meaning they can be ignored.
-This may lead to unexpected behavior if the user is relying on the behavior specified by the \refstruct{pmix_info_t} value.
-If the user relies on the behavior defined by the \refstruct{pmix_info_t} then they must set the \refconst{PMIX_INFO_REQD} flag using the \refmacro{PMIX_INFO_REQUIRED} macro.
+A PMIx implementation or PMIx-enabled \ac{RM} may ignore any \refstruct{pmix_info_t} value passed to a \ac{PMIx} \ac{API} that it does not support or does not recognize if it is not explicitly marked as \refconst{PMIX_INFO_REQD}.
+This is because the values specified default to optional, meaning they can be ignored in such circumstances.
+This may lead to unexpected behavior when porting between environments or \ac{PMIx} implementations if the user is relying on the behavior specified by the \refstruct{pmix_info_t} value.
+Users relying on the behavior defined by the \refstruct{pmix_info_t} are advised to set the \refconst{PMIX_INFO_REQD} flag using the \refmacro{PMIX_INFO_REQUIRED} macro.
 \adviceuserend
 
 \adviceimplstart
@@ -1954,16 +1313,13 @@ Host environments are advised to use the provided \refmacro{PMIX_INFO_IS_REQUIRE
 \advicermend
 
 
-\subsection{Info Directive support macros}
+\subsubsection{Info Directive support macros}
 
 The following macros are provided to support the setting and testing of \refstruct{pmix_info_t} directives.
 
 %%%%
-\subsubsection{Mark an info structure as required}
+\littleheader{Mark an info structure as required}
 \declaremacro{PMIX_INFO_REQUIRED}
-
-%%%%
-\summary
 
 Set the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure.
 
@@ -1981,11 +1337,9 @@ PMIX_INFO_REQUIRED(info);
 This macro simplifies the setting of the \refconst{PMIX_INFO_REQD} flag in \refstruct{pmix_info_t} structures.
 
 %%%%
-\subsubsection{Mark an info structure as optional}
+\littleheader{Mark an info structure as optional}
 \declaremacro{PMIX_INFO_OPTIONAL}
 
-%%%%
-\summary
 Unsets the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure.
 
 \versionMarker{2.0}
@@ -2002,11 +1356,8 @@ PMIX_INFO_OPTIONAL(info);
 This macro simplifies marking a \refstruct{pmix_info_t} structure as \textit{optional}.
 
 %%%%%%%%%%%
-\subsubsection{Test an info structure for \textit{required} directive}
+\littleheader{Test an info structure for \textit{required} directive}
 \declaremacro{PMIX_INFO_IS_REQUIRED}
-
-%%%%
-\summary
 
 Test the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure, returning \code{true} if the flag is set.
 
@@ -2024,11 +1375,8 @@ PMIX_INFO_IS_REQUIRED(info);
 This macro simplifies the testing of the required flag in \refstruct{pmix_info_t} structures.
 
 %%%%%%%%%%%
-\subsubsection{Test an info structure for \textit{optional} directive}
+\littleheader{Test an info structure for \textit{optional} directive}
 \declaremacro{PMIX_INFO_IS_OPTIONAL}
-
-%%%%
-\summary
 
 Test a \refstruct{pmix_info_t} structure, returning \code{true} if the structure is \textit{optional}.
 
@@ -2046,11 +1394,8 @@ PMIX_INFO_IS_OPTIONAL(info);
 Test the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure, returning \code{true} if the flag is \textit{not} set.
 
 %%%%%%%%%%%
-\subsubsection{Test an info structure for \textit{end of array} directive}
+\littleheader{Test an info structure for \textit{end of array} directive}
 \declaremacro{PMIX_INFO_IS_END}
-
-%%%%
-\summary
 
 Test a \refstruct{pmix_info_t} structure, returning \code{true} if the structure is at the end of an array created by the \refmacro{PMIX_INFO_CREATE} macro.
 
@@ -2067,67 +1412,7 @@ PMIX_INFO_IS_END(info);
 
 This macro simplifies the testing of the end-of-array flag in \refstruct{pmix_info_t} structures.
 
-%%%%%%%%%%%
-\subsection{Job Allocation Directives}
-\declarestruct{pmix_alloc_directive_t}
-
-\versionMarker{2.0}
-The \refstruct{pmix_alloc_directive_t} structure is a \code{uint8_t} type that defines the behavior of allocation requests.
-The following constants can be used to set a variable of the type \refstruct{pmix_alloc_directive_t}. All definitions were introduced in version 2 of the standard unless otherwise marked.
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_ALLOC_NEW}
-A new allocation is being requested.
-The resulting allocation will be disjoint (i.e., not connected in a job sense) from the requesting allocation.
-%
-\declareconstitem{PMIX_ALLOC_EXTEND}
-Extend the existing allocation, either in time or as additional resources.
-%
-\declareconstitem{PMIX_ALLOC_RELEASE}
-Release part of the existing allocation.
-Attributes in the accompanying \refstruct{pmix_info_t} array may be used to specify permanent release of the identified resources, or ``lending'' of those resources for some period of time.
-%
-\declareconstitem{PMIX_ALLOC_REAQUIRE}
-Reacquire resources that were previously ``lent'' back to the scheduler.
-%
-\declareconstitem{PMIX_ALLOC_EXTERNAL}
-A value boundary above which implementers are free to define their own directive values.
-%
-\end{constantdesc}
-
-
-%%%%%%%%%%%
-\subsection{IO Forwarding Channels}
-\declarestruct{pmix_iof_channel_t}
-
-\versionMarker{3.0}
-The \refstruct{pmix_iof_channel_t} structure is a \code{uint16_t} type that defines a set of bit-mask flags for specifying IO forwarding channels. These can be bitwise OR'd together to reference multiple channels.
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_FWD_NO_CHANNELS}
-Forward no channels
-%
-\declareconstitem{PMIX_FWD_STDIN_CHANNEL}
-Forward stdin
-%
-\declareconstitem{PMIX_FWD_STDOUT_CHANNEL}
-Forward stdout
-%
-\declareconstitem{PMIX_FWD_STDERR_CHANNEL}
-Forward stderr
-%
-\declareconstitem{PMIX_FWD_STDDIAG_CHANNEL}
-Forward stddiag, if available
-%
-\declareconstitem{PMIX_FWD_ALL_CHANNELS}
-Forward all available channels
-%
-\end{constantdesc}
-
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Environmental Variable Structure}
 \declarestruct{pmix_envar_t}
 
@@ -2142,20 +1427,20 @@ the aggregate value.
 
 \cspecificstart
 \begin{codepar}
-typedef struct {
+typedef struct \{
     char *envar;
     char *value;
     char separator;
-} pmix_envar_t;
+\} pmix_envar_t;
 \end{codepar}
 \cspecificend
 
-
-\subsection{Environmental variable support macros}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Environmental variable support macros}
 
 The following macros are provided to support the \refstruct{pmix_envar_t} structure.
 
-\subsubsection{Initialize the envar structure}
+\littleheader{Initialize the envar structure}
 \declaremacro{PMIX_ENVAR_CONSTRUCT}
 
 Initialize the \refstruct{pmix_envar_t} fields
@@ -2171,7 +1456,7 @@ PMIX_ENVAR_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_envar_t})}
 \end{arglist}
 
-\subsubsection{Destruct the envar structure}
+\littleheader{Destruct the envar structure}
 \declaremacro{PMIX_ENVAR_DESTRUCT}
 
 Clear the \refstruct{pmix_envar_t} fields
@@ -2188,7 +1473,7 @@ PMIX_ENVAR_DESTRUCT(m)
 \end{arglist}
 
 
-\subsubsection{Create an envar array}
+\littleheader{Create an envar array}
 \declaremacro{PMIX_ENVAR_CREATE}
 
 Allocate and initialize an array of \refstruct{pmix_envar_t} structures
@@ -2206,7 +1491,7 @@ PMIX_ENVAR_CREATE(m, n)
 \end{arglist}
 
 
-\subsubsection{Free an envar array}
+\littleheader{Free an envar array}
 \declaremacro{PMIX_ENVAR_FREE}
 
 Release an array of \refstruct{pmix_envar_t} structures
@@ -2223,7 +1508,7 @@ PMIX_ENVAR_FREE(m, n)
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
-\subsubsection{Load an envar structure}
+\littleheader{Load an envar structure}
 \declaremacro{PMIX_ENVAR_LOAD}
 
 Load values into a \refstruct{pmix_envar_t}
@@ -2243,608 +1528,7 @@ PMIX_ENVAR_LOAD(m, e, v, s)
 \end{arglist}
 
 
-%%%%%%%%%%%
-\subsection{Lookup Returned Data Structure}
-\declarestruct{pmix_pdata_t}
-
-The \refstruct{pmix_pdata_t} structure is used by \refapi{PMIx_Lookup} to describe the data being accessed.
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_pdata \{
-    pmix_proc_t proc;
-    pmix_key_t key;
-    pmix_value_t value;
-\} pmix_pdata_t;
-\end{codepar}
-\cspecificend
-
-\subsection{Lookup data structure support macros}
-
-The following macros are provided to support the \refstruct{pmix_pdata_t} structure.
-
-\subsubsection{Initialize the pdata structure}
-\declaremacro{PMIX_PDATA_CONSTRUCT}
-
-Initialize the \refstruct{pmix_pdata_t} fields
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_PDATA_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_pdata_t})}
-\end{arglist}
-
-\subsubsection{Destruct the pdata structure}
-\declaremacro{PMIX_PDATA_DESTRUCT}
-
-Destruct the \refstruct{pmix_pdata_t} fields
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_PDATA_DESTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_pdata_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Create a pdata array}
-\declaremacro{PMIX_PDATA_CREATE}
-
-Allocate and initialize an array of \refstruct{pmix_pdata_t} structures
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_PDATA_CREATE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_pdata_t} structures shall be stored (handle)}
-\argin{n}{Number of structures to be allocated (\code{size_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%
-\subsubsection{Free a pdata structure}
-\declaremacro{PMIX_PDATA_RELEASE}
-
-Release a \refstruct{pmix_pdata_t} structure
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_PDATA_RELEASE(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to a \refstruct{pmix_pdata_t} structure (handle)}
-\end{arglist}
-
-
-%%%%%%%%%%%
-\subsubsection{Free a pdata array}
-\declaremacro{PMIX_PDATA_FREE}
-
-Release an array of \refstruct{pmix_pdata_t} structures
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_PDATA_FREE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_pdata_t} structures (handle)}
-\argin{n}{Number of structures in the array (\code{size_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Load a lookup data structure}
-\declaremacro{PMIX_PDATA_LOAD}
-
-%%%%
-\summary
-
-Load key, process identifier, and data value into a \refstruct{pmix_pdata_t} structure.
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_PDATA_LOAD(m, p, k, d, t);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the \refstruct{pmix_pdata_t} structure into which the key and data are to be loaded (pointer to \refstruct{pmix_pdata_t})}
-\argin{p}{Pointer to the \refstruct{pmix_proc_t} structure containing the identifier of the process being referenced (pointer to \refstruct{pmix_proc_t})}
-\argin{k}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
-\argin{d}{Pointer to the data value to be loaded (handle)}
-\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
-\end{arglist}
-
-This macro simplifies the loading of key, process identifier, and data into a \refstruct{pmix_proc_t} by correctly assigning values to the structure's fields.
-
-\adviceuserstart
-Key, process identifier, and data will all be copied into the \refstruct{pmix_pdata_t} - thus, the source information can be modified or free'd without affecting the copied data once the macro has completed.
-\adviceuserend
-
-%%%%%%%%%%%
-\subsubsection{Transfer a lookup data structure}
-\declaremacro{PMIX_PDATA_XFER}
-
-%%%%
-\summary
-
-Transfer key, process identifier, and data value between two \refstruct{pmix_pdata_t} structures.
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_PDATA_XFER(d, s);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{d}{Pointer to the destination \refstruct{pmix_pdata_t} (pointer to \refstruct{pmix_pdata_t})}
-\argin{s}{Pointer to the source \refstruct{pmix_pdata_t} (pointer to \refstruct{pmix_pdata_t})}
-\end{arglist}
-
-This macro simplifies the transfer of key and data between two\refstruct{pmix_pdata_t} structures.
-
-\adviceuserstart
-Key, process identifier, and data will all be copied into the destination \refstruct{pmix_pdata_t} - thus, the source \refstruct{pmix_pdata_t} may free'd without affecting the copied data once the macro has completed.
-\adviceuserend
-
-
-%%%%%%%%%%%
-\subsection{Application Structure}
-\declarestruct{pmix_app_t}
-
-The \refstruct{pmix_app_t} structure describes the application context for the \refapi{PMIx_Spawn} and \refapi{PMIx_Spawn_nb} operations.
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_app \{
-    /** Executable */
-    char *cmd;
-    /** Argument set, NULL terminated */
-    char **argv;
-    /** Environment set, NULL terminated */
-    char **env;
-    /** Current working directory */
-    char *cwd;
-    /** Maximum processes with this profile */
-    int maxprocs;
-    /** Array of info keys describing this application*/
-    pmix_info_t *info;
-    /** Number of info keys in 'info' array */
-    size_t ninfo;
-\} pmix_app_t;
-\end{codepar}
-\cspecificend
-
-\subsection{App structure support macros}
-The following macros are provided to support the \refstruct{pmix_app_t} structure.
-
-\subsubsection{Initialize the app structure}
-\declaremacro{PMIX_APP_CONSTRUCT}
-
-Initialize the \refstruct{pmix_app_t} fields
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_APP_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_app_t})}
-\end{arglist}
-
-\subsubsection{Destruct the app structure}
-\declaremacro{PMIX_APP_DESTRUCT}
-
-Destruct the \refstruct{pmix_app_t} fields
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_APP_DESTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_app_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Create an app array}
-\declaremacro{PMIX_APP_CREATE}
-
-Allocate and initialize an array of \refstruct{pmix_app_t} structures
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_APP_CREATE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_app_t} structures shall be stored (handle)}
-\argin{n}{Number of structures to be allocated (\code{size_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%
-\subsubsection{Free an app structure}
-\declaremacro{PMIX_APP_RELEASE}
-
-Release a \refstruct{pmix_app_t} structure
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_APP_RELEASE(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to a \refstruct{pmix_app_t} structure (handle)}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Free an app array}
-\declaremacro{PMIX_APP_FREE}
-
-Release an array of \refstruct{pmix_app_t} structures
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-PMIX_APP_FREE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_app_t} structures (handle)}
-\argin{n}{Number of structures in the array (\code{size_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Create the info array of application directives}
-\declaremacro{PMIX_APP_INFO_CREATE}
-
-Create an array of \refstruct{pmix_info_t} structures for passing application-level directives, updating the \refarg{ninfo} field of the \refstruct{pmix_app_t} structure.
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_APP_INFO_CREATE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the \refstruct{pmix_app_t} structure (handle)}
-\argin{n}{Number of directives to be allocated (\code{size_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%
-\subsection{Query Structure}
-\declarestruct{pmix_query_t}
-
-The \refstruct{pmix_query_t} structure is used by \refapi{PMIx_Query_info_nb} to describe a single query operation.
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_query \{
-    char **keys;
-    pmix_info_t *qualifiers;
-    size_t nqual;
-\} pmix_query_t;
-\end{codepar}
-\cspecificend
-
-\subsection{Query structure support macros}
-The following macros are provided to support the \refstruct{pmix_query_t} structure.
-
-\subsubsection{Initialize the query structure}
-\declaremacro{PMIX_QUERY_CONSTRUCT}
-
-Initialize the \refstruct{pmix_query_t} fields
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_QUERY_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_query_t})}
-\end{arglist}
-
-\subsubsection{Destruct the query structure}
-\declaremacro{PMIX_QUERY_DESTRUCT}
-
-Destruct the \refstruct{pmix_query_t} fields
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_QUERY_DESTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_query_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Create a query array}
-\declaremacro{PMIX_QUERY_CREATE}
-
-Allocate and initialize an array of \refstruct{pmix_query_t} structures
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_QUERY_CREATE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_query_t} structures shall be stored (handle)}
-\argin{n}{Number of structures to be allocated (\code{size_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%
-\subsubsection{Free a query structure}
-\declaremacro{PMIX_QUERY_RELEASE}
-
-Release a \refstruct{pmix_query_t} structure
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_QUERY_RELEASE(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to a \refstruct{pmix_query_t} structure (handle)}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Free a query array}
-\declaremacro{PMIX_QUERY_FREE}
-
-Release an array of \refstruct{pmix_query_t} structures
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_QUERY_FREE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_query_t} structures (handle)}
-\argin{n}{Number of structures in the array (\code{size_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Create the info array of query qualifiers}
-\declaremacro{PMIX_QUERY_QUALIFIERS_CREATE}
-
-Create an array of \refstruct{pmix_info_t} structures for passing query qualifiers, updating the \refarg{nqual} field of the \refstruct{pmix_query_t} structure.
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_QUERY_QUALIFIERS_CREATE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the \refstruct{pmix_query_t} structure (handle)}
-\argin{n}{Number of qualifiers to be allocated (\code{size_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%
-\subsection{Attribute registration structure}
-\declarestruct{pmix_regattr_t}
-
-The \refstruct{pmix_regattr_t} structure is used to register attribute support for a \ac{PMIx} function.
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_regattr \{
-    char *name;
-    pmix_key_t *string;
-    pmix_data_type_t type;
-    pmix_info_t *info;
-    size_t ninfo;
-    char **description;
-\} pmix_regattr_t;;
-\end{codepar}
-\cspecificend
-
-Note that in this structure:
-
-\begin{itemize}
-    \item the \refarg{name} is the actual name of the attribute - e.g., "PMIX_MAX_PROCS"; and
-    \item the \refarg{string} is the literal string value of the attribute - e.g., "pmix.max.size" for the \refattr{PMIX_MAX_PROCS} attribute
-    \item \refarg{type} must be a \ac{PMIx} data type identifying the type of data associated with this attribute.
-    \item the \refarg{info} array contains machine-usable information regarding the range of accepted values. This may include entries for \refattr{PMIX_MIN_VALUE}, \refattr{PMIX_MAX_VALUE}, \refattr{PMIX_ENUM_VALUE}, or a combination of them. For example, an attribute that supports all positive integers might delineate it by including a \refstruct{pmix_info_t} with a key of \refattr{PMIX_MIN_VALUE}, type of \refconst{PMIX_INT}, and value of zero. The lack of an entry for \refattr{PMIX_MAX_VALUE} indicates that there is no ceiling to the range of accepted values.
-    \item \refarg{ninfo} indicates the number of elements in the \refarg{info} array
-    \item The \refarg{description} field consists of a \code{NULL}-terminated array of strings describing the attribute, optionally including a human-readable description of the range of accepted values - e.g., "ALL POSITIVE INTEGERS", or a comma-delimited list of enum value names. No correlation between the number of entries in the \refarg{description} and the number of elements in the \refarg{info} array is implied or required.
-\end{itemize}
-
-The attribute \refarg{name} and \refarg{string} fields must be \code{NULL}-terminated strings composed of standard alphanumeric values supported by common utilities such as \textit{strcmp}.
-
-\adviceimplstart
-Although not strictly required, \ac{PMIx} library implementers are strongly encouraged to provide both human-readable and machine-parsable descriptions of supported attributes.
-\adviceimplend
-
-\advicermstart
-Although not strictly required, host environments are strongly encouraged to provide both human-readable and machine-parsable descriptions of supported attributes when registering them.
-\advicermend
-
-
-%%%%%%%%%%%
-\subsection{Attribute registration structure support macros}
-The following macros are provided to support the \refstruct{pmix_regattr_t} structure.
-
-%%%%%%%%%%%
-\subsubsection{Initialize the regattr structure}
-\declaremacro{PMIX_REGATTR_CONSTRUCT}
-
-Initialize the \refstruct{pmix_regattr_t} fields
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_REGATTR_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_regattr_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Destruct the regattr structure}
-\declaremacro{PMIX_REGATTR_DESTRUCT}
-
-Destruct the \refstruct{pmix_regattr_t} fields, releasing all strings.
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_REGATTR_DESTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_regattr_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Create a regattr array}
-\declaremacro{PMIX_REGATTR_CREATE}
-
-Allocate and initialize an array of \refstruct{pmix_regattr_t} structures
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_REGATTR_CREATE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_regattr_t} structures shall be stored (handle)}
-\argin{n}{Number of structures to be allocated (\code{size_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Free a regattr array}
-\declaremacro{PMIX_REGATTR_FREE}
-
-Release an array of \refstruct{pmix_regattr_t} structures
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_REGATTR_FREE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{m}{Pointer to the array of \refstruct{pmix_regattr_t} structures (handle)}
-\argin{n}{Number of structures in the array (\code{size_t})}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Load a regattr structure}
-\declaremacro{PMIX_REGATTR_LOAD}
-
-Load values into a \refstruct{pmix_regattr_t} structure. The macro can be called multiple times to add as many strings as desired to the same structure by passing the same address and a \code{NULL} key to the macro. Note that the \refarg{t} type value must be given each time.
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_REGATTR_LOAD(a, n, k, t, ni, v)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{a}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_proc_t})}
-\argin{n}{String name of the attribute (string)}
-\argin{k}{Key value to be loaded (\refstruct{pmix_key_t})}
-\argin{t}{Type of data associated with the provided key (\refstruct{pmix_data_type_t})}
-\argin{ni}{Number of \refstruct{pmix_info_t} elements to be allocated in \refarg{info} (\code{size_t})}
-\argin{v}{One-line description to be loaded (more can be added separately) (string)}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsubsection{Transfer a regattr to another regattr}
-\declaremacro{PMIX_REGATTR_XFER}
-
-Non-destructively transfer the contents of a \refstruct{pmix_regattr_t} structure to another one.
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_REGATTR_XFER(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{m}{Pointer to the destination \refstruct{pmix_regattr_t} structure (handle)}
-\argin{m}{Pointer to the source \refstruct{pmix_regattr_t} structure (handle)}
-\end{arglist}
-
-%%%%%%%%%%%
-\subsection{PMIx Group Directives}
-\declarestruct{pmix_group_opt_t}
-
-\versionMarker{4.0}
-The \refstruct{pmix_group_opt_t} type is an enumerated type used with the \refapi{PMIx_Group_join} \ac{API} to indicate \emph{accept} or \emph{decline} of the invitation - these are provided for readability of user code:
-
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_GROUP_DECLINE}
-Decline the invitation
-%
-\declareconstitem{PMIX_GROUP_ACCEPT}
-Accept the invitation.
-%
-\end{constantdesc}
-
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Byte Object Type}
 \declarestruct{pmix_byte_object_t}
 
@@ -2860,10 +1544,11 @@ typedef struct pmix_byte_object \{
 \end{codepar}
 \cspecificend
 
-\subsection{Byte object support macros}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Byte object support macros}
 The following macros support the \refstruct{pmix_byte_object_t} structure.
 
-\subsubsection{Initialize the byte object structure}
+\littleheader{Initialize the byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_CONSTRUCT}
 
 Initialize the \refstruct{pmix_byte_object_t} fields
@@ -2879,7 +1564,7 @@ PMIX_BYTE_OBJECT_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_byte_object_t})}
 \end{arglist}
 
-\subsubsection{Destruct the byte object structure}
+\littleheader{Destruct the byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_DESTRUCT}
 
 Clear the \refstruct{pmix_byte_object_t} fields
@@ -2895,7 +1580,7 @@ PMIX_BYTE_OBJECT_DESTRUCT(m)
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_byte_object_t})}
 \end{arglist}
 
-\subsubsection{Create a byte object structure}
+\littleheader{Create a byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_CREATE}
 
 Allocate and intitialize an array of \refstruct{pmix_byte_object_t} structures
@@ -2912,7 +1597,7 @@ PMIX_BYTE_OBJECT_CREATE(m, n)
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
-\subsubsection{Free a byte object array}
+\littleheader{Free a byte object array}
 \declaremacro{PMIX_BYTE_OBJECT_FREE}
 
 Release an array of \refstruct{pmix_byte_object_t} structures
@@ -2929,7 +1614,7 @@ PMIX_BYTE_OBJECT_FREE(m, n)
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
-\subsubsection{Load a byte object structure}
+\littleheader{Load a byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_LOAD}
 
 Load values into a \refstruct{pmix_byte_object_t}
@@ -2948,7 +1633,7 @@ PMIX_BYTE_OBJECT_LOAD(b, d, s)
 \end{arglist}
 
 
-%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Data Array Structure}
 \declarestruct{pmix_data_array_t}
 
@@ -2965,11 +1650,11 @@ typedef struct pmix_data_array \{
 \end{codepar}
 \cspecificend
 
-
-\subsection{Data array support macros}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Data array support macros}
 The following macros support the \refstruct{pmix_data_array_t} structure.
 
-\subsubsection{Initialize a data array structure}
+\littleheader{Initialize a data array structure}
 \declaremacro{PMIX_DATA_ARRAY_CONSTRUCT}
 
 Initialize the \refstruct{pmix_data_array_t} fields, allocating memory for the array of the indicated type.
@@ -2988,7 +1673,7 @@ PMIX_DATA_ARRAY_CONSTRUCT(m, n, t)
 \end{arglist}
 
 
-\subsubsection{Destruct a data array structure}
+\littleheader{Destruct a data array structure}
 \declaremacro{PMIX_DATA_ARRAY_DESTRUCT}
 
 Destruct the \refstruct{pmix_data_array_t}, releasing the memory in the array.
@@ -3005,7 +1690,7 @@ PMIX_DATA_ARRAY_CONSTRUCT(m)
 \end{arglist}
 
 
-\subsubsection{Create a data array structure}
+\littleheader{Create a data array structure}
 \declaremacro{PMIX_DATA_ARRAY_CREATE}
 
 Allocate memory for the \refstruct{pmix_data_array_t} object itself, and then allocate memory for the array of the indicated type.
@@ -3024,7 +1709,7 @@ PMIX_DATA_ARRAY_CREATE(m, n, t)
 \end{arglist}
 
 
-\subsubsection{Free a data array structure}
+\littleheader{Free a data array structure}
 \declaremacro{PMIX_DATA_ARRAY_FREE}
 
 Release the memory in the array, and then release the \refstruct{pmix_data_array_t} object itself.
@@ -3040,16 +1725,14 @@ PMIX_DATA_ARRAY_FREE(m)
 \argin{m}{Pointer to the structure to be released (pointer to \refstruct{pmix_data_array_t})}
 \end{arglist}
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Argument Array Macros}
 
 The following macros support the construction and release of \code{NULL}-terminated argv arrays of strings.
 
-\subsubsection{Argument array extension}
-\declaremacro{PMIX_ARGV_APPEND}
-
 %%%%
-\summary
+\littleheader{Argument array extension}
+\declaremacro{PMIX_ARGV_APPEND}
 
 Append a string to a NULL-terminated, argv-style array of strings.
 
@@ -3065,20 +1748,15 @@ PMIX_ARGV_APPEND(r, a, b);
 \argin{b}{Argument to append to the list (string)}
 \end{arglist}
 
-%%%%
-\descr
-
-This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required in the way that the \ac{PRI} expects it to be constructed.
+This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required.
 
 \adviceuserstart
 The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the macro has completed.
 \adviceuserend
 
-\subsubsection{Argument array prepend}
-\declaremacro{PMIX_ARGV_PREPEND}
-
 %%%%
-\summary
+\littleheader{Argument array prepend}
+\declaremacro{PMIX_ARGV_PREPEND}
 
 Prepend a string to a NULL-terminated, argv-style array of strings.
 
@@ -3094,21 +1772,15 @@ PMIX_ARGV_PREPEND(r, a, b);
 \argin{b}{Argument to append to the list (string)}
 \end{arglist}
 
-%%%%
-\descr
-
-This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required in the way that the \ac{PRI} expects it to be constructed.
+This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required.
 
 \adviceuserstart
 The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the macro has completed.
 \adviceuserend
 
 %%%%%%%%%%%
-\subsubsection{Argument array extension - unique}
+\littleheader{Argument array extension - unique}
 \declaremacro{PMIX_ARGV_APPEND_UNIQUE}
-
-%%%%
-\summary
 
 Append a string to a NULL-terminated, argv-style array of strings, but only if the provided argument doesn't already exist somewhere in the array.
 
@@ -3124,21 +1796,15 @@ PMIX_ARGV_APPEND_UNIQUE(r, a, b);
 \argin{b}{Argument to append to the list (string)}
 \end{arglist}
 
-%%%%
-\descr
-
-This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required in the way that the \ac{PRI} expects it to be constructed.
+This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required.
 
 \adviceuserstart
 The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the macro has completed.
 \adviceuserend
 
 %%%%%%%%%%%
-\subsubsection{Argument array release}
+\littleheader{Argument array release}
 \declaremacro{PMIX_ARGV_FREE}
-
-%%%%
-\summary
 
 Free an argv-style array and all of the strings that it contains
 
@@ -3152,17 +1818,11 @@ PMIX_ARGV_FREE(a);
 \argin{a}{Argument list (pointer to NULL-terminated array of strings)}
 \end{arglist}
 
-%%%%
-\descr
-
 This function releases the array and all of the strings it contains.
 
 %%%%%%%%%%%
-\subsubsection{Argument array split}
+\littleheader{Argument array split}
 \declaremacro{PMIX_ARGV_SPLIT}
-
-%%%%
-\summary
 
 Split a string into a NULL-terminated argv array.
 
@@ -3178,9 +1838,6 @@ PMIX_ARGV_SPLIT(a, b, c);
 \argin{c}{Delimiter character (\code{char})}
 \end{arglist}
 
-%%%%
-\descr
-
 Split an input string into a NULL-terminated argv array. Do not include empty strings in the resulting array.
 
 \adviceuserstart
@@ -3188,11 +1845,8 @@ All strings are inserted into the argv array by value; the newly-allocated array
 \adviceuserend
 
 %%%%%%%%%%%
-\subsubsection{Argument array join}
+\littleheader{Argument array join}
 \declaremacro{PMIX_ARGV_JOIN}
-
-%%%%
-\summary
 
 Join all the elements of an argv array into a single newly-allocated string.
 
@@ -3208,17 +1862,11 @@ PMIX_ARGV_JOIN(a, b, c);
 \argin{c}{Delimiter character (\code{char})}
 \end{arglist}
 
-%%%%
-\descr
-
 Join all the elements of an argv array into a single newly-allocated string.
 
 %%%%%%%%%%%
-\subsubsection{Argument array count}
+\littleheader{Argument array count}
 \declaremacro{PMIX_ARGV_COUNT}
-
-%%%%
-\summary
 
 Return the length of a NULL-terminated argv array.
 
@@ -3233,20 +1881,13 @@ PMIX_ARGV_COUNT(r, a);
 \argin{a}{Argv-style array (\code{char**})}
 \end{arglist}
 
-%%%%
-\descr
-
 Count the number of elements in an argv array
 
-
 %%%%%%%%%%%
-\subsubsection{Argument array copy}
+\littleheader{Argument array copy}
 \declaremacro{PMIX_ARGV_COPY}
 
-%%%%
-\summary
-
-Copy an argv array, including copying all off its strings.
+Copy an argv array, including copying all of its strings.
 
 \cspecificstart
 \begin{codepar}
@@ -3259,13 +1900,10 @@ PMIX_ARGV_COPY(a, b);
 \argin{b}{Argv-style array (\code{char**})}
 \end{arglist}
 
-%%%%
-\descr
-
-Copy an argv array, including copying all off its strings.
+Copy an argv array, including copying all of its strings.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Set Environment Variable}
 \declaremacro{PMIX_SETENV}
 
@@ -3298,7 +1936,8 @@ The provided name and value are copied into the destination environment array - 
 \adviceuserend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Generalized Data Types Used for Packing/Unpacking}
 \declarestruct{pmix_data_type_t}
 
@@ -3465,2079 +2104,18 @@ A starting point for implementer-specific data types.
 Values above this are guaranteed not to conflict with \ac{PMIx} values.
 Definitions should always be based on the \refconst{PMIX_DATA_TYPE_MAX} constant and not a specific value as the value of the constant may change.
 %
-
 \end{constantdesc}
 
-%%%%%%%%%%%
-\section{Reserved attributes}
-\label{api:struct:attributes}
 
-The PMIx standard defines a relatively small set of APIs and the caller may customize the behavior of the API by passing one or more attributes to that API.
-Additionally, attributes may be keys passed to \refapi{PMIx_Get} calls to access the specified values from the system.
-
-Each attribute is represented by a \var{key} string, and a type for the associated \var{value}.
-This section defines a set of \textbf{reserved} keys which are prefixed with \code{pmix.} to designate them as PMIx standard reserved keys. All definitions were introduced in version 1 of the standard unless otherwise marked.
-
-Applications or associated libraries (e.g., \ac{MPI}) may choose to define additional attributes.
-The attributes defined in this section are of the system and job as opposed to the attributes that the application (or associated libraries) might choose to expose.
-Due to this extensibility the \refapi{PMIx_Get} API will return \refconst{PMIX_ERR_NOT_FOUND} if the provided \var{key} cannot be found.
-
-Attributes added in this version of the standard are shown in \textit{\textbf{\color{magenta}magenta}} to distinguish them from those defined in prior versions, which are shown in \textit{\textbf{black}}. Deprecated attributes are shown in \textit{\textbf{\color{green!80!black}green}} and will be removed in future versions of the standard.
-
-\declareAttribute{PMIX_ATTR_UNDEF}{NULL}{NULL}{
-Constant representing an undefined attribute.
-}
-
-%%%%%%%%%%%
-\subsection{Initialization attributes}
-\label{api:struct:attributes:init}
-
-These attributes are defined to assist the caller with initialization by passing them into the appropriate initialization \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_EVENT_BASE}{"pmix.evbase"}{struct event_base *}{
-Pointer to libevent\footnote{\url{http://libevent.org/}} \code{event_base} to use in place of the internal progress thread.
-}
-
-%
-\declareAttribute{PMIX_SERVER_TOOL_SUPPORT}{"pmix.srvr.tool"}{bool}{
-The host \ac{RM} wants to declare itself as willing to accept tool connection requests.
-}
-
-%
-\declareAttribute{PMIX_SERVER_REMOTE_CONNECTIONS}{"pmix.srvr.remote"}{bool}{
-Allow connections from remote tools. Forces the PMIx server to not exclusively use loopback device.
-}
-
-%
-\declareAttribute{PMIX_SERVER_SYSTEM_SUPPORT}{"pmix.srvr.sys"}{bool}{
-The host \ac{RM} wants to declare itself as being the local system server for PMIx connection requests.
-}
-
-%
-\declareAttributeNEW{PMIX_SERVER_SESSION_SUPPORT}{"pmix.srvr.sess"}{bool}{
-The host \ac{RM} wants to declare itself as being the local session server for PMIx connection requests.
-}
-
-%
-\declareAttributeNEW{PMIX_SERVER_START_TIME}{"pmix.srvr.strtime"}{char*}{
-Time when the server started - i.e., when the server created it's rendezvous file (given in ctime string format)
-}
-
-%
-\declareAttribute{PMIX_SERVER_TMPDIR}{"pmix.srvr.tmpdir"}{char*}{
-Top-level temporary directory for all client processes connected to this server, and where the PMIx server will place its tool rendezvous point and contact information.
-}
-
-%
-\declareAttribute{PMIX_SYSTEM_TMPDIR}{"pmix.sys.tmpdir"}{char*}{
-Temporary directory for this system, and where a PMIx server that declares itself to be a system-level server will place a tool rendezvous point and contact information.
-}
-
-%
-\declareAttribute{PMIX_SERVER_ENABLE_MONITORING}{"pmix.srv.monitor"}{bool}{
-Enable PMIx internal monitoring by the PMIx server.
-}
-
-%
-\declareAttribute{PMIX_SERVER_NSPACE}{"pmix.srv.nspace"}{char*}{
-Name of the namespace to use for this PMIx server.
-}
-
-%
-\declareAttribute{PMIX_SERVER_RANK}{"pmix.srv.rank"}{pmix_rank_t}{
-Rank of this PMIx server
-}
-
-%
-\declareAttribute{PMIX_SERVER_GATEWAY}{"pmix.srv.gway"}{bool}{
-Server is acting as a gateway for PMIx requests that cannot be serviced on backend nodes (e.g., logging to email)
-}
-
-
-%%%%%%%%%%%
-\subsection{Identification attributes}
-\label{api:struct:attributes:ident}
-
-These attributes are defined to identify a process and it's associated PMIx-enabled library. They are not typically accessed via the \refapi{PMIx_Get} \ac{API}, and thus are not associated with a particular rank.
-
-%
-\declareAttribute{PMIX_USERID}{"pmix.euid"}{uint32_t}{
-Effective user id.
-}
-
-%
-\declareAttribute{PMIX_GRPID}{"pmix.egid"}{uint32_t}{
-Effective group id.
-}
-
-%
-\declareAttribute{PMIX_DSTPATH}{"pmix.dstpath"}{char*}{
-Path to shared memory data storage (dstore) files.
-}
-
-%
-\declareAttribute{PMIX_VERSION_INFO}{"pmix.version"}{char*}{
-PMIx version of contractor.
-}
-
-%
-\declareAttribute{PMIX_REQUESTOR_IS_TOOL}{"pmix.req.tool"}{bool}{
-The requesting process is a PMIx tool.
-}
-
-%
-\declareAttribute{PMIX_REQUESTOR_IS_CLIENT}{"pmix.req.client"}{bool}{
-The requesting process is a PMIx client.
-}
-
-%
-\declareAttributeNEW{PMIX_REINCARNATION}{"pmix.reinc"}{uint32_t}{
-Number of times this process has been re-instantiated - i.e, a value of zero indicates that the process has never failed and been restarted.
-}
-
-%%%%%%%%%%%
-\subsection{Programming model attributes}
-\label{api:struct:attributes:model}
-
-These attributes are associated with programming models.
-
-%
-\declareAttribute{PMIX_PROGRAMMING_MODEL}{"pmix.pgm.model"}{char*}{
-Programming model being initialized (e.g., ``MPI'' or ``OpenMP'')
-}
-
-%
-\declareAttribute{PMIX_MODEL_LIBRARY_NAME}{"pmix.mdl.name"}{char*}{
-Programming model implementation ID (e.g., ``OpenMPI'' or ``MPICH'')
-}
-
-%
-\declareAttribute{PMIX_MODEL_LIBRARY_VERSION}{"pmix.mld.vrs"}{char*}{
-Programming model version string (e.g., ``2.1.1'')
-}
-
-%
-\declareAttribute{PMIX_THREADING_MODEL}{"pmix.threads"}{char*}{
-Threading model used (e.g., ``pthreads'')
-}
-
-%
-\declareAttribute{PMIX_MODEL_NUM_THREADS}{"pmix.mdl.nthrds"}{uint64_t}{
-Number of active threads being used by the model
-}
-
-%
-\declareAttribute{PMIX_MODEL_NUM_CPUS}{"pmix.mdl.ncpu"}{uint64_t}{
-Number of cpus being used by the model
-}
-
-%
-\declareAttribute{PMIX_MODEL_CPU_TYPE}{"pmix.mdl.cputype"}{char*}{
-Granularity - ``hwthread'', ``core'', etc.
-}
-
-%
-\declareAttribute{PMIX_MODEL_PHASE_NAME}{"pmix.mdl.phase"}{char*}{
-User-assigned name for a phase in the application execution (e.g., ``cfd reduction'')
-}
-
-%
-\declareAttribute{PMIX_MODEL_PHASE_TYPE}{"pmix.mdl.ptype"}{char*}{
-Type of phase being executed (e.g., ``matrix multiply'')
-}
-
-%
-\declareAttribute{PMIX_MODEL_AFFINITY_POLICY}{"pmix.mdl.tap"}{char*}{
-Thread affinity policy - e.g.:
-         "master" (thread co-located with master thread),
-         "close" (thread located on cpu close to master thread),
-         "spread" (threads load-balanced across available cpus)
-}
-
-
-
-%%%%%%%%%%%
-\subsection{UNIX socket rendezvous socket attributes}
-\label{api:struct:attributes:usock}
-
-These attributes are used to describe a UNIX socket for rendezvous with the local \ac{RM} by passing them into the relevant initialization \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_USOCK_DISABLE}{"pmix.usock.disable"}{bool}{
-Disable legacy UNIX socket (usock) support
-}
-
-%
-\declareAttribute{PMIX_SOCKET_MODE}{"pmix.sockmode"}{uint32_t}{
-POSIX \var{mode_t} (9 bits valid)
-}
-
-%
-\declareAttribute{PMIX_SINGLE_LISTENER}{"pmix.sing.listnr"}{bool}{
-Use only one rendezvous socket, letting priorities and/or environment parameters select the active transport.
-}
-
-
-%%%%%%%%%%%
-\subsection{TCP connection attributes}
-\label{api:struct:attributes:tcp}
-
-These attributes are used to describe a TCP socket for rendezvous with the local \ac{RM} by passing them into the relevant initialization \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_TCP_REPORT_URI}{"pmix.tcp.repuri"}{char*}{
-If provided, directs that the TCP \ac{URI} be reported and indicates the desired method of reporting: \code{'-'} for stdout, \code{'+'} for stderr, or filename.
-}
-
-%
-\declareAttribute{PMIX_TCP_URI}{"pmix.tcp.uri"}{char*}{
-The \ac{URI} of the PMIx server to connect to, or a file name containing it in the form of \code{file:<name of file containing it>}.
-}
-
-%
-\declareAttribute{PMIX_TCP_IF_INCLUDE}{"pmix.tcp.ifinclude"}{char*}{
-Comma-delimited list of devices and/or \ac{CIDR} notation to include when establishing the TCP connection.
-}
-
-%
-\declareAttribute{PMIX_TCP_IF_EXCLUDE}{"pmix.tcp.ifexclude"}{char*}{
-Comma-delimited list of devices and/or \ac{CIDR} notation to exclude when establishing the TCP connection.
-}
-
-%
-\declareAttribute{PMIX_TCP_IPV4_PORT}{"pmix.tcp.ipv4"}{int}{
-The IPv4 port to be used.
-}
-
-%
-\declareAttribute{PMIX_TCP_IPV6_PORT}{"pmix.tcp.ipv6"}{int}{
-The IPv6 port to be used.
-}
-
-%
-\declareAttribute{PMIX_TCP_DISABLE_IPV4}{"pmix.tcp.disipv4"}{bool}{
-Set to \code{true} to disable IPv4 family of addresses.
-}
-
-%
-\declareAttribute{PMIX_TCP_DISABLE_IPV6}{"pmix.tcp.disipv6"}{bool}{
-Set to \code{true} to disable IPv6 family of addresses.
-}
-
-
-%%%%%%%%%%%
-\subsection{Global Data Storage (GDS) attributes}
-\label{api:struct:attributes:gds}
-
-These attributes are used to define the behavior of the \ac{GDS} used to manage key/value pairs by passing them into the relevant initialization \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_GDS_MODULE}{"pmix.gds.mod"}{char*}{
-Comma-delimited string of desired modules.
-}
-
-
-%%%%%%%%%%%
-\subsection{General process-level attributes}
-\label{api:struct:attributes:gproc}
-
-These attributes are used to define process attributes and are referenced by their process rank.
-
-%
-\declareAttribute{PMIX_CPUSET}{"pmix.cpuset"}{char*}{
-HWLOC\footnote{\url{https://www.open-mpi.org/projects/hwloc/}} bitmap applied to the process upon launch.
-}
-
-%
-\declareAttribute{PMIX_CREDENTIAL}{"pmix.cred"}{char*}{
-Security credential assigned to the process.
-}
-
-%
-\declareAttribute{PMIX_SPAWNED}{"pmix.spawned"}{bool}{
-\code{true} if this process resulted from a call to \refapi{PMIx_Spawn}. Lack of inclusion (i.e., a return status of \refconst{PMIX_ERR_NOT_FOUND}) corresponds to a value of \code{false} for this attribute.
-}
-
-%
-\declareAttribute{PMIX_ARCH}{"pmix.arch"}{uint32_t}{
-Architecture flag.
-}
-
-
-%%%%%%%%%%%
-\subsection{Scratch directory attributes}
-\label{api:struct:attributes:scratchdir}
-
-These attributes are used to define an application scratch directory and are referenced using the \refconst{PMIX_RANK_WILDCARD} rank.
-
-%
-\declareAttribute{PMIX_TMPDIR}{"pmix.tmpdir"}{char*}{
-Full path to the top-level temporary directory assigned to the session.
-}
-
-%
-\declareAttribute{PMIX_NSDIR}{"pmix.nsdir"}{char*}{
-Full path to the temporary directory assigned to the namespace, under \refattr{PMIX_TMPDIR}.
-}
-
-%
-\declareAttribute{PMIX_PROCDIR}{"pmix.pdir"}{char*}{
-Full path to the subdirectory under \refattr{PMIX_NSDIR} assigned to the process.
-}
-
-%
-\declareAttribute{PMIX_TDIR_RMCLEAN}{"pmix.tdir.rmclean"}{bool}{
-Resource Manager will clean session directories
-}
-
-
-%%%%%%%%%%%
-\subsection{Relative Rank Descriptive Attributes}
-\label{api:struct:attributes:relrankinfo}
-
-These attributes are used to describe information about relative ranks as assigned by the \ac{RM}, and thus are referenced using the process rank except where noted.
-
-%
-\declareAttribute{PMIX_CLUSTER_ID}{"pmix.clid"}{char*}{
-A string name for the cluster this allocation is on
-}
-
-%
-\declareAttribute{PMIX_PROCID}{"pmix.procid"}{pmix_proc_t}{
-Process identifier
-}
-
-%
-\declareAttribute{PMIX_NSPACE}{"pmix.nspace"}{char*}{
-Namespace of the job - may be a numerical value expressed as a string, but is often a non-numerical string carrying information solely of use to the system.
-}
-
-%
-\declareAttribute{PMIX_JOBID}{"pmix.jobid"}{char*}{
-Job identifier assigned by the scheduler - may be identical to the namespace, but is often a numerical value expressed as a string (e.g., "12345.3").
-}
-
-%
-\declareAttribute{PMIX_APPNUM}{"pmix.appnum"}{uint32_t}{
-Application number within the job.
-}
-
-%
-\declareAttribute{PMIX_RANK}{"pmix.rank"}{pmix_rank_t}{
-Process rank within the job.
-}
-
-%
-\declareAttribute{PMIX_GLOBAL_RANK}{"pmix.grank"}{pmix_rank_t}{
-Process rank spanning across all jobs in this session.
-}
-
-%
-\declareAttribute{PMIX_APP_RANK}{"pmix.apprank"}{pmix_rank_t}{
-Process rank within this application.
-}
-
-%
-\declareAttribute{PMIX_NPROC_OFFSET}{"pmix.offset"}{pmix_rank_t}{
-Starting global rank of this job - referenced using \refconst{PMIX_RANK_WILDCARD}.
-}
-
-%
-\declareAttribute{PMIX_LOCAL_RANK}{"pmix.lrank"}{uint16_t}{
-Local rank on this node within this job.
-}
-
-%
-\declareAttribute{PMIX_NODE_RANK}{"pmix.nrank"}{uint16_t}{
-Process rank on this node spanning all jobs.
-}
-
-%
-\declareAttributeNEW{PMIX_PACKAGE_RANK}{"pmix.pkgrank"}{uint16_t}{
-Process rank within this job on the package where this process resides
-}
-
-%
-\declareAttribute{PMIX_LOCALLDR}{"pmix.lldr"}{pmix_rank_t}{
-Lowest rank on this node within this job - referenced using \refconst{PMIX_RANK_WILDCARD}.
-}
-
-%
-\declareAttribute{PMIX_APPLDR}{"pmix.aldr"}{pmix_rank_t}{
-Lowest rank in this application within this job - referenced using \refconst{PMIX_RANK_WILDCARD}.
-}
-
-%
-\declareAttribute{PMIX_PROC_PID}{"pmix.ppid"}{pid_t}{
-\ac{PID} of specified process.
-}
-
-%
-\declareAttribute{PMIX_SESSION_ID}{"pmix.session.id"}{uint32_t}{
-Session identifier assigned by the scheduler - referenced using \refconst{PMIX_RANK_WILDCARD}.
-}
-
-%
-\declareAttribute{PMIX_NODE_LIST}{"pmix.nlist"}{char*}{
-Comma-delimited list of nodes running processes for the specified namespace - referenced using \refconst{PMIX_RANK_WILDCARD}.
-}
-
-%
-\declareAttribute{PMIX_ALLOCATED_NODELIST}{"pmix.alist"}{char*}{
-Comma-delimited list or regular expression of all nodes in this allocation regardless of whether or not they currently host processes - referenced using \refconst{PMIX_RANK_WILDCARD}.
-}
-
-%
-\declareAttribute{PMIX_HOSTNAME}{"pmix.hname"}{char*}{
-Name of the host (e.g., where a specified process is running, or a given device is located).
-}
-
-%
-\declareAttributeNEW{PMIX_HOSTNAME_ALIASES}{"pmix.alias"}{char*}{
-Comma-delimited list of names by which this node is known.
-}
-
-%
-\declareAttributeNEW{PMIX_HOSTNAME_KEEP_FQDN}{"pmix.fqdn"}{bool}{
-FQDN hostnames are being retained
-}
-
-%
-\declareAttribute{PMIX_NODEID}{"pmix.nodeid"}{uint32_t}{
-Node identifier expressed as the node's index (beginning at zero) in an array of nodes within the active session. The value must be unique and directly correlate to the \refattr{PMIX_HOSTNAME} of the node - i.e., users can interchangeably reference the same location using either the \refattr{PMIX_HOSTNAME} or corresponding \refattr{PMIX_NODEID}.
-}
-
-%
-\declareAttribute{PMIX_LOCAL_PEERS}{"pmix.lpeers"}{char*}{
-Comma-delimited list of ranks on this node within the specified namespace - referenced using \refconst{PMIX_RANK_WILDCARD}.
-}
-
-%
-\declareAttribute{PMIX_LOCAL_PROCS}{"pmix.lprocs"}{pmix_proc_t array}{
-Array of \refstruct{pmix_proc_t} of all processes on the specified node - referenced using \refconst{PMIX_RANK_WILDCARD}.
-}
-
-%
-\declareAttribute{PMIX_LOCAL_CPUSETS}{"pmix.lcpus"}{char*}{
-Colon-delimited cpusets of local peers within the specified namespace - referenced using \refconst{PMIX_RANK_WILDCARD}.
-}
-
-%
-\declareAttribute{PMIX_PROC_URI}{"pmix.puri"}{char*}{
-\ac{URI} containing contact information for a given process.
-}
-
-%
-\declareAttribute{PMIX_PARENT_ID}{"pmix.parent"}{pmix_proc_t}{
-Process identifier of the parent process of the calling process.
-}
-
-%
-\declareAttribute{PMIX_EXIT_CODE}{"pmix.exit.code"}{int}{
-Exit code returned when process terminated
-}
-
-%%%%%%%%%%%
-\subsection{Information retrieval attributes}
-\label{api:struct:attributes:retrieval}
-
-The following attributes are used to specify the level of information (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) being requested where ambiguity may exist - see \ref{chap:api_kv:getex} for examples of their use.
-
-%
-\declareAttribute{PMIX_SESSION_INFO}{"pmix.ssn.info"}{bool}{
-Return information about the specified session. If information about a session other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_SESSION_ID} attribute identifying the desired target.
-}
-
-%
-\declareAttribute{PMIX_JOB_INFO}{"pmix.job.info"}{bool}{
-Return information about the specified job or namespace. If information about a job or namespace other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_JOBID} or \refattr{PMIX_NSPACE} attribute identifying the desired target. Similarly, if information is requested about a job or namespace in a session other than the one containing the requesting process, then an attribute identifying the target session must be provided.
-}
-
-%
-\declareAttribute{PMIX_APP_INFO}{"pmix.app.info"}{bool}{
-Return information about the specified application. If information about an application other than the one containing the requesting process is desired, then the attribute array must contain a \refattr{PMIX_APPNUM} attribute identifying the desired target. Similarly, if information is requested about an application in a job or session other than the one containing the requesting process, then attributes identifying the target job and/or session must be provided.
-}
-
-%
-\declareAttribute{PMIX_NODE_INFO}{"pmix.node.info"}{bool}{
-Return information about the specified node. If information about a node other than the one containing the requesting process is desired, then the attribute array must contain either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute identifying the desired target.
-}
-
-%%%%%%%%%%%
-\subsection{Information storage attributes}
-\label{api:struct:attributes:storage}
-
-The following attributes are used to assemble information by its level (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) for storage where ambiguity may exist - see \ref{chap:api_server:assemble} for examples of their use.
-
-%
-\declareAttribute{PMIX_SESSION_INFO_ARRAY}{"pmix.ssn.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing session-level information. The \refattr{PMIX_SESSION_ID} attribute is required to be included in the array.
-}
-
-%
-\declareAttributeNEW{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing job-level information. The \refattr{PMIX_SESSION_ID} attribute of the \refterm{session} containing the \refterm{job} is required to be included in the array whenever the \ac{PMIx} server library may host multiple sessions (e.g., when executing with a host \ac{RM} daemon). As information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes when used in that context (though either or both of them may be included). At least one of the job identifiers must be provided in all other contexts where the job being referenced is ambiguous.
-}
-
-%
-\declareAttributeNEW{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, must to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
-}
-
-%
-\declareAttributeNEW{PMIX_PROC_INFO_ARRAY}{"pmix.pdata"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing process-level information. The \refattr{PMIX_RANK} and \refattr{PMIX_NSPACE} attributes, or the \refattr{PMIX_PROCID} attribute, are required to be included in the array when the array is not included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the process is ambiguous. All three may be included if desired. When the array is included in some broader structure that identifies the job, then only the \refattr{PMIX_RANK} or the \refattr{PMIX_PROCID} attribute must be included (the others are optional).
-}
-
-%
-\declareAttributeNEW{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is required to be included in the array, though both may be included.
-}
-
-%
-\declareAttributeNEW{PMIX_SERVER_INFO_ARRAY}{"pmix.srv.arr"}{pmix_data_array_t}{
-Array of data on a given server, starting with its \refattr{PMIX_NSPACE}
-}
-
-Note that these assemblages can be used hierarchically:
-
-\begin{itemize}
-\item a \refattr{PMIX_JOB_INFO_ARRAY} might contain multiple \refattr{PMIX_APP_INFO_ARRAY} elements, each describing values for a specific application within the job
-\item a \refattr{PMIX_JOB_INFO_ARRAY} could contain a \refattr{PMIX_NODE_INFO_ARRAY} for each node hosting processes from that job, each array describing job-level values for that node
-\item a \refattr{PMIX_SESSION_INFO_ARRAY} might contain multiple \refattr{PMIX_JOB_INFO_ARRAY} elements, each describing a job executing within the session. Each job array could, in turn, contain both application and node arrays, thus providing a complete picture of the active operations within the allocation
-\end{itemize}
-
-\adviceimplstart
-\ac{PMIx} implementations must be capable of properly parsing and storing any hierarchical depth of information arrays. The resulting stored values are must to be accessible via both \refapi{PMIx_Get} and \refapi{PMIx_Query_info_nb} \acp{API}, assuming appropriate directives are provided by the caller.
-\adviceimplend
-
-%%%%%%%%%%%
-\subsection{Size information attributes}
-\label{api:struct:attributes:sizeinfo}
-
-These attributes are used to describe the size of various dimensions of the PMIx universe - all are referenced using \refconst{PMIX_RANK_WILDCARD}.
-
-%
-\declareAttribute{PMIX_UNIV_SIZE}{"pmix.univ.size"}{uint32_t}{
-Number of allocated slots in a session - each slot may or may not be occupied by an executing process. Note that this attribute is equivalent to providing the \refattr{PMIX_MAX_PROCS} entry in the \refattr{PMIX_SESSION_INFO_ARRAY} array - it is included in the Standard for historical reasons.
-}
-
-%
-\declareAttribute{PMIX_JOB_SIZE}{"pmix.job.size"}{uint32_t}{
-Total number of processes in this job across all contained applications. Note that this value can be different from \refattr{PMIX_MAX_PROCS}. For example, users may choose to subdivide an allocation (running several jobs in parallel within it), and dynamic programming models may support adding and removing processes from a running \refterm{job} on-the-fly. In the latter case, \ac{PMIx} events must be used to notify processes within the job that the job size has changed.
-}
-
-%
-\declareAttribute{PMIX_JOB_NUM_APPS}{"pmix.job.napps"}{uint32_t}{
-Number of applications in this job.
-}
-
-%
-\declareAttribute{PMIX_APP_SIZE}{"pmix.app.size"}{uint32_t}{
-Number of processes in this application.
-}
-
-%
-\declareAttribute{PMIX_LOCAL_SIZE}{"pmix.local.size"}{uint32_t}{
-Number of processes in this job or application on this node.
-}
-
-%
-\declareAttribute{PMIX_NODE_SIZE}{"pmix.node.size"}{uint32_t}{
-Number of processes across all jobs on this node.
-}
-
-%
-\declareAttribute{PMIX_MAX_PROCS}{"pmix.max.size"}{uint32_t}{
-Maximum number of processes that can be executed in this context (session, namespace, application, or node). Typically, this is a constraint imposed by a scheduler or by user settings in a hostfile or other resource description.
-}
-
-%
-\declareAttribute{PMIX_NUM_SLOTS}{"pmix.num.slots"}{uint32_t}{
-Number of slots allocated in this context (session, namespace, application, or node). Note that this attribute is the equivalent to \refattr{PMIX_MAX_PROCS} used in the corresponding context - it is included in the Standard for historical reasons.
-}
-
-%
-\declareAttributeNEW{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
-Number of nodes in this session, or that are currently executing processes from the associated namespace or application.
-}
-
-%%%%%%%%%%%
-\subsection{Memory information attributes}
-\label{api:struct:attributes:meminfo}
-
-These attributes are used to describe memory available and used in the system - all are referenced using \refconst{PMIX_RANK_WILDCARD}.
-
-%
-\declareAttribute{PMIX_AVAIL_PHYS_MEMORY}{"pmix.pmem"}{uint64_t}{
-Total available physical memory on this node.
-}
-
-%
-\declareAttribute{PMIX_DAEMON_MEMORY}{"pmix.dmn.mem"}{float}{
-Megabytes of memory currently used by the \ac{RM} daemon.
-}
-
-%
-\declareAttribute{PMIX_CLIENT_AVG_MEMORY}{"pmix.cl.mem.avg"}{float}{
-Average Megabytes of memory used by client processes.
-}
-
-
-%%%%%%%%%%%
-\subsection{Topology information attributes}
-\label{api:struct:attributes:topoinfo}
-
-These attributes are used to describe topology information in the \ac{PMIx}
-universe - all are referenced using \refconst{PMIX_RANK_WILDCARD} except where
-noted.
-
-\adviceuserstart
-The following attributes are being removed from the \ac{PMIx} Standard as they
-are internal to a given \ac{PMIx} implementation. Users are referred to the
-\refapi{PMIx_Load_topology} \ac{API} for obtaining the local topology
-description.
-\adviceuserend
-
-%
-\declareAttributeDEP{PMIX_LOCAL_TOPO}{"pmix.ltopo"}{char*}{
-\ac{XML} representation of local node topology.
-}
-
-
-%
-\declareAttributeDEP{PMIX_TOPOLOGY_XML}{"pmix.topo.xml"}{char*}{
-\ac{XML}-based description of topology
-}
-
-%
-\declareAttributeDEP{PMIX_TOPOLOGY_FILE}{"pmix.topo.file"}{char*}{
-Full path to file containing \ac{XML} topology description
-}
-
-%
-\declareAttributeDEP{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
-Topology signature string.
-}
-
-%
-\declareAttributeDEP{PMIX_HWLOC_SHMEM_ADDR}{"pmix.hwlocaddr"}{size_t}{
-Address of the HWLOC shared memory segment.
-}
-
-%
-\declareAttributeDEP{PMIX_HWLOC_SHMEM_SIZE}{"pmix.hwlocsize"}{size_t}{
-Size of the HWLOC shared memory segment.
-}
-
-%
-\declareAttributeDEP{PMIX_HWLOC_SHMEM_FILE}{"pmix.hwlocfile"}{char*}{
-Path to the HWLOC shared memory file.
-}
-
-%
-\declareAttributeDEP{PMIX_HWLOC_XML_V1}{"pmix.hwlocxml1"}{char*}{
-\ac{XML} representation of local topology using HWLOC's v1.x format.
-}
-
-%
-\declareAttributeDEP{PMIX_HWLOC_XML_V2}{"pmix.hwlocxml2"}{char*}{
-\ac{XML} representation of local topology using HWLOC's v2.x format.
-}
-
-%
-\declareAttributeDEP{PMIX_HWLOC_SHARE_TOPO}{"pmix.hwlocsh"}{bool}{
-Share the HWLOC topology via shared memory
-}
-
-%
-\declareAttributeDEP{PMIX_HWLOC_HOLE_KIND}{"pmix.hwlocholek"}{char*}{
-Kind of VM ``hole'' HWLOC should use for shared memory
-}
-
-
-%%%%%%%%%%%
-\subsection{Request-related attributes}
-\label{api:struct:attributes:request}
-
-These attributes are used to influence the behavior of various PMIx operations - they do not represent values accessed using the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_COLLECT_DATA}{"pmix.collect"}{bool}{
-Collect data and return it at the end of the operation.
-}
-
-%
-\declareAttribute{PMIX_TIMEOUT}{"pmix.timeout"}{int}{
-Time in seconds before the specified operation should time out (\var{0} indicating infinite) in error.
-The timeout parameter can help avoid ``hangs'' due to programming errors that prevent the target process from ever exposing its data.
-}
-
-%
-\declareAttribute{PMIX_IMMEDIATE}{"pmix.immediate"}{bool}{
-Specified operation should immediately return an error from the PMIx server if the requested data cannot be found - do not request it from the host \ac{RM}.
-}
-
-%
-\declareAttribute{PMIX_WAIT}{"pmix.wait"}{int}{
-Caller requests that the PMIx server wait until at least the specified number of values are found (\var{0} indicates all and is the default).
-}
-
-%
-\declareAttribute{PMIX_COLLECTIVE_ALGO}{"pmix.calgo"}{char*}{
-Comma-delimited list of algorithms to use for the collective operation. \ac{PMIx} does not impose any requirements on a host environment's collective algorithms. Thus, the acceptable values for this attribute will be environment-dependent - users are encouraged to check their host environment for supported values.
-}
-
-%
-\declareAttributeDEP{PMIX_COLLECTIVE_ALGO_REQD}{"pmix.calreqd"}{bool}{
-If \code{true}, indicates that the requested choice of algorithm is mandatory.
-}
-
-%
-\declareAttribute{PMIX_RANGE}{"pmix.range"}{pmix_data_range_t}{
-Value for calls to publish/lookup/unpublish or for monitoring event notifications.
-}
-
-%
-\declareAttribute{PMIX_PERSISTENCE}{"pmix.persist"}{pmix_persistence_t}{
-Value for calls to \refapi{PMIx_Publish}.
-}
-
-%
-\declareAttribute{PMIX_DATA_SCOPE}{"pmix.scope"}{pmix_scope_t}{
-Scope of the data to be found in a \refapi{PMIx_Get} call.
-}
-
-%
-\declareAttribute{PMIX_OPTIONAL}{"pmix.optional"}{bool}{
-Look only in the client's local data store for the requested value - do not request data from the PMIx server if not found.
-}
-
-%
-\declareAttributeNEW{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
-Request that any pointers in the returned value point directly to values in the key-value store
-}
-
-%
-\declareAttribute{PMIX_EMBED_BARRIER}{"pmix.embed.barrier"}{bool}{
-Execute a blocking fence operation before executing the specified operation.
-For example, \refapi{PMIx_Finalize} does not include an internal barrier operation by default.
-This attribute would direct \refapi{PMIx_Finalize} to execute a barrier as part of the finalize operation.
-}
-
-%
-\declareAttribute{PMIX_JOB_TERM_STATUS}{"pmix.job.term.status"}{pmix_status_t}{
-Status returned by job upon its termination. The status will be communicated as part of a \ac{PMIx} event payload provided by the host environment upon termination of a job. Note that generation of the \refconst{PMIX_EVENT_JOB_END} event is optional and host environments may choose to provide it only upon request.
-}
-
-%
-\declareAttribute{PMIX_PROC_STATE_STATUS}{"pmix.proc.state"}{pmix_proc_state_t}{
-State of the specified process as of the last report - may not be the actual current state based on update rate.
-}
-
-\declareAttribute{PMIX_PROC_TERM_STATUS}{"pmix.proc.term.status"}{pmix_status_t}{
-Status returned by a process upon its termination. The status will be communicated as part of a \ac{PMIx} event payload provided by the host environment upon termination of a process. Note that generation of the \refconst{PMIX_PROC_TERMINATED} event is optional and host environments may choose to provide it only upon request.
-}
-
-
-\declareAttributeNEW{PMIX_NOTIFY_LAUNCH}{"pmix.note.lnch"}{bool}{
-Notify the requester upon launch of the child job and return its namespace in the event
-}
-
-\declareAttributeNEW{PMIX_GET_REFRESH_CACHE}{"pmix.get.refresh"}{bool}{
-When retrieving data for a remote process, refresh the existing local data cache for the process in case new values have been put and committed by it since the last refresh
-}
-
-%%%%%%%%%%%
-\subsection{Server-to-PMIx library attributes}
-\label{api:struct:attributes:server2cl}
-
-Attributes used by the host environment to pass data to its PMIx server library.
-The data will then be parsed and provided to the local PMIx clients. These attributes
-are all referenced using \refconst{PMIX_RANK_WILDCARD} except where noted.
-
-%
-\declareAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
-Registration is for this namespace only, do not copy job data - this attribute is not accessed using the \refapi{PMIx_Get}
-}
-
-%
-\declareAttribute{PMIX_PROC_DATA}{"pmix.pdata"}{pmix_data_array_t}{
-Deprecated in favor of the \refattr{PMIX_PROC_INFO_ARRAY} attribute
-}
-
-%
-\declareAttribute{PMIX_NODE_MAP}{"pmix.nmap"}{char*}{
-Regular expression of nodes - see \ref{cptr:api_server:noderegex} for an explanation of its generation.
-}
-
-%
-\declareAttribute{PMIX_PROC_MAP}{"pmix.pmap"}{char*}{
-Regular expression describing processes on each node  - see \ref{cptr:api_server:ppnregex} for an explanation of its generation.
-}
-
-%
-\declareAttribute{PMIX_ANL_MAP}{"pmix.anlmap"}{char*}{
-Process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation.
-}
-
-%
-\declareAttribute{PMIX_APP_MAP_TYPE}{"pmix.apmap.type"}{char*}{
-Type of mapping used to layout the application (e.g., \code{cyclic}).
-}
-
-%
-\declareAttribute{PMIX_APP_MAP_REGEX}{"pmix.apmap.regex"}{char*}{
-Regular expression describing the result of the process mapping.
-}
-
-%
-\declareAttribute{PMIX_REQUIRED_KEY}{"pmix.req.key"}{char*}{
-Key the user needs prior to responding from a dmodex request
-}
-
-
-%%%%%%%%%%%
-\subsection{Server-to-Client attributes}
-\label{api:struct:attributes:server2client}
-
-Attributes used internally to communicate data from the PMIx server to the PMIx client - they do not represent values accessed using the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_PROC_BLOB}{"pmix.pblob"}{pmix_byte_object_t}{
-Packed blob of process data.
-}
-
-%
-\declareAttribute{PMIX_MAP_BLOB}{"pmix.mblob"}{pmix_byte_object_t}{
-Packed blob of process location.
-}
-
-
-%%%%%%%%%%%
-\subsection{Event handler registration and notification attributes}
-\label{api:struct:attributes:event}
-
-Attributes to support event registration and notification - they are values passed to the event registration and notification \acp{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_EVENT_HDLR_NAME}{"pmix.evname"}{char*}{
-String name identifying this handler.
-}
-
-%
-\declareAttribute{PMIX_EVENT_HDLR_FIRST}{"pmix.evfirst"}{bool}{
-Invoke this event handler before any other handlers.
-}
-
-%
-\declareAttribute{PMIX_EVENT_HDLR_LAST}{"pmix.evlast"}{bool}{
-Invoke this event handler after all other handlers have been called.
-}
-
-%
-\declareAttribute{PMIX_EVENT_HDLR_FIRST_IN_CATEGORY}{"pmix.evfirstcat"}{bool}{
-Invoke this event handler before any other handlers in this category.
-}
-
-%
-\declareAttribute{PMIX_EVENT_HDLR_LAST_IN_CATEGORY}{"pmix.evlastcat"}{bool}{
-Invoke this event handler after all other handlers in this category have been called.
-}
-
-%
-\declareAttribute{PMIX_EVENT_HDLR_BEFORE}{"pmix.evbefore"}{char*}{
-Put this event handler immediately before the one specified in the \code{(char*)} value.
-}
-
-%
-\declareAttribute{PMIX_EVENT_HDLR_AFTER}{"pmix.evafter"}{char*}{
-Put this event handler immediately after the one specified in the \code{(char*)} value.
-}
-
-%
-\declareAttribute{PMIX_EVENT_HDLR_PREPEND}{"pmix.evprepend"}{bool}{
-Prepend this handler to the precedence list within its category.
-}
-
-%
-\declareAttribute{PMIX_EVENT_HDLR_APPEND}{"pmix.evappend"}{bool}{
-Append this handler to the precedence list within its category.
-}
-
-%
-\declareAttribute{PMIX_EVENT_CUSTOM_RANGE}{"pmix.evrange"}{pmix_data_array_t*}{
-Array of \refstruct{pmix_proc_t} defining range of event notification.
-}
-
-%
-\declareAttribute{PMIX_EVENT_AFFECTED_PROC}{"pmix.evproc"}{pmix_proc_t}{
-The single process that was affected.
-}
-
-%
-\declareAttribute{PMIX_EVENT_AFFECTED_PROCS}{"pmix.evaffected"}{pmix_data_array_t*}{
-Array of \refstruct{pmix_proc_t} defining affected processes.
-}
-
-%
-\declareAttribute{PMIX_EVENT_NON_DEFAULT}{"pmix.evnondef"}{bool}{
-Event is not to be delivered to default event handlers.
-}
-
-%
-\declareAttribute{PMIX_EVENT_RETURN_OBJECT}{"pmix.evobject"}{void *}{
-Object to be returned whenever the registered callback function \code{cbfunc} is invoked.
-The object will only be returned to the process that registered it.
-}
-
-%
-\declareAttribute{PMIX_EVENT_DO_NOT_CACHE}{"pmix.evnocache"}{bool}{
-Instruct the PMIx server not to cache the event.
-}
-
-%
-\declareAttribute{PMIX_EVENT_SILENT_TERMINATION}{"pmix.evsilentterm"}{bool}{
-Do not generate an event when this job normally terminates.
-}
-
-%
-\declareAttribute{PMIX_EVENT_PROXY}{"pmix.evproxy"}{pmix_proc_t*}{
-\ac{PMIx} server that sourced the event
-}
-
-%
-\declareAttribute{PMIX_EVENT_TEXT_MESSAGE}{"pmix.evtext"}{char*}{
-Text message suitable for output by recipient - e.g., describing the cause of the event
-}
-
-%
-\declareAttributeNEW{PMIX_EVENT_TIMESTAMP}{"pmix.evtstamp"}{time_t}{
-System time when the associated event occurred.
-}
-
-%%%%%%%%%%%
-\subsection{Fault tolerance attributes}
-\label{api:struct:attributes:faulttolerance}
-
-Attributes to support fault tolerance behaviors - they are values passed to the event notification \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_EVENT_TERMINATE_SESSION}{"pmix.evterm.sess"}{bool}{
-The \ac{RM} intends to terminate this session.
-}
-
-%
-\declareAttribute{PMIX_EVENT_TERMINATE_JOB}{"pmix.evterm.job"}{bool}{
-The \ac{RM} intends to terminate this job.
-}
-
-%
-\declareAttribute{PMIX_EVENT_TERMINATE_NODE}{"pmix.evterm.node"}{bool}{
-The \ac{RM} intends to terminate all processes on this node.
-}
-
-%
-\declareAttribute{PMIX_EVENT_TERMINATE_PROC}{"pmix.evterm.proc"}{bool}{
-The \ac{RM} intends to terminate just this process.
-}
-
-%
-\declareAttribute{PMIX_EVENT_ACTION_TIMEOUT}{"pmix.evtimeout"}{int}{
-The time in seconds before the \ac{RM} will execute error response.
-}
-
-%
-\declareAttribute{PMIX_EVENT_NO_TERMINATION}{"pmix.evnoterm"}{bool}{
-Indicates that the handler has satisfactorily handled the event and believes termination of the application is not required.
-}
-
-%
-\declareAttribute{PMIX_EVENT_WANT_TERMINATION}{"pmix.evterm"}{bool}{
-Indicates that the handler has determined that the application should be terminated
-}
-
-
-%%%%%%%%%%%
-\subsection{Spawn attributes}
-\label{api:struct:attributes:spawn}
-
-Attributes used to describe \refapi{PMIx_Spawn} behavior - they are values passed to the \refapi{PMIx_Spawn} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API} when used in that context. However, some of the attributes defined in this section can be provided by the host environment for other purposes - e.g., the environment might provide the \refattr{PMIX_MAPPER} attribute in the job-related information so that an application can use \refapi{PMIx_Get} to discover the layout algorithm used for determining process locations. Multi-use attributes and their respective access reference rank are denoted below.
-
-%
-\declareAttribute{PMIX_PERSONALITY}{"pmix.pers"}{char*}{
-Name of personality to use.
-}
-
-%
-\declareAttribute{PMIX_HOST}{"pmix.host"}{char*}{
-Comma-delimited list of hosts to use for spawned processes.
-}
-
-%
-\declareAttribute{PMIX_HOSTFILE}{"pmix.hostfile"}{char*}{
-Hostfile to use for spawned processes.
-}
-
-%
-\declareAttribute{PMIX_ADD_HOST}{"pmix.addhost"}{char*}{
-Comma-delimited list of hosts to add to the allocation.
-}
-
-%
-\declareAttribute{PMIX_ADD_HOSTFILE}{"pmix.addhostfile"}{char*}{
-Hostfile listing hosts to add to existing allocation.
-}
-
-%
-\declareAttribute{PMIX_PREFIX}{"pmix.prefix"}{char*}{
-Prefix to use for starting spawned processes.
-}
-
-%
-\declareAttribute{PMIX_WDIR}{"pmix.wdir"}{char*}{
-Working directory for spawned processes.
-}
-
-%
-\declareAttribute{PMIX_MAPPER}{"pmix.mapper"}{char*}{
-Mapping mechanism to use for placing spawned processes - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the mapping mechanism used for the provided namespace.
-}
-
-%
-\declareAttribute{PMIX_DISPLAY_MAP}{"pmix.dispmap"}{bool}{
-Display process mapping upon spawn.
-}
-
-%
-\declareAttribute{PMIX_PPR}{"pmix.ppr"}{char*}{
-Number of processes to spawn on each identified resource.
-}
-
-%
-\declareAttribute{PMIX_MAPBY}{"pmix.mapby"}{char*}{
-Process mapping policy - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the mapping policy used for the provided namespace
-}
-
-%
-\declareAttribute{PMIX_RANKBY}{"pmix.rankby"}{char*}{
-Process ranking policy - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the ranking algorithm used for the provided namespace
-}
-
-%
-\declareAttribute{PMIX_BINDTO}{"pmix.bindto"}{char*}{
-Process binding policy - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the binding policy used for the provided namespace
-}
-
-%
-\declareAttribute{PMIX_PRELOAD_BIN}{"pmix.preloadbin"}{bool}{
-Preload binaries onto nodes.
-}
-
-%
-\declareAttribute{PMIX_PRELOAD_FILES}{"pmix.preloadfiles"}{char*}{
-Comma-delimited list of files to pre-position on nodes.
-}
-
-%
-\declareAttribute{PMIX_NON_PMI}{"pmix.nonpmi"}{bool}{
-Spawned processes will not call \refapi{PMIx_Init}.
-}
-
-%
-\declareAttribute{PMIX_STDIN_TGT}{"pmix.stdin"}{uint32_t}{
-Spawned process rank that is to receive any forwarded \code{stdin}.
-}
-
-%
-\declareAttribute{PMIX_SET_SESSION_CWD}{"pmix.ssncwd"}{bool}{
-Set the application's current working directory to the session working directory assigned by the \ac{RM} - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the session working directory assigned to the provided namespace
-}
-
-%
-\declareAttribute{PMIX_TAG_OUTPUT}{"pmix.tagout"}{bool}{
-Tag application output with the identity of the source process.
-}
-
-%
-\declareAttribute{PMIX_TIMESTAMP_OUTPUT}{"pmix.tsout"}{bool}{
-Timestamp output from applications.
-}
-
-%
-\declareAttribute{PMIX_MERGE_STDERR_STDOUT}{"pmix.mergeerrout"}{bool}{
-Merge \code{stdout} and \code{stderr} streams from application processes.
-}
-
-%
-\declareAttribute{PMIX_OUTPUT_TO_FILE}{"pmix.outfile"}{char*}{
-Direct application output (both stdout and stderr) into files of form "<filename>.rank"
-}
-
-%
-\declareAttributeNEW{PMIX_OUTPUT_TO_DIRECTORY}{"pmix.outdir"}{char*}{
-Direct application output into files of form "<directory>/<jobid>/rank.<rank>/stdout[err]"
-}
-
-%
-\declareAttribute{PMIX_INDEX_ARGV}{"pmix.indxargv"}{bool}{
-Mark the \code{argv} with the rank of the process.
-}
-
-%
-\declareAttribute{PMIX_CPUS_PER_PROC}{"pmix.cpuperproc"}{uint32_t}{
-Number of cpus to assign to each rank - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the cpus/process assigned to the provided namespace
-}
-
-%
-\declareAttribute{PMIX_NO_PROCS_ON_HEAD}{"pmix.nolocal"}{bool}{
-Do not place processes on the head node.
-}
-
-%
-\declareAttribute{PMIX_NO_OVERSUBSCRIBE}{"pmix.noover"}{bool}{
-Do not oversubscribe the cpus.
-}
-
-%
-\declareAttribute{PMIX_REPORT_BINDINGS}{"pmix.repbind"}{bool}{
-Report bindings of the individual processes.
-}
-
-%
-\declareAttribute{PMIX_CPU_LIST}{"pmix.cpulist"}{char*}{
-List of cpus to use for this job - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the cpu list used for the provided namespace
-}
-
-%
-\declareAttribute{PMIX_JOB_RECOVERABLE}{"pmix.recover"}{bool}{
-Application supports recoverable operations.
-}
-
-%
-\declareAttribute{PMIX_JOB_CONTINUOUS}{"pmix.continuous"}{bool}{
-Application is continuous, all failed processes should be immediately restarted.
-}
-
-%
-\declareAttribute{PMIX_MAX_RESTARTS}{"pmix.maxrestarts"}{uint32_t}{
-Maximum number of times to restart a job - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the max restarts for the provided namespace
-}
-
-%
-\declareAttribute{PMIX_SPAWN_TOOL}{"pmix.spwn.tool"}{bool}{
-Indicate that the job being spawned is a tool
-}
-
-%
-\declareAttributeNEW{PMIX_CMD_LINE}{"pmix.cmd.line"}{char*}{
-Command line used to execute the specified process (e.g., "mpirun -n 2 --map-by foo ./myapp")
-}
-
-%
-\declareAttributeNEW{PMIX_FORK_EXEC_AGENT}{"pmix.fe.agnt"}{char*}{
-Command line of fork/exec agent to be used for starting local processes
-}
-
-%
-\declareAttributeNEW{PMIX_TIMEOUT_STACKTRACES}{"pmix.tim.stack"}{bool}{
-Include process stacktraces in timeout report from a job
-}
-
-%
-\declareAttributeNEW{PMIX_TIMEOUT_REPORT_STATE}{"pmix.tim.state"}{bool}{
-Report process states in timeout report from a job
-}
-
-%
-\declareAttributeNEW{PMIX_APP_ARGV}{"pmix.app.argv"}{char*}{
-Consolidated argv passed to the spawn command for the given process (e.g., "./myapp arg1 arg2 arg3")
-}
-
-%
-\declareAttributeNEW{PMIX_NOTIFY_JOB_EVENTS}{"pmix.note.jev"}{bool}{
-Requests that the launcher generate the
-\refconst{PMIX_EVENT_JOB_START}, \refconst{PMIX_LAUNCH_COMPLETE}, and
-\refconst{PMIX_EVENT_JOB_END} events. Each event is to include at least the
-namespace of the corresponding job and a \refattr{PMIX_EVENT_TIMESTAMP}
-indicating the time the event occurred. Note that the requester must register
-for these individual events, or capture
-and process them by registering a default event handler instead of individual
-handlers and then process the events based on the returned status code.
-Another common method is to register one event handler for all job-related
-events, with a separate handler for non-job events - see
-\refapi{PMIx_Register_event_handler} for details. }
-
-%
-\declareAttribute{PMIX_NOTIFY_COMPLETION}{"pmix.notecomp"}{bool}{
-Requests that the launcher generate the \refconst{PMIX_EVENT_JOB_END} event
-for normal or abnormal termination of the spawned job. The event shall include
-the returned status code (\refattr{PMIX_JOB_TERM_STATUS}) for the
-corresponding job; the identity (\refattr{PMIX_PROCID}) and exit status
-(\refattr{PMIX_EXIT_CODE}) of the first failed process, if applicable; and a
-\refattr{PMIX_EVENT_TIMESTAMP} indicating the time the termination occurred.
-Note that the requester must register for the event or capture and process it
-within a default event handler.
-}
-
-%
-\declareAttributeNEW{PMIX_LOG_JOB_EVENTS}{"pmix.log.jev"}{bool}{
-Requests that the launcher log the \refconst{PMIX_EVENT_JOB_START},
-\refconst{PMIX_LAUNCH_COMPLETE}, and \refconst{PMIX_EVENT_JOB_END} events using
-\refapi{PMIx_Log}, subject to the logging attributes of Section
-\ref{api:struct:attributes:log}
-}
-
-%
-\declareAttributeNEW{PMIX_LOG_COMPLETION}{"pmix.logcomp"}{bool}{
-Requests that the launcher log the \refconst{PMIX_EVENT_JOB_END} event
-for normal or abnormal termination of the spawned job using
-\refapi{PMIx_Log}, subject to the logging attributes of Section
-\ref{api:struct:attributes:log}. The event shall include
-the returned status code (\refattr{PMIX_JOB_TERM_STATUS}) for the
-corresponding job; the identity (\refattr{PMIX_PROCID}) and exit status
-(\refattr{PMIX_EXIT_CODE}) of the first failed process, if applicable; and a
-\refattr{PMIX_EVENT_TIMESTAMP} indicating the time the termination occurred.
-}
-
-%%%%%%%%%%%
-\subsection{Query attributes}
-\label{api:struct:attributes:query}
-
-Attributes used to describe \refapi{PMIx_Query_info_nb} behavior - these are values passed to the \refapi{PMIx_Query_info_nb} \ac{API} and therefore are not passed to the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttributeNEW{PMIX_QUERY_SUPPORTED_KEYS}{"pmix.qry.keys"}{char*}{
-Returns comma-delimited list of keys supported by the query function. NO QUALIFIERS
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_SUPPORTED_QUALIFIERS}{"pmix.qry.quals"}{char*}{
-Return comma-delimited list of qualifiers supported by a query on the provided key, instead of actually performing the query on the key. NO QUALIFIERS
-}
-
-%
-\declareAttribute{PMIX_QUERY_REFRESH_CACHE}{"pmix.qry.rfsh"}{bool}{
-Retrieve updated information from server. NO QUALIFIERS
-}
-
-%
-\declareAttribute{PMIX_QUERY_NAMESPACES}{"pmix.qry.ns"}{char*}{
-Request a comma-delimited list of active namespaces. NO QUALIFIERS
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_NAMESPACE_INFO}{"pmix.qry.nsinfo"}{pmix_data_array_t*}{
-Return an array of active namespace information - each element will itself contain an array including the namespace plus the command line of the application executing within it. SUPPORTED QUALIFIERS: \refattr{PMIX_NSPACE} of specific namespace whose info is being requested}
-
-%
-\declareAttribute{PMIX_QUERY_JOB_STATUS}{"pmix.qry.jst"}{pmix_status_t}{
-Status of a specified, currently executing job. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose status is being queried
-}
-
-%
-\declareAttribute{PMIX_QUERY_QUEUE_LIST}{"pmix.qry.qlst"}{char*}{
-Request a comma-delimited list of scheduler queues. NO QUALIFIERS
-}
-
-%
-\declareAttribute{PMIX_QUERY_QUEUE_STATUS}{"pmix.qry.qst"}{char*}{
-Returns status of a specified scheduler queue, expressed as a string. SUPPORTED QUALIFIERS: \refattr{PMIX_ALLOC_QUEUE} naming specific queue whose status is being requested
-}
-
-%
-\declareAttribute{PMIX_QUERY_AUTHORIZATIONS}{"pmix.qry.auths"}{bool}{
-Return operations the PMIx tool is authorized to perform.  NO QUALIFIERS
-}
-
-%
-\declareAttribute{PMIX_QUERY_SPAWN_SUPPORT}{"pmix.qry.spawn"}{bool}{
-Return a comma-delimited list of supported spawn attributes. NO QUALIFIERS
-}
-
-%
-\declareAttribute{PMIX_QUERY_DEBUG_SUPPORT}{"pmix.qry.debug"}{bool}{
-Return a comma-delimited list of supported debug attributes. NO QUALIFIERS
-}
-
-%
-\declareAttribute{PMIX_QUERY_MEMORY_USAGE}{"pmix.qry.mem"}{bool}{
-Return information on memory usage for the processes indicated in the qualifiers. SUPPORTED QUALIFIERS: \refattr{PMIX_NSPACE} and \refattr{PMIX_RANK}, or \refattr{PMIX_PROCID} of specific process(es) whose memory usage is being requested
-}
-
-%
-\declareAttribute{PMIX_QUERY_LOCAL_ONLY}{"pmix.qry.local"}{bool}{
-Constrain the query to local information only. NO QUALIFIERS
-}
-
-%
-\declareAttribute{PMIX_QUERY_REPORT_AVG}{"pmix.qry.avg"}{bool}{
-Report only average values for sampled information. NO QUALIFIERS
-}
-
-%
-\declareAttribute{PMIX_QUERY_REPORT_MINMAX}{"pmix.qry.minmax"}{bool}{
-Report minimum and maximum values. NO QUALIFIERS
-}
-
-%
-\declareAttribute{PMIX_QUERY_ALLOC_STATUS}{"pmix.query.alloc"}{char*}{
-String identifier of the allocation whose status is being requested. NO QUALIFIERS
-}
-
-%
-\declareAttribute{PMIX_TIME_REMAINING}{"pmix.time.remaining"}{char*}{
-Query number of seconds (\code{uint32_t}) remaining in allocation for the specified namespace. SUPPORTED QUALIFIERS: \refattr{PMIX_NSPACE} of the namespace whose info is being requested (defaults to allocation containing the caller)
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
-Query list of supported attributes for specified \acp{API}. SUPPORTED QUALIFIERS: \refattr{PMIX_CLIENT_FUNCTIONS}, \refattr{PMIX_SERVER_FUNCTIONS}, \refattr{PMIX_TOOL_FUNCTIONS}, and/or \refattr{PMIX_HOST_FUNCTIONS}
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_AVAIL_SERVERS}{"pmix.qry.asrvrs"}{pmix_data_array_t*}{
-Return an array of \refstruct{pmix_info_t}, each element itself containing an array of \refstruct{pmix_info_t} of available data for servers on this node to which the caller might be able to connect. Each array must include at least one of the rendezvous-required pieces of information.
-}
-
-
-%%%%%%%%%%%
-\subsection{Log attributes}
-\label{api:struct:attributes:log}
-
-Attributes used to describe \refapi{PMIx_Log} behavior - these are values passed to the \refapi{PMIx_Log} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_LOG_SOURCE}{"pmix.log.source"}{pmix_proc_t*}{
-ID of source of the log request
-}
-
-%
-\declareAttribute{PMIX_LOG_STDERR}{"pmix.log.stderr"}{char*}{
-Log string to \code{stderr}.
-}
-
-%
-\declareAttribute{PMIX_LOG_STDOUT}{"pmix.log.stdout"}{char*}{
-Log string to \code{stdout}.
-}
-
-%
-\declareAttribute{PMIX_LOG_SYSLOG}{"pmix.log.syslog"}{char*}{
-Log data to syslog.
-Defaults to \code{ERROR} priority.  Will log to global syslog if available, otherwise to local syslog
-}
-
-%
-\declareAttribute{PMIX_LOG_LOCAL_SYSLOG}{"pmix.log.lsys"}{char*}{
-Log data to local syslog.
-Defaults to \code{ERROR} priority.
-}
-
-%
-\declareAttribute{PMIX_LOG_GLOBAL_SYSLOG}{"pmix.log.gsys"}{char*}{
-Forward data to system ``gateway'' and log msg to that syslog
-Defaults to \code{ERROR} priority.
-}
-
-%
-\declareAttribute{PMIX_LOG_SYSLOG_PRI}{"pmix.log.syspri"}{int}{
-Syslog priority level
-}
-
-%
-\declareAttribute{PMIX_LOG_TIMESTAMP}{"pmix.log.tstmp"}{time_t}{
-Timestamp for log report
-}
-
-%
-\declareAttribute{PMIX_LOG_GENERATE_TIMESTAMP}{"pmix.log.gtstmp"}{bool}{
-Generate timestamp for log
-}
-
-%
-\declareAttribute{PMIX_LOG_TAG_OUTPUT}{"pmix.log.tag"}{bool}{
-Label the output stream with the channel name (e.g., ``stdout'')
-}
-
-%
-\declareAttribute{PMIX_LOG_TIMESTAMP_OUTPUT}{"pmix.log.tsout"}{bool}{
-Print timestamp in output string
-}
-
-%
-\declareAttribute{PMIX_LOG_XML_OUTPUT}{"pmix.log.xml"}{bool}{
-Print the output stream in \ac{XML} format
-}
-
-%
-\declareAttribute{PMIX_LOG_ONCE}{"pmix.log.once"}{bool}{
-Only log this once with whichever channel can first support it, taking the channels in priority order
-}
-
-%
-\declareAttribute{PMIX_LOG_MSG}{"pmix.log.msg"}{pmix_byte_object_t}{
-Message blob to be sent somewhere.
-}
-
-%
-\declareAttribute{PMIX_LOG_EMAIL}{"pmix.log.email"}{pmix_data_array_t}{
-Log via email based on \refstruct{pmix_info_t} containing directives.
-}
-
-%
-\declareAttribute{PMIX_LOG_EMAIL_ADDR}{"pmix.log.emaddr"}{char*}{
-Comma-delimited list of email addresses that are to receive the message.
-}
-
-%
-\declareAttribute{PMIX_LOG_EMAIL_SENDER_ADDR}{"pmix.log.emfaddr"}{char*}{
-Return email address of sender
-}
-
-%
-\declareAttribute{PMIX_LOG_EMAIL_SUBJECT}{"pmix.log.emsub"}{char*}{
-Subject line for email.
-}
-
-%
-\declareAttribute{PMIX_LOG_EMAIL_MSG}{"pmix.log.emmsg"}{char*}{
-Message to be included in email.
-}
-
-%
-\declareAttribute{PMIX_LOG_EMAIL_SERVER}{"pmix.log.esrvr"}{char*}{
-Hostname (or IP address) of estmp server
-}
-
-%
-\declareAttribute{PMIX_LOG_EMAIL_SRVR_PORT}{"pmix.log.esrvrprt"}{int32_t}{
-Port the email server is listening to
-}
-
-%
-\declareAttribute{PMIX_LOG_GLOBAL_DATASTORE}{"pmix.log.gstore"}{bool}{
-Store the log data in a global data store (e.g., database)
-}
-
-%
-\declareAttribute{PMIX_LOG_JOB_RECORD}{"pmix.log.jrec"}{bool}{
-Log the provided information to the host environment's job record
-}
-
-
-%%%%%%%%%%%
-\subsection{Resource manager attributes}
-\label{api:struct:attributes:rm}
-
-Attributes used to describe the \ac{RM} - these are values assigned by the host environment and accessed using the \refapi{PMIx_Get} \ac{API}. The value of the provided namespace is unimportant but should be given as the namespace of the requesting process and a rank of \refconst{PMIX_RANK_WILDCARD} used to indicate that the information will be found with the job-level information.
-
-%
-\declareAttribute{PMIX_RM_NAME}{"pmix.rm.name"}{char*}{
-String name of the \ac{RM}.
-}
-
-%
-\declareAttribute{PMIX_RM_VERSION}{"pmix.rm.version"}{char*}{
-\ac{RM} version string.
-}
-
-
-%%%%%%%%%%%
-\subsection{Environment variable attributes}
-\label{api:struct:attributes:envar}
-
-Attributes used to adjust environment variables - these are values passed to the \refapi{PMIx_Spawn} \ac{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_SET_ENVAR}{"pmix.envar.set"}{pmix_envar_t*}{
-Set the envar to the given value, overwriting any pre-existing one
-}
-
-%
-\declareAttribute{PMIX_UNSET_ENVAR}{"pmix.envar.unset"}{char*}{
-Unset the environment variable specified in the string.
-}
-
-%
-\declareAttribute{PMIX_ADD_ENVAR}{"pmix.envar.add"}{pmix_envar_t*}{
-Add the environment variable, but do not overwrite any pre-existing one
-}
-
-%
-\declareAttribute{PMIX_PREPEND_ENVAR}{"pmix.envar.prepnd"}{pmix_envar_t*}{
-Prepend the given value to the specified environmental value using the given separator character, creating the variable if it doesn't already exist
-}
-
-%
-\declareAttribute{PMIX_APPEND_ENVAR}{"pmix.envar.appnd"}{pmix_envar_t*}{
-Append the given value to the specified environmental value using the given separator character, creating the variable if it doesn't already exist
-}
-
-%
-\declareAttributeNEW{PMIX_FIRST_ENVAR}{"pmix.envar.first"}{pmix_envar_t*}{
-Ensure the given value appears first in the specified envar using the separator character, creating the envar if it doesn't already exist
-}
-
-
-%%%%%%%%%%%
-\subsection{Job Allocation attributes}
-\label{api:struct:attributes:joballoc}
-
-Attributes used to describe the job allocation - these are values passed to and/or returned by the \refapi{PMIx_Allocation_request_nb} and \refapi{PMIx_Allocation_request} \acp{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}
-
-%
-\declareAttribute{PMIX_ALLOC_REQ_ID}{"pmix.alloc.reqid"}{char*}{
-User-provided string identifier for this allocation request which can later be used to query status of the request.
-}
-
-%
-\declareAttributeNEW{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
-A string identifier (provided by the host environment) for the resulting allocation which can later be used to reference the allocated resources in, for example, a call to \refapi{PMIx_Spawn}.
-}
-
-%
-\declareAttributeNEW{PMIX_ALLOC_QUEUE}{"pmix.alloc.queue"}{char*}{
-Name of the \ac{WLM} queue to which the allocation request is to be directed, or the queue being referenced in a query.
-}
-
-%
-\declareAttribute{PMIX_ALLOC_NUM_NODES}{"pmix.alloc.nnodes"}{uint64_t}{
-The number of nodes being requested in an allocation request
-}
-
-%
-\declareAttribute{PMIX_ALLOC_NODE_LIST}{"pmix.alloc.nlist"}{char*}{
-Regular expression of the specific nodes being requested in an allocation request
-}
-
-%
-\declareAttribute{PMIX_ALLOC_NUM_CPUS}{"pmix.alloc.ncpus"}{uint64_t}{
-Number of cpus being requested in an allocation request.
-}
-
-%
-\declareAttribute{PMIX_ALLOC_NUM_CPU_LIST}{"pmix.alloc.ncpulist"}{char*}{
-Regular expression of the number of cpus for each node being requested in an allocation request.
-}
-
-%
-\declareAttribute{PMIX_ALLOC_CPU_LIST}{"pmix.alloc.cpulist"}{char*}{
-Regular expression of the specific cpus  being requested in an allocation request.
-}
-
-%
-\declareAttribute{PMIX_ALLOC_MEM_SIZE}{"pmix.alloc.msize"}{float}{
-Number of Megabytes[base2] of memory (per process) being requested in an allocation request.
-}
-
-%
-\declareAttributeDEP{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
-Changed to \refattr{PMIX_ALLOC_FABRIC}
-}
-%
-\declareAttribute{PMIX_ALLOC_FABRIC}{"pmix.alloc.net"}{array}{
-Array of \refstruct{pmix_info_t} describing requested fabric resources. This must include at least: \refattr{PMIX_ALLOC_FABRIC_ID}, \refattr{PMIX_ALLOC_FABRIC_TYPE}, and \refattr{PMIX_ALLOC_FABRIC_ENDPTS}, plus whatever other descriptors are desired.
-}
-%
-\declareAttributeDEP{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
-Changed to \refattr{PMIX_ALLOC_FABRIC_ID}
-}
-%
-\declareAttribute{PMIX_ALLOC_FABRIC_ID}{"pmix.alloc.netid"}{char*}{
-The key to be used when accessing this requested fabric allocation. The allocation will be returned/stored as a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} indexed by this key and containing at least one entry with the same key and the allocated resource description.
-The type of the included value depends upon the fabric support. For example, a TCP allocation might consist of a comma-delimited string of socket ranges such as \var{"32000-32100,33005,38123-38146"}. Additional entries will consist of any provided resource request directives, along with their assigned values. Examples include: \refattr{PMIX_ALLOC_FABRIC_TYPE} - the type of resources provided; \refattr{PMIX_ALLOC_FABRIC_PLANE} - if applicable, what plane the resources were assigned from; \refattr{PMIX_ALLOC_FABRIC_QOS} - the assigned QoS; \refattr{PMIX_ALLOC_BANDWIDTH} - the allocated bandwidth; \refattr{PMIX_ALLOC_FABRIC_SEC_KEY} - a security key for the requested fabric allocation. NOTE: the assigned values may differ from those requested, especially if \refconst{PMIX_INFO_REQD} was not set in the request.
-}
-
-%
-\declareAttribute{PMIX_ALLOC_BANDWIDTH}{"pmix.alloc.bw"}{float}{
-Fabric bandwidth (in Megabits[base2]/sec) for the job being requested in an allocation request.
-}
-
-%
-\declareAttributeDEP{PMIX_ALLOC_NETWORK_QOS}{"pmix.alloc.netqos"}{char*}{
-Changed to \refattr{PMIX_ALLOC_FABRIC_QOS}
-}
-
-%
-\declareAttribute{PMIX_ALLOC_FABRIC_QOS}{"pmix.alloc.netqos"}{char*}{
-Fabric quality of service level for the job being requested in an allocation request.
-}
-
-%
-\declareAttribute{PMIX_ALLOC_TIME}{"pmix.alloc.time"}{uint32_t}{
-Total session time (in seconds) being requested in an allocation request.
-}
-
-%
-\declareAttributeDEP{PMIX_ALLOC_NETWORK_TYPE}{"pmix.alloc.nettype"}{char*}{
-Changed to \refattr{PMIX_ALLOC_FABRIC_TYPE}
-}
-%
-\declareAttribute{PMIX_ALLOC_FABRIC_TYPE}{"pmix.alloc.nettype"}{char*}{
-Type of desired transport (e.g., \var{``tcp''}, \var{``udp''}) being requested in an allocation request.
-}
-
-%
-\declareAttributeDEP{PMIX_ALLOC_NETWORK_PLANE}{"pmix.alloc.netplane"}{char*}{
-Changed to \refattr{PMIX_ALLOC_FABRIC_PLANE}
-}
-%
-\declareAttribute{PMIX_ALLOC_FABRIC_PLANE}{"pmix.alloc.netplane"}{char*}{
-ID string for the NIC (aka \textit{plane}) to be used for the requested allocation (e.g., CIDR for Ethernet)
-}
-
-%
-\declareAttributeDEP{PMIX_ALLOC_NETWORK_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
-Changed to \refattr{PMIX_ALLOC_FABRIC_ENDPTS}
-}
-%
-\declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
-Number of endpoints to allocate per process in the job
-}
-
-%
-\declareAttributeDEP{PMIX_ALLOC_NETWORK_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
-Changed to \refattr{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
-}
-%
-\declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
-Number of endpoints to allocate per node for the job
-}
-
-%
-\declareAttributeDEP{PMIX_ALLOC_NETWORK_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
-Changed to \refattr{PMIX_ALLOC_FABRIC_SEC_KEY}
-}
-%
-\declareAttribute{PMIX_ALLOC_FABRIC_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
-Fabric security key for the spawned job
-}
-
-
-%%%%%%%%%%%
-\subsection{Job control attributes}
-\label{api:struct:attributes:jobcontrol}
-
-Attributes used to request control operations on an executing application - these are values passed to the \refapi{PMIx_Job_control_nb} \ac{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_JOB_CTRL_ID}{"pmix.jctrl.id"}{char*}{
-Provide a string identifier for this request. The user can provide an identifier for the requested operation, thus allowing them to later request status of the operation or to terminate it. The host, therefore, shall track it with the request for future reference.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_PAUSE}{"pmix.jctrl.pause"}{bool}{
-Pause the specified processes.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_RESUME}{"pmix.jctrl.resume"}{bool}{
-Resume (``un-pause'') the specified processes.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_CANCEL}{"pmix.jctrl.cancel"}{char*}{
-Cancel the specified request - the provided request ID must match the \refattr{PMIX_JOB_CTRL_ID} provided to a previous call to \refapi{PMIx_Job_control}. An ID of \code{NULL} implies cancel all requests from this requestor.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_KILL}{"pmix.jctrl.kill"}{bool}{
-Forcibly terminate the specified processes and cleanup.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_RESTART}{"pmix.jctrl.restart"}{char*}{
-Restart the specified processes using the given checkpoint ID.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT}{"pmix.jctrl.ckpt"}{char*}{
-Checkpoint the specified processes and assign the given ID to it.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_EVENT}{"pmix.jctrl.ckptev"}{bool}{
-Use event notification to trigger a process checkpoint.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_SIGNAL}{"pmix.jctrl.ckptsig"}{int}{
-Use the given signal to trigger a process checkpoint.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_TIMEOUT}{"pmix.jctrl.ckptsig"}{int}{
-Time in seconds to wait for a checkpoint to complete.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_METHOD}{"pmix.jctrl.ckmethod"}{pmix_data_array_t}{
-Array of \refstruct{pmix_info_t} declaring each method and value supported by this application.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_SIGNAL}{"pmix.jctrl.sig"}{int}{
-Send given signal to specified processes.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_PROVISION}{"pmix.jctrl.pvn"}{char*}{
-Regular expression identifying nodes that are to be provisioned.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_PROVISION_IMAGE}{"pmix.jctrl.pvnimg"}{char*}{
-Name of the image that is to be provisioned.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_PREEMPTIBLE}{"pmix.jctrl.preempt"}{bool}{
-Indicate that the job can be pre-empted.
-}
-
-%
-\declareAttribute{PMIX_JOB_CTRL_TERMINATE}{"pmix.jctrl.term"}{bool}{
-Politely terminate the specified processes.
-}
-
-%
-\declareAttribute{PMIX_REGISTER_CLEANUP}{"pmix.reg.cleanup"}{char*}{
-Comma-delimited list of files to be removed upon process termination
-}
-
-%
-\declareAttribute{PMIX_REGISTER_CLEANUP_DIR}{"pmix.reg.cleanupdir"}{char*}{
-Comma-delimited list of directories to be removed upon process termination
-}
-
-%
-\declareAttribute{PMIX_CLEANUP_RECURSIVE}{"pmix.clnup.recurse"}{bool}{
-Recursively cleanup all subdirectories under the specified one(s)
-}
-
-%
-\declareAttribute{PMIX_CLEANUP_EMPTY}{"pmix.clnup.empty"}{bool}{
-Only remove empty subdirectories
-}
-
-%
-\declareAttribute{PMIX_CLEANUP_IGNORE}{"pmix.clnup.ignore"}{char*}{
-Comma-delimited list of filenames that are not to be removed
-}
-
-%
-\declareAttribute{PMIX_CLEANUP_LEAVE_TOPDIR}{"pmix.clnup.lvtop"}{bool}{
-When recursively cleaning subdirectories, do not remove the top-level directory (the one given in the cleanup request)
-}
-
-
-%%%%%%%%%%%
-\subsection{Monitoring attributes}
-\label{api:struct:attributes:monitor}
-
-Attributes used to control monitoring of an executing application- these are values passed to the \refapi{PMIx_Process_monitor_nb} \ac{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}.
-
-%
-\declareAttribute{PMIX_MONITOR_ID}{"pmix.monitor.id"}{char*}{
-Provide a string identifier for this request.
-}
-
-%
-\declareAttribute{PMIX_MONITOR_CANCEL}{"pmix.monitor.cancel"}{char*}{
-Identifier to be canceled (\code{NULL} means cancel all monitoring for this process).
-}
-
-%
-\declareAttribute{PMIX_MONITOR_APP_CONTROL}{"pmix.monitor.appctrl"}{bool}{
-The application desires to control the response to a monitoring event.
-}
-
-%
-\declareAttribute{PMIX_MONITOR_HEARTBEAT}{"pmix.monitor.mbeat"}{void}{
-Register to have the PMIx server monitor the requestor for heartbeats.
-}
-
-%
-\declareAttribute{PMIX_SEND_HEARTBEAT}{"pmix.monitor.beat"}{void}{
-Send heartbeat to local PMIx server.
-}
-
-%
-\declareAttribute{PMIX_MONITOR_HEARTBEAT_TIME}{"pmix.monitor.btime"}{uint32_t}{
-Time in seconds before declaring heartbeat missed.
-}
-
-%
-\declareAttribute{PMIX_MONITOR_HEARTBEAT_DROPS}{"pmix.monitor.bdrop"}{uint32_t}{
-Number of heartbeats that can be missed before generating the event.
-}
-
-%
-\declareAttribute{PMIX_MONITOR_FILE}{"pmix.monitor.fmon"}{char*}{
-Register to monitor file for signs of life.
-}
-
-%
-\declareAttribute{PMIX_MONITOR_FILE_SIZE}{"pmix.monitor.fsize"}{bool}{
-Monitor size of given file is growing to determine if the application is running.
-}
-
-%
-\declareAttribute{PMIX_MONITOR_FILE_ACCESS}{"pmix.monitor.faccess"}{char*}{
-Monitor time since last access of given file to determine if the application is running.
-}
-
-%
-\declareAttribute{PMIX_MONITOR_FILE_MODIFY}{"pmix.monitor.fmod"}{char*}{
-Monitor time since last modified of given file to determine if the application is running.
-}
-
-%
-\declareAttribute{PMIX_MONITOR_FILE_CHECK_TIME}{"pmix.monitor.ftime"}{uint32_t}{
-Time in seconds between checking the file.
-}
-
-%
-\declareAttribute{PMIX_MONITOR_FILE_DROPS}{"pmix.monitor.fdrop"}{uint32_t}{
-Number of file checks that can be missed before generating the event.
-}
-
-%%%%%%%%%%%
-\subsection{Security attributes}
-\label{api:struct:attributes:security}
-
-\versionMarker{3.0}
-Attributes for managing security credentials
-
-%
-\declareAttribute{PMIX_CRED_TYPE}{"pmix.sec.ctype"}{char*}{
-When passed in \refapi{PMIx_Get_credential}, a prioritized, comma-delimited list of desired credential types for use
-in environments where multiple authentication mechanisms may be available. When returned in a callback function, a
-string identifier of the credential type.
-}
-
-%
-\declareAttribute{PMIX_CRYPTO_KEY}{"pmix.sec.key"}{pmix_byte_object_t}{
-Blob containing crypto key
-}
-
-
-%%%%%%%%%%%
-\subsection{Application setup attributes}
-\label{api:struct:attributes:security}
-
-\versionMarker{3.0}
-Attributes for controlling contents of application setup data
-
-%
-\declareAttribute{PMIX_SETUP_APP_ENVARS}{"pmix.setup.env"}{bool}{
-Harvest and include relevant environmental variables
-}
-
-%
-\declareAttribute{PMIX_SETUP_APP_NONENVARS}{""pmix.setup.nenv"}{bool}{
-Include all relevant data other than environmental variables
-}
-
-%
-\declareAttribute{PMIX_SETUP_APP_ALL}{"pmix.setup.all"}{bool}{
-Include all relevant data
-}
-
-%%%%%%%%%%%
-\subsection{Attribute support level attributes}
-\label{api:struct:attributes:level}
-
-\declareAttributeNEW{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
-Request a list of functions supported by the \ac{PMIx} client library
-}
-
-\declareAttributeNEW{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
-Request attributes supported by the \ac{PMIx} client library
-}
-
-\declareAttributeNEW{PMIX_SERVER_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
-Request a list of functions supported by the \ac{PMIx} server library
-}
-
-\declareAttributeNEW{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
-Request attributes supported by the \ac{PMIx} server library
-}
-
-\declareAttributeNEW{PMIX_HOST_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
-Request a list of functions supported by the host environment
-}
-
-\declareAttributeNEW{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
-Request attributes supported by the host environment
-}
-
-\declareAttributeNEW{PMIX_TOOL_FUNCTIONS}{"pmix.tool.fns"}{bool}{
-Request a list of functions supported by the \ac{PMIx} tool library
-}
-
-\declareAttributeNEW{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
-Request attributes supported by the \ac{PMIx} tool library functions
-}
-
-%%%%%%%%%%%
-\subsection{Descriptive attributes}
-\label{api:struct:attributes:descr}
-
-\declareAttributeNEW{PMIX_MAX_VALUE}{"pmix.descr.maxval"}{varies}{
-Used in \refstruct{pmix_regattr_t} to describe the maximum valid value for the associated attribute.
-}
-
-\declareAttributeNEW{PMIX_MIN_VALUE}{"pmix.descr.minval"}{varies}{
-Used in \refstruct{pmix_regattr_t} to describe the minimum valid value for the associated attribute.
-}
-
-\declareAttributeNEW{PMIX_ENUM_VALUE}{"pmix.descr.enum"}{char*}{
-Used in \refstruct{pmix_regattr_t} to describe accepted values for the associated attribute. Numerical values shall be presented in a form convertible to the attribute's declared data type. Named values (i.e., values defined by constant names via a typical C-language enum declaration) must be provided as their numerical equivalent.
-}
-
-%%%%%%%%%%%
-\subsection{Process group attributes}
-\label{api:struct:attributes:pgrp}
-
-\versionMarker{4.0}
-Attributes for controlling the \ac{PMIx} Group \acp{API}
-
-%
-\declareAttributeNEW{PMIX_GROUP_ID}{"pmix.grp.id"}{char*}{
-User-provided group identifier
-}
-
-%
-\declareAttributeNEW{PMIX_GROUP_LEADER}{"pmix.grp.ldr"}{bool}{
-This process is the leader of the group
-}
-
-%
-\declareAttributeNEW{PMIX_GROUP_OPTIONAL}{"pmix.grp.opt"}{bool}{
-Participation is optional - do not return an error if any of the specified processes terminate without having joined. The default is false
-}
-
-%
-\declareAttributeNEW{PMIX_GROUP_NOTIFY_TERMINATION}{"pmix.grp.notterm"}{bool}{
-Notify remaining members when another member terminates without first leaving the group. The default is false
-}
-
-%
-\declareAttributeNEW{PMIX_GROUP_INVITE_DECLINE}{"pmix.grp.decline"}{bool}{
-Notify the inviting process that this process does not wish to participate in the proposed group The default is true
-}
-
-%
-\declareAttributeNEW{PMIX_GROUP_FT_COLLECTIVE}{"pmix.grp.ftcoll"}{bool}{
-Adjust internal tracking for terminated processes. Default is false
-}
-
-%
-\declareAttributeNEW{PMIX_GROUP_MEMBERSHIP}{"pmix.grp.mbrs"}{pmix_data_array_t*}{
-Array of group member ID's
-}
-
-%
-\declareAttributeNEW{PMIX_GROUP_ASSIGN_CONTEXT_ID}{"pmix.grp.actxid"}{bool}{
-Requests that the \ac{RM} assign a new context identifier to the newly created group. The identifier is an unsigned, \code{size_t} value that the \ac{RM} guarantees to be unique across the range specified in the request. Thus, the value serves as a means of identifying the group within that range. If no range is specified, then the request defaults to \refconst{PMIX_RANGE_SESSION}.
-}
-
-%
-\declareAttributeNEW{PMIX_GROUP_CONTEXT_ID}{"pmix.grp.ctxid"}{size_t}{
-Context identifier assigned to the group by the host \ac{RM}.
-}
-
-%
-\declareAttributeNEW{PMIX_GROUP_LOCAL_ONLY}{"pmix.grp.lcl"}{bool}{
-Group operation only involves local processes. \ac{PMIx} implementations are \textit{required} to automatically scan an array of group members for local vs remote processes - if only local processes are detected, the implementation need not execute a global collective for the operation unless a context ID has been requested from the host environment. This can result in significant time savings. This attribute can be used to optimize the operation by indicating whether or not only local processes are represented, thus allowing the implementation to bypass the scan. The default is false
-}
-
-%
-\declareAttributeNEW{PMIX_GROUP_ENDPT_DATA}{"pmix.grp.endpt"}{pmix_byte_object_t}{
-Data collected to be shared during group construction
-}
-
-
-%%%%%%%%%%%
-\subsection{Storage-related attributes}
-\label{api:struct:attributes:pstrg}
-
-\versionMarker{4.0}
-Attributes related to storage systems
-
-%
-\declareAttributeNEW{PMIX_STORAGE_ID}{"pmix.strg.id"}{char*}{
-Identifier of the storage system being referenced
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_PATH}{"pmix.strg.path"}{char*}{
-Mount point corresponding to a specified storage ID
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_TYPE}{"pmix.strg.type"}{char*}{
-Qualifier indicating the type of storage being referenced by a query e.g., lustre, gpfs, online, fabric-attached, ...)
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_BW}{"pmix.strg.bw"}{float}{
-Overall bandwidth (in Megabytes[base2]/sec) of specified storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_AVAIL_BW}{"pmix.strg.availbw"}{float}{
-Overall bandwidth (in Megabytes[base2]/sec) of specified storage system that is available for use by the calling program
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_OBJECT_LIMIT}{"pmix.strg.obj"}{uint64_t}{
-Overall limit on number of objects (e.g., inodes) of specified storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_OBJECTS_FREE}{"pmix.strg.objf"}{uint64_t}{
-Number of free objects (e.g., inodes) on specified storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_OBJECTS_AVAIL}{"pmix.strg.obja"}{uint64_t}{
-Number of objects (e.g., inodes) on specified storage system that are available for use by the calling program
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_CAPACITY_LIMIT}{"pmix.strg.cap"}{uint64_t}{
-Overall capacity (in Megabytes[base2]) of specified storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_CAPACITY_FREE}{"pmix.strg.free"}{uint64_t}{
-Free capacity (in Megabytes[base2]) of specified storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_CAPACITY_AVAIL}{"pmix.strg.avail"}{uint64_t}{
-Capacity (in Megabytes[[base2]]) of specified storage system that is available for use by the calling program
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_STORAGE_LIST}{"pmix.strg.list"}{char*}{
-Return comma-delimited list of identifiers for all available storage systems
-}
-
-
-%%%%%%%%%%%
-\section{Callback Functions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{General Callback Functions}
 
 PMIx provides blocking and nonblocking versions of most APIs.
 In the nonblocking versions, a callback is activated upon completion of the the operation.
 This section describes many of those callbacks.
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Release Callback Function}
 \declareapi{pmix_release_cbfunc_t}
 
@@ -5553,7 +2131,7 @@ The \refapi{pmix_release_cbfunc_t} is used by the \refapi{pmix_modex_cbfunc_t} a
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_release_cbfunc_t)
-    (void *cbdata)
+    (void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -5567,80 +2145,7 @@ typedef void (*pmix_release_cbfunc_t)
 Since the data is ``owned'' by the host server, provide a callback function to notify the host server that we are done with the data so it can be released.
 
 
-%%%%%%%%%%%
-\subsection{Modex Callback Function}
-\declareapi{pmix_modex_cbfunc_t}
-
-%%%%
-\summary
-
-The \refapi{pmix_modex_cbfunc_t} is used by the \refapi{pmix_server_fencenb_fn_t} and \refapi{pmix_server_dmodex_req_fn_t} PMIx server operations to return modex \ac{BCX} data.
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_modex_cbfunc_t)
-    (pmix_status_t status,
-     const char *data, size_t ndata,
-     void *cbdata,
-     pmix_release_cbfunc_t release_fn,
-     void *release_cbdata)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{status}{Status associated with the operation (handle)}
-\argin{data}{Data to be passed (pointer)}
-\argin{ndata}{size of the data (\code{size_t})}
-\argin{cbdata}{Callback data passed to original API call (memory reference)}
-\argin{release_fn}{Callback for releasing \argref{data} (function pointer)}
-\argin{release_cbdata}{Pointer to be passed to \argref{release_fn} (memory reference)}
-\end{arglist}
-
-%%%%
-\descr
-
-A callback function that is solely used by PMIx servers, and not clients, to return modex \ac{BCX} data in response to ``fence'' and ``get'' operations.
-The returned blob contains the data collected from each server participating in the operation.
-
-
-
-%%%%%%%%%%%
-\subsection{Spawn Callback Function}
-\declareapi{pmix_spawn_cbfunc_t}
-
-%%%%
-\summary
-
-The \refapi{pmix_spawn_cbfunc_t} is used on the PMIx client side by \refapi{PMIx_Spawn_nb} and on the PMIx server side by \refapi{pmix_server_spawn_fn_t}.
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_spawn_cbfunc_t)
-    (pmix_status_t status,
-     pmix_nspace_t nspace, void *cbdata);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{status}{Status associated with the operation (handle)}
-\argin{nspace}{Namespace string (\refstruct{pmix_nspace_t})}
-\argin{cbdata}{Callback data passed to original API call (memory reference)}
-\end{arglist}
-
-
-%%%%
-\descr
-
-The callback will be executed upon launch of the specified applications in \refapi{PMIx_Spawn_nb}, or upon failure to launch any of them.
-
-The \refarg{status} of the callback will indicate whether or not the spawn succeeded.
-The \refarg{nspace} of the spawned processes will be returned, along with any provided callback data.
-Note that the returned \refarg{nspace} value will not be protected by the \ac{PRI} upon return from the callback function, so the receiver must copy it if it needs to be retained.
-
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Op Callback Function}
 \declareapi{pmix_op_cbfunc_t}
 
@@ -5669,45 +2174,7 @@ Used by a wide range of \ac{PMIx} API's including \refapi{PMIx_Fence_nb}, \refap
 This callback function is used to return a status to an often nonblocking operation.
 
 
-%%%%%%%%%%%
-\subsection{Lookup Callback Function}
-\declareapi{pmix_lookup_cbfunc_t}
-
-%%%%
-\summary
-
-The \refapi{pmix_lookup_cbfunc_t} is used by \refapi{PMIx_Lookup_nb} to return data.
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_lookup_cbfunc_t)
-    (pmix_status_t status,
-     pmix_pdata_t data[], size_t ndata,
-     void *cbdata);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{status}{Status associated with the operation (handle)}
-\argin{data}{Array of data returned (\refstruct{pmix_pdata_t})}
-\argin{ndata}{Number of elements in the \argref{data} array (\code{size_t})}
-\argin{cbdata}{Callback data passed to original API call (memory reference)}
-\end{arglist}
-
-
-%%%%
-\descr
-
-A callback function for calls to \refapi{PMIx_Lookup_nb}
-The function will be called upon completion of the command with the \refarg{status} indicating the success or failure of the request.
-Any retrieved data will be returned in an array of \refstruct{pmix_pdata_t} structs.
-The namespace and rank of the process that provided each data element is also returned.
-
-Note that these structures will be released upon return from the callback function, so the receiver must copy/protect the data prior to returning if it needs to be retained.
-
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Value Callback Function}
 \declareapi{pmix_value_cbfunc_t}
 
@@ -5741,7 +2208,7 @@ A pointer to the \refstruct{pmix_value_t} structure containing the found data is
 The pointer will be \code{NULL} if the requested data was not found.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Info Callback Function}
 \declareapi{pmix_info_cbfunc_t}
 
@@ -5778,411 +2245,8 @@ typedef void (*pmix_info_cbfunc_t)
 The \refarg{status} indicates if requested data was found or not.
 An array of \refstruct{pmix_info_t} will contain the key/value pairs.
 
-
 %%%%%%%%%%%
-\subsection{Event Handler Registration Callback Function}
-\declareapi{pmix_evhdlr_reg_cbfunc_t}
-
-The \refapi{pmix_evhdlr_reg_cbfunc_t} callback function.
-
-\adviceuserstart
-The \ac{PMIx} \textit{ad hoc} v1.0 Standard defined an error handler registration callback function with a compatible signature, but with a different type definition function name (pmix_errhandler_reg_cbfunc_t). It was removed from the v2.0 Standard and is not included in this document to avoid confusion.
-\adviceuserend
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_evhdlr_reg_cbfunc_t)
-    (pmix_status_t status,
-     size_t evhdlr_ref,
-     void *cbdata)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{status}{Status indicates if the request was successful or not (\refstruct{pmix_status_t})}
-\argin{evhdlr_ref}{Reference assigned to the event handler by \ac{PMIx} --- this reference
- * must be used to deregister the err handler (\code{size_t})}
-\argin{cbdata}{Callback data passed to original API call (memory reference)}
-\end{arglist}
-
-
-%%%%
-\descr
-
-Define a callback function for calls to \refapi{PMIx_Register_event_handler} Deprecated in v4.0 in favor of \refapi{pmix_hdlr_reg_cbfunc_t}.
-
-
-%%%%%%%%%%%
-\subsection{Notification Handler Completion Callback Function}
-\declareapi{pmix_event_notification_cbfunc_fn_t}
-
-%%%%
-\summary
-
-The \refapi{pmix_event_notification_cbfunc_fn_t} is called by event handlers to indicate completion of their operations.
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_event_notification_cbfunc_fn_t)
-    (pmix_status_t status,
-     pmix_info_t *results, size_t nresults,
-     pmix_op_cbfunc_t cbfunc, void *thiscbdata,
-     void *notification_cbdata);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{status}{Status returned by the event handler's operation (\refstruct{pmix_status_t})}
-\argin{results}{Results from this event handler's operation on the event (\refstruct{pmix_info_t})}
-\argin{nresults}{Number of elements in the results array (\code{size_t})}
-\argin{cbfunc}{\refapi{pmix_op_cbfunc_t} function to be executed when \ac{PMIx} completes processing the callback (function reference)}
-\argin{thiscbdata}{Callback data that was passed in to the handler (memory reference)}
-\argin{cbdata}{Callback data to be returned when \ac{PMIx} executes cbfunc (memory reference)}
-\end{arglist}
-
-%%%%
-\descr
-
-Define a callback by which an event handler can notify the \ac{PMIx} library that it has completed its response to the notification. The handler is \textit{required} to execute this callback so the library can determine if additional handlers need to be called. The handler shall return \refconst{PMIX_EVENT_ACTION_COMPLETE} if no further action is required. The return status of each event handler and any returned \refstruct{pmix_info_t} structures will be added to the \textit{results} array of \refstruct{pmix_info_t} passed to any subsequent event handlers to help guide their operation.
-
-If non-NULL, the provided callback function will be called to allow the event handler to release the provided info array and execute any other required cleanup operations.
-
-
-%%%%%%%%%%%
-\subsection{Notification Function}
-\declareapi{pmix_notification_fn_t}
-
-%%%%
-\summary
-
-The \refapi{pmix_notification_fn_t} is called by \ac{PMIx} to deliver notification of an event.
-
-\adviceuserstart
-The \ac{PMIx} \textit{ad hoc} v1.0 Standard defined an error notification function with an identical name, but different signature than the v2.0 Standard described below. The \textit{ad hoc} v1.0 version was removed from the v2.0 Standard is not included in this document to avoid confusion.
-\adviceuserend
-
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_notification_fn_t)
-    (size_t evhdlr_registration_id,
-     pmix_status_t status,
-     const pmix_proc_t *source,
-     pmix_info_t info[], size_t ninfo,
-     pmix_info_t results[], size_t nresults,
-     pmix_event_notification_cbfunc_fn_t cbfunc,
-     void *cbdata);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{evhdlr_registration_id}{Registration number of the handler being called (\code{size_t})}
-\argin{status}{Status associated with the operation (\refstruct{pmix_status_t})}
-\argin{source}{Identifier of the process that generated the event (\refstruct{pmix_proc_t})}. If the source is the \ac{SMS}, then the nspace will be empty and the rank will be PMIX_RANK_UNDEF
-\argin{info}{Information describing the event (\refstruct{pmix_info_t})}. This argument will be NULL if no additional information was provided by the event generator.
-\argin{ninfo}{Number of elements in the info array (\code{size_t})}
-\argin{results}{Aggregated results from prior event handlers servicing this event (\refstruct{pmix_info_t})}. This argument will be \code{NULL} if this is the first handler servicing the event, or if no prior handlers provided results.
-\argin{nresults}{Number of elements in the results array (\code{size_t})}
-\argin{cbfunc}{\refapi{pmix_event_notification_cbfunc_fn_t} callback function to be executed upon completion of the handler's operation and prior to handler return (function reference)}.
-\argin{cbdata}{Callback data to be passed to cbfunc (memory reference)}
-\end{arglist}
-
-%%%%
-\descr
-
-Note that different \acp{RM} may provide differing levels of support for event notification to application processes. Thus, the \refarg{info} array may be \code{NULL} or may contain detailed information of the event. It is the responsibility of the application to parse any provided info array for defined key-values if it so desires.
-
-\adviceuserstart
-Possible uses of the \refarg{info} array include:
-
-\begin{itemize}
-\item for the host \ac{RM} to alert the process as to planned actions, such as aborting the session, in response to the reported event
-
-\item provide a timeout for alternative action to occur, such as for the application to request an alternate response to the event
-\end{itemize}
-
-For example, the \ac{RM} might alert the application to the failure of a node that resulted in termination of several processes, and indicate that the overall session will be aborted unless the application requests an alternative behavior in the next 5 seconds. The application then has time to respond with a checkpoint request, or a request to recover from the failure by obtaining replacement nodes and restarting from some earlier checkpoint.
-
-Support for these options is left to the discretion of the host \ac{RM}. Info keys are included in the common definitions above but may be augmented by environment vendors.
-\adviceuserend
-
-\advicermstart
-On the server side, the notification function is used to inform the \ac{PMIx} server library's host of a detected event in the \ac{PMIx} server library. Events generated by \ac{PMIx} clients are communicated to the \ac{PMIx} server library, but will be relayed to the host via the \refapi{pmix_server_notify_event_fn_t} function pointer, if provided.
-\advicermend
-
-%%%%%%%%%%%
-\subsection{Server Setup Application Callback Function}
-\declareapi{pmix_setup_application_cbfunc_t}
-
-The \refapi{PMIx_server_setup_application} callback function.
-
-%%%%
-\summary
-
-Provide a function by which the resource manager can receive application-specific environmental variables and other setup data prior to launch of an application.
-
-%%%%
-\format
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_setup_application_cbfunc_t)(
-                        pmix_status_t status,
-                        pmix_info_t info[], size_t ninfo,
-                        void *provided_cbdata,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{status}{returned status of the request (\refstruct{pmix_status_t})}
-\argin{info}{Array of info structures (array of handles)}
-\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
-\argin{provided_cbdata}{Data originally passed to call to \refapi{PMIx_server_setup_application} (memory reference)}
-\argin{cbfunc}{\refapi{pmix_op_cbfunc_t} function to be called when processing completed (function reference)}
-\argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
-\end{arglist}
-
-\descr
-
-Define a function to be called by the \ac{PMIx} server library for return of application-specific setup data in response to a request from the host \ac{RM}. The returned \refarg{info} array is owned by the \ac{PMIx} server library and will be free'd when the provided \refarg{cbfunc} is called.
-
-
-%%%%%%%%%%%
-\subsection{Server Direct Modex Response Callback Function}
-\declareapi{pmix_dmodex_response_fn_t}
-
-The \refapi{PMIx_server_dmodex_request} callback function.
-
-%%%%
-\summary
-
-Provide a function by which the local \ac{PMIx} server library can return connection and other data posted by local application processes to the host resource manager.
-
-%%%%
-\format
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_dmodex_response_fn_t)(pmix_status_t status,
-                        char *data, size_t sz,
-                        void *cbdata);
-\end{codepar}
-\cspecificend
-
-
-\begin{arglist}
-\argin{status}{Returned status of the request (\refstruct{pmix_status_t})}
-\argin{data}{Pointer to a data "blob" containing the requested information (handle)}
-\argin{sz}{Number of bytes in the \refarg{data} blob (integer)}
-\argin{cbdata}{Data passed into the initial call to \refapi{PMIx_server_dmodex_request} (memory reference)}
-\end{arglist}
-
-
-\descr
-Define a function to be called by the PMIx server library for return of information posted by a local application process (via \refapi{PMIx_Put} with subsequent \refapi{PMIx_Commit}) in response to a request from the host RM. The returned \refarg{data} blob is owned by the PMIx server library and will be free’d upon return from the function.
-
-%%%%%%%%%%%
-\subsection{PMIx Client Connection Callback Function}
-\declareapi{pmix_connection_cbfunc_t}
-
-%%%%
-\summary
-
-Callback function for incoming connection request from a local client
-
-%%%%
-\format
-
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_connection_cbfunc_t)(
-                             int incoming_sd, void *cbdata)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{incoming_sd}{(integer)}
-\argin{cbdata}{ (memory reference)}
-\end{arglist}
-
-%%%%
-\descr
-
-Callback function for incoming connection requests from local clients - only used by host environments that wish to directly handle socket connection requests.
-
-
-%%%%%%%%%%%
-\subsection{PMIx Tool Connection Callback Function}
-\declareapi{pmix_tool_connection_cbfunc_t}
-
-%%%%
-\summary
-
-Callback function for incoming tool connections.
-
-%%%%
-\format
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_tool_connection_cbfunc_t)(
-                             pmix_status_t status,
-                             pmix_proc_t *proc, void *cbdata)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{status}{\refstruct{pmix_status_t} value (handle)}
-\argin{proc}{\refstruct{pmix_proc_t} structure containing the identifier assigned to the tool (handle)}
-\argin{cbdata}{Data to be passed (memory reference)}
-\end{arglist}
-
-%%%%
-\descr
-
-Callback function for incoming tool connections.
-The host environment shall provide a namespace/rank identifier for the connecting tool.
-
-\advicermstart
-It is assumed that \code{rank=0} will be the normal assignment, but allow for the future possibility of a parallel set of tools connecting, and thus each process requiring a unique rank.
-\advicermend
-
-%%%%%%%%%%%
-\subsection{Credential callback function}
-\declareapi{pmix_credential_cbfunc_t}
-
-%%%%
-\summary
-
-Callback function to return a requested security credential
-
-%%%%
-\format
-
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_credential_cbfunc_t)(
-                             pmix_status_t status,
-                             pmix_byte_object_t *credential,
-                             pmix_info_t info[], size_t ninfo,
-                             void *cbdata)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{status}{\refstruct{pmix_status_t} value (handle)}
-\argin{credential}{\refstruct{pmix_byte_object_t} structure containing the security credential (handle)}
-\argin{info}{Array of provided by the system to pass any additional information about the credential - e.g., the identity of the issuing agent. (handle)}
-\argin{ninfo}{Number of elements in \refarg{info} (\code{size_t})}
-\argin{cbdata}{Object passed in original request (memory reference)}
-\end{arglist}
-
-%%%%
-\descr
-
-Define a callback function to return a requested security credential. Information provided by the issuing agent can subsequently be used
-by the application for a variety of purposes. Examples include:
-
-\begin{itemize}
-    \item checking identified authorizations to determine what requests/operations are feasible as a means to steering \refterm{workflows}
-    \item compare the credential type to that of the local SMS for compatibility
-\end{itemize}
-
-\adviceuserstart
-The credential is opaque and therefore understandable only by a service compatible with the issuer. The \refarg{info} array is owned by the \ac{PMIx} library and is not to be released or altered by the receiving party.
-\adviceuserend
-
-%%%%%%%%%%%
-\subsection{Credential validation callback function}
-\declareapi{pmix_validation_cbfunc_t}
-
-%%%%
-\summary
-
-Callback function for security credential validation
-
-%%%%
-\format
-
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_validation_cbfunc_t)(
-                             pmix_status_t status,
-                             pmix_info_t info[], size_t ninfo,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{status}{\refstruct{pmix_status_t} value (handle)}
-\argin{info}{Array of \refstruct{pmix_info_t} provided by the system to pass any additional information about the authentication - e.g., the effective userid and group id of the certificate holder, and any related authorizations (handle)}
-\argin{ninfo}{Number of elements in \refarg{info} (\code{size_t})}
-\argin{cbdata}{Object passed in original request (memory reference)}
-\end{arglist}
-
-%%%%
-\descr
-
-Define a validation callback function to indicate if a provided credential is valid, and any corresponding information regarding authorizations and other security matters.
-
-\adviceuserstart
-The precise contents of the array will depend on the host environment and its associated security system. At the minimum, it is expected (but not required) that the array will contain entries for the \refattr{PMIX_USERID} and \refattr{PMIX_GRPID} of the client described in the credential. The \refarg{info} array is owned by the \ac{PMIx} library and is not to be released or altered by the receiving party.
-\adviceuserend
-
-%%%%%%%%%%%
-\subsection{IOF delivery function}
-\declareapi{pmix_iof_cbfunc_t}
-
-%%%%
-\summary
-
-Callback function for delivering forwarded \ac{IO} to a process
-
-%%%%
-\format
-
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_iof_cbfunc_t)(
-                             size_t iofhdlr, pmix_iof_channel_t channel,
-                             pmix_proc_t *source, char *payload,
-                             pmix_info_t info[], size_t ninfo);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{iofhdlr}{Registration number of the handler being invoked (\code{size_t})}
-\argin{channel}{bitmask identifying the channel the data arrived on (\refstruct{pmix_iof_channel_t})}
-\argin{source}{Pointer to a \refstruct{pmix_proc_t} identifying the namespace/rank of the process that generated the data (\code{char*})}
-\argin{payload}{Pointer to character array containing the data.}
-\argin{info}{Array of \refstruct{pmix_info_t} provided by the source containing metadata about the payload. This could include \refattr{PMIX_IOF_COMPLETE} (handle)}
-\argin{ninfo}{Number of elements in \refarg{info} (\code{size_t})}
-\end{arglist}
-
-%%%%
-\descr
-
-Define a callback function for delivering forwarded \ac{IO} to a process. This function will be called whenever data becomes available, or a
-specified buffering size and/or time has been met.
-
-\adviceuserstart
-Multiple strings may be included in a given \refarg{payload}, and the \refarg{payload} may \textit{not} be \code{NULL} terminated. The user is responsible for releasing the \refarg{payload} memory. The \refarg{info} array is owned by the \ac{PMIx} library and is not to be released or altered by the receiving party.
-\adviceuserend
-
-
-%%%%%%%%%%%
-\subsection{IOF and Event registration function}
+\subsection{Handler registration callback function}
 \declareapi{pmix_hdlr_reg_cbfunc_t}
 
 %%%%
@@ -6196,9 +2260,10 @@ Callback function for calls to register handlers, e.g., event notification and I
 \versionMarker{3.0}
 \cspecificstart
 \begin{codepar}
-typedef void (*pmix_hdlr_reg_cbfunc_t)(pmix_status_t status,
-                                       size_t refid,
-                                       void *cbdata);
+typedef void (*pmix_hdlr_reg_cbfunc_t)
+    (pmix_status_t status,
+     size_t refid,
+     void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -6214,8 +2279,9 @@ typedef void (*pmix_hdlr_reg_cbfunc_t)(pmix_status_t status,
 Callback function for calls to register handlers, e.g., event notification and IOF requests.
 
 
-%%%%%%%%%%%
-\section{Constant String Functions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{PMIx Datatype Value String Representations}
 
 Provide a string representation for several types of values.
 Note that the provided string is statically defined and must NOT be \code{free}'d.
@@ -6360,23 +2426,6 @@ PMIx_Job_state_string(pmix_job_state_t state);
 \end{codepar}
 \cspecificend
 
-
-
-%%%%
-\summary
-\declareapi{PMIx_Job_state_string}
-
-String representation of a \refstruct{pmix_job_state_t}.
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-const char*
-PMIx_Job_state_string(pmix_job_state_t state);
-\end{codepar}
-\cspecificend
-
-
 %%%%
 \summary
 \declareapi{PMIx_Get_attribute_string}
@@ -6391,7 +2440,6 @@ PMIx_Get_attribute_string(char *attributename);
 \end{codepar}
 \cspecificend
 
-
 %%%%
 \summary
 \declareapi{PMIx_Get_attribute_name}
@@ -6405,7 +2453,6 @@ const char*
 PMIx_Get_attribute_name(char *attributestring);
 \end{codepar}
 \cspecificend
-
 
 %%%%
 \summary

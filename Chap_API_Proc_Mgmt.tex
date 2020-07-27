@@ -4,16 +4,16 @@
 \chapter{Process Management}
 \label{chap:api_proc_mgmt}
 
-This chapter defines functionality used by clients to create and destroy/abort processes in the \ac{PMIx} universe.
+This chapter defines functionality processes can use to abort processes, spawn processes, and determine the relative locality of local processes.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Abort}
 \label{chap:api_proc_mgmt:abort}
 
 \ac{PMIx} provides a dedicated API by which an application can request that specified processes be aborted by the system.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Abort}}
 \declareapi{PMIx_Abort}
 
@@ -51,6 +51,8 @@ A Unix or POSIX environment should handle the provided status as a return error 
 A \code{NULL} for the \refarg{procs} array indicates that all processes in the caller's namespace are to be aborted, including itself.
 Passing a \code{NULL} \refarg{msg} parameter is allowed.
 
+The function shall not return until the host environment has carried out the operation on the specified processes. If the caller is included in the array of targets, then the function will not return unless the host is unable to execute the operation.
+
 \adviceuserstart
 The response to this request is somewhat dependent on the specific \acl{RM} and its configuration (e.g., some resource managers will not abort the application if the provided status is zero unless specifically configured to do so, and some cannot abort subsets of processes in an application), and thus lies outside the control of PMIx itself.
 However, the PMIx client library shall inform the \ac{RM} of the request that the specified \refarg{procs} be aborted, regardless of the value of the provided status.
@@ -59,14 +61,14 @@ Note that race conditions caused by multiple processes calling \refapi{PMIx_Abor
 \adviceuserend
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Process Creation}
 \label{chap:api_proc_mgmt:spawn}
 
 The \refapi{PMIx_Spawn} commands spawn new processes and/or applications in the \ac{PMIx} universe. This may include requests to extend the existing resource allocation or obtain a new one, depending upon provided and supported attributes.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Spawn}}
 \declareapi{PMIx_Spawn}
 
@@ -99,16 +101,9 @@ PMIx_Spawn(const pmix_info_t job_info[], size_t ninfo,
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the following attributes to those provided before passing the request to the host:
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host environment for processing.
 
-\pasteAttributeItem{PMIX_SPAWNED}
-\pasteAttributeItem{PMIX_PARENT_ID}
-\pasteAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
-\pasteAttributeItem{PMIX_REQUESTOR_IS_TOOL}
-
-\divider
-
-Host environments that implement support for \refapi{PMIx_Spawn} are required to pass the \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes to all \ac{PMIx} servers launching new child processes so those values can be returned to clients upon connection to the \ac{PMIx} server. In addition, they are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
+Host environments are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
 
 \pasteAttributeItem{PMIX_WDIR}
 \pasteAttributeItem{PMIX_SET_SESSION_CWD}
@@ -126,13 +121,11 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_PRELOAD_BIN}
 \pasteAttributeItem{PMIX_PRELOAD_FILES}
 \pasteAttributeItem{PMIX_PERSONALITY}
-\pasteAttributeItem{PMIX_MAPPER}
 \pasteAttributeItem{PMIX_DISPLAY_MAP}
 \pasteAttributeItem{PMIX_PPR}
 \pasteAttributeItem{PMIX_MAPBY}
 \pasteAttributeItem{PMIX_RANKBY}
 \pasteAttributeItem{PMIX_BINDTO}
-\pasteAttributeItem{PMIX_NON_PMI}
 \pasteAttributeItem{PMIX_STDIN_TGT}
 \pasteAttributeItem{PMIX_TAG_OUTPUT}
 \pasteAttributeItem{PMIX_TIMESTAMP_OUTPUT}
@@ -178,8 +171,8 @@ The assigned namespace of the spawned applications is returned in the \refarg{ns
 A \code{NULL} value in that location indicates that the caller doesn't wish to have the namespace returned.
 The \refarg{nspace} array must be at least of size one more than \refconst{PMIX_MAX_NSLEN}.
 
-By default, the spawned processes will be PMIx ``connected'' to the parent process upon successful launch (see \refapi{PMIx_Connect} description for details).
-Note that this only means that (a) the parent process will be given a copy of the new job's
+By default, the spawned processes will be PMIx ``connected'' to the parent process upon successful launch (see Section \ref{chap:api_proc_mgmt:connect}
+for details). This includes that (a) the parent process will be given a copy of the new job's
 information so it can query job-level info without incurring any communication penalties, (b) newly spawned child processes will receive a copy of the parent processes job-level info, and (c) both the parent process and members of the child job will receive notification of errors from processes in their combined assemblage.
 
 \adviceuserstart
@@ -191,7 +184,7 @@ Tools may utilize \refapi{PMIx_Spawn} to start intermediate launchers as describ
 \adviceimplend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Spawn_nb}}
 \declareapi{PMIx_Spawn_nb}
 
@@ -230,16 +223,9 @@ Returns one of the following:
 
 
 \reqattrstart
-\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is required to add the following attributes to those provided before passing the request to the host:
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
 
-\pasteAttributeItem{PMIX_SPAWNED}
-\pasteAttributeItem{PMIX_PARENT_ID}
-\pasteAttributeItem{PMIX_REQUESTOR_IS_CLIENT}
-\pasteAttributeItem{PMIX_REQUESTOR_IS_TOOL}
-
-\divider
-
-Host environments that implement support for \refapi{PMIx_Spawn} are required to pass the \refattr{PMIX_SPAWNED} and \refattr{PMIX_PARENT_ID} attributes to all \ac{PMIx} servers launching new child processes so those values can be returned to clients upon connection to the \ac{PMIx} server. In addition, they are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
+Host environments are required to support the following attributes when present in either the \refarg{job_info} or the \textit{info} array of an element of the \refarg{apps} array:
 
 \pasteAttributeItem{PMIX_WDIR}
 \pasteAttributeItem{PMIX_SET_SESSION_CWD}
@@ -257,13 +243,11 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_PRELOAD_BIN}
 \pasteAttributeItem{PMIX_PRELOAD_FILES}
 \pasteAttributeItem{PMIX_PERSONALITY}
-\pasteAttributeItem{PMIX_MAPPER}
 \pasteAttributeItem{PMIX_DISPLAY_MAP}
 \pasteAttributeItem{PMIX_PPR}
 \pasteAttributeItem{PMIX_MAPBY}
 \pasteAttributeItem{PMIX_RANKBY}
 \pasteAttributeItem{PMIX_BINDTO}
-\pasteAttributeItem{PMIX_NON_PMI}
 \pasteAttributeItem{PMIX_STDIN_TGT}
 \pasteAttributeItem{PMIX_TAG_OUTPUT}
 \pasteAttributeItem{PMIX_TIMESTAMP_OUTPUT}
@@ -310,18 +294,448 @@ Nonblocking version of the \refapi{PMIx_Spawn} routine. The provided callback fu
 Behavior of individual resource managers may differ, but it is expected that failure of any application process to start will result in termination/cleanup of all processes in the newly spawned job and return of an error code to the caller.
 \adviceuserend
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Spawn-specific constants}
+\label{api:struct:constants:spawn}
+
+In addition to the generic error constants, the following spawn-specific error constants may be returned by the spawn \acp{API}:
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_ERR_JOB_ALLOC_FAILED}
+The job request could not be executed due to failure to obtain the specified allocation
+%
+\declareconstitemNEW{PMIX_ERR_JOB_APP_NOT_EXECUTABLE}
+The specified application executable either could not be found, or lacks execution privileges.
+%
+\declareconstitemNEW{PMIX_ERR_JOB_NO_EXE_SPECIFIED}
+The job request did not specify an executable.
+%
+\declareconstitemNEW{PMIX_ERR_JOB_FAILED_TO_MAP}
+The launcher was unable to map the processes for the specified job request.
+%
+\declareconstitemNEW{PMIX_ERR_JOB_FAILED_TO_LAUNCH}
+One or more processes in the job request failed to launch
+%
+\end{constantdesc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Spawn attributes}
+\label{api:struct:attributes:spawn}
+
+Attributes used to describe \refapi{PMIx_Spawn} behavior - they are values passed to the \refapi{PMIx_Spawn} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \acp{API} when used in that context. However, some of the attributes defined in this section can be provided by the host environment for other purposes - e.g., the host might provide the \refattr{PMIX_MAPPER} attribute in the job-related information so that an application can use \refapi{PMIx_Get} to discover the layout algorithm used for determining process locations. Multi-use attributes and their respective access reference rank are denoted below.
+
+%
+\declareAttribute{PMIX_PERSONALITY}{"pmix.pers"}{char*}{
+Name of personality corresponding to programming model used by application - supported values depend upon \ac{PMIx} implementation.
+}
+%
+\declareAttribute{PMIX_HOST}{"pmix.host"}{char*}{
+Comma-delimited list of hosts to use for spawned processes.
+}
+%
+\declareAttribute{PMIX_HOSTFILE}{"pmix.hostfile"}{char*}{
+Hostfile to use for spawned processes.
+}
+%
+\declareAttribute{PMIX_ADD_HOST}{"pmix.addhost"}{char*}{
+Comma-delimited list of hosts to add to the allocation.
+}
+%
+\declareAttribute{PMIX_ADD_HOSTFILE}{"pmix.addhostfile"}{char*}{
+Hostfile containing hosts to add to existing allocation.
+}
+%
+\declareAttribute{PMIX_PREFIX}{"pmix.prefix"}{char*}{
+Prefix to use for starting spawned processes - i.e., the directory where the executables can be found.
+}
+%
+\declareAttribute{PMIX_WDIR}{"pmix.wdir"}{char*}{
+Working directory for spawned processes.
+}
+%
+\declareAttribute{PMIX_DISPLAY_MAP}{"pmix.dispmap"}{bool}{
+Display process mapping upon spawn.
+}
+%
+\declareAttribute{PMIX_PPR}{"pmix.ppr"}{char*}{
+Number of processes to spawn on each identified resource.
+}
+%
+\declareAttribute{PMIX_MAPBY}{"pmix.mapby"}{char*}{
+Process mapping policy - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the mapping policy used for the provided namespace. Supported values are launcher specific.
+}
+%
+\declareAttribute{PMIX_RANKBY}{"pmix.rankby"}{char*}{
+Process ranking policy - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the ranking algorithm used for the provided namespace. Supported values are launcher specific.
+}
+%
+\declareAttribute{PMIX_BINDTO}{"pmix.bindto"}{char*}{
+Process binding policy - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the binding policy used for the provided namespace. Supported values are launcher specific.
+}
+%
+\declareAttribute{PMIX_PRELOAD_BIN}{"pmix.preloadbin"}{bool}{
+Preload executables onto nodes prior to executing launch procedure.
+}
+%
+\declareAttribute{PMIX_PRELOAD_FILES}{"pmix.preloadfiles"}{char*}{
+Comma-delimited list of files to pre-position on nodes prior to executing launch procedure.
+}
+%
+\declareAttribute{PMIX_STDIN_TGT}{"pmix.stdin"}{uint32_t}{
+Spawned process rank that is to receive any forwarded \code{stdin}.
+}
+%
+\declareAttribute{PMIX_SET_SESSION_CWD}{"pmix.ssncwd"}{bool}{
+Set the current working directory to the session working directory assigned by the \ac{RM} - can be assigned to the entire job (by including attribute in the \refarg{job_info} array) or on a per-application basis in the \refarg{info} array for each \refstruct{pmix_app_t}.
+}
+%
+\declareAttribute{PMIX_TAG_OUTPUT}{"pmix.tagout"}{bool}{
+Tag \code{stdout}/\code{stderr} with the identity of the source process - can be assigned to the entire job (by including attribute in the \refarg{job_info} array) or on a per-application basis in the \refarg{info} array for each \refstruct{pmix_app_t}.
+}
+%
+\declareAttribute{PMIX_TIMESTAMP_OUTPUT}{"pmix.tsout"}{bool}{
+Timestamp output - can be assigned to the entire job (by including attribute in the \refarg{job_info} array) or on a per-application basis in the \refarg{info} array for each \refstruct{pmix_app_t}.
+}
+%
+\declareAttribute{PMIX_MERGE_STDERR_STDOUT}{"pmix.mergeerrout"}{bool}{
+Merge \code{stdout} and \code{stderr} streams - can be assigned to the entire job (by including attribute in the \refarg{job_info} array) or on a per-application basis in the \refarg{info} array for each \refstruct{pmix_app_t}.
+}
+%
+\declareAttribute{PMIX_OUTPUT_TO_FILE}{"pmix.outfile"}{char*}{
+Direct output (both stdout and stderr) into files of form \code{"<filename>.rank"} - can be assigned to the entire job (by including attribute in the \refarg{job_info} array) or on a per-application basis in the \refarg{info} array for each \refstruct{pmix_app_t}.
+}
+%
+\declareAttributeNEW{PMIX_OUTPUT_TO_DIRECTORY}{"pmix.outdir"}{char*}{
+Direct output into files of form \code{"<directory>/\allowbreak <jobid>/\allowbreak rank.<rank>/\allowbreak stdout[err]"} - can be assigned to the entire job (by including attribute in the \refarg{job_info} array) or on a per-application basis in the \refarg{info} array for each \refstruct{pmix_app_t}.
+}
+%
+\declareAttribute{PMIX_INDEX_ARGV}{"pmix.indxargv"}{bool}{
+Mark the \code{argv} with the rank of the process.
+}
+%
+\declareAttribute{PMIX_CPUS_PER_PROC}{"pmix.cpuperproc"}{uint32_t}{
+Number of \acp{PU} to assign to each rank - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the \acp{PU}/process assigned to the provided namespace.
+}
+%
+\declareAttribute{PMIX_NO_PROCS_ON_HEAD}{"pmix.nolocal"}{bool}{
+Do not place processes on the head node.
+}
+%
+\declareAttribute{PMIX_NO_OVERSUBSCRIBE}{"pmix.noover"}{bool}{
+Do not oversubscribe the nodes - i.e., do not place more processes than allocated slots on a node.
+}
+%
+\declareAttribute{PMIX_REPORT_BINDINGS}{"pmix.repbind"}{bool}{
+Report bindings of the individual processes.
+}
+%
+\declareAttribute{PMIX_CPU_LIST}{"pmix.cpulist"}{char*}{
+List of \acp{PU} to use for this job - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the \ac{PU} list used for the provided namespace.
+}
+%
+\declareAttribute{PMIX_JOB_RECOVERABLE}{"pmix.recover"}{bool}{
+Application supports recoverable operations.
+}
+%
+\declareAttribute{PMIX_JOB_CONTINUOUS}{"pmix.continuous"}{bool}{
+Application is continuous, all failed processes should be immediately restarted.
+}
+%
+\declareAttribute{PMIX_MAX_RESTARTS}{"pmix.maxrestarts"}{uint32_t}{
+Maximum number of times to restart a process - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the max restarts for the provided namespace.
+}
+%
+\declareAttribute{PMIX_SPAWN_TOOL}{"pmix.spwn.tool"}{bool}{
+Indicate that the job being spawned is a tool.
+}
+%
+\declareAttributeNEW{PMIX_TIMEOUT_STACKTRACES}{"pmix.tim.stack"}{bool}{
+Include process stacktraces in timeout report from a job.
+}
+%
+\declareAttributeNEW{PMIX_TIMEOUT_REPORT_STATE}{"pmix.tim.state"}{bool}{
+Report process states in timeout report from a job.
+}
+%
+\declareAttributeNEW{PMIX_NOTIFY_JOB_EVENTS}{"pmix.note.jev"}{bool}{
+Requests that the launcher generate the
+\refconst{PMIX_EVENT_JOB_START}, \refconst{PMIX_LAUNCH_COMPLETE}, and
+\refconst{PMIX_EVENT_JOB_END} events. Each event is to include at least the
+namespace of the corresponding job and a \refattr{PMIX_EVENT_TIMESTAMP}
+indicating the time the event occurred. Note that the requester must register
+for these individual events, or capture
+and process them by registering a default event handler instead of individual
+handlers and then process the events based on the returned status code.
+Another common method is to register one event handler for all job-related
+events, with a separate handler for non-job events - see
+\refapi{PMIx_Register_event_handler} for details.
+}
+%
+\declareAttribute{PMIX_NOTIFY_COMPLETION}{"pmix.notecomp"}{bool}{
+Requests that the launcher generate the \refconst{PMIX_EVENT_JOB_END} event
+for normal or abnormal termination of the spawned job. The event shall include
+the returned status code (\refattr{PMIX_JOB_TERM_STATUS}) for the
+corresponding job; the identity (\refattr{PMIX_PROCID}) and exit status
+(\refattr{PMIX_EXIT_CODE}) of the first failed process, if applicable; and a
+\refattr{PMIX_EVENT_TIMESTAMP} indicating the time the termination occurred.
+Note that the requester must register for the event or capture and process it
+within a default event handler.
+}
+%
+\declareAttributeNEW{PMIX_NOTIFY_PROC_TERMINATION}{"pmix.noteproc"}{bool}{
+Requests that the launcher generate the \refconst{PMIX_EVENT_PROC_TERMINATED}
+event whenever a process either normally or abnormally terminates.
+}
+%
+\declareAttributeNEW{PMIX_NOTIFY_PROC_ABNORMAL TERMINATION}{"pmix.noteabproc"}{bool}{
+Requests that the launcher generate the \refconst{PMIX_EVENT_PROC_TERMINATED}
+event only when a process abnormally terminates.
+}
+%
+\declareAttributeNEW{PMIX_LOG_PROC_TERMINATION}{"pmix.logproc"}{bool}{
+Requests that the launcher log the \refconst{PMIX_EVENT_PROC_TERMINATED} event
+whenever a process either normally or abnormally terminates.
+}
+%
+\declareAttributeNEW{PMIX_LOG_PROC_ABNORMAL TERMINATION}{"pmix.logabproc"}{bool}{
+Requests that the launcher log the \refconst{PMIX_EVENT_PROC_TERMINATED} event
+only when a process abnormally terminates.
+}
+%
+\declareAttributeNEW{PMIX_LOG_JOB_EVENTS}{"pmix.log.jev"}{bool}{
+Requests that the launcher log the \refconst{PMIX_EVENT_JOB_START},
+\refconst{PMIX_LAUNCH_COMPLETE}, and \refconst{PMIX_EVENT_JOB_END} events using
+\refapi{PMIx_Log}, subject to the logging attributes of Section
+\ref{api:struct:attributes:log}.
+}
+%
+\declareAttributeNEW{PMIX_LOG_COMPLETION}{"pmix.logcomp"}{bool}{
+Requests that the launcher log the \refconst{PMIX_EVENT_JOB_END} event
+for normal or abnormal termination of the spawned job using
+\refapi{PMIx_Log}, subject to the logging attributes of Section
+\ref{api:struct:attributes:log}. The event shall include
+the returned status code (\refattr{PMIX_JOB_TERM_STATUS}) for the
+corresponding job; the identity (\refattr{PMIX_PROCID}) and exit status
+(\refattr{PMIX_EXIT_CODE}) of the first failed process, if applicable; and a
+\refattr{PMIX_EVENT_TIMESTAMP} indicating the time the termination occurred.
+}
+%
+\declareAttribute{PMIX_EVENT_SILENT_TERMINATION}{"pmix.evsilentterm"}{bool}{
+Do not generate an event when this job normally terminates.
+}
+
+\vspace{\baselineskip}
+Attributes used to adjust remote environment variables prior to spawning the specified application processes.
+
+%
+\declareAttribute{PMIX_SET_ENVAR}{"pmix.envar.set"}{pmix_envar_t*}{
+Set the envar to the given value, overwriting any pre-existing one
+}
+%
+\declareAttribute{PMIX_UNSET_ENVAR}{"pmix.envar.unset"}{char*}{
+Unset the environment variable specified in the string.
+}
+%
+\declareAttribute{PMIX_ADD_ENVAR}{"pmix.envar.add"}{pmix_envar_t*}{
+Add the environment variable, but do not overwrite any pre-existing one
+}
+%
+\declareAttribute{PMIX_PREPEND_ENVAR}{"pmix.envar.prepnd"}{pmix_envar_t*}{
+Prepend the given value to the specified environmental value using the given separator character, creating the variable if it doesn't already exist
+}
+%
+\declareAttribute{PMIX_APPEND_ENVAR}{"pmix.envar.appnd"}{pmix_envar_t*}{
+Append the given value to the specified environmental value using the given separator character, creating the variable if it doesn't already exist
+}
+%
+\declareAttributeNEW{PMIX_FIRST_ENVAR}{"pmix.envar.first"}{pmix_envar_t*}{
+Ensure the given value appears first in the specified envar using the separator character, creating the envar if it doesn't already exist
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Application Structure}
+\declarestruct{pmix_app_t}
+
+The \refstruct{pmix_app_t} structure describes the application context for the \refapi{PMIx_Spawn} and \refapi{PMIx_Spawn_nb} operations.
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_app \{
+    /** Executable */
+    char *cmd;
+    /** Argument set, NULL terminated */
+    char **argv;
+    /** Environment set, NULL terminated */
+    char **env;
+    /** Current working directory */
+    char *cwd;
+    /** Maximum processes with this profile */
+    int maxprocs;
+    /** Array of info keys describing this application*/
+    pmix_info_t *info;
+    /** Number of info keys in 'info' array */
+    size_t ninfo;
+\} pmix_app_t;
+\end{codepar}
+\cspecificend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{App structure support macros}
+The following macros are provided to support the \refstruct{pmix_app_t} structure.
+
+%%%%%%%%%%%
+\littleheader{Initialize the app structure}
+\declaremacro{PMIX_APP_CONSTRUCT}
+
+Initialize the \refstruct{pmix_app_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_app_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\littleheader{Destruct the app structure}
+\declaremacro{PMIX_APP_DESTRUCT}
+
+Destruct the \refstruct{pmix_app_t} fields
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_app_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\littleheader{Create an app array}
+\declaremacro{PMIX_APP_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_app_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_app_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\littleheader{Free an app structure}
+\declaremacro{PMIX_APP_RELEASE}
+
+Release a \refstruct{pmix_app_t} structure
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_RELEASE(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to a \refstruct{pmix_app_t} structure (handle)}
+\end{arglist}
+
+%%%%%%%%%%%
+\littleheader{Free an app array}
+\declaremacro{PMIX_APP_FREE}
+
+Release an array of \refstruct{pmix_app_t} structures
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_app_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\littleheader{Create the info array of application directives}
+\declaremacro{PMIX_APP_INFO_CREATE}
+
+Create an array of \refstruct{pmix_info_t} structures for passing application-level directives, updating the \refarg{ninfo} field of the \refstruct{pmix_app_t} structure.
+
+\versionMarker{2.2}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_INFO_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the \refstruct{pmix_app_t} structure (handle)}
+\argin{n}{Number of directives to be allocated (\code{size_t})}
+\end{arglist}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Spawn Callback Function}
+\declareapi{pmix_spawn_cbfunc_t}
+
+%%%%
+\summary
+
+The \refapi{pmix_spawn_cbfunc_t} is used on the PMIx client side by \refapi{PMIx_Spawn_nb} and on the PMIx server side by \refapi{pmix_server_spawn_fn_t}.
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_spawn_cbfunc_t)
+    (pmix_status_t status,
+     pmix_nspace_t nspace, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{status}{Status associated with the operation (handle)}
+\argin{nspace}{Namespace string (\refstruct{pmix_nspace_t})}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
+\end{arglist}
+
+
+%%%%
+\descr
+
+The callback will be executed upon launch of the specified applications in \refapi{PMIx_Spawn_nb}, or upon failure to launch any of them.
+
+The \refarg{status} of the callback will indicate whether or not the spawn succeeded.
+The \refarg{nspace} of the spawned processes will be returned, along with any provided callback data.
+Note that the returned \refarg{nspace} value will not be protected upon return from the callback function, so the receiver must copy it if it needs to be retained.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connecting and Disconnecting Processes}
 \label{chap:api_proc_mgmt:connect}
 
 This section defines functions to connect and disconnect processes in two or more separate \ac{PMIx} namespaces. The \ac{PMIx} definition of \textit{connected} solely implies that the host environment should treat the failure of any process in the assemblage as a reportable event, taking action on the assemblage as if it were a single application. For example, if the environment defaults (in the absence of any application directives) to terminating an application upon failure of any process in that application, then the environment should terminate all processes in the connected assemblage upon failure of any member.
 
-\advicermstart
-The host environment may choose to assign a new namespace to the connected assemblage and/or assign new ranks for its members for its own internal tracking purposes. However, it is not required to communicate such assignments to the participants (e.g., in response to an appropriate call to \refapi{PMIx_Query_info_nb}). The host environment is required to generate a \refconst{PMIX_ERR_INVALID_TERMINATION} event should any process in the assemblage terminate or call \refapi{PMIx_Finalize} without first \textit{disconnecting} from the assemblage.
+The host environment may choose to assign a new namespace to the connected assemblage and/or assign new ranks for its members for its own internal tracking purposes. However, it is not required to communicate such assignments to the participants (e.g., in response to an appropriate call to \refapi{PMIx_Query_info_nb}). The host environment is required to generate a \refconst{PMIX_ERR_PROC_TERM_WO_SYNC} event should any process in the assemblage terminate or call \refapi{PMIx_Finalize} without first \textit{disconnecting} from the assemblage. If the job including the process is terminated as a result of that action, then the host environment is required to also generate the \refconst{PMIX_ERR_JOB_TERM_WO_SYNC} for all jobs that were terminated as a result.
 
+\advicermstart
 The \textit{connect} operation does not require the exchange of job-level information nor the inclusion of information posted by  participating processes via \refapi{PMIx_Put}. Indeed, the callback function utilized in \refapi{pmix_server_connect_fn_t} cannot pass information back into the \ac{PMIx} server library. However, host environments are advised that collecting such information at the participating daemons represents an optimization opportunity as participating processes are likely to request such information after the connect operation completes.
 \advicermend
 
@@ -332,7 +746,7 @@ Neither the \ac{PMIx} implementation nor host environment are required to provid
 \adviceuserend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Connect}}
 \declareapi{PMIx_Connect}
 
@@ -371,19 +785,18 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_TIMEOUT}
-\pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
-\pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
 
 %%%%
 \descr
 
 Record the processes specified by the \refarg{procs} array as \textit{connected} as per the \ac{PMIx} definition. The function will return once all processes identified in \refarg{procs} have called either \refapi{PMIx_Connect} or its non-blocking version, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes.
+
+A process can only engage in one connect operation involving the identical \refarg{procs} array at a time.
+However, a process can be simultaneously engaged in multiple connect operations, each involving a different \refarg{procs} array.
+
+As in the case of the \refapi{PMIx_Fence} operation, the \refarg{info} array can be used to pass user-level directives regarding timeout constraints and other options available from the host \ac{RM}.
 
 \adviceuserstart
 All processes engaged in a given \refapi{PMIx_Connect} operation must provide the identical \refarg{procs} array as ordering of entries in the array and the method by which those processes are identified (e.g., use of \refconst{PMIX_RANK_WILDCARD} versus listing the individual processes) \textit{may} impact the host environment's algorithm for uniquely identifying an operation.
@@ -397,15 +810,8 @@ All processes engaged in a given \refapi{PMIx_Connect} operation must provide th
 The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
 \advicermend
 
-Processes that combine via \refapi{PMIx_Connect} must call \refapi{PMIx_Disconnect} prior to finalizing and/or terminating - any process in the assemblage failing to meet this requirement will cause a \refconst{PMIX_ERR_INVALID_TERMINATION} event to be generated.
 
-A process can only engage in one connect operation involving the identical \refarg{procs} array at a time.
-However, a process can be simultaneously engaged in multiple connect operations, each involving a different \refarg{procs} array.
-
-As in the case of the \refapi{PMIx_Fence} operation, the \refarg{info} array can be used to pass user-level directives regarding the algorithm to be used for any collective operation involved in the operation, timeout constraints, and other options available from the host \ac{RM}.
-
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Connect_nb}}
 \declareapi{PMIx_Connect_nb}
 
@@ -454,14 +860,8 @@ Returns one of the following:
 The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_TIMEOUT}
-\pasteAttributeItem{PMIX_COLLECTIVE_ALGO}
-\pasteAttributeItem{PMIX_COLLECTIVE_ALGO_REQD}
 
 \optattrend
-
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
 
 %%%%
 \descr
@@ -469,7 +869,7 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 Nonblocking version of \refapi{PMIx_Connect}. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Connect} or its non-blocking version, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes. See the advice provided in the description for \refapi{PMIx_Connect} for more information.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Disconnect}}
 \declareapi{PMIx_Disconnect}
 
@@ -497,7 +897,14 @@ PMIx_Disconnect(const pmix_proc_t procs[], size_t nprocs,
 \argin{ninfo}{Number of element in the \refarg{info} array (integer)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request was successfully executed
+    \item the \refconst{PMIX_ERR_INVALID_OPERATION} error indicating that the specified set of \refarg{procs} was not previously \textit{connected} via a call to \refapi{PMIx_Connect} or its non-blocking form.
+    \item a PMIx error constant indicating either an error in the input or that the request failed
+\end{itemize}
+
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
@@ -511,16 +918,15 @@ The following attributes are optional for host environments that support this op
 
 \optattrend
 
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
-
 %%%%
 \descr
 
-Disconnect a previously connected set of processes.
-A \refconst{PMIX_ERR_INVALID_OPERATION} error will be returned if the specified set of \refarg{procs} was not previously \textit{connected} via a call to \refapi{PMIx_Connect} or its non-blocking form. The function will return once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect} or its non-blocking version, \textit{and} the host environment has completed any required supporting operations.
+Disconnect a previously connected set of processes. The function will return once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect} or its non-blocking version, \textit{and} the host environment has completed any required supporting operations.
+
+A process can only engage in one disconnect operation involving the identical \refarg{procs} array at a time.
+However, a process can be simultaneously engaged in multiple disconnect operations, each involving a different \refarg{procs} array.
+
+As in the case of the \refapi{PMIx_Fence} operation, the \refarg{info} array can be used to pass user-level directives regarding the algorithm to be used for any collective operation involved in the operation, timeout constraints, and other options available from the host \ac{RM}.
 
 \adviceuserstart
 All processes engaged in a given \refapi{PMIx_Disconnect} operation must provide the identical \refarg{procs} array as ordering of entries in the array and the method by which those processes are identified (e.g., use of \refconst{PMIX_RANK_WILDCARD} versus listing the individual processes) \textit{may} impact the host environment's algorithm for uniquely identifying an operation.
@@ -535,13 +941,8 @@ The host will receive a single call for each collective operation. The host will
 
 \advicermend
 
-A process can only engage in one disconnect operation involving the identical \refarg{procs} array at a time.
-However, a process can be simultaneously engaged in multiple disconnect operations, each involving a different \refarg{procs} array.
 
-As in the case of the \refapi{PMIx_Fence} operation, the \refarg{info} array can be used to pass user-level directives regarding the algorithm to be used for any collective operation involved in the operation, timeout constraints, and other options available from the host \ac{RM}.
-
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Disconnect_nb}}
 \declareapi{PMIx_Disconnect_nb}
 
@@ -592,20 +993,28 @@ The following attributes are optional for host environments that support this op
 
 \optattrend
 
-\adviceimplstart
-We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left to the host environment due to race condition considerations between completion of the operation versus internal timeout in the \ac{PMIx} server library. Implementers that choose to support \refattr{PMIX_TIMEOUT} directly in the \ac{PMIx} server library must take care to resolve the race condition and should avoid passing \refattr{PMIX_TIMEOUT} to the host environment so that multiple competing timeouts are not created.
-\adviceimplend
-
 %%%%
 \descr
 
-Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect_nb} or its blocking version, \textit{and} the host environment has completed any required supporting operations. See the advice provided in the description for \refapi{PMIx_Disconnect} for more information.
+Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called either:
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{itemize}
+    \item to return the \refconst{PMIX_ERR_INVALID_OPERATION} error indicating that the specified set of \refarg{procs} was not previously \textit{connected} via a call to \refapi{PMIx_Connect} or its non-blocking form;
+
+    \item to return a \ac{PMIx} error constant indicating that the operation failed; or
+
+    \item once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect_nb} or its blocking version, \textit{and} the host environment has completed any required supporting operations.
+\end{itemize}
+
+See the advice provided in the description for \refapi{PMIx_Disconnect} for more information.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Process Locality}
 \label{chap:api_proc_mgmt:locality}
 
-The relative locality of processes is often used to optimize their interactions with the hardware and other processes. \ac{PMIx} provides a means by which the host environment can communicate the locality of a given process using the \refapi{PMIx_generate_locality_string} to generate an abstracted representation of that value. This provides a human-readable format and allows the client to parse the locality string with a method of its choice that may differ from the one used by the server that generated it.
+The relative locality of processes is often used to optimize their interactions with the hardware and other processes. \ac{PMIx} provides a means by which the host environment can communicate the locality of a given process using the \refapi{PMIx_server_generate_locality_string} to generate an abstracted representation of that value. This provides a human-readable format and allows the client to parse the locality string with a method of its choice that may differ from the one used by the server that generated it.
 
 There are times, however, when relative locality and other \ac{PMIx}-provided
 information doesn't include some element required by the application. In these
@@ -618,7 +1027,7 @@ sharing the topology between the host environment (which may well have already
 generated it prior to local start of application processes) and the clients -
 e.g., through passing of a shared memory region.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Load_topology}}
 \declareapi{PMIx_Load_topology}
 
@@ -665,7 +1074,7 @@ returned \refarg{source} to verify that the returned topology description is
 compatible with the user's code.
 \adviceuserend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Get_relative_locality}}
 \declareapi{PMIx_Get_relative_locality}
 
@@ -688,8 +1097,8 @@ PMIx_Get_relative_locality(const char *locality1,
 \cspecificend
 
 \begin{arglist}
-\argin{locality1}{String returned by the \refapi{PMIx_generate_locality_string} \ac{API} (handle)}
-\argin{locality2}{String returned by the \refapi{PMIx_generate_locality_string} \ac{API} (handle)}
+\argin{locality1}{String returned by the \refapi{PMIx_server_generate_locality_string} \ac{API} (handle)}
+\argin{locality2}{String returned by the \refapi{PMIx_server_generate_locality_string} \ac{API} (handle)}
 \arginout{locality}{Location where the relative locality bitmask is to be constructed (memory reference)}
 \end{arglist}
 
@@ -698,9 +1107,9 @@ Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{locality} was succe
 %%%%
 \descr
 
-Parse the locality strings of the two processes and set the appropriate \refstruct{pmix_locality_t} locality bits in the provided memory location.
+Parse the locality strings of two processes (as returned by \refapi{PMIx_Get} using the \refattr{PMIX_LOCALITY_STRING} key) and set the appropriate \refstruct{pmix_locality_t} locality bits in the provided memory location.
 
-%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Topology description}
 \declarestruct{pmix_topology_t}
 
@@ -718,6 +1127,7 @@ typedef struct pmix_topology \{
 \end{codepar}
 \cspecificend
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Initialize the topology description structure}
 \declaremacro{PMIX_TOPO_CONSTRUCT}
 
@@ -735,7 +1145,7 @@ PMIX_TOPOLOGY_CONSTRUCT(m)
 \end{arglist}
 
 
-%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Relative locality of two processes}
 \declarestruct{pmix_locality_t}
 
@@ -773,16 +1183,15 @@ The two processes share at least a package
 %
 \declareconstitemNEW{PMIX_LOCALITY_SHARE_NODE}
 The two processes are executing on the same node
-
-
+%
 \end{constantdesc}
 
 
 Implementers and vendors may choose to extend these definitions as needed to describe a particular system.
 
 
-%%%%%%%%%%%
-\subsubsection{\code{Locality keys}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Locality keys}
 
 %
 \declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
@@ -797,7 +1206,37 @@ string of a process that returns \refconst{PMIX_ERR_NOT_FOUND} indicates that
 the process is not executing on the same node.
 }
 
-%
-\declareAttributeDEP{PMIX_LOCALITY}{"pmix.loc"}{\refstruct{pmix_locality_t}}{
-Relative locality of the specified process to the requester, expressed as a bitmask as per the description in the \refstruct{pmix_locality_t} section. This value is unique to the requesting process and thus cannot be communicated by the server as part of the job-level information. Its use has therefore been deprecated and the key will be removed in a future release.
-}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_Get_cpuset}}
+\declareapi{PMIx_Get_cpuset}
+
+%%%%
+\summary
+
+Get the \ac{PU} binding bitmap from its string representation.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Get_cpuset(const char *cpuset_string,
+                pmix_cpuset_t *cpuset);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{cpuset_string}{String returned by the \refapi{PMIx_server_generate_cpuset_string} \ac{API} (handle)}
+\arginout{cpuset}{Address of an object where the bitmap is to be stored (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{cpuset} was successfully loaded, or an appropriate \ac{PMIx} error constant.
+
+%%%%
+\descr
+
+Parse the string representation of the binding bitmap (as returned by \refapi{PMIx_Get} using the \refattr{PMIX_CPUSET} key) and set the appropriate \ac{PU} binding location information in the provided memory location.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

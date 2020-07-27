@@ -1,34 +1,26 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter: Initialization & Finalization
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Initialization and Finalization}
+\chapter{Client Initialization and Finalization}
 \label{chap:api_init}
 
 The \ac{PMIx} library is required to be initialized and finalized around the usage of most of the \acp{API}.
 The \acp{API} that may be used outside of the initialized and finalized region are noted.
 All other \acp{API} must be used inside this region.
 
-There are three sets of initialization and finalization functions depending upon the role of the process in the \ac{PMIx} universe.
-Each of these functional sets are described in this chapter.
-Note that a process can only call \textit{one} of the init/finalize functional pairs - e.g., a process that calls the client initialization function cannot also call the tool or server initialization functions, and must call the corresponding client finalize.
+There are three sets of initialization and finalization functions depending upon the role of the process in the \ac{PMIx} Standard - those associated with the \ac{PMIx} \emph{client} are defined in this chapter. \ac{PMIx} clients are processes that have been assigned to a particular \ac{PMIx} server at time of start, with the information required to connect to that server being provided to them.
 
-\adviceuserstart
-Processes that initialize as a server or tool automatically are given access to all client \acp{API}.
-Server initialization includes setting up the infrastructure to support local clients - thus, it necessarily includes overhead and an increased memory footprint.
-Tool initialization automatically searches for a server to which it can connect --- if declared as a \textit{launcher}, the \ac{PMIx} library sets up the required ``hooks'' for other tools (e.g., debuggers) to attach to it.
-\adviceuserend
+Note that a process can only call \textit{one} of the init/finalize functional pairs - e.g., a process that calls the client initialization function cannot also call the tool or server initialization functions, and must call the corresponding client finalize. Regardless of the role assumed by the process, all processes have access to the client \acp{API}. Thus, the \emph{server} and \emph{tool} roles can be considered supersets of the \ac{PMIx} client.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Query}
-\label{chap:api_init:general}
-
-The \ac{API} defined in this section can be used by any \ac{PMIx} process, regardless of their role in the \ac{PMIx} universe.
-
-%%%%%%%%%%%
-\subsection{\code{PMIx_Initialized}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Initialized}}
 \declareapi{PMIx_Initialized}
+
+%%%%
+\summary
+
+Determine if the \ac{PMIx} library has been initialized. This function may be used outside of the initialized and finalized region, and is usable by servers and tools in addition to clients.
 
 %%%%
 \format
@@ -52,14 +44,16 @@ The return value is an integer for historical reasons as that was the signature 
 Check to see if the \ac{PMIx} library has been initialized using any of the init functions:
 \refapi{PMIx_Init}, \refapi{PMIx_server_init}, or \refapi{PMIx_tool_init}.
 
-%%%%%%%%%%%
-\subsection{\code{PMIx_Get_version}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Get_version}}
 \declareapi{PMIx_Get_version}
 
 %%%%
 \summary
 
-Get the \ac{PMIx} version information.
+Get the \ac{PMIx} version information. This function may be used outside of the initialized and finalized region, and is usable by servers and tools in addition to clients.
 
 %%%%
 \format
@@ -77,20 +71,10 @@ const char* PMIx_Get_version(void)
 Get the \ac{PMIx} version string.
 Note that the provided string is statically defined and must \textit{not} be free'd.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Client Initialization and Finalization}
-\label{chap:api_init:client}
 
-Initialization and finalization routines for \ac{PMIx} clients.
-
-\adviceuserstart
-The \ac{PMIx} \textit{ad hoc} v1.0 Standard defined the \refapi{PMIx_Init} function, but modified the function signature in the v1.2 version. The \textit{ad hoc} v1.0 version is not included in this document to avoid confusion.
-\adviceuserend
-
-
-%%%%%%%%%%%
-\subsection{\code{PMIx_Init}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Init}}
 \declareapi{PMIx_Init}
 
 %%%%
@@ -142,8 +126,6 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
 \pasteAttributeItemEnd{}
 \pasteAttributeItem{PMIX_EVENT_BASE}
-\pasteAttributeItemBegin{PMIX_GDS_MODULE} This attribute is specific to the \ac{PRI} and controls only the selection of \ac{GDS} module for internal use by the process. Module selection for interacting with the server is performed dynamically during the connection process.
-\pasteAttributeItemEnd{}
 \optattrend
 
 %%%%
@@ -167,9 +149,124 @@ Each call to \refapi{PMIx_Init} may contain an array of \refstruct{pmix_info_t} 
 Multiple calls to \refapi{PMIx_Init} shall not include conflicting directives.
 The \refapi{PMIx_Init} function will return an error when directives that conflict with prior directives are encountered.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Initialization events}
 
-%%%%%%%%%%%
-\subsection{\code{PMIx_Finalize}}
+The following events are typically associated with calls to \refapi{PMIx_Init}:
+
+\begin{constantdesc}
+%
+\declareconstitem{PMIX_MODEL_DECLARED}
+Model declared
+%
+\declareconstitem{PMIX_MODEL_RESOURCES}
+Resource usage by a programming model has changed
+%
+\declareconstitem{PMIX_OPENMP_PARALLEL_ENTERED}
+An OpenMP parallel code region has been entered
+%
+\declareconstitem{PMIX_OPENMP_PARALLEL_EXITED}
+An OpenMP parallel code region has completed
+%
+\end{constantdesc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Initialization attributes}
+
+The following attributes influence the behavior of \refapi{PMIx_Init}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Connection attributes}
+
+These attributes are used to describe a TCP socket for rendezvous with the local \ac{RM} by passing them into the relevant initialization \ac{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
+
+%
+\declareAttribute{PMIX_TCP_REPORT_URI}{"pmix.tcp.repuri"}{char*}{
+If provided, directs that the TCP \ac{URI} be reported and indicates the desired method of reporting: \code{'-'} for stdout, \code{'+'} for stderr, or filename.
+}
+%
+\declareAttribute{PMIX_TCP_URI}{"pmix.tcp.uri"}{char*}{
+The \ac{URI} of the PMIx server to connect to, or a file name containing it in the form of \code{file:<name of file containing it>}.
+}
+%
+\declareAttribute{PMIX_TCP_IF_INCLUDE}{"pmix.tcp.ifinclude"}{char*}{
+Comma-delimited list of devices and/or \ac{CIDR} notation to include when establishing the TCP connection.
+}
+%
+\declareAttribute{PMIX_TCP_IF_EXCLUDE}{"pmix.tcp.ifexclude"}{char*}{
+Comma-delimited list of devices and/or \ac{CIDR} notation to exclude when establishing the TCP connection.
+}
+%
+\declareAttribute{PMIX_TCP_IPV4_PORT}{"pmix.tcp.ipv4"}{int}{
+The IPv4 port to be used.
+}
+%
+\declareAttribute{PMIX_TCP_IPV6_PORT}{"pmix.tcp.ipv6"}{int}{
+The IPv6 port to be used.
+}
+%
+\declareAttribute{PMIX_TCP_DISABLE_IPV4}{"pmix.tcp.disipv4"}{bool}{
+Set to \code{true} to disable IPv4 family of addresses.
+}
+%
+\declareAttribute{PMIX_TCP_DISABLE_IPV6}{"pmix.tcp.disipv6"}{bool}{
+Set to \code{true} to disable IPv6 family of addresses.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Programming model attributes}
+\label{api:struct:attributes:model}
+
+These attributes are associated with programming models.
+
+%
+\declareAttribute{PMIX_PROGRAMMING_MODEL}{"pmix.pgm.model"}{char*}{
+Programming model being initialized (e.g., ``MPI'' or ``OpenMP'')
+}
+%
+\declareAttribute{PMIX_MODEL_LIBRARY_NAME}{"pmix.mdl.name"}{char*}{
+Programming model implementation ID (e.g., ``OpenMPI'' or ``MPICH'')
+}
+%
+\declareAttribute{PMIX_MODEL_LIBRARY_VERSION}{"pmix.mld.vrs"}{char*}{
+Programming model version string (e.g., ``2.1.1'')
+}
+%
+\declareAttribute{PMIX_THREADING_MODEL}{"pmix.threads"}{char*}{
+Threading model used (e.g., ``pthreads'')
+}
+%
+\declareAttribute{PMIX_MODEL_NUM_THREADS}{"pmix.mdl.nthrds"}{uint64_t}{
+Number of active threads being used by the model
+}
+%
+\declareAttribute{PMIX_MODEL_NUM_CPUS}{"pmix.mdl.ncpu"}{uint64_t}{
+Number of cpus being used by the model
+}
+%
+\declareAttribute{PMIX_MODEL_CPU_TYPE}{"pmix.mdl.cputype"}{char*}{
+Granularity - ``hwthread'', ``core'', etc.
+}
+%
+\declareAttribute{PMIX_MODEL_PHASE_NAME}{"pmix.mdl.phase"}{char*}{
+User-assigned name for a phase in the application execution (e.g., ``cfd reduction'')
+}
+%
+\declareAttribute{PMIX_MODEL_PHASE_TYPE}{"pmix.mdl.ptype"}{char*}{
+Type of phase being executed (e.g., ``matrix multiply'')
+}
+%
+\declareAttribute{PMIX_MODEL_AFFINITY_POLICY}{"pmix.mdl.tap"}{char*}{
+Thread affinity policy - e.g.:
+         "master" (thread co-located with master thread),
+         "close" (thread located on cpu close to master thread),
+         "spread" (threads load-balanced across available cpus)
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Finalize}}
 \declareapi{PMIx_Finalize}
 
 %%%%
@@ -207,6 +304,16 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 Decrement the \ac{PMIx} client library reference count.
 When the reference count reaches zero, the library will finalize the \ac{PMIx} client, closing the connection with the local \ac{PMIx} server and releasing all internally allocated memory.
 
+\subsection{Finalize attributes}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The following attribute influences the behavior of \refapi{PMIx_Finalize}.
+
+%
+\declareAttribute{PMIX_EMBED_BARRIER}{"pmix.embed.barrier"}{bool}{
+Execute a blocking fence operation before executing the specified operation.
+For example, \refapi{PMIx_Finalize} does not include an internal barrier operation by default.
+This attribute would direct \refapi{PMIx_Finalize} to execute a barrier as part of the finalize operation.
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
