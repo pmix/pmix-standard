@@ -600,3 +600,44 @@ We recommend that implementation of the \refattr{PMIX_TIMEOUT} attribute be left
 \descr
 
 Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Disconnect_nb} or its blocking version, \textit{and} the host environment has completed any required supporting operations. See the advice provided in the description for \refapi{PMIx_Disconnect} for more information.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Process Locality}
+\label{chap:api_proc_mgmt:locality}
+
+The relative locality of processes is often used to optimize their interactions. \ac{PMIx} provides a means by which the host environment can communicate the locality of a given process using the \refapi{PMIx_generate_locality_string} to generate an abstracted representation of that value. This allows the client to parse the locality string with a method of its choice that may differ from the one used by the server to generate it.
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_get_relative_locality}}
+\declareapi{PMIx_get_relative_locality}
+
+%%%%
+\summary
+
+Get the relative locality of two local processes given their locality strings.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_get_relative_locality(const char *locality1,
+                           const char *locality2,
+                           pmix_locality_t *locality);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{locality1}{String returned by the \refapi{PMIx_generate_locality_string} \ac{API} (handle)}
+\argin{locality2}{String returned by the \refapi{PMIx_generate_locality_string} \ac{API} (handle)}
+\arginout{locality}{Location where the relative locality bitmask is to be constructed (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{locality} was successfully loaded, or an appropriate \ac{PMIx} error
+
+%%%%
+\descr
+
+Parse the locality strings of the two processes and set the appropriate \refstruct{pmix_locality_t} locality bits in the provided memory location.

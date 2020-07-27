@@ -3312,6 +3312,84 @@ The provided name and value are copied into the destination environment array - 
 
 
 %%%%%%%%%%%
+\subsection{Cpuset Structure}
+\declarestruct{pmix_cpuset_t}
+
+The \refstruct{pmix_cpuset_t} structure contains a character string identifying the source of the bitmap (e.g., "hwloc") and a pointer to the corresponding implementation-specific structure (e.g., \code{hwloc_cpuset_t}).
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_cpuset \{
+    char *source;
+    void *bitmap;
+\} pmix_cpuset_t;
+\end{codepar}
+\cspecificend
+
+\subsection{Cpuset support macros}
+The following macros support the \refstruct{pmix_cpuset_t} structure.
+
+\subsubsection{Initialize the \refstruct{pmix_cpuset_t} structure}
+\declaremacro{PMIX_CPUSET_CONSTRUCT}
+
+Initialize the \refstruct{pmix_cpuset_t} fields
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_CPUSET_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_cpuset_t})}
+\end{arglist}
+
+%%%%%%%
+\subsection{Relative locality of two processes}
+\declarestruct{pmix_locality_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_locality_t} datatype is a \code{uint16_t} bitmask that defines the relative locality of two processes on a node. The following constants represent specific bits in the mask and can be used to test a locality value using standard bit-test methods.
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_LOCALITY_UNKNOWN}
+All bits are set to zero, indicating that the relative locality of the two processes is unknown
+%
+\declareconstitemNEW{PMIX_LOCALITY_NONLOCAL}
+The two processes do not share any common locations
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_HWTHREAD}
+The two processes share at least one hardware thread
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_CORE}
+The two processes share at least one core
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_L1CACHE}
+The two processes share at least an L1 cache
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_L2CACHE}
+The two processes share at least an L2 cache
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_L3CACHE}
+The two processes share at least an L3 cache
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_PACKAGE}
+The two processes share at least a package
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_NODE}
+The two processes are executing on the same node
+
+
+\end{constantdesc}
+
+
+Implementers and vendors may choose to extend these definitions as needed to describe a particular system.
+
+
+%%%%%%%%%%%
 \section{Generalized Data Types Used for Packing/Unpacking}
 \declarestruct{pmix_data_type_t}
 
