@@ -9,46 +9,6 @@ The \ac{RM} daemon that hosts the \ac{PMIx} server library interacts with that l
 Second, the host can provide a set of callback functions by which the \ac{PMIx} server library can pass requests upward for servicing by the host. These include notifications of client connection and finalize, as well as requests by clients for information and/or services that the \ac{PMIx} server library does not itself provide.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Server datatypes}
-\label{chap:api_init:serverdt}
-
-%%%%%%%%%%%
-\subsection{Cpuset Structure}
-\declarestruct{pmix_cpuset_t}
-
-The \refstruct{pmix_cpuset_t} structure contains a character string identifying the source of the bitmap (e.g., "hwloc") and a pointer to the corresponding implementation-specific structure (e.g., \code{hwloc_cpuset_t}).
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_cpuset \{
-    char *source;
-    void *bitmap;
-\} pmix_cpuset_t;
-\end{codepar}
-\cspecificend
-
-\subsection{Cpuset support macros}
-The following macros support the \refstruct{pmix_cpuset_t} structure.
-
-\subsubsection{Initialize the cpuset structure}
-\declaremacro{PMIX_CPUSET_CONSTRUCT}
-
-Initialize the \refstruct{pmix_cpuset_t} fields
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_CPUSET_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_cpuset_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Server Initialization and Finalization}
 \label{chap:api_init:server}
 
@@ -1286,6 +1246,43 @@ Returns either \refconst{PMIX_SUCCESS} indicating that the returned string conta
 \descr
 
 Provide a function by which the host environment can generate a \ac{PMIx} locality string for inclusion in the call to \refapi{PMIx_server_register_nspace}. This function shall only be called for local client processes, with the returned locality included in the job-level information (via the \refattr{PMIX_LOCALITY_STRING} attribute) provided to local clients. Local clients can use these strings as input to determine the relative locality of their local peers via the \refapi{PMIx_get_relative_locality} \ac{API}.
+
+The function is required to return a string prefixed by the \refarg{source} field of the provided \refarg{cpuset} followed by a colon. The remainder of the string shall represent the corresponding locality as expressed by the underlying implementation.
+
+%%%%%%%%%%%
+\subsubsection{Cpuset Structure}
+\declarestruct{pmix_cpuset_t}
+
+The \refstruct{pmix_cpuset_t} structure contains a character string identifying the source of the bitmap (e.g., "hwloc") and a pointer to the corresponding implementation-specific structure (e.g., \code{hwloc_cpuset_t}).
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_cpuset \{
+    char *source;
+    void *bitmap;
+\} pmix_cpuset_t;
+\end{codepar}
+\cspecificend
+
+\subsection{Cpuset support macros}
+The following macros support the \refstruct{pmix_cpuset_t} structure.
+
+\subsubsection{Initialize the cpuset structure}
+\declaremacro{PMIX_CPUSET_CONSTRUCT}
+
+Initialize the \refstruct{pmix_cpuset_t} fields
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_CPUSET_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_cpuset_t})}
+\end{arglist}
 
 
 %%%%%%%%%%%

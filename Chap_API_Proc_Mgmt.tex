@@ -609,9 +609,39 @@ The relative locality of processes is often used to optimize their interactions 
 
 
 %%%%%%%%%%%
-\subsection{\code{Locality datatypes}}
+\subsection{\code{PMIx_get_relative_locality}}
+\declareapi{PMIx_get_relative_locality}
 
-The following datatypes are associated with process locality.
+%%%%
+\summary
+
+Get the relative locality of two local processes given their locality strings.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_get_relative_locality(const char *locality1,
+                           const char *locality2,
+                           pmix_locality_t *locality);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{locality1}{String returned by the \refapi{PMIx_generate_locality_string} \ac{API} (handle)}
+\argin{locality2}{String returned by the \refapi{PMIx_generate_locality_string} \ac{API} (handle)}
+\arginout{locality}{Location where the relative locality bitmask is to be constructed (memory reference)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{locality} was successfully loaded, or an appropriate \ac{PMIx} error constant.
+
+%%%%
+\descr
+
+Parse the locality strings of the two processes and set the appropriate \refstruct{pmix_locality_t} locality bits in the provided memory location.
 
 %%%%%%%
 \subsubsection{Relative locality of two processes}
@@ -657,25 +687,11 @@ Implementers and vendors may choose to extend these definitions as needed to des
 
 
 %%%%%%%%%%%
-\subsection{\code{Locality keys}}
+\subsubsection{\code{Locality keys}}
 
 %
 \declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
-String describing a process's bound location - referenced using the process's rank.
-The string is of the form:\\
-\code{NM\%s:SK\%s:L3\%s:L2\%s:L1\%s:CR\%s:HT\%s}\\
-Where the \code{\%s} is replaced with an integer index or inclusive range for hwloc.
-\code{NM} identifies the numa node(s).
-\code{SK} identifies the socket(s).
-\code{L3} identifies the L3 cache(s).
-\code{L2} identifies the L2 cache(s).
-\code{L1} identifies the L1 cache(s).
-\code{CR} identifies the cores(s).
-\code{HT} identifies the hardware thread(s).
-If your architecture does not have the specified hardware designation then it can be omitted from the signature.
-\\
-For example: \code{NM0:SK0:L30-4:L20-4:L10-4:CR0-4:HT0-39}.\\
-This means numa node \code{0}, socket \code{0}, L3 caches \code{0,1,2,3,4}, L2 caches \code{0-4}, L1 caches \code{0-4}, cores \code{0,1,2,3,4}, and hardware threads \code{0-39}.
+String describing a process's bound location - referenced using the process's rank. The string is prefixed by the implementation that created it (e.g., "hwloc") followed by a colon. The remainder of the string represents the corresponding locality as expressed by the underlying implementation. The entire string must be passed to \refapi{PMIx_get_relative_locality} for processing. Note that hosts are only required to provide locality strings for local client processes - thus, a call to \refapi{PMIx_Get} for the locality string of a process that returns \refconst{PMIX_ERR_NOT_FOUND} indicates that the process is not executing on the same node.
 }
 
 %
@@ -684,37 +700,3 @@ Relative locality of the specified process to the requester, expressed as a bitm
 }
 
 
-%%%%%%%%%%%
-\subsection{\code{PMIx_get_relative_locality}}
-\declareapi{PMIx_get_relative_locality}
-
-%%%%
-\summary
-
-Get the relative locality of two local processes given their locality strings.
-
-%%%%
-\format
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_get_relative_locality(const char *locality1,
-                           const char *locality2,
-                           pmix_locality_t *locality);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{locality1}{String returned by the \refapi{PMIx_generate_locality_string} \ac{API} (handle)}
-\argin{locality2}{String returned by the \refapi{PMIx_generate_locality_string} \ac{API} (handle)}
-\arginout{locality}{Location where the relative locality bitmask is to be constructed (memory reference)}
-\end{arglist}
-
-Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{locality} was successfully loaded, or an appropriate \ac{PMIx} error constant.
-
-%%%%
-\descr
-
-Parse the locality strings of the two processes and set the appropriate \refstruct{pmix_locality_t} locality bits in the provided memory location.
