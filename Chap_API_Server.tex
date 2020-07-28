@@ -1214,6 +1214,78 @@ Returns one of the following:
 Provide a function by which the host environment can pass inventory information obtained from a node to the \ac{PMIx} server library for storage. Inventory data is subsequently used by the \ac{PMIx} server library for allocations in response to \refapi{PMIx_server_setup_application}, and may be available to the library's host via the \refapi{PMIx_Get} \ac{API} (depending upon \ac{PMIx} implementation). The \refarg{cbfunc} callback function will be called once the \ac{PMIx} server library no longer requires access to the provided data.
 
 %%%%%%%%%%%
+\subsection{\code{PMIx_generate_locality_string}}
+\declareapi{PMIx_generate_locality_string}
+
+%%%%
+\summary
+
+Generate a \ac{PMIx} locality string from a given cpuset
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_generate_locality_string(const pmix_cpuset_t *cpuset,
+                              char **locality);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{cpuset}{Pointer to a \refstruct{pmix_cpuset_t} containing the bitmap of assigned \acp{PU} (handle)}
+\argout{locality}{String representation of the \ac{PMIx} locality corresponding to the input bitmap (\code{char*})}
+\end{arglist}
+
+Returns either \refconst{PMIX_SUCCESS} indicating that the returned string contains the locality, or an appropriate \ac{PMIx} error constant.
+
+
+%%%%
+\descr
+
+Provide a function by which the host environment can generate a \ac{PMIx} locality string for inclusion in the call to \refapi{PMIx_server_register_nspace}. This function shall only be called for local client processes, with the returned locality included in the job-level information (via the \refattr{PMIX_LOCALITY_STRING} attribute) provided to local clients. Local clients can use these strings as input to determine the relative locality of their local peers via the \refapi{PMIx_get_relative_locality} \ac{API}.
+
+The function is required to return a string prefixed by the \refarg{source} field of the provided \refarg{cpuset} followed by a colon. The remainder of the string shall represent the corresponding locality as expressed by the underlying implementation.
+
+%%%%%%%%%%%
+\subsubsection{Cpuset Structure}
+\declarestruct{pmix_cpuset_t}
+
+The \refstruct{pmix_cpuset_t} structure contains a character string identifying the source of the bitmap (e.g., "hwloc") and a pointer to the corresponding implementation-specific structure (e.g., \code{hwloc_cpuset_t}).
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_cpuset \{
+    char *source;
+    void *bitmap;
+\} pmix_cpuset_t;
+\end{codepar}
+\cspecificend
+
+\subsection{Cpuset support macros}
+The following macros support the \refstruct{pmix_cpuset_t} structure.
+
+\subsubsection{Initialize the cpuset structure}
+\declaremacro{PMIX_CPUSET_CONSTRUCT}
+
+Initialize the \refstruct{pmix_cpuset_t} fields
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_CPUSET_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_cpuset_t})}
+\end{arglist}
+
+
+%%%%%%%%%%%
 \section{Server Function Pointers}
 
 \ac{PMIx} utilizes a "function-shipping" approach to support for implementing the server-side of the protocol. This method allows \acp{RM} to implement the server without being burdened with \ac{PMIx} internal details. When a request is received from the client, the corresponding server function will be called with the information.

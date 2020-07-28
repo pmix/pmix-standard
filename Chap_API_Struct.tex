@@ -805,7 +805,7 @@ typedef struct pmix_proc \{
 \subsection{Process structure support macros}
 The following macros are provided to support the \refstruct{pmix_proc_t} structure.
 
-\subsubsection{Initialize the \refstruct{pmix_proc_t} structure}
+\subsubsection{Initialize the proc structure}
 \declaremacro{PMIX_PROC_CONSTRUCT}
 
 Initialize the \refstruct{pmix_proc_t} fields
@@ -821,7 +821,7 @@ PMIX_PROC_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_proc_t})}
 \end{arglist}
 
-\subsubsection{Destruct the \refstruct{pmix_proc_t} structure}
+\subsubsection{Destruct the proc structure}
 \declaremacro{PMIX_PROC_DESTRUCT}
 
 Destruct the \refstruct{pmix_proc_t} fields
@@ -838,7 +838,7 @@ PMIX_PROC_DESTRUCT(m)
 
 There is nothing to release here as the fields in \refstruct{pmix_proc_t} are all declared \emph{static}. However, the macro is provided for symmetry in the code and for future-proofing should some allocated field be included some day.
 
-\subsubsection{Create a \refstruct{pmix_proc_t} array}
+\subsubsection{Create a proc array}
 \declaremacro{PMIX_PROC_CREATE}
 
 Allocate and initialize an array of \refstruct{pmix_proc_t} structures
@@ -856,7 +856,7 @@ PMIX_PROC_CREATE(m, n)
 \end{arglist}
 
 
-\subsubsection{Free a \refstruct{pmix_proc_t}}
+\subsubsection{Free a proc structure}
 \declaremacro{PMIX_PROC_RELEASE}
 
 Release a \refstruct{pmix_proc_t} structure
@@ -872,7 +872,7 @@ PMIX_PROC_RELEASE(m)
 \argin{m}{Pointer to a \refstruct{pmix_proc_t} structure (handle)}
 \end{arglist}
 
-\subsubsection{Free a\refstruct{pmix_proc_t} array}
+\subsubsection{Free a proc array}
 \declaremacro{PMIX_PROC_FREE}
 
 Release an array of \refstruct{pmix_proc_t} structures
@@ -889,7 +889,7 @@ PMIX_PROC_FREE(m, n)
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
-\subsubsection{Load a\refstruct{pmix_proc_t} structure}
+\subsubsection{Load a proc structure}
 \declaremacro{PMIX_PROC_LOAD}
 
 Load values into a \refstruct{pmix_proc_t}
@@ -1155,7 +1155,7 @@ typedef struct pmix_proc_info \{
 The following macros are provided to support the \refstruct{pmix_proc_info_t} structure.
 
 %%%%
-\subsubsection{Initialize the \refstruct{pmix_proc_info_t} structure}
+\subsubsection{Initialize the process information structure}
 \declaremacro{PMIX_PROC_INFO_CONSTRUCT}
 
 Initialize the \refstruct{pmix_proc_info_t} fields
@@ -1172,7 +1172,7 @@ PMIX_PROC_INFO_CONSTRUCT(m)
 \end{arglist}
 
 %%%%
-\subsubsection{Destruct the \refstruct{pmix_proc_info_t} structure}
+\subsubsection{Destruct the process information structure}
 \declaremacro{PMIX_PROC_INFO_DESTRUCT}
 
 Destruct the \refstruct{pmix_proc_info_t} fields
@@ -1189,7 +1189,7 @@ PMIX_PROC_INFO_DESTRUCT(m)
 \end{arglist}
 
 %%%%
-\subsubsection{Create a \refstruct{pmix_proc_info_t} array}
+\subsubsection{Create a process information array}
 \declaremacro{PMIX_PROC_INFO_CREATE}
 
 Allocate and initialize a \refstruct{pmix_proc_info_t} array
@@ -1207,7 +1207,7 @@ PMIX_PROC_INFO_CREATE(m, n)
 \end{arglist}
 
 %%%%
-\subsubsection{Free a \refstruct{pmix_proc_info_t}}
+\subsubsection{Free a process information structure}
 \declaremacro{PMIX_PROC_INFO_RELEASE}
 
 Release a \refstruct{pmix_proc_info_t} structure
@@ -1224,7 +1224,7 @@ PMIX_PROC_INFO_RELEASE(m)
 \end{arglist}
 
 %%%%
-\subsubsection{Free a\refstruct{pmix_proc_info_t} array}
+\subsubsection{Free a process information array}
 \declaremacro{PMIX_PROC_INFO_FREE}
 
 Release an array of \refstruct{pmix_proc_info_t} structures
@@ -1416,7 +1416,7 @@ The \refstruct{pmix_data_array_t} structure is used to pass arrays of related va
 \subsection{Data array structure support macros}
 The following macros are provided to support the \refstruct{pmix_data_array_t} structure.
 
-\subsubsection{Initialize the \refstruct{pmix_data_array_t} structure}
+\subsubsection{Initialize the data array structure}
 \declaremacro{PMIX_DATA_ARRAY_CONSTRUCT}
 
 Initialize the \refstruct{pmix_data_array_t} fields, allocating memory for the array itself.
@@ -1434,7 +1434,7 @@ PMIX_DATA_ARRAY_CONSTRUCT(m, n, t)
 \argin{t}{\ac{PMIx} data type for the array elements (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-\subsubsection{Destruct the \refstruct{pmix_data_array_t} structure}
+\subsubsection{Destruct the data array structure}
 \declaremacro{PMIX_DATA_ARRAY_DESTRUCT}
 
 Destruct the \refstruct{pmix_data_array_t} fields, releasing the array's memory.
@@ -1451,7 +1451,7 @@ PMIX_DATA_ARRAY_DESTRUCT(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create and initialize a \refstruct{pmix_data_array_t} object}
+\subsubsection{Create and initialize a data array object}
 \declaremacro{PMIX_DATA_ARRAY_CREATE}
 
 Allocate and initialize a \refstruct{pmix_data_array_t} structure and initialize it, allocating memory for the array itself as well.
@@ -1471,7 +1471,7 @@ PMIX_DATA_ARRAY_CREATE(m, n, t)
 
 
 %%%%%%%%%%%
-\subsubsection{Free a\refstruct{pmix_data_array_t} object}
+\subsubsection{Free a data array object}
 \declaremacro{PMIX_DATA_ARRAY_FREE}
 
 Release a \refstruct{pmix_data_array_t} structure, including releasing the array's memory.
@@ -1541,7 +1541,7 @@ typedef struct pmix_value \{
 \subsection{Value structure support macros}
 The following macros are provided to support the \refstruct{pmix_value_t} structure.
 
-\subsubsection{Initialize the \refstruct{pmix_value_t} structure}
+\subsubsection{Initialize the value structure}
 \declaremacro{PMIX_VALUE_CONSTRUCT}
 
 Initialize the \refstruct{pmix_value_t} fields
@@ -1557,7 +1557,7 @@ PMIX_VALUE_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_value_t})}
 \end{arglist}
 
-\subsubsection{Destruct the \refstruct{pmix_value_t} structure}
+\subsubsection{Destruct the value structure}
 \declaremacro{PMIX_VALUE_DESTRUCT}
 
 Destruct the \refstruct{pmix_value_t} fields
@@ -1574,7 +1574,7 @@ PMIX_VALUE_DESTRUCT(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create a \refstruct{pmix_value_t} array}
+\subsubsection{Create a value array}
 \declaremacro{PMIX_VALUE_CREATE}
 
 Allocate and initialize an array of \refstruct{pmix_value_t} structures
@@ -1593,7 +1593,7 @@ PMIX_VALUE_CREATE(m, n)
 
 
 %%%%%%%%%%%
-\subsubsection{Free a\refstruct{pmix_value_t}}
+\subsubsection{Free a value structure}
 \declaremacro{PMIX_VALUE_RELEASE}
 
 Release a \refstruct{pmix_value_t} structure
@@ -1610,7 +1610,7 @@ PMIX_VALUE_RELEASE(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Free a\refstruct{pmix_value_t} array}
+\subsubsection{Free a value array}
 \declaremacro{PMIX_VALUE_FREE}
 
 Release an array of \refstruct{pmix_value_t} structures
@@ -1659,7 +1659,7 @@ The data will be copied into the \refstruct{pmix_value_t} - thus, any data store
 \adviceuserend
 
 %%%%%%%%%%%
-\subsubsection{Unload a \refstruct{pmix_value_t} structure}
+\subsubsection{Unload a value structure}
 \declaremacro{PMIX_VALUE_UNLOAD}
 
 %%%%
@@ -1692,7 +1692,7 @@ Memory will be allocated and the data will be in the \refstruct{pmix_value_t} re
 
 
 %%%%%%%%%%%
-\subsubsection{Transfer data between \refstruct{pmix_value_t} structures}
+\subsubsection{Transfer data between value structures}
 \declaremacro{PMIX_VALUE_XFER}
 
 %%%%
@@ -1724,7 +1724,7 @@ The data will be copied into the destination \refstruct{pmix_value_t} - thus, an
 
 
 %%%%%%%%%%%
-\subsubsection{Retrieve a numerical value from a \refstruct{pmix_value_t}}
+\subsubsection{Retrieve a numerical value from a value struct}
 \declaremacro{PMIX_VALUE_GET_NUMBER}
 
 Retrieve a numerical value from a \refstruct{pmix_value_t} structure
@@ -1767,7 +1767,7 @@ typedef struct pmix_info_t \{
 \subsection{Info structure support macros}
 The following macros are provided to support the \refstruct{pmix_info_t} structure.
 
-\subsubsection{Initialize the \refstruct{pmix_info_t} structure}
+\subsubsection{Initialize the info structure}
 \declaremacro{PMIX_INFO_CONSTRUCT}
 
 Initialize the \refstruct{pmix_info_t} fields
@@ -1783,7 +1783,7 @@ PMIX_INFO_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-\subsubsection{Destruct the \refstruct{pmix_info_t} structure}
+\subsubsection{Destruct the info structure}
 \declaremacro{PMIX_INFO_DESTRUCT}
 
 Destruct the \refstruct{pmix_info_t} fields
@@ -1800,10 +1800,10 @@ PMIX_INFO_DESTRUCT(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create a \refstruct{pmix_info_t} array}
+\subsubsection{Create an info array}
 \declaremacro{PMIX_INFO_CREATE}
 
-Allocate and initialize an array of \refstruct{pmix_info_t} structures
+Allocate and initialize an array of info structures
 
 \versionMarker{1.0}
 \cspecificstart
@@ -1819,7 +1819,7 @@ PMIX_INFO_CREATE(m, n)
 
 
 %%%%%%%%%%%
-\subsubsection{Free a\refstruct{pmix_info_t} array}
+\subsubsection{Free an info array}
 \declaremacro{PMIX_INFO_FREE}
 
 Release an array of \refstruct{pmix_info_t} structures
@@ -1837,7 +1837,7 @@ PMIX_INFO_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Load key and value data into a \refstruct{pmix_info_t}}
+\subsubsection{Load key and value data into a info struct}
 \declaremacro{PMIX_INFO_LOAD}
 
 \versionMarker{1.0}
@@ -1861,7 +1861,7 @@ Both key and data will be copied into the \refstruct{pmix_info_t} - thus, the ke
 \adviceuserend
 
 %%%%%%%%%%%
-\subsubsection{Copy data between \refstruct{pmix_info_t} structures}
+\subsubsection{Copy data between info structures}
 \declaremacro{PMIX_INFO_XFER}
 
 Copy all data (including key, value, and directives) between two \refstruct{pmix_info_t} structures.
@@ -1886,7 +1886,7 @@ All data (including key, value, and directives) will be copied into the destinat
 
 
 %%%%%%%%%%%
-\subsubsection{Test a boolean \refstruct{pmix_info_t}}
+\subsubsection{Test a boolean info struct}
 \declaremacro{PMIX_INFO_TRUE}
 
 A special macro for checking if a boolean \refstruct{pmix_info_t} is \code{true}
@@ -2149,7 +2149,7 @@ typedef struct {
 
 The following macros are provided to support the \refstruct{pmix_envar_t} structure.
 
-\subsubsection{Initialize the \refstruct{pmix_envar_t} structure}
+\subsubsection{Initialize the envar structure}
 \declaremacro{PMIX_ENVAR_CONSTRUCT}
 
 Initialize the \refstruct{pmix_envar_t} fields
@@ -2165,7 +2165,7 @@ PMIX_ENVAR_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_envar_t})}
 \end{arglist}
 
-\subsubsection{Destruct the \refstruct{pmix_envar_t} structure}
+\subsubsection{Destruct the envar structure}
 \declaremacro{PMIX_ENVAR_DESTRUCT}
 
 Clear the \refstruct{pmix_envar_t} fields
@@ -2182,7 +2182,7 @@ PMIX_ENVAR_DESTRUCT(m)
 \end{arglist}
 
 
-\subsubsection{Create a \refstruct{pmix_envar_t} array}
+\subsubsection{Create an envar array}
 \declaremacro{PMIX_ENVAR_CREATE}
 
 Allocate and initialize an array of \refstruct{pmix_envar_t} structures
@@ -2200,7 +2200,7 @@ PMIX_ENVAR_CREATE(m, n)
 \end{arglist}
 
 
-\subsubsection{Free a\refstruct{pmix_envar_t} array}
+\subsubsection{Free an envar array}
 \declaremacro{PMIX_ENVAR_FREE}
 
 Release an array of \refstruct{pmix_envar_t} structures
@@ -2217,7 +2217,7 @@ PMIX_ENVAR_FREE(m, n)
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
-\subsubsection{Load a\refstruct{pmix_envar_t} structure}
+\subsubsection{Load an envar structure}
 \declaremacro{PMIX_ENVAR_LOAD}
 
 Load values into a \refstruct{pmix_envar_t}
@@ -2258,7 +2258,7 @@ typedef struct pmix_pdata \{
 
 The following macros are provided to support the \refstruct{pmix_pdata_t} structure.
 
-\subsubsection{Initialize the \refstruct{pmix_pdata_t} structure}
+\subsubsection{Initialize the pdata structure}
 \declaremacro{PMIX_PDATA_CONSTRUCT}
 
 Initialize the \refstruct{pmix_pdata_t} fields
@@ -2274,7 +2274,7 @@ PMIX_PDATA_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_pdata_t})}
 \end{arglist}
 
-\subsubsection{Destruct the \refstruct{pmix_pdata_t} structure}
+\subsubsection{Destruct the pdata structure}
 \declaremacro{PMIX_PDATA_DESTRUCT}
 
 Destruct the \refstruct{pmix_pdata_t} fields
@@ -2291,7 +2291,7 @@ PMIX_PDATA_DESTRUCT(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create a \refstruct{pmix_pdata_t} array}
+\subsubsection{Create a pdata array}
 \declaremacro{PMIX_PDATA_CREATE}
 
 Allocate and initialize an array of \refstruct{pmix_pdata_t} structures
@@ -2310,7 +2310,7 @@ PMIX_PDATA_CREATE(m, n)
 
 
 %%%%%%%%%%%
-\subsubsection{Free a\refstruct{pmix_pdata_t}}
+\subsubsection{Free a pdata structure}
 \declaremacro{PMIX_PDATA_RELEASE}
 
 Release a \refstruct{pmix_pdata_t} structure
@@ -2328,7 +2328,7 @@ PMIX_PDATA_RELEASE(m)
 
 
 %%%%%%%%%%%
-\subsubsection{Free a\refstruct{pmix_pdata_t} array}
+\subsubsection{Free a pdata array}
 \declaremacro{PMIX_PDATA_FREE}
 
 Release an array of \refstruct{pmix_pdata_t} structures
@@ -2434,7 +2434,7 @@ typedef struct pmix_app \{
 \subsection{App structure support macros}
 The following macros are provided to support the \refstruct{pmix_app_t} structure.
 
-\subsubsection{Initialize the \refstruct{pmix_app_t} structure}
+\subsubsection{Initialize the app structure}
 \declaremacro{PMIX_APP_CONSTRUCT}
 
 Initialize the \refstruct{pmix_app_t} fields
@@ -2450,7 +2450,7 @@ PMIX_APP_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_app_t})}
 \end{arglist}
 
-\subsubsection{Destruct the \refstruct{pmix_app_t} structure}
+\subsubsection{Destruct the app structure}
 \declaremacro{PMIX_APP_DESTRUCT}
 
 Destruct the \refstruct{pmix_app_t} fields
@@ -2467,7 +2467,7 @@ PMIX_APP_DESTRUCT(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create a \refstruct{pmix_app_t} array}
+\subsubsection{Create an app array}
 \declaremacro{PMIX_APP_CREATE}
 
 Allocate and initialize an array of \refstruct{pmix_app_t} structures
@@ -2486,7 +2486,7 @@ PMIX_APP_CREATE(m, n)
 
 
 %%%%%%%%%%%
-\subsubsection{Free a \refstruct{pmix_app_t}}
+\subsubsection{Free an app structure}
 \declaremacro{PMIX_APP_RELEASE}
 
 Release a \refstruct{pmix_app_t} structure
@@ -2503,7 +2503,7 @@ PMIX_APP_RELEASE(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Free a \refstruct{pmix_app_t} array}
+\subsubsection{Free an app array}
 \declaremacro{PMIX_APP_FREE}
 
 Release an array of \refstruct{pmix_app_t} structures
@@ -2521,26 +2521,7 @@ PMIX_APP_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create the \refstruct{pmix_info_t} array of application directives}
-\declaremacro{PMIX_APP_INFO_CREATE}
-
-Create an array of \refstruct{pmix_info_t} structures for passing application-level directives, updating the \refarg{ninfo} field of the \refstruct{pmix_app_t} structure.
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_APP_INFO_CREATE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the \refstruct{pmix_app_t} structure (handle)}
-\argin{n}{Number of directives to be allocated (\code{size_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%
-\subsubsection{Create the \refstruct{pmix_info_t} array of application directives}
+\subsubsection{Create the info array of application directives}
 \declaremacro{PMIX_APP_INFO_CREATE}
 
 Create an array of \refstruct{pmix_info_t} structures for passing application-level directives, updating the \refarg{ninfo} field of the \refstruct{pmix_app_t} structure.
@@ -2578,7 +2559,7 @@ typedef struct pmix_query \{
 \subsection{Query structure support macros}
 The following macros are provided to support the \refstruct{pmix_query_t} structure.
 
-\subsubsection{Initialize the \refstruct{pmix_query_t} structure}
+\subsubsection{Initialize the query structure}
 \declaremacro{PMIX_QUERY_CONSTRUCT}
 
 Initialize the \refstruct{pmix_query_t} fields
@@ -2594,7 +2575,7 @@ PMIX_QUERY_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_query_t})}
 \end{arglist}
 
-\subsubsection{Destruct the \refstruct{pmix_query_t} structure}
+\subsubsection{Destruct the query structure}
 \declaremacro{PMIX_QUERY_DESTRUCT}
 
 Destruct the \refstruct{pmix_query_t} fields
@@ -2611,7 +2592,7 @@ PMIX_QUERY_DESTRUCT(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create a \refstruct{pmix_query_t} array}
+\subsubsection{Create a query array}
 \declaremacro{PMIX_QUERY_CREATE}
 
 Allocate and initialize an array of \refstruct{pmix_query_t} structures
@@ -2630,7 +2611,7 @@ PMIX_QUERY_CREATE(m, n)
 
 
 %%%%%%%%%%%
-\subsubsection{Free a \refstruct{pmix_query_t}}
+\subsubsection{Free a query structure}
 \declaremacro{PMIX_QUERY_RELEASE}
 
 Release a \refstruct{pmix_query_t} structure
@@ -2647,7 +2628,7 @@ PMIX_QUERY_RELEASE(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Free a \refstruct{pmix_query_t} array}
+\subsubsection{Free a query array}
 \declaremacro{PMIX_QUERY_FREE}
 
 Release an array of \refstruct{pmix_query_t} structures
@@ -2665,7 +2646,7 @@ PMIX_QUERY_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create the\refstruct{pmix_info_t} array of query qualifiers}
+\subsubsection{Create the info array of query qualifiers}
 \declaremacro{PMIX_QUERY_QUALIFIERS_CREATE}
 
 Create an array of \refstruct{pmix_info_t} structures for passing query qualifiers, updating the \refarg{nqual} field of the \refstruct{pmix_query_t} structure.
@@ -2730,7 +2711,7 @@ Although not strictly required, host environments are strongly encouraged to pro
 The following macros are provided to support the \refstruct{pmix_regattr_t} structure.
 
 %%%%%%%%%%%
-\subsubsection{Initialize the \refstruct{pmix_regattr_t} structure}
+\subsubsection{Initialize the regattr structure}
 \declaremacro{PMIX_REGATTR_CONSTRUCT}
 
 Initialize the \refstruct{pmix_regattr_t} fields
@@ -2747,7 +2728,7 @@ PMIX_REGATTR_CONSTRUCT(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Destruct the \refstruct{pmix_regattr_t} structure}
+\subsubsection{Destruct the regattr structure}
 \declaremacro{PMIX_REGATTR_DESTRUCT}
 
 Destruct the \refstruct{pmix_regattr_t} fields, releasing all strings.
@@ -2764,7 +2745,7 @@ PMIX_REGATTR_DESTRUCT(m)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Create a \refstruct{pmix_regattr_t} array}
+\subsubsection{Create a regattr array}
 \declaremacro{PMIX_REGATTR_CREATE}
 
 Allocate and initialize an array of \refstruct{pmix_regattr_t} structures
@@ -2782,7 +2763,7 @@ PMIX_REGATTR_CREATE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Free a \refstruct{pmix_regattr_t} array}
+\subsubsection{Free a regattr array}
 \declaremacro{PMIX_REGATTR_FREE}
 
 Release an array of \refstruct{pmix_regattr_t} structures
@@ -2800,7 +2781,7 @@ PMIX_REGATTR_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Load a\refstruct{pmix_regattr_t} structure}
+\subsubsection{Load a regattr structure}
 \declaremacro{PMIX_REGATTR_LOAD}
 
 Load values into a \refstruct{pmix_regattr_t} structure. The macro can be called multiple times to add as many strings as desired to the same structure by passing the same address and a \code{NULL} key to the macro. Note that the \refarg{t} type value must be given each time.
@@ -2822,7 +2803,7 @@ PMIX_REGATTR_LOAD(a, n, k, t, ni, v)
 \end{arglist}
 
 %%%%%%%%%%%
-\subsubsection{Transfer a \refstruct{pmix_regattr_t} to another \refstruct{pmix_regattr_t}}
+\subsubsection{Transfer a regattr to another regattr}
 \declaremacro{PMIX_REGATTR_XFER}
 
 Non-destructively transfer the contents of a \refstruct{pmix_regattr_t} structure to another one.
@@ -2876,7 +2857,7 @@ typedef struct pmix_byte_object \{
 \subsection{Byte object support macros}
 The following macros support the \refstruct{pmix_byte_object_t} structure.
 
-\subsubsection{Initialize the \refstruct{pmix_byte_object_t} structure}
+\subsubsection{Initialize the byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_CONSTRUCT}
 
 Initialize the \refstruct{pmix_byte_object_t} fields
@@ -2892,7 +2873,7 @@ PMIX_BYTE_OBJECT_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_byte_object_t})}
 \end{arglist}
 
-\subsubsection{Destruct the \refstruct{pmix_byte_object_t} structure}
+\subsubsection{Destruct the byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_DESTRUCT}
 
 Clear the \refstruct{pmix_byte_object_t} fields
@@ -2908,7 +2889,7 @@ PMIX_BYTE_OBJECT_DESTRUCT(m)
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_byte_object_t})}
 \end{arglist}
 
-\subsubsection{Create a \refstruct{pmix_byte_object_t} structure}
+\subsubsection{Create a byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_CREATE}
 
 Allocate and intitialize an array of \refstruct{pmix_byte_object_t} structures
@@ -2925,7 +2906,7 @@ PMIX_BYTE_OBJECT_CREATE(m, n)
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
-\subsubsection{Free a \refstruct{pmix_byte_object_t} array}
+\subsubsection{Free a byte object array}
 \declaremacro{PMIX_BYTE_OBJECT_FREE}
 
 Release an array of \refstruct{pmix_byte_object_t} structures
@@ -2942,7 +2923,7 @@ PMIX_BYTE_OBJECT_FREE(m, n)
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
-\subsubsection{Load a\refstruct{pmix_byte_object_t} structure}
+\subsubsection{Load a byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_LOAD}
 
 Load values into a \refstruct{pmix_byte_object_t}
@@ -2982,7 +2963,7 @@ typedef struct pmix_data_array \{
 \subsection{Data array support macros}
 The following macros support the \refstruct{pmix_data_array_t} structure.
 
-\subsubsection{Initialize a \refstruct{pmix_data_array_t} structure}
+\subsubsection{Initialize a data array structure}
 \declaremacro{PMIX_DATA_ARRAY_CONSTRUCT}
 
 Initialize the \refstruct{pmix_data_array_t} fields, allocating memory for the array of the indicated type.
@@ -3001,7 +2982,7 @@ PMIX_DATA_ARRAY_CONSTRUCT(m, n, t)
 \end{arglist}
 
 
-\subsubsection{Destruct a \refstruct{pmix_data_array_t} structure}
+\subsubsection{Destruct a data array structure}
 \declaremacro{PMIX_DATA_ARRAY_DESTRUCT}
 
 Destruct the \refstruct{pmix_data_array_t}, releasing the memory in the array.
@@ -3018,7 +2999,7 @@ PMIX_DATA_ARRAY_CONSTRUCT(m)
 \end{arglist}
 
 
-\subsubsection{Create a \refstruct{pmix_data_array_t} structure}
+\subsubsection{Create a data array structure}
 \declaremacro{PMIX_DATA_ARRAY_CREATE}
 
 Allocate memory for the \refstruct{pmix_data_array_t} object itself, and then allocate memory for the array of the indicated type.
@@ -3037,7 +3018,7 @@ PMIX_DATA_ARRAY_CREATE(m, n, t)
 \end{arglist}
 
 
-\subsubsection{Free a \refstruct{pmix_data_array_t} structure}
+\subsubsection{Free a data array structure}
 \declaremacro{PMIX_DATA_ARRAY_FREE}
 
 Release the memory in the array, and then release the \refstruct{pmix_data_array_t} object itself.
@@ -3528,12 +3509,12 @@ The host \ac{RM} wants to declare itself as being the local system server for PM
 }
 
 %
-\declareNewAttribute{PMIX_SERVER_SESSION_SUPPORT}{"pmix.srvr.sess"}{bool}{
+\declareAttributeNEW{PMIX_SERVER_SESSION_SUPPORT}{"pmix.srvr.sess"}{bool}{
 The host \ac{RM} wants to declare itself as being the local session server for PMIx connection requests.
 }
 
 %
-\declareNewAttribute{PMIX_SERVER_START_TIME}{"pmix.srvr.strtime"}{char*}{
+\declareAttributeNEW{PMIX_SERVER_START_TIME}{"pmix.srvr.strtime"}{char*}{
 Time when the server started - i.e., when the server created it's rendezvous file (given in ctime string format)
 }
 
@@ -3605,12 +3586,12 @@ The requesting process is a PMIx client.
 }
 
 %
-\declareNewAttribute{PMIX_PSET_NAME}{"pmix.pset.nm"}{char*}{
+\declareAttributeNEW{PMIX_PSET_NAME}{"pmix.pset.nm"}{char*}{
 User-assigned name for the process set containing the given process.
 }
 
 %
-\declareNewAttribute{PMIX_REINCARNATION}{"pmix.reinc"}{uint32_t}{
+\declareAttributeNEW{PMIX_REINCARNATION}{"pmix.reinc"}{uint32_t}{
 Number of times this process has been re-instantiated - i.e, a value of zero indicates that the process has never failed and been restarted.
 }
 
@@ -3872,7 +3853,7 @@ Process rank on this node spanning all jobs.
 }
 
 %
-\declareNewAttribute{PMIX_PACKAGE_RANK}{"pmix.pkgrank"}{uint16_t}{
+\declareAttributeNEW{PMIX_PACKAGE_RANK}{"pmix.pkgrank"}{uint16_t}{
 Process rank within this job on the package where this process resides
 }
 
@@ -3912,12 +3893,12 @@ Name of the host (e.g., where a specified process is running, or a given device 
 }
 
 %
-\declareNewAttribute{PMIX_HOSTNAME_ALIASES}{"pmix.alias"}{char*}{
+\declareAttributeNEW{PMIX_HOSTNAME_ALIASES}{"pmix.alias"}{char*}{
 Comma-delimited list of names by which this node is known.
 }
 
 %
-\declareNewAttribute{PMIX_HOSTNAME_KEEP_FQDN}{"pmix.fqdn"}{bool}{
+\declareAttributeNEW{PMIX_HOSTNAME_KEEP_FQDN}{"pmix.fqdn"}{bool}{
 FQDN hostnames are being retained
 }
 
@@ -3944,11 +3925,6 @@ Colon-delimited cpusets of local peers within the specified namespace - referenc
 %
 \declareAttribute{PMIX_PROC_URI}{"pmix.puri"}{char*}{
 \ac{URI} containing contact information for a given process.
-}
-
-%
-\declareAttribute{PMIX_LOCALITY}{"pmix.loc"}{uint16_t}{
-Relative locality of the specified process to the requestor.
 }
 
 %
@@ -3999,27 +3975,27 @@ Provide an array of \refstruct{pmix_info_t} containing session-level information
 }
 
 %
-\declareNewAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
+\declareAttributeNEW{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing job-level information. The \refattr{PMIX_SESSION_ID} attribute of the \refterm{session} containing the \refterm{job} is required to be included in the array whenever the \ac{PMIx} server library may host multiple sessions (e.g., when executing with a host \ac{RM} daemon). As information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes when used in that context (though either or both of them may be included). At least one of the job identifiers must be provided in all other contexts where the job being referenced is ambiguous.
 }
 
 %
-\declareNewAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
+\declareAttributeNEW{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, must to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
 }
 
 %
-\declareNewAttribute{PMIX_PROC_INFO_ARRAY}{"pmix.pdata"}{pmix_data_array_t}{
+\declareAttributeNEW{PMIX_PROC_INFO_ARRAY}{"pmix.pdata"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing process-level information. The \refattr{PMIX_RANK} and \refattr{PMIX_NSPACE} attributes, or the \refattr{PMIX_PROCID} attribute, are required to be included in the array when the array is not included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the process is ambiguous. All three may be included if desired. When the array is included in some broader structure that identifies the job, then only the \refattr{PMIX_RANK} or the \refattr{PMIX_PROCID} attribute must be included (the others are optional).
 }
 
 %
-\declareNewAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
+\declareAttributeNEW{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is required to be included in the array, though both may be included.
 }
 
 %
-\declareNewAttribute{PMIX_SERVER_INFO_ARRAY}{"pmix.srv.arr"}{pmix_data_array_t}{
+\declareAttributeNEW{PMIX_SERVER_INFO_ARRAY}{"pmix.srv.arr"}{pmix_data_array_t}{
 Array of data on a given server, starting with its \refattr{PMIX_NSPACE}
 }
 
@@ -4082,7 +4058,7 @@ Number of slots allocated in this context (session, namespace, application, or n
 }
 
 %
-\declareNewAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
+\declareAttributeNEW{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
 Number of nodes in this session, or that are currently executing processes from the associated namespace or application.
 }
 
@@ -4137,25 +4113,6 @@ Full path to file containing \ac{XML} topology description
 %
 \declareAttribute{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
 Topology signature string.
-}
-
-%
-\declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
-String describing a process's bound location - referenced using the process's rank.
-The string is of the form:\\
-\code{NM\%s:SK\%s:L3\%s:L2\%s:L1\%s:CR\%s:HT\%s}\\
-Where the \code{\%s} is replaced with an integer index or inclusive range for hwloc.
-\code{NM} identifies the numa node(s).
-\code{SK} identifies the socket(s).
-\code{L3} identifies the L3 cache(s).
-\code{L2} identifies the L2 cache(s).
-\code{L1} identifies the L1 cache(s).
-\code{CR} identifies the cores(s).
-\code{HT} identifies the hardware thread(s).
-If your architecture does not have the specified hardware designation then it can be omitted from the signature.
-\\
-For example: \code{NM0:SK0:L30-4:L20-4:L10-4:CR0-4:HT0-39}.\\
-This means numa node \code{0}, socket \code{0}, L3 caches \code{0,1,2,3,4}, L2 caches \code{0-4}, L1 caches \code{0-4}, cores \code{0,1,2,3,4}, and hardware threads \code{0-39}.
 }
 
 %
@@ -4227,7 +4184,7 @@ Comma-delimited list of algorithms to use for the collective operation. \ac{PMIx
 }
 
 %
-\declareDepAttribute{PMIX_COLLECTIVE_ALGO_REQD}{"pmix.calreqd"}{bool}{
+\declareAttributeDEP{PMIX_COLLECTIVE_ALGO_REQD}{"pmix.calreqd"}{bool}{
 If \code{true}, indicates that the requested choice of algorithm is mandatory.
 }
 
@@ -4252,7 +4209,7 @@ Look only in the client's local data store for the requested value - do not requ
 }
 
 %
-\declareNewAttribute{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
+\declareAttributeNEW{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
 Request that any pointers in the returned value point directly to values in the key-value store
 }
 
@@ -4278,11 +4235,11 @@ Status returned by a process upon its termination. The status will be communicat
 }
 
 
-\declareNewAttribute{PMIX_NOTIFY_LAUNCH}{"pmix.note.lnch"}{bool}{
+\declareAttributeNEW{PMIX_NOTIFY_LAUNCH}{"pmix.note.lnch"}{bool}{
 Notify the requester upon launch of the child job and return its namespace in the event
 }
 
-\declareNewAttribute{PMIX_GET_REFRESH_CACHE}{"pmix.get.refresh"}{bool}{
+\declareAttributeNEW{PMIX_GET_REFRESH_CACHE}{"pmix.get.refresh"}{bool}{
 When retrieving data for a remote process, refresh the existing local data cache for the process in case new values have been put and committed by it since the last refresh
 }
 
@@ -4450,7 +4407,7 @@ Text message suitable for output by recipient - e.g., describing the cause of th
 }
 
 %
-\declareNewAttribute{PMIX_EVENT_TIMESTAMP}{"pmix.evtstamp"}{time_t}{
+\declareAttributeNEW{PMIX_EVENT_TIMESTAMP}{"pmix.evtstamp"}{time_t}{
 System time when the associated event occurred.
 }
 
@@ -4613,7 +4570,7 @@ Direct application output (both stdout and stderr) into files of form "<filename
 }
 
 %
-\declareNewAttribute{PMIX_OUTPUT_TO_DIRECTORY}{"pmix.outdir"}{char*}{
+\declareAttributeNEW{PMIX_OUTPUT_TO_DIRECTORY}{"pmix.outdir"}{char*}{
 Direct application output into files of form "<directory>/<jobid>/rank.<rank>/stdout[err]"
 }
 
@@ -4668,32 +4625,32 @@ Indicate that the job being spawned is a tool
 }
 
 %
-\declareNewAttribute{PMIX_CMD_LINE}{"pmix.cmd.line"}{char*}{
+\declareAttributeNEW{PMIX_CMD_LINE}{"pmix.cmd.line"}{char*}{
 Command line used to execute the specified process (e.g., "mpirun -n 2 --map-by foo ./myapp")
 }
 
 %
-\declareNewAttribute{PMIX_FORK_EXEC_AGENT}{"pmix.fe.agnt"}{char*}{
+\declareAttributeNEW{PMIX_FORK_EXEC_AGENT}{"pmix.fe.agnt"}{char*}{
 Command line of fork/exec agent to be used for starting local processes
 }
 
 %
-\declareNewAttribute{PMIX_TIMEOUT_STACKTRACES}{"pmix.tim.stack"}{bool}{
+\declareAttributeNEW{PMIX_TIMEOUT_STACKTRACES}{"pmix.tim.stack"}{bool}{
 Include process stacktraces in timeout report from a job
 }
 
 %
-\declareNewAttribute{PMIX_TIMEOUT_REPORT_STATE}{"pmix.tim.state"}{bool}{
+\declareAttributeNEW{PMIX_TIMEOUT_REPORT_STATE}{"pmix.tim.state"}{bool}{
 Report process states in timeout report from a job
 }
 
 %
-\declareNewAttribute{PMIX_APP_ARGV}{"pmix.app.argv"}{char*}{
+\declareAttributeNEW{PMIX_APP_ARGV}{"pmix.app.argv"}{char*}{
 Consolidated argv passed to the spawn command for the given process (e.g., "./myapp arg1 arg2 arg3")
 }
 
 %
-\declareNewAttribute{PMIX_NOTIFY_JOB_EVENTS}{"pmix.note.jev"}{bool}{
+\declareAttributeNEW{PMIX_NOTIFY_JOB_EVENTS}{"pmix.note.jev"}{bool}{
 Requests that the \ac{PMIx} server provide the requester with the \refconst{PMIX_EVENT_JOB_START}, \refconst{PMIX_LAUNCH_COMPLETE}, and \refconst{PMIX_EVENT_JOB_END} events. Each event is to include at least the namespace of the corresponding job and a \refattr{PMIX_EVENT_TIMESTAMP} indicating the time the event occurred. Note that these events can be captured and processed by registering a default event handler instead of individual handlers and then processing the events based on the returned status code. Another common method is to register one event handler for all job-related events, with a separate handler for non-job events - see \refapi{PMIx_Register_event_handler} for details.
 }
 
@@ -4703,7 +4660,7 @@ Requests that the \ac{PMIx} generate the \refconst{PMIX_EVENT_JOB_END} event for
 }
 
 %
-\declareNewAttribute{PMIX_LOG_JOB_EVENTS}{"pmix.log.jev"}{bool}{
+\declareAttributeNEW{PMIX_LOG_JOB_EVENTS}{"pmix.log.jev"}{bool}{
 Requests that the \ac{PMIx} server log the \refconst{PMIX_EVENT_JOB_START}, \refconst{PMIX_LAUNCH_COMPLETE}, and \refconst{PMIX_EVENT_JOB_END} events using \refapi{PMIx_Log} instead of generating \ac{PMIx} events, subject to the logging attributes of Section \ref{api:struct:attributes:log}
 }
 
@@ -4714,12 +4671,12 @@ Requests that the \ac{PMIx} server log the \refconst{PMIX_EVENT_JOB_START}, \ref
 Attributes used to describe \refapi{PMIx_Query_info_nb} behavior - these are values passed to the \refapi{PMIx_Query_info_nb} \ac{API} and therefore are not passed to the \refapi{PMIx_Get} \ac{API}.
 
 %
-\declareNewAttribute{PMIX_QUERY_SUPPORTED_KEYS}{"pmix.qry.keys"}{char*}{
+\declareAttributeNEW{PMIX_QUERY_SUPPORTED_KEYS}{"pmix.qry.keys"}{char*}{
 Returns comma-delimited list of keys supported by the query function. NO QUALIFIERS
 }
 
 %
-\declareNewAttribute{PMIX_QUERY_SUPPORTED_QUALIFIERS}{"pmix.qry.quals"}{char*}{
+\declareAttributeNEW{PMIX_QUERY_SUPPORTED_QUALIFIERS}{"pmix.qry.quals"}{char*}{
 Return comma-delimited list of qualifiers supported by a query on the provided key, instead of actually performing the query on the key. NO QUALIFIERS
 }
 
@@ -4734,7 +4691,7 @@ Request a comma-delimited list of active namespaces. NO QUALIFIERS
 }
 
 %
-\declareNewAttribute{PMIX_QUERY_NAMESPACE_INFO}{"pmix.qry.nsinfo"}{pmix_data_array_t*}{
+\declareAttributeNEW{PMIX_QUERY_NAMESPACE_INFO}{"pmix.qry.nsinfo"}{pmix_data_array_t*}{
 Return an array of active namespace information - each element will itself contain an array including the namespace plus the command line of the application executing within it. SUPPORTED QUALIFIERS: \refattr{PMIX_NSPACE} of specific namespace whose info is being requested}
 
 %
@@ -4808,22 +4765,22 @@ Query number of seconds (\code{uint32_t}) remaining in allocation for the specif
 }
 
 %
-\declareNewAttribute{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
+\declareAttributeNEW{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
 Query list of supported attributes for specified \acp{API}. SUPPORTED QUALIFIERS: \refattr{PMIX_CLIENT_FUNCTIONS}, \refattr{PMIX_SERVER_FUNCTIONS}, \refattr{PMIX_TOOL_FUNCTIONS}, and/or \refattr{PMIX_HOST_FUNCTIONS}
 }
 
 %
-\declareNewAttribute{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
+\declareAttributeNEW{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
 Return the number of psets defined in the specified range (defaults to session).
 }
 
 %
-\declareNewAttribute{PMIX_QUERY_PSET_NAMES}{"pmix.qry.psets"}{char*}{
+\declareAttributeNEW{PMIX_QUERY_PSET_NAMES}{"pmix.qry.psets"}{char*}{
 Return a comma-delimited list of the names of the psets defined in the specified range (defaults to session).
 }
 
 %
-\declareNewAttribute{PMIX_QUERY_AVAIL_SERVERS}{"pmix.qry.asrvrs"}{pmix_data_array_t*}{
+\declareAttributeNEW{PMIX_QUERY_AVAIL_SERVERS}{"pmix.qry.asrvrs"}{pmix_data_array_t*}{
 Return an array of \refstruct{pmix_info_t}, each element itself containing an array of \refstruct{pmix_info_t} of available data for servers on this node to which the caller might be able to connect. Each array must include at least one of the rendezvous-required pieces of information.
 }
 
@@ -5002,7 +4959,7 @@ Append the given value to the specified environmental value using the given sepa
 }
 
 %
-\declareNewAttribute{PMIX_FIRST_ENVAR}{"pmix.envar.first"}{pmix_envar_t*}{
+\declareAttributeNEW{PMIX_FIRST_ENVAR}{"pmix.envar.first"}{pmix_envar_t*}{
 Ensure the given value appears first in the specified envar using the separator character, creating the envar if it doesn't already exist
 }
 
@@ -5019,12 +4976,12 @@ User-provided string identifier for this allocation request which can later be u
 }
 
 %
-\declareNewAttribute{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
+\declareAttributeNEW{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
 A string identifier (provided by the host environment) for the resulting allocation which can later be used to reference the allocated resources in, for example, a call to \refapi{PMIx_Spawn}.
 }
 
 %
-\declareNewAttribute{PMIX_ALLOC_QUEUE}{"pmix.alloc.queue"}{char*}{
+\declareAttributeNEW{PMIX_ALLOC_QUEUE}{"pmix.alloc.queue"}{char*}{
 Name of the \ac{WLM} queue to which the allocation request is to be directed, or the queue being referenced in a query.
 }
 
@@ -5059,7 +5016,7 @@ Number of Megabytes[base2] of memory (per process) being requested in an allocat
 }
 
 %
-\declareDepAttribute{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
+\declareAttributeDEP{PMIX_ALLOC_NETWORK}{"pmix.alloc.net"}{array}{
 Changed to \refattr{PMIX_ALLOC_FABRIC}
 }
 %
@@ -5067,7 +5024,7 @@ Changed to \refattr{PMIX_ALLOC_FABRIC}
 Array of \refstruct{pmix_info_t} describing requested fabric resources. This must include at least: \refattr{PMIX_ALLOC_FABRIC_ID}, \refattr{PMIX_ALLOC_FABRIC_TYPE}, and \refattr{PMIX_ALLOC_FABRIC_ENDPTS}, plus whatever other descriptors are desired.
 }
 %
-\declareDepAttribute{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
+\declareAttributeDEP{PMIX_ALLOC_NETWORK_ID}{"pmix.alloc.netid"}{char*}{
 Changed to \refattr{PMIX_ALLOC_FABRIC_ID}
 }
 %
@@ -5082,7 +5039,7 @@ Fabric bandwidth (in Megabits[base2]/sec) for the job being requested in an allo
 }
 
 %
-\declareDepAttribute{PMIX_ALLOC_NETWORK_QOS}{"pmix.alloc.netqos"}{char*}{
+\declareAttributeDEP{PMIX_ALLOC_NETWORK_QOS}{"pmix.alloc.netqos"}{char*}{
 Changed to \refattr{PMIX_ALLOC_FABRIC_QOS}
 }
 
@@ -5097,7 +5054,7 @@ Total session time (in seconds) being requested in an allocation request.
 }
 
 %
-\declareDepAttribute{PMIX_ALLOC_NETWORK_TYPE}{"pmix.alloc.nettype"}{char*}{
+\declareAttributeDEP{PMIX_ALLOC_NETWORK_TYPE}{"pmix.alloc.nettype"}{char*}{
 Changed to \refattr{PMIX_ALLOC_FABRIC_TYPE}
 }
 %
@@ -5106,7 +5063,7 @@ Type of desired transport (e.g., \var{``tcp''}, \var{``udp''}) being requested i
 }
 
 %
-\declareDepAttribute{PMIX_ALLOC_NETWORK_PLANE}{"pmix.alloc.netplane"}{char*}{
+\declareAttributeDEP{PMIX_ALLOC_NETWORK_PLANE}{"pmix.alloc.netplane"}{char*}{
 Changed to \refattr{PMIX_ALLOC_FABRIC_PLANE}
 }
 %
@@ -5115,7 +5072,7 @@ ID string for the NIC (aka \textit{plane}) to be used for the requested allocati
 }
 
 %
-\declareDepAttribute{PMIX_ALLOC_NETWORK_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
+\declareAttributeDEP{PMIX_ALLOC_NETWORK_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
 Changed to \refattr{PMIX_ALLOC_FABRIC_ENDPTS}
 }
 %
@@ -5124,7 +5081,7 @@ Number of endpoints to allocate per process in the job
 }
 
 %
-\declareDepAttribute{PMIX_ALLOC_NETWORK_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
+\declareAttributeDEP{PMIX_ALLOC_NETWORK_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
 Changed to \refattr{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
 }
 %
@@ -5133,7 +5090,7 @@ Number of endpoints to allocate per node for the job
 }
 
 %
-\declareDepAttribute{PMIX_ALLOC_NETWORK_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
+\declareAttributeDEP{PMIX_ALLOC_NETWORK_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
 Changed to \refattr{PMIX_ALLOC_FABRIC_SEC_KEY}
 }
 %
@@ -5376,35 +5333,35 @@ Include all relevant data
 \subsection{Attribute support level attributes}
 \label{api:struct:attributes:level}
 
-\declareNewAttribute{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
+\declareAttributeNEW{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
 Request a list of functions supported by the \ac{PMIx} client library
 }
 
-\declareNewAttribute{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
+\declareAttributeNEW{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
 Request attributes supported by the \ac{PMIx} client library
 }
 
-\declareNewAttribute{PMIX_SERVER_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
+\declareAttributeNEW{PMIX_SERVER_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
 Request a list of functions supported by the \ac{PMIx} server library
 }
 
-\declareNewAttribute{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
+\declareAttributeNEW{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
 Request attributes supported by the \ac{PMIx} server library
 }
 
-\declareNewAttribute{PMIX_HOST_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
+\declareAttributeNEW{PMIX_HOST_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
 Request a list of functions supported by the host environment
 }
 
-\declareNewAttribute{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
+\declareAttributeNEW{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
 Request attributes supported by the host environment
 }
 
-\declareNewAttribute{PMIX_TOOL_FUNCTIONS}{"pmix.tool.fns"}{bool}{
+\declareAttributeNEW{PMIX_TOOL_FUNCTIONS}{"pmix.tool.fns"}{bool}{
 Request a list of functions supported by the \ac{PMIx} tool library
 }
 
-\declareNewAttribute{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
+\declareAttributeNEW{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
 Request attributes supported by the \ac{PMIx} tool library functions
 }
 
@@ -5412,15 +5369,15 @@ Request attributes supported by the \ac{PMIx} tool library functions
 \subsection{Descriptive attributes}
 \label{api:struct:attributes:descr}
 
-\declareNewAttribute{PMIX_MAX_VALUE}{"pmix.descr.maxval"}{varies}{
+\declareAttributeNEW{PMIX_MAX_VALUE}{"pmix.descr.maxval"}{varies}{
 Used in \refstruct{pmix_regattr_t} to describe the maximum valid value for the associated attribute.
 }
 
-\declareNewAttribute{PMIX_MIN_VALUE}{"pmix.descr.minval"}{varies}{
+\declareAttributeNEW{PMIX_MIN_VALUE}{"pmix.descr.minval"}{varies}{
 Used in \refstruct{pmix_regattr_t} to describe the minimum valid value for the associated attribute.
 }
 
-\declareNewAttribute{PMIX_ENUM_VALUE}{"pmix.descr.enum"}{char*}{
+\declareAttributeNEW{PMIX_ENUM_VALUE}{"pmix.descr.enum"}{char*}{
 Used in \refstruct{pmix_regattr_t} to describe accepted values for the associated attribute. Numerical values shall be presented in a form convertible to the attribute's declared data type. Named values (i.e., values defined by constant names via a typical C-language enum declaration) must be provided as their numerical equivalent.
 }
 
@@ -5432,57 +5389,57 @@ Used in \refstruct{pmix_regattr_t} to describe accepted values for the associate
 Attributes for controlling the \ac{PMIx} Group \acp{API}
 
 %
-\declareNewAttribute{PMIX_GROUP_ID}{"pmix.grp.id"}{char*}{
+\declareAttributeNEW{PMIX_GROUP_ID}{"pmix.grp.id"}{char*}{
 User-provided group identifier
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_LEADER}{"pmix.grp.ldr"}{bool}{
+\declareAttributeNEW{PMIX_GROUP_LEADER}{"pmix.grp.ldr"}{bool}{
 This process is the leader of the group
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_OPTIONAL}{"pmix.grp.opt"}{bool}{
+\declareAttributeNEW{PMIX_GROUP_OPTIONAL}{"pmix.grp.opt"}{bool}{
 Participation is optional - do not return an error if any of the specified processes terminate without having joined. The default is false
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_NOTIFY_TERMINATION}{"pmix.grp.notterm"}{bool}{
+\declareAttributeNEW{PMIX_GROUP_NOTIFY_TERMINATION}{"pmix.grp.notterm"}{bool}{
 Notify remaining members when another member terminates without first leaving the group. The default is false
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_INVITE_DECLINE}{"pmix.grp.decline"}{bool}{
+\declareAttributeNEW{PMIX_GROUP_INVITE_DECLINE}{"pmix.grp.decline"}{bool}{
 Notify the inviting process that this process does not wish to participate in the proposed group The default is true
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_FT_COLLECTIVE}{"pmix.grp.ftcoll"}{bool}{
+\declareAttributeNEW{PMIX_GROUP_FT_COLLECTIVE}{"pmix.grp.ftcoll"}{bool}{
 Adjust internal tracking for terminated processes. Default is false
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_MEMBERSHIP}{"pmix.grp.mbrs"}{pmix_data_array_t*}{
+\declareAttributeNEW{PMIX_GROUP_MEMBERSHIP}{"pmix.grp.mbrs"}{pmix_data_array_t*}{
 Array of group member ID's
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_ASSIGN_CONTEXT_ID}{"pmix.grp.actxid"}{bool}{
+\declareAttributeNEW{PMIX_GROUP_ASSIGN_CONTEXT_ID}{"pmix.grp.actxid"}{bool}{
 Requests that the \ac{RM} assign a new context identifier to the newly created group. The identifier is an unsigned, \code{size_t} value that the \ac{RM} guarantees to be unique across the range specified in the request. Thus, the value serves as a means of identifying the group within that range. If no range is specified, then the request defaults to \refconst{PMIX_RANGE_SESSION}.
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_CONTEXT_ID}{"pmix.grp.ctxid"}{size_t}{
+\declareAttributeNEW{PMIX_GROUP_CONTEXT_ID}{"pmix.grp.ctxid"}{size_t}{
 Context identifier assigned to the group by the host \ac{RM}.
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_LOCAL_ONLY}{"pmix.grp.lcl"}{bool}{
+\declareAttributeNEW{PMIX_GROUP_LOCAL_ONLY}{"pmix.grp.lcl"}{bool}{
 Group operation only involves local processes. \ac{PMIx} implementations are \textit{required} to automatically scan an array of group members for local vs remote processes - if only local processes are detected, the implementation need not execute a global collective for the operation unless a context ID has been requested from the host environment. This can result in significant time savings. This attribute can be used to optimize the operation by indicating whether or not only local processes are represented, thus allowing the implementation to bypass the scan. The default is false
 }
 
 %
-\declareNewAttribute{PMIX_GROUP_ENDPT_DATA}{"pmix.grp.endpt"}{pmix_byte_object_t}{
+\declareAttributeNEW{PMIX_GROUP_ENDPT_DATA}{"pmix.grp.endpt"}{pmix_byte_object_t}{
 Data collected to be shared during group construction
 }
 
@@ -5495,62 +5452,62 @@ Data collected to be shared during group construction
 Attributes related to storage systems
 
 %
-\declareNewAttribute{PMIX_STORAGE_ID}{"pmix.strg.id"}{char*}{
+\declareAttributeNEW{PMIX_STORAGE_ID}{"pmix.strg.id"}{char*}{
 Identifier of the storage system being referenced
 }
 
 %
-\declareNewAttribute{PMIX_STORAGE_PATH}{"pmix.strg.path"}{char*}{
+\declareAttributeNEW{PMIX_STORAGE_PATH}{"pmix.strg.path"}{char*}{
 Mount point corresponding to a specified storage ID
 }
 
 %
-\declareNewAttribute{PMIX_STORAGE_TYPE}{"pmix.strg.type"}{char*}{
+\declareAttributeNEW{PMIX_STORAGE_TYPE}{"pmix.strg.type"}{char*}{
 Qualifier indicating the type of storage being referenced by a query e.g., lustre, gpfs, online, fabric-attached, ...)
 }
 
 %
-\declareNewAttribute{PMIX_STORAGE_BW}{"pmix.strg.bw"}{float}{
+\declareAttributeNEW{PMIX_STORAGE_BW}{"pmix.strg.bw"}{float}{
 Overall bandwidth (in Megabytes[base2]/sec) of specified storage system
 }
 
 %
-\declareNewAttribute{PMIX_STORAGE_AVAIL_BW}{"pmix.strg.availbw"}{float}{
+\declareAttributeNEW{PMIX_STORAGE_AVAIL_BW}{"pmix.strg.availbw"}{float}{
 Overall bandwidth (in Megabytes[base2]/sec) of specified storage system that is available for use by the calling program
 }
 
 %
-\declareNewAttribute{PMIX_STORAGE_OBJECT_LIMIT}{"pmix.strg.obj"}{uint64_t}{
+\declareAttributeNEW{PMIX_STORAGE_OBJECT_LIMIT}{"pmix.strg.obj"}{uint64_t}{
 Overall limit on number of objects (e.g., inodes) of specified storage system
 }
 
 %
-\declareNewAttribute{PMIX_STORAGE_OBJECTS_FREE}{"pmix.strg.objf"}{uint64_t}{
+\declareAttributeNEW{PMIX_STORAGE_OBJECTS_FREE}{"pmix.strg.objf"}{uint64_t}{
 Number of free objects (e.g., inodes) on specified storage system
 }
 
 %
-\declareNewAttribute{PMIX_STORAGE_OBJECTS_AVAIL}{"pmix.strg.obja"}{uint64_t}{
+\declareAttributeNEW{PMIX_STORAGE_OBJECTS_AVAIL}{"pmix.strg.obja"}{uint64_t}{
 Number of objects (e.g., inodes) on specified storage system that are available for use by the calling program
 }
 
 %
-\declareNewAttribute{PMIX_STORAGE_CAPACITY_LIMIT}{"pmix.strg.cap"}{uint64_t}{
+\declareAttributeNEW{PMIX_STORAGE_CAPACITY_LIMIT}{"pmix.strg.cap"}{uint64_t}{
 Overall capacity (in Megabytes[base2]) of specified storage system
 }
 
 %
-\declareNewAttribute{PMIX_STORAGE_CAPACITY_FREE}{"pmix.strg.free"}{uint64_t}{
+\declareAttributeNEW{PMIX_STORAGE_CAPACITY_FREE}{"pmix.strg.free"}{uint64_t}{
 Free capacity (in Megabytes[base2]) of specified storage system
 }
 
 %
-\declareNewAttribute{PMIX_STORAGE_CAPACITY_AVAIL}{"pmix.strg.avail"}{uint64_t}{
+\declareAttributeNEW{PMIX_STORAGE_CAPACITY_AVAIL}{"pmix.strg.avail"}{uint64_t}{
 Capacity (in Megabytes[[base2]]) of specified storage system that is available for use by the calling program
 }
 
 %
-\declareNewAttribute{PMIX_QUERY_STORAGE_LIST}{"pmix.strg.list"}{char*}{
+\declareAttributeNEW{PMIX_QUERY_STORAGE_LIST}{"pmix.strg.list"}{char*}{
 Return comma-delimited list of identifiers for all available storage systems
 }
 
