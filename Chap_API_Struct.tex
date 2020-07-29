@@ -4088,65 +4088,70 @@ Average Megabytes of memory used by client processes.
 \subsection{Topology information attributes}
 \label{api:struct:attributes:topoinfo}
 
-These attributes are used to describe topology information in the PMIx universe - all are referenced using \refconst{PMIX_RANK_WILDCARD} except where noted.
+These attributes are used to describe topology information in the \ac{PMIx}
+universe - all are referenced using \refconst{PMIX_RANK_WILDCARD} except where
+noted.
+
+\adviceuserstart
+The following attributes are being removed from the \ac{PMIx} Standard as they
+are internal to a given \ac{PMIx} implementation. Users are referred to the
+\refapi{PMIx_Load_topology} \ac{API} for obtaining the local topology
+description.
+\adviceuserend
 
 %
-\declareAttribute{PMIX_LOCAL_TOPO}{"pmix.ltopo"}{char*}{
+\declareAttributeDEP{PMIX_LOCAL_TOPO}{"pmix.ltopo"}{char*}{
 \ac{XML} representation of local node topology.
 }
 
-%
-\declareAttribute{PMIX_TOPOLOGY}{"pmix.topo"}{hwloc_topology_t}{
-Pointer to the PMIx client's internal hwloc topology object.
-}
 
 %
-\declareAttribute{PMIX_TOPOLOGY_XML}{"pmix.topo.xml"}{char*}{
+\declareAttributeDEP{PMIX_TOPOLOGY_XML}{"pmix.topo.xml"}{char*}{
 \ac{XML}-based description of topology
 }
 
 %
-\declareAttribute{PMIX_TOPOLOGY_FILE}{"pmix.topo.file"}{char*}{
+\declareAttributeDEP{PMIX_TOPOLOGY_FILE}{"pmix.topo.file"}{char*}{
 Full path to file containing \ac{XML} topology description
 }
 
 %
-\declareAttribute{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
+\declareAttributeDEP{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
 Topology signature string.
 }
 
 %
-\declareAttribute{PMIX_HWLOC_SHMEM_ADDR}{"pmix.hwlocaddr"}{size_t}{
+\declareAttributeDEP{PMIX_HWLOC_SHMEM_ADDR}{"pmix.hwlocaddr"}{size_t}{
 Address of the HWLOC shared memory segment.
 }
 
 %
-\declareAttribute{PMIX_HWLOC_SHMEM_SIZE}{"pmix.hwlocsize"}{size_t}{
+\declareAttributeDEP{PMIX_HWLOC_SHMEM_SIZE}{"pmix.hwlocsize"}{size_t}{
 Size of the HWLOC shared memory segment.
 }
 
 %
-\declareAttribute{PMIX_HWLOC_SHMEM_FILE}{"pmix.hwlocfile"}{char*}{
+\declareAttributeDEP{PMIX_HWLOC_SHMEM_FILE}{"pmix.hwlocfile"}{char*}{
 Path to the HWLOC shared memory file.
 }
 
 %
-\declareAttribute{PMIX_HWLOC_XML_V1}{"pmix.hwlocxml1"}{char*}{
+\declareAttributeDEP{PMIX_HWLOC_XML_V1}{"pmix.hwlocxml1"}{char*}{
 \ac{XML} representation of local topology using HWLOC's v1.x format.
 }
 
 %
-\declareAttribute{PMIX_HWLOC_XML_V2}{"pmix.hwlocxml2"}{char*}{
+\declareAttributeDEP{PMIX_HWLOC_XML_V2}{"pmix.hwlocxml2"}{char*}{
 \ac{XML} representation of local topology using HWLOC's v2.x format.
 }
 
 %
-\declareAttribute{PMIX_HWLOC_SHARE_TOPO}{"pmix.hwlocsh"}{bool}{
+\declareAttributeDEP{PMIX_HWLOC_SHARE_TOPO}{"pmix.hwlocsh"}{bool}{
 Share the HWLOC topology via shared memory
 }
 
 %
-\declareAttribute{PMIX_HWLOC_HOLE_KIND}{"pmix.hwlocholek"}{char*}{
+\declareAttributeDEP{PMIX_HWLOC_HOLE_KIND}{"pmix.hwlocholek"}{char*}{
 Kind of VM ``hole'' HWLOC should use for shared memory
 }
 

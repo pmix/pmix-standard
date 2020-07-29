@@ -607,10 +607,67 @@ Nonblocking \refapi{PMIx_Disconnect} routine. The callback function is called on
 
 The relative locality of processes is often used to optimize their interactions with the hardware and other processes. \ac{PMIx} provides a means by which the host environment can communicate the locality of a given process using the \refapi{PMIx_generate_locality_string} to generate an abstracted representation of that value. This provides a human-readable format and allows the client to parse the locality string with a method of its choice that may differ from the one used by the server that generated it.
 
+There are times, however, when relative locality and other \ac{PMIx}-provided
+information doesn't include some element required by the application. In these
+instances, the application may need access to the full description of the
+local hardware topology. \ac{PMIx} does not itself generate such descriptions
+- there are multiple third-party libraries that fulfill that role. Instead,
+\ac{PMIx} offers an abstraction method by which users can obtain a pointer to
+the description. This transparently enables support for different methods of
+sharing the topology between the host environment (which may well have already
+generated it prior to local start of application processes) and the clients -
+e.g., through passing of a shared memory region.
 
 %%%%%%%%%%%
-\subsection{\code{PMIx_get_relative_locality}}
-\declareapi{PMIx_get_relative_locality}
+\subsection{\code{PMIx_Load_topology}}
+\declareapi{PMIx_Load_topology}
+
+%%%%
+\summary
+
+Load the local hardware topology description
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Load_topology(pmix_topology_t *topo);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{topo}{Address of a \refstruct{pmix_topology_t} structure where the topology information is to be loaded (handle)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{topo} was successfully loaded, or an appropriate \ac{PMIx} error constant.
+
+%%%%
+\descr
+
+Obtain a pointer to the topology description of the local node. If the
+\refarg{source} field of the provided \refstruct{pmix_topology_t} is set, then
+the \ac{PMIx} library must return a description from the specified
+implementation or else indicate that the implementation is not available by
+returning the \refconst{PMIX_ERR_NOT_SUPPORTED} error constant.
+
+The returned pointer may point to a shared memory region or an actual instance
+of the topology description. In either case, the description shall be treated
+as a "read-only" object - attempts to modify the object are likely to fail and
+return an error. The \ac{PMIx} library is responsible for performing any required cleanup when the client library finalizes.
+
+\adviceuserstart
+It is the responsibility of the user to ensure that the \refarg{topo} argument
+is properly initialized prior to calling this \ac{API}, and to check the
+returned \refarg{source} to verify that the returned topology description is
+compatible with the user's code.
+\adviceuserend
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_Get_relative_locality}}
+\declareapi{PMIx_Get_relative_locality}
 
 %%%%
 \summary
@@ -624,7 +681,7 @@ Get the relative locality of two local processes given their locality strings.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_get_relative_locality(const char *locality1,
+PMIx_Get_relative_locality(const char *locality1,
                            const char *locality2,
                            pmix_locality_t *locality);
 \end{codepar}
@@ -644,11 +701,49 @@ Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{locality} was succe
 Parse the locality strings of the two processes and set the appropriate \refstruct{pmix_locality_t} locality bits in the provided memory location.
 
 %%%%%%%
+\subsubsection{Topology description}
+\declarestruct{pmix_topology_t}
+
+The \refstruct{pmix_topology_t} structure contains a (case-insensitive)
+string identifying the source of the topology (e.g., "hwloc") and a pointer
+to the corresponding implementation-specific topology description.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_topology \{
+    char *source;
+    void *topology;
+\} pmix_topoology_t;
+\end{codepar}
+\cspecificend
+
+\subsubsection{Initialize the topology description structure}
+\declaremacro{PMIX_TOPO_CONSTRUCT}
+
+Initialize the \refstruct{pmix_topology_t} fields to \code{NULL}
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_TOPOLOGY_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_topology_t})}
+\end{arglist}
+
+
+%%%%%%%
 \subsubsection{Relative locality of two processes}
 \declarestruct{pmix_locality_t}
 
 \versionMarker{4.0}
-The \refstruct{pmix_locality_t} datatype is a \code{uint16_t} bitmask that defines the relative locality of two processes on a node. The following constants represent specific bits in the mask and can be used to test a locality value using standard bit-test methods.
+The \refstruct{pmix_locality_t} datatype is a \code{uint16_t} bitmask that
+defines the relative locality of two processes on a node. The following
+constants represent specific bits in the mask and can be used to test a
+locality value using standard bit-test methods.
 
 \begin{constantdesc}
 %
@@ -691,12 +786,18 @@ Implementers and vendors may choose to extend these definitions as needed to des
 
 %
 \declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
-String describing a process's bound location - referenced using the process's rank. The string is prefixed by the implementation that created it (e.g., "hwloc") followed by a colon. The remainder of the string represents the corresponding locality as expressed by the underlying implementation. The entire string must be passed to \refapi{PMIx_get_relative_locality} for processing. Note that hosts are only required to provide locality strings for local client processes - thus, a call to \refapi{PMIx_Get} for the locality string of a process that returns \refconst{PMIX_ERR_NOT_FOUND} indicates that the process is not executing on the same node.
+String describing a process's bound location - referenced using the process's
+rank. The string is prefixed by the implementation that created it (e.g.,
+"hwloc") followed by a colon. The remainder of the string represents the
+corresponding locality as expressed by the underlying implementation. The
+entire string must be passed to \refapi{PMIx_Get_relative_locality} for
+processing. Note that hosts are only required to provide locality strings for
+local client processes - thus, a call to \refapi{PMIx_Get} for the locality
+string of a process that returns \refconst{PMIX_ERR_NOT_FOUND} indicates that
+the process is not executing on the same node.
 }
 
 %
 \declareAttributeDEP{PMIX_LOCALITY}{"pmix.loc"}{\refstruct{pmix_locality_t}}{
 Relative locality of the specified process to the requester, expressed as a bitmask as per the description in the \refstruct{pmix_locality_t} section. This value is unique to the requesting process and thus cannot be communicated by the server as part of the job-level information. Its use has therefore been deprecated and the key will be removed in a future release.
 }
-
-
