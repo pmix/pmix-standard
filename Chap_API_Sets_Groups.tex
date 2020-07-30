@@ -4,14 +4,21 @@
 \chapter{Process Sets and Groups}
 \label{chap:api_sets_groups}
 
-\ac{PMIx} supports two slightly related, but functionally different concepts known as \emph{process sets} and \emph{process groups}. This chapter these two concepts and describes how they are utilized, along with their corresponding \acp{API}.
+\ac{PMIx} supports two slightly related, but functionally different concepts
+known as \emph{process sets} and \emph{process groups}. This chapter defines
+these two concepts and describes how they are utilized, along with their
+corresponding \acp{API}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Process Sets}
 \label{chap:api_sets_groups:sets}
 
-A \ac{PMIx} \emph{Process Set} is a user-provided label associated with a given set of application processes. Processes can belong to multiple process \emph{sets} at a time. Definition of a \ac{PMIx} process set typically occurs at time of application execution - e.g., on a command line:
+A \ac{PMIx} \emph{Process Set} is a user-provided or host environment assigned
+label associated with a given set of application processes. Processes can
+belong to multiple process \emph{sets} at a time. Definition of a \ac{PMIx}
+process set typically occurs at time of application execution - e.g., on a
+command line:
 
 \cspecificstart
 \begin{codepar}
@@ -19,22 +26,76 @@ A \ac{PMIx} \emph{Process Set} is a user-provided label associated with a given 
 \end{codepar}
 \cspecificend
 
-In this example, the processes in the first application will be labeled with a \refattr{PMIX_PSET_NAME} attribute of \emph{ocean} while those in the second application will be labeled with an \emph{ice} value. During the execution, application processes could lookup the process set attribute for any other process using \refapi{PMIx_Get}. Alternatively, other executing applications could utilize the \refapi{PMIx_Query_info_nb} \ac{API} to obtain the number of declared process sets in the system, a list of their names, and other information about them. In other words, the \emph{process set} identifier provides a label by which an application can derive information about a process and its application - it does \emph{not}, however, confer any operational function.
+In this example, the processes in the first application will be labeled with a \refattr{PMIX_PSET_NAMES} attribute of \emph{ocean} while those in the second application will be labeled with an \emph{ice} value. During the execution, application processes could lookup the process set attribute for any other process using \refapi{PMIx_Get}. Alternatively, other executing applications could utilize the \refapi{PMIx_Query_info_nb} \ac{API} to obtain the number of declared process sets in the system, a list of their names, and other information about them. In other words, the \emph{process set} identifier provides a label by which an application can derive information about a process and its application - it does \emph{not}, however, confer any operational function.
 
-Thus, process \emph{sets} differ from process \emph{groups} in several key ways:
+Host environments can create or delete process sets at any time, as well as
+add and delete members from existing process sets, through the
+\refapi{PMIx_server_define_process_set} and
+\refapi{PMIx_server_delete_process_set} \acp{API}. \ac{PMIx} servers shall
+notify all local clients of process set operations via the
+\refconst{PMIX_PROCESS_SET_DEFINE} or \refconst{PMIX_PROCESS_SET_DELETE}
+events.
+
+\advicermstart
+The host environment is responsible for ensuring:
+
+\begin{itemize}
+    \item consistent knowledge of process set membership across all involved
+    \ac{PMIx} servers; and
+    \item that process set names do not conflict with system-assigned namespaces within the scope of the set
+\end{itemize}
+
+\advicermend
+
+Process \emph{sets} differ from process \emph{groups} in several key ways:
 
 \begin{itemize}
     \item Process \emph{sets} have no implied relationship between their members - i.e., a process in a process set has no concept of a ``pset rank'' as it would in a process \emph{group}
-    \item Process \emph{set} identifiers are considered job-level information set at launch. No \ac{PMIx} \ac{API} is provided by which a user can change the process \emph{set} value of a process on-the-fly. In contrast, \ac{PMIx} process \emph{groups} can only be defined dynamically by the application.
+
+    \item Process \emph{set} identifiers are set by the host environment -
+    there are no \ac{PMIx} \acp{API} provided by which an application can
+    change a process \emph{set} membership. In contrast, \ac{PMIx} process
+    \emph{groups} can only be defined dynamically by the application.
+
     \item Process \emph{groups} can be used in calls to \ac{PMIx} operations. Members of process \emph{groups} that are involved in an operation are translated by their \ac{PMIx} server into their \emph{native} identifier prior to the operation being passed to the host environment. For example, an application can define a process group to consist of ranks 0 and 1 from the host-assigned namespace of \emph{210456}, identified by the group id of \emph{foo}. If the application subsequently calls the \refapi{PMIx_Fence} \ac{API} with a process identifier of \{foo, PMIX_RANK_WILDCARD\}, the \ac{PMIx} server will replace that identifier with an array consisting of \{210456, 0\} and \{210456, 1\} - the host-assigned identifiers of the participating processes - prior to passing the request up to the host environment
+
     \item Process \emph{groups} can request that the host environment assign a unique \code{size_t} \ac{PGCID} to the group at time of group construction. An \ac{MPI} library may, for example, use the \ac{PGCID} as the \ac{MPI} communicator identifier for the group.
 \end{itemize}
 
-The two concepts do, however, overlap in one specific area. Process \emph{groups} are included in the process \emph{set} information returned by calls to \refapi{PMIx_Query_info_nb}. Thus, a \emph{process group} can effectively be considered an extended version of a \emph{process set} that adds dynamic definition and operational context to the \emph{process set} concept.
+The two concepts do, however, overlap in one specific area. Process
+\emph{groups} are included in the process \emph{set} information returned by
+calls to \refapi{PMIx_Query_info_nb} with the \refattr{PMIX_PSET_NAMES}.
+Thus, a \emph{process group} can effectively be considered an extended version
+of a \emph{process set} that adds dynamic definition and operational context
+to the \emph{process set} concept.
 
 \adviceimplstart
 \ac{PMIx} implementations are required to include all active \emph{group} identifiers in the returned list of process \emph{set} names provided in response to the appropriate \refapi{PMIx_Query_info_nb} call.
 \adviceimplend
+
+%%%%%%%%%%%
+\subsection{Process Set Constants}
+
+\versionMarker{4.0}
+The \ac{PMIx} server is required to notify all local clients of changes to
+process set membership, including the creation of new process sets as well as
+their complete deletion. Client processes wishing to receive such
+notifications must register for one or more of the following events:
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_PROCESS_SET_DEFINE}
+The host environment has defined a new process set, or has added members to
+an existing process set.
+%
+\declareconstitemNEW{PMIX_PROCESS_SET_DELETE}
+The host environment has removed members from an existing process set. If all
+members of the set have been removed, then the set definition has been
+deleted from the system.
+%
+\end{constantdesc}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

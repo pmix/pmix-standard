@@ -3586,8 +3586,8 @@ The requesting process is a PMIx client.
 }
 
 %
-\declareAttributeNEW{PMIX_PSET_NAME}{"pmix.pset.nm"}{char*}{
-User-assigned name for the process set containing the given process.
+\declareAttributeNEW{PMIX_PSET_NAMES}{"pmix.pset.nm"}{char*}{
+Comma-delimited list of process sets and process groups to which the given process is a member.
 }
 
 %
@@ -4776,12 +4776,20 @@ Query list of supported attributes for specified \acp{API}. SUPPORTED QUALIFIERS
 
 %
 \declareAttributeNEW{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
-Return the number of psets defined in the specified range (defaults to session).
+Return the number of process sets defined in the specified range (defaults
+to session).
 }
 
 %
 \declareAttributeNEW{PMIX_QUERY_PSET_NAMES}{"pmix.qry.psets"}{char*}{
-Return a comma-delimited list of the names of the psets defined in the specified range (defaults to session).
+Return a comma-delimited list of the names of the process sets defined in the
+specified range (defaults to session).
+}
+
+%
+\declareAttributeNEW{PMIX_QUERY_PSET_MEMBERSHIP}{"pmix.qry.pmems"}{pmix_proc_t*}{
+Return an array of \refstruct{pmix_proc_t} of the members of the specified
+process set.
 }
 
 %

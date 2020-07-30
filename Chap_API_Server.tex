@@ -101,7 +101,10 @@ perform the necessary actions to scalably expose the description to the local
 clients. This includes creating any required shared memory backing stores and/
 or \ac{XML} representations, plus ensuring that all necessary key-value pairs
 for clients to access the description are included in the job-level
-information provided to each client.
+information provided to each client. All required files are to be installed
+under the effective \refattr{PMIX_SERVER_TMPDIR} directory. The \ac{PMIx}
+server library is responsible for cleaning up any artifacts (e.g., shared
+memory backing files or cached key-value pairs) at library finalize.
 \pasteAttributeItemEnd{}
 
 \optattrend
@@ -338,7 +341,7 @@ Application-level information is accessed by providing both the namespace of the
 plus the following optional information:
 
 \begin{itemize}
-    \item \pasteAttributeItem{PMIX_PSET_NAME}
+    \item \pasteAttributeItem{PMIX_PSET_NAMES}
 \end{itemize}
 
 The data may also include attributes provided by the host environment that identify the programming model (as specified by the user) being executed within the namespace. The \ac{PMIx} server library may utilize this information to customize the environment to fit that model (e.g., adding environmental variables specified by the corresponding standard for that model):
@@ -1306,6 +1309,104 @@ PMIX_CPUSET_CONSTRUCT(m)
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_cpuset_t})}
 \end{arglist}
+
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_define_process_set}}
+\declareapi{PMIx_server_define_process_set}
+
+%%%%
+\summary
+
+Add members to a \ac{PMIx} process set
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_define_process_set(const pmix_proc_t *members,
+                               char *pset_name);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{members}{Pointer to an array of \refstruct{pmix_proc_t} containing the
+identifiers of the processes to be added to the process set (handle)}
+\argin{pset_name}{String name of the process set to which the specified
+processes are to be added (\code{char*})}
+\end{arglist}
+
+Returns either \refconst{PMIX_SUCCESS} or an appropriate \ac{PMIx} error constant.
+
+
+%%%%
+\descr
+
+Provide a function by which the host environment can add processes to a
+process set, creating the set if it doesn't already exist. The \ac{PMIx}
+server shall alert all local clients of the new process set (including process
+set name and membership) via the \refconst{PMIX_PROCESS_SET_DEFINE} event.
+
+\advicermstart
+The host environment is responsible for ensuring:
+
+\begin{itemize}
+    \item consistent knowledge of process set membership across all involved
+    \ac{PMIx} servers; and
+    \item that process set names do not conflict with system-assigned
+    namespaces within the scope of the set
+\end{itemize}
+
+\advicermend
+
+%%%%%%%%%%%
+\subsection{\code{PMIx_server_delete_process_set}}
+\declareapi{PMIx_server_delete_process_set}
+
+%%%%
+\summary
+
+Delete members from a \ac{PMIx} process set
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_delete_process_set(const pmix_proc_t *members,
+                               char *pset_name);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{members}{Pointer to an array of \refstruct{pmix_proc_t} containing the
+identifiers of the processes to be removed from the process set (handle)}
+\argin{pset_name}{String name of the process set from which the specified
+processes are to be removed (\code{char*})}
+\end{arglist}
+
+Returns either \refconst{PMIX_SUCCESS} or an appropriate \ac{PMIx} error
+constant.
+
+
+%%%%
+\descr
+
+Provide a function by which the host environment can remove processes from a
+process set. If the array of members is \code{NULL}, then all current members
+are to be removed and the process set name deleted from the \ac{PMIx} server.
+The \ac{PMIx} server shall alert all local clients of the process set
+modifications via the \refconst{PMIX_PROCESS_SET_DELETE} event.
+
+\advicermstart
+The host environment is responsible for ensuring consistent knowledge of
+process set membership across all involved \ac{PMIx} servers.
+\advicermend
 
 
 %%%%%%%%%%%
