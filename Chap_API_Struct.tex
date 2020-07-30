@@ -3586,11 +3586,6 @@ The requesting process is a PMIx client.
 }
 
 %
-\declareAttributeNEW{PMIX_PSET_NAME}{"pmix.pset.nm"}{char*}{
-User-assigned name for the process set containing the given process.
-}
-
-%
 \declareAttributeNEW{PMIX_REINCARNATION}{"pmix.reinc"}{uint32_t}{
 Number of times this process has been re-instantiated - i.e, a value of zero indicates that the process has never failed and been restarted.
 }
@@ -4772,16 +4767,6 @@ Query number of seconds (\code{uint32_t}) remaining in allocation for the specif
 %
 \declareAttributeNEW{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
 Query list of supported attributes for specified \acp{API}. SUPPORTED QUALIFIERS: \refattr{PMIX_CLIENT_FUNCTIONS}, \refattr{PMIX_SERVER_FUNCTIONS}, \refattr{PMIX_TOOL_FUNCTIONS}, and/or \refattr{PMIX_HOST_FUNCTIONS}
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
-Return the number of psets defined in the specified range (defaults to session).
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_PSET_NAMES}{"pmix.qry.psets"}{char*}{
-Return a comma-delimited list of the names of the psets defined in the specified range (defaults to session).
 }
 
 %
