@@ -9,6 +9,22 @@ The \ac{RM} daemon that hosts the \ac{PMIx} server library interacts with that l
 Second, the host can provide a set of callback functions by which the \ac{PMIx} server library can pass requests upward for servicing by the host. These include notifications of client connection and finalize, as well as requests by clients for information and/or services that the \ac{PMIx} server library does not itself provide.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Server-Specific Attributes}
+\label{chap:api_init:serverattrs}
+
+%
+\declareAttributeDEP{PMIX_TOPOLOGY}{"pmix.topo"}{hwloc_topology_t}{
+Provide a pointer to an HWLOC description of the local node
+topology.
+}
+
+%
+\declareAttribute{PMIX_TOPOLOGY2}{"pmix.topo2"}{pmix_topology_t}{
+Provide a pointer to an implementation-specific description of the local node
+topology.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Server Initialization and Finalization}
 \label{chap:api_init:server}
 
@@ -80,6 +96,13 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemBegin{PMIX_SERVER_REMOTE_CONNECTIONS} If the library supports connections from remote tools, this attribute may be supported for enabling or disabling it.
 \pasteAttributeItemEnd{}
 \pasteAttributeItem{PMIX_EVENT_BASE}
+\pasteAttributeItemBegin{PMIX_TOPOLOGY2}If provided, the \ac{PMIx} server will
+perform the necessary actions to scalably expose the description to the local
+clients. This includes creating any required shared memory backing stores and/
+or \ac{XML} representations, plus ensuring that all necessary key-value pairs
+for clients to access the description are included in the job-level
+information provided to each client.
+\pasteAttributeItemEnd{}
 
 \optattrend
 
@@ -1245,7 +1268,7 @@ Returns either \refconst{PMIX_SUCCESS} indicating that the returned string conta
 %%%%
 \descr
 
-Provide a function by which the host environment can generate a \ac{PMIx} locality string for inclusion in the call to \refapi{PMIx_server_register_nspace}. This function shall only be called for local client processes, with the returned locality included in the job-level information (via the \refattr{PMIX_LOCALITY_STRING} attribute) provided to local clients. Local clients can use these strings as input to determine the relative locality of their local peers via the \refapi{PMIx_get_relative_locality} \ac{API}.
+Provide a function by which the host environment can generate a \ac{PMIx} locality string for inclusion in the call to \refapi{PMIx_server_register_nspace}. This function shall only be called for local client processes, with the returned locality included in the job-level information (via the \refattr{PMIX_LOCALITY_STRING} attribute) provided to local clients. Local clients can use these strings as input to determine the relative locality of their local peers via the \refapi{PMIx_Get_relative_locality} \ac{API}.
 
 The function is required to return a string prefixed by the \refarg{source} field of the provided \refarg{cpuset} followed by a colon. The remainder of the string shall represent the corresponding locality as expressed by the underlying implementation.
 
