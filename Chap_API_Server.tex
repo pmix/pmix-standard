@@ -2661,6 +2661,11 @@ typedef void (*pmix_server_tool_connection_fn_t)(
 
 \pasteAttributeItem{PMIX_USERID}
 \pasteAttributeItem{PMIX_GRPID}
+\pasteAttributeItemBegin{PMIX_TOOL_NSPACE}This must be included only if the tool already has an assigned namespace.
+\pasteAttributeItemEnd{}
+\pasteAttributeItemBegin{PMIX_TOOL_RANK}This must be included only if the tool already has an assigned rank.
+\pasteAttributeItemEnd{}
+\pasteAttributeItem{PMIX_CREDENTIAL}
 
 \reqattrend
 
@@ -2677,13 +2682,29 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Register that a tool has connected to the server, and request that the tool be assigned a namespace/rank identifier for further interactions.
-The \refstruct{pmix_info_t} array is used to pass qualifiers for the connection request, including the effective uid and gid of the calling tool for authentication purposes.
+Register that a tool has connected to the server, possibly requesting that the
+tool be assigned a namespace/rank identifier for further interactions.
+The \refstruct{pmix_info_t} array is used to pass qualifiers for the
+connection request, including the effective uid and gid of the calling tool
+for authentication purposes.
 
-\advicermstart
-The host environment is solely responsible for authenticating and authorizing the connection, and for authorizing all subsequent tool requests. The host must not execute the callback function prior to returning from the \ac{API}.
+If the tool already has an assigned process identifier, then this must be
+indicated in the \refarg{info} array. The host is responsible for checking
+that the provided namespace does not conflict with any currently known
+assignments, returning an appropriate error in the callback function if a conflict is found.
 
-\advicermend
+The host environment is solely responsible for authenticating and authorizing
+the connection using whatever means it deems appropriate. If certificates or
+other authentication information are required, then the tool must provide them.
+The conclusion of those operations shall be communicated back to the \ac{PMIx}
+server library via the callback function.
+
+Approval or rejection of the connection request shall be returned in the
+\refarg{status} parameter of the \refapi{pmix_tool_connection_cbfunc_t}. If
+the connection is refused, the \ac{PMIx} server library must terminate the
+connection attempt. The host must not execute the callback function prior to
+returning from the \ac{API}.
+
 
 
 %%%%%%%%%%%

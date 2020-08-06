@@ -62,16 +62,69 @@ Process \emph{sets} differ from process \emph{groups} in several key ways:
     \item Process \emph{groups} can request that the host environment assign a unique \code{size_t} \ac{PGCID} to the group at time of group construction. An \ac{MPI} library may, for example, use the \ac{PGCID} as the \ac{MPI} communicator identifier for the group.
 \end{itemize}
 
-The two concepts do, however, overlap in one specific area. Process
-\emph{groups} are included in the process \emph{set} information returned by
-calls to \refapi{PMIx_Query_info_nb} with the \refattr{PMIX_PSET_NAMES}.
-Thus, a \emph{process group} can effectively be considered an extended version
-of a \emph{process set} that adds dynamic definition and operational context
-to the \emph{process set} concept.
+The two concepts do, however, overlap in one specific area in that they both
+involve collections of processes. Users desiring to create a process group
+based on a process set could, for example, obtain the membership array of the
+process set and use that as input to \refapi{PMIx_Group_construct}, perhaps
+including the process set name as the group identifier for clarity. Note that
+no linkage between the set and group of the same name is implied nor
+maintained - e.g., changes in process set membership would not automatically be
+reflected in the process group using the same identifier.
 
-\adviceimplstart
-\ac{PMIx} implementations are required to include all active \emph{group} identifiers in the returned list of process \emph{set} names provided in response to the appropriate \refapi{PMIx_Query_info_nb} call.
-\adviceimplend
+
+%%%%%%%%%%%
+\subsection{Process Set Constants}
+
+\versionMarker{4.0}
+The \ac{PMIx} server is required to notify all local clients of changes to
+process set membership, including the creation of new process sets as well as
+their complete deletion. Client processes wishing to receive such
+notifications must register for one or more of the following events:
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_PROCESS_SET_DEFINE}
+The host environment has defined a new process set, or has added members to
+an existing process set.
+%
+\declareconstitemNEW{PMIX_PROCESS_SET_DELETE}
+The host environment has removed members from an existing process set. If all
+members of the set have been removed, then the set definition has been
+deleted from the system.
+%
+\end{constantdesc}
+
+
+%%%%%%%%%%%
+\subsection{Process Set Attributes}
+
+\versionMarker{4.0}
+Several attributes are provided for querying the system regarding process sets.
+
+%
+\declareAttributeNEW{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
+Return the number of process sets defined in the specified range (defaults
+to session).
+}
+
+%
+\declareAttributeNEW{PMIX_QUERY_PSET_NAMES}{"pmix.qry.psets"}{pmix_data_array_t*}{
+Return a \refstruct{pmix_data_array_t} containing an array of strings of the
+process set names defined in the specified range (defaults to session).
+}
+
+%
+\declareAttributeNEW{PMIX_QUERY_PSET_MEMBERSHIP}{"pmix.qry.pmems"}{pmix_proc_t*}{
+Return a \refstruct{pmix_data_array_t} of \refstruct{pmix_proc_t} containing
+the members of the specified process set.
+}
+
+In addition, a process can request (via \refapi{PMIx_Get}) the process sets to which a given process (including itself) belongs:
+
+%
+\declareAttributeNEW{PMIX_PSET_NAMES}{"pmix.pset.nm"}{pmix_data_array_t*}{
+Returns an array of \code{char*} string names of the process sets in which the given process is a member.
+}
 
 %%%%%%%%%%%
 \subsection{Process Set Constants}
@@ -161,6 +214,39 @@ Construct a group composed of the specified processes - used by a \ac{PMIx} serv
 Destruct the specified group - used by a \ac{PMIx} server library to direct host operation
 %
 \end{constantdesc}
+
+
+%%%%%%%%%%%
+\subsection{Process Group Attributes}
+
+\versionMarker{4.0}
+Several attributes are provided for querying the system regarding process
+groups.
+
+%
+\declareAttributeNEW{PMIX_QUERY_NUM_GROUPS}{"pmix.qry.pgrpnum"}{size_t}{
+Return the number of process groups defined in the specified range (defaults
+to session).
+}
+
+%
+\declareAttributeNEW{PMIX_QUERY_GROUP_NAMES}{"pmix.qry.pgrp"}{pmix_data_array_t*}{
+Return a \refstruct{pmix_data_array_t} containing an array of string names of
+the process groups defined in the specified range (defaults to session).
+}
+
+%
+\declareAttributeNEW{PMIX_QUERY_GROUP_MEMBERSHIP}{"pmix.qry.pgrpmems"}{pmix_data_array_t*}{
+Return a \refstruct{pmix_data_array_t} of \refstruct{pmix_proc_t} containing
+the members of the specified process group.
+}
+
+In addition, a process can request (via \refapi{PMIx_Get}) the process groups to which a given process (including itself) belongs:
+
+%
+\declareAttributeNEW{PMIX_GROUP_NAMES}{"pmix.pgrp.nm"}{pmix_data_array_t*}{
+Returns an array of \code{char*} string names of the process groups in which the given process is a member.
+}
 
 
 %%%%%%%%%%%

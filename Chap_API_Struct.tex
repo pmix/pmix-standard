@@ -47,6 +47,12 @@ PMIX_INFO_LOAD(&array[n], "mykey2", &myint, PMIX_INT);
 ++n;
 \end{codepar}
 
+Users are also advised to use the macros for creating, loading, and releasing
+\ac{PMIx} structures to avoid potential issues with release of memory. For
+example, pointing a \refstruct{pmix_envar_t} element at a static string
+variable and then using \refmacro{PMIX_ENVAR_DESTRUCT} to clear it would
+generate an error as the static string had not been allocated.
+
 \adviceuserend
 
 %%%%%%%%%%%
@@ -3586,11 +3592,6 @@ The requesting process is a PMIx client.
 }
 
 %
-\declareAttributeNEW{PMIX_PSET_NAMES}{"pmix.pset.nm"}{char*}{
-Comma-delimited list of process sets and process groups to which the given process is a member.
-}
-
-%
 \declareAttributeNEW{PMIX_REINCARNATION}{"pmix.reinc"}{uint32_t}{
 Number of times this process has been re-instantiated - i.e, a value of zero indicates that the process has never failed and been restarted.
 }
@@ -4656,17 +4657,48 @@ Consolidated argv passed to the spawn command for the given process (e.g., "./my
 
 %
 \declareAttributeNEW{PMIX_NOTIFY_JOB_EVENTS}{"pmix.note.jev"}{bool}{
-Requests that the \ac{PMIx} server provide the requester with the \refconst{PMIX_EVENT_JOB_START}, \refconst{PMIX_LAUNCH_COMPLETE}, and \refconst{PMIX_EVENT_JOB_END} events. Each event is to include at least the namespace of the corresponding job and a \refattr{PMIX_EVENT_TIMESTAMP} indicating the time the event occurred. Note that these events can be captured and processed by registering a default event handler instead of individual handlers and then processing the events based on the returned status code. Another common method is to register one event handler for all job-related events, with a separate handler for non-job events - see \refapi{PMIx_Register_event_handler} for details.
-}
+Requests that the launcher generate the
+\refconst{PMIX_EVENT_JOB_START}, \refconst{PMIX_LAUNCH_COMPLETE}, and
+\refconst{PMIX_EVENT_JOB_END} events. Each event is to include at least the
+namespace of the corresponding job and a \refattr{PMIX_EVENT_TIMESTAMP}
+indicating the time the event occurred. Note that the requester must register
+for these individual events, or capture
+and process them by registering a default event handler instead of individual
+handlers and then process the events based on the returned status code.
+Another common method is to register one event handler for all job-related
+events, with a separate handler for non-job events - see
+\refapi{PMIx_Register_event_handler} for details. }
 
 %
 \declareAttribute{PMIX_NOTIFY_COMPLETION}{"pmix.notecomp"}{bool}{
-Requests that the \ac{PMIx} generate the \refconst{PMIX_EVENT_JOB_END} event for normal or abnormal termination of the spawned job. The event shall include the returned status code for the corresponding job and a \refattr{PMIX_EVENT_TIMESTAMP} indicating the time the termination occurred.
+Requests that the launcher generate the \refconst{PMIX_EVENT_JOB_END} event
+for normal or abnormal termination of the spawned job. The event shall include
+the returned status code (\refattr{PMIX_JOB_TERM_STATUS}) for the
+corresponding job; the identity (\refattr{PMIX_PROCID}) and exit status
+(\refattr{PMIX_EXIT_CODE}) of the first failed process, if applicable; and a
+\refattr{PMIX_EVENT_TIMESTAMP} indicating the time the termination occurred.
+Note that the requester must register for the event or capture and process it
+within a default event handler.
 }
 
 %
 \declareAttributeNEW{PMIX_LOG_JOB_EVENTS}{"pmix.log.jev"}{bool}{
-Requests that the \ac{PMIx} server log the \refconst{PMIX_EVENT_JOB_START}, \refconst{PMIX_LAUNCH_COMPLETE}, and \refconst{PMIX_EVENT_JOB_END} events using \refapi{PMIx_Log} instead of generating \ac{PMIx} events, subject to the logging attributes of Section \ref{api:struct:attributes:log}
+Requests that the launcher log the \refconst{PMIX_EVENT_JOB_START},
+\refconst{PMIX_LAUNCH_COMPLETE}, and \refconst{PMIX_EVENT_JOB_END} events using
+\refapi{PMIx_Log}, subject to the logging attributes of Section
+\ref{api:struct:attributes:log}
+}
+
+%
+\declareAttributeNEW{PMIX_LOG_COMPLETION}{"pmix.logcomp"}{bool}{
+Requests that the launcher log the \refconst{PMIX_EVENT_JOB_END} event
+for normal or abnormal termination of the spawned job using
+\refapi{PMIx_Log}, subject to the logging attributes of Section
+\ref{api:struct:attributes:log}. The event shall include
+the returned status code (\refattr{PMIX_JOB_TERM_STATUS}) for the
+corresponding job; the identity (\refattr{PMIX_PROCID}) and exit status
+(\refattr{PMIX_EXIT_CODE}) of the first failed process, if applicable; and a
+\refattr{PMIX_EVENT_TIMESTAMP} indicating the time the termination occurred.
 }
 
 %%%%%%%%%%%
@@ -4712,16 +4744,6 @@ Request a comma-delimited list of scheduler queues. NO QUALIFIERS
 %
 \declareAttribute{PMIX_QUERY_QUEUE_STATUS}{"pmix.qry.qst"}{char*}{
 Returns status of a specified scheduler queue, expressed as a string. SUPPORTED QUALIFIERS: \refattr{PMIX_ALLOC_QUEUE} naming specific queue whose status is being requested
-}
-
-%
-\declareAttribute{PMIX_QUERY_PROC_TABLE}{"pmix.qry.ptable"}{char*}{
-Returns a (\refstruct{pmix_data_array_t}) array of \refstruct{pmix_proc_info_t}, one entry for each process in the specified namespace, ordered by process job rank. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose process table is being queried
-}
-
-%
-\declareAttribute{PMIX_QUERY_LOCAL_PROC_TABLE}{"pmix.qry.lptable"}{char*}{
-Returns a (\refstruct{pmix_data_array_t}) array of \refstruct{pmix_proc_info_t}, one entry for each process in the specified namespace executing on the same node as the requester, ordered by process job rank. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose process table is being queried
 }
 
 %
@@ -4772,24 +4794,6 @@ Query number of seconds (\code{uint32_t}) remaining in allocation for the specif
 %
 \declareAttributeNEW{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
 Query list of supported attributes for specified \acp{API}. SUPPORTED QUALIFIERS: \refattr{PMIX_CLIENT_FUNCTIONS}, \refattr{PMIX_SERVER_FUNCTIONS}, \refattr{PMIX_TOOL_FUNCTIONS}, and/or \refattr{PMIX_HOST_FUNCTIONS}
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
-Return the number of process sets defined in the specified range (defaults
-to session).
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_PSET_NAMES}{"pmix.qry.psets"}{char*}{
-Return a comma-delimited list of the names of the process sets defined in the
-specified range (defaults to session).
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_PSET_MEMBERSHIP}{"pmix.qry.pmems"}{pmix_proc_t*}{
-Return an array of \refstruct{pmix_proc_t} of the members of the specified
-process set.
 }
 
 %
