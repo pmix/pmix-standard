@@ -1370,6 +1370,7 @@ All processes in the specified \refarg{procs} array are required to participate 
 The callback is to be executed once every daemon hosting at least one participant has called the host server's \refapi{pmix_server_fencenb_fn_t} function.
 
 \adviceimplstart
+The \refapi{PMIx_Fence} and \refapi{PMIx_Fence_nb} functions that activate the \refapi{pmix_server_fencenb_fn_t} callback are both \emph{collective} operations.
 The \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
 \adviceimplend
 
