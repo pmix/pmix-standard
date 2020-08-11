@@ -70,7 +70,7 @@ pmix-standard.pdf: $(CHAPTERS) $(SOURCES) pmix.sty pmix-standard.tex figs/pmix-l
 
 FORCECHECK:
 
-check: check-attr-ref check-openpmix
+check: check-attr-ref check-openpmix check-decl
 
 check-attr-ref: pmix-standard.pdf FORCECHECK
 	@echo "====> Checking for Attributes Declared, but not referenced"
@@ -80,6 +80,9 @@ check-openpmix: pmix-standard.pdf FORCECHECK
 	@echo "====> Checking cross-reference with OpenPMIx"
 	@./bin/check-openpmix.py
 
+check-decl: pmix-standard.pdf FORCECHECK
+	@echo "====> Checking for Multi-declared items"
+	@./bin/check-multi-declare.py
 
 clean:
 	rm -f $(INTERMEDIATE_FILES) pmix-standard-*.pdf
