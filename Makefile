@@ -20,6 +20,7 @@ CHAPTERS= \
 	Chap_API_Fabric.tex \
 	Chap_API_Sets_Groups.tex \
 	Chap_API_Tools.tex \
+	Chap_API_Storage.tex \
 	App_Python.tex \
 	Acknowledgements.tex
 
