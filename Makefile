@@ -62,9 +62,7 @@ pmix-standard.pdf: $(CHAPTERS) $(SOURCES) pmix.sty pmix-standard.tex figs/pmix-l
 	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex || \
 		pdflatex -interaction=errorstopmode -file-line-error pmix-standard.tex  < /dev/null
 	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex
-	@echo "====> Checking References (pmix-standard.log)"
-	@grep "Hyper reference" pmix-standard.log | grep Warning \
-	&& { echo "====> Error check references (above)" ; exit 1; } || { exit 0; }
+	@./bin/check-doc.sh
 	@echo "====> Success"
 	@cp pmix-standard.pdf pmix-standard-${version}.pdf
 
