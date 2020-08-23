@@ -157,16 +157,16 @@ The following events are typically associated with calls to \refapi{PMIx_Init}:
 \begin{constantdesc}
 %
 \declareconstitem{PMIX_MODEL_DECLARED}
-Model declared
+Model declared.
 %
 \declareconstitem{PMIX_MODEL_RESOURCES}
-Resource usage by a programming model has changed
+Resource usage by a programming model has changed.
 %
 \declareconstitem{PMIX_OPENMP_PARALLEL_ENTERED}
-An OpenMP parallel code region has been entered
+An OpenMP parallel code region has been entered.
 %
 \declareconstitem{PMIX_OPENMP_PARALLEL_EXITED}
-An OpenMP parallel code region has completed
+An OpenMP parallel code region has completed.
 %
 \end{constantdesc}
 
@@ -198,7 +198,7 @@ Comma-delimited list of devices and/or \ac{CIDR} notation to exclude when establ
 }
 %
 \declareAttribute{PMIX_TCP_IPV4_PORT}{"pmix.tcp.ipv4"}{int}{
-The IPv4 port to be used.
+The IPv4 port to be used..
 }
 %
 \declareAttribute{PMIX_TCP_IPV6_PORT}{"pmix.tcp.ipv6"}{int}{
@@ -221,27 +221,27 @@ These attributes are associated with programming models.
 
 %
 \declareAttribute{PMIX_PROGRAMMING_MODEL}{"pmix.pgm.model"}{char*}{
-Programming model being initialized (e.g., ``MPI'' or ``OpenMP'')
+Programming model being initialized (e.g., ``MPI'' or ``OpenMP'').
 }
 %
 \declareAttribute{PMIX_MODEL_LIBRARY_NAME}{"pmix.mdl.name"}{char*}{
-Programming model implementation ID (e.g., ``OpenMPI'' or ``MPICH'')
+Programming model implementation ID (e.g., ``OpenMPI'' or ``MPICH'').
 }
 %
 \declareAttribute{PMIX_MODEL_LIBRARY_VERSION}{"pmix.mld.vrs"}{char*}{
-Programming model version string (e.g., ``2.1.1'')
+Programming model version string (e.g., ``2.1.1'').
 }
 %
 \declareAttribute{PMIX_THREADING_MODEL}{"pmix.threads"}{char*}{
-Threading model used (e.g., ``pthreads'')
+Threading model used (e.g., ``pthreads'').
 }
 %
 \declareAttribute{PMIX_MODEL_NUM_THREADS}{"pmix.mdl.nthrds"}{uint64_t}{
-Number of active threads being used by the model
+Number of active threads being used by the model.
 }
 %
 \declareAttribute{PMIX_MODEL_NUM_CPUS}{"pmix.mdl.ncpu"}{uint64_t}{
-Number of cpus being used by the model
+Number of cpus being used by the model.
 }
 %
 \declareAttribute{PMIX_MODEL_CPU_TYPE}{"pmix.mdl.cputype"}{char*}{
@@ -249,18 +249,18 @@ Granularity - ``hwthread'', ``core'', etc.
 }
 %
 \declareAttribute{PMIX_MODEL_PHASE_NAME}{"pmix.mdl.phase"}{char*}{
-User-assigned name for a phase in the application execution (e.g., ``cfd reduction'')
+User-assigned name for a phase in the application execution (e.g., ``cfd reduction'').
 }
 %
 \declareAttribute{PMIX_MODEL_PHASE_TYPE}{"pmix.mdl.ptype"}{char*}{
-Type of phase being executed (e.g., ``matrix multiply'')
+Type of phase being executed (e.g., ``matrix multiply'').
 }
 %
 \declareAttribute{PMIX_MODEL_AFFINITY_POLICY}{"pmix.mdl.tap"}{char*}{
 Thread affinity policy - e.g.:
          "master" (thread co-located with master thread),
          "close" (thread located on cpu close to master thread),
-         "spread" (threads load-balanced across available cpus)
+         "spread" (threads load-balanced across available cpus).
 }
 
 

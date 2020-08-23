@@ -122,20 +122,20 @@ The following values are general constants used in a variety of places.
 \begin{constantdesc}
 %
 \declareconstitem{PMIX_SUCCESS}
-Success
+Success.
 %
 \declareconstitem{PMIX_ERROR}
-General Error
+General Error.
 %
 \declareconstitemNEW{PMIX_ERR_EXISTS}
 Requested operation would overwrite an existing value - typically returned
-when an operation would overwrite an existing file or directory
+when an operation would overwrite an existing file or directory.
 %
 \declareconstitem{PMIX_ERR_INVALID_CRED}
-Invalid security credentials
+Invalid security credentials.
 %
 \declareconstitem{PMIX_ERR_WOULD_BLOCK}
-Operation would block
+Operation would block.
 %
 \declareconstitem{PMIX_ERR_UNKNOWN_DATA_TYPE}
 The data type specified in an input to the \ac{PMIx} library is not recognized
@@ -149,45 +149,45 @@ that type in the current unpack location.
 %
 \declareconstitem{PMIX_ERR_UNPACK_INADEQUATE_SPACE}
 Inadequate space to unpack data - the number of values in the buffer exceeds
-the specified number to unpack
+the specified number to unpack.
 %
 \declareconstitem{PMIX_ERR_UNPACK_READ_PAST_END_OF_BUFFER}
 Unpacking past the end of the provided buffer - the number of values in the
 buffer is less than the specified number to unpack, or a request was made to
-unpack a buffer beyond the buffer's end
+unpack a buffer beyond the buffer's end.
 %
 \declareconstitem{PMIX_ERR_UNPACK_FAILURE}
-The unpack operation failed for an unspecified reason
+The unpack operation failed for an unspecified reason.
 %
 \declareconstitem{PMIX_ERR_PACK_FAILURE}
-The pack operation failed for an unspecified reason
+The pack operation failed for an unspecified reason.
 %
 \declareconstitem{PMIX_ERR_NO_PERMISSIONS}
-The user lacks permissions to execute the specified operation
+The user lacks permissions to execute the specified operation.
 %
 \declareconstitem{PMIX_ERR_TIMEOUT}
-Either a user-specified or system-internal timeout expired
+Either a user-specified or system-internal timeout expired.
 %
 \declareconstitem{PMIX_ERR_UNREACH}
 The specified target server or client process is not reachable - i.e., a
 suitable connection either has not been or can not be made.
 %
 \declareconstitem{PMIX_ERR_BAD_PARAM}
-An incorrect parameter was passed to a \ac{PMIx} \ac{API}
+An incorrect parameter was passed to a \ac{PMIx} \ac{API}.
 %
 \declareconstitem{PMIX_ERR_RESOURCE_BUSY}
 Resource busy - typically seen when an attempt to establish a connection
 to another process (e.g., a \ac{PMIx} server) cannot be made due to a
-communication failure
+communication failure.
 %
 \declareconstitem{PMIX_ERR_OUT_OF_RESOURCE}
-Resource exhausted
+Resource exhausted.
 %
 \declareconstitem{PMIX_ERR_INIT}
-Error during initialization
+Error during initialization.
 %
 \declareconstitem{PMIX_ERR_NOMEM}
-Out of memory
+Out of memory.
 %
 \declareconstitem{PMIX_ERR_NOT_FOUND}
 The requested information was not found.
@@ -198,7 +198,7 @@ or the host environment.
 %
 \declareconstitem{PMIX_ERR_COMM_FAILURE}
 Communication failure - a message failed to be sent or received, but the
-connection remains intact
+connection remains intact.
 %
 \declareconstitemNEW{PMIX_ERR_LOST_CONNECTION}
 Lost connection between server and client or tool.
@@ -208,13 +208,13 @@ The requested operation is supported by the implementation and host environment,
 %
 \declareconstitem{PMIX_OPERATION_IN_PROGRESS}
 A requested operation is already in progress - the duplicate request
-shall therefore be ignored
+shall therefore be ignored.
 %
 \declareconstitem{PMIX_OPERATION_SUCCEEDED}
-The requested operation was performed atomically - no callback function will be executed
+The requested operation was performed atomically - no callback function will be executed.
 %
 \declareconstitemNEW{PMIX_ERR_PARTIAL_SUCCESS}
-The operation is considered successful but not all elements of the operation were concluded (e.g., some members of a group construct operation chose not to participate)
+The operation is considered successful but not all elements of the operation were concluded (e.g., some members of a group construct operation chose not to participate).
 %
 \end{constantdesc}
 
@@ -271,7 +271,7 @@ The following macros are provided for convenience when working with \ac{PMIx} ke
 \littleheader{Check key macro}
 \declaremacro{PMIX_CHECK_KEY}
 
-Compare the key in a \refstruct{pmix_info_t} to a given value
+Compare the key in a \refstruct{pmix_info_t} to a given value.
 
 \versionMarker{3.0}
 \cspecificstart
@@ -290,7 +290,7 @@ Returns \code{true} if the key matches the given value
 \littleheader{Load key macro}
 \declaremacro{PMIX_LOAD_KEY}
 
-Load a key into a \refstruct{pmix_info_t}
+Load a key into a \refstruct{pmix_info_t}.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -335,7 +335,7 @@ The following macros are provided for convenience when working with \ac{PMIx} na
 \littleheader{Check namespace macro}
 \declaremacro{PMIX_CHECK_NSPACE}
 
-Compare the string in a \refstruct{pmix_nspace_t} to a given value
+Compare the string in a \refstruct{pmix_nspace_t} to a given value.
 
 \versionMarker{3.0}
 \cspecificstart
@@ -354,7 +354,7 @@ Returns \code{true} if the namespace matches the given value
 \littleheader{Load namespace macro}
 \declaremacro{PMIX_LOAD_NSPACE}
 
-Load a namespace into a \refstruct{pmix_nspace_t}
+Load a namespace into a \refstruct{pmix_nspace_t}.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -435,7 +435,7 @@ The following macros are provided to support the \refstruct{pmix_proc_t} structu
 \littleheader{Initialize the proc structure}
 \declaremacro{PMIX_PROC_CONSTRUCT}
 
-Initialize the \refstruct{pmix_proc_t} fields
+Initialize the \refstruct{pmix_proc_t} fields.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -451,7 +451,7 @@ PMIX_PROC_CONSTRUCT(m)
 \littleheader{Destruct the proc structure}
 \declaremacro{PMIX_PROC_DESTRUCT}
 
-Destruct the \refstruct{pmix_proc_t} fields
+Destruct the \refstruct{pmix_proc_t} fields.
 
 \cspecificstart
 \begin{codepar}
@@ -468,7 +468,7 @@ There is nothing to release here as the fields in \refstruct{pmix_proc_t} are al
 \littleheader{Create a proc array}
 \declaremacro{PMIX_PROC_CREATE}
 
-Allocate and initialize an array of \refstruct{pmix_proc_t} structures
+Allocate and initialize an array of \refstruct{pmix_proc_t} structures.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -486,7 +486,7 @@ PMIX_PROC_CREATE(m, n)
 \littleheader{Free a proc structure}
 \declaremacro{PMIX_PROC_RELEASE}
 
-Release a \refstruct{pmix_proc_t} structure
+Release a \refstruct{pmix_proc_t} structure.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -502,7 +502,7 @@ PMIX_PROC_RELEASE(m)
 \littleheader{Free a proc array}
 \declaremacro{PMIX_PROC_FREE}
 
-Release an array of \refstruct{pmix_proc_t} structures
+Release an array of \refstruct{pmix_proc_t} structures.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -519,7 +519,7 @@ PMIX_PROC_FREE(m, n)
 \littleheader{Load a proc structure}
 \declaremacro{PMIX_PROC_LOAD}
 
-Load values into a \refstruct{pmix_proc_t}
+Load values into a \refstruct{pmix_proc_t}.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -539,7 +539,7 @@ No return value. Deprecated in favor of \refmacro{PMIX_LOAD_PROCID}
 \littleheader{Compare identifiers}
 \declaremacro{PMIX_CHECK_PROCID}
 
-Compare two \refstruct{pmix_proc_t} identifiers
+Compare two \refstruct{pmix_proc_t} identifiers.
 
 \versionMarker{3.0}
 \cspecificstart
@@ -564,7 +564,7 @@ Returns \code{true} if the two structures contain matching namespaces and:
 \littleheader{Load a procID structure}
 \declaremacro{PMIX_LOAD_PROCID}
 
-Load values into a \refstruct{pmix_proc_t}
+Load values into a \refstruct{pmix_proc_t}.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -582,7 +582,7 @@ PMIX_LOAD_PROCID(m, n, r)
 \littleheader{Construct a multi-cluster namespace}
 \declaremacro{PMIX_MULTICLUSTER_NSPACE_CONSTRUCT}
 
-Construct a multi-cluster identifier containing a cluster ID and a namespace
+Construct a multi-cluster identifier containing a cluster ID and a namespace.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -602,7 +602,7 @@ Combined length of the cluster identifier and namespace must be less than \refco
 \littleheader{Parse a multi-cluster namespace}
 \declaremacro{PMIX_MULTICLUSTER_NSPACE_PARSE}
 
-Parse a multi-cluster identifier into its cluster ID and namespace parts
+Parse a multi-cluster identifier into its cluster ID and namespace parts.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -633,75 +633,75 @@ The fine-grained nature of the following constants may exceed the ability of an 
 \begin{constantdesc}
 %
 \declareconstitem{PMIX_PROC_STATE_UNDEF}
-Undefined process state
+Undefined process state.
 %
 \declareconstitem{PMIX_PROC_STATE_PREPPED}
-Process is ready to be launched
+Process is ready to be launched.
 %
 \declareconstitem{PMIX_PROC_STATE_LAUNCH_UNDERWAY}
-Process launch is underway
+Process launch is underway.
 %
 \declareconstitem{PMIX_PROC_STATE_RESTART}
-Process is ready for restart
+Process is ready for restart.
 %
 \declareconstitem{PMIX_PROC_STATE_TERMINATE}
-Process is marked for termination
+Process is marked for termination.
 %
 \declareconstitem{PMIX_PROC_STATE_RUNNING}
-Process has been locally \code{fork}'ed by the \ac{RM}
+Process has been locally \code{fork}'ed by the \ac{RM}.
 %
 \declareconstitem{PMIX_PROC_STATE_CONNECTED}
-Process has connected to PMIx server
+Process has connected to PMIx server.
 %
 \declareconstitem{PMIX_PROC_STATE_UNTERMINATED}
 Define a ``boundary'' between the terminated states and \refconst{PMIX_PROC_STATE_CONNECTED} so users can easily and quickly determine if a process is still running or not.
 Any value less than this constant means that the process has not terminated.
 %
 \declareconstitem{PMIX_PROC_STATE_TERMINATED}
-Process has terminated and is no longer running
+Process has terminated and is no longer running.
 %
 \declareconstitem{PMIX_PROC_STATE_ERROR}
 Define a boundary so users can easily and quickly determine if a process abnormally terminated.
 Any value above this constant means that the process has terminated abnormally.
 %
 \declareconstitem{PMIX_PROC_STATE_KILLED_BY_CMD}
-Process was killed by a command
+Process was killed by a command.
 %
 \declareconstitem{PMIX_PROC_STATE_ABORTED}
-Process was aborted by a call to \refapi{PMIx_Abort}
+Process was aborted by a call to \refapi{PMIx_Abort}.
 %
 \declareconstitem{PMIX_PROC_STATE_FAILED_TO_START}
-Process failed to start
+Process failed to start.
 %
 \declareconstitem{PMIX_PROC_STATE_ABORTED_BY_SIG}
-Process aborted by a signal
+Process aborted by a signal.
 %
 \declareconstitem{PMIX_PROC_STATE_TERM_WO_SYNC}
-Process exited without calling \refapi{PMIx_Finalize}
+Process exited without calling \refapi{PMIx_Finalize}.
 %
 \declareconstitem{PMIX_PROC_STATE_COMM_FAILED}
-Process communication has failed
+Process communication has failed.
 %
 \declareconstitemNEW{PMIX_PROC_STATE_SENSOR_BOUND_EXCEEDED}
-Process exceeded a specified sensor limit
+Process exceeded a specified sensor limit.
 %
 \declareconstitem{PMIX_PROC_STATE_CALLED_ABORT}
-Process called \refapi{PMIx_Abort}
+Process called \refapi{PMIx_Abort}.
 %
 \declareconstitemNEW{PMIX_PROC_STATE_HEARTBEAT_FAILED}
-Frocess failed to send heartbeat within specified time limit
+Frocess failed to send heartbeat within specified time limit.
 %
 \declareconstitem{PMIX_PROC_STATE_MIGRATING}
-Process failed and is waiting for resources before restarting
+Process failed and is waiting for resources before restarting.
 %
 \declareconstitem{PMIX_PROC_STATE_CANNOT_RESTART}
-Process failed and cannot be restarted
+Process failed and cannot be restarted.
 %
 \declareconstitem{PMIX_PROC_STATE_TERM_NON_ZERO}
-Process exited with a non-zero status
+Process exited with a non-zero status.
 %
 \declareconstitem{PMIX_PROC_STATE_FAILED_TO_LAUNCH}
-Unable to launch process
+Unable to launch process.
 %
 \end{constantdesc}
 
@@ -742,7 +742,7 @@ The following macros are provided to support the \refstruct{pmix_proc_info_t} st
 \littleheader{Initialize the process information structure}
 \declaremacro{PMIX_PROC_INFO_CONSTRUCT}
 
-Initialize the \refstruct{pmix_proc_info_t} fields
+Initialize the \refstruct{pmix_proc_info_t} fields.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -759,7 +759,7 @@ PMIX_PROC_INFO_CONSTRUCT(m)
 \littleheader{Destruct the process information structure}
 \declaremacro{PMIX_PROC_INFO_DESTRUCT}
 
-Destruct the \refstruct{pmix_proc_info_t} fields
+Destruct the \refstruct{pmix_proc_info_t} fields.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -776,7 +776,7 @@ PMIX_PROC_INFO_DESTRUCT(m)
 \littleheader{Create a process information array}
 \declaremacro{PMIX_PROC_INFO_CREATE}
 
-Allocate and initialize a \refstruct{pmix_proc_info_t} array
+Allocate and initialize a \refstruct{pmix_proc_info_t} array.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -794,7 +794,7 @@ PMIX_PROC_INFO_CREATE(m, n)
 \littleheader{Free a process information structure}
 \declaremacro{PMIX_PROC_INFO_RELEASE}
 
-Release a \refstruct{pmix_proc_info_t} structure
+Release a \refstruct{pmix_proc_info_t} structure.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -811,7 +811,7 @@ PMIX_PROC_INFO_RELEASE(m)
 \littleheader{Free a process information array}
 \declaremacro{PMIX_PROC_INFO_FREE}
 
-Release an array of \refstruct{pmix_proc_info_t} structures
+Release an array of \refstruct{pmix_proc_info_t} structures.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -841,29 +841,29 @@ The fine-grained nature of the following constants may exceed the ability of an 
 \begin{constantdesc}
 %
 \declareconstitemNEW{PMIX_JOB_STATE_UNDEF}
-Undefined job state
+Undefined job state.
 %
 \declareconstitemNEW{PMIX_JOB_STATE_AWAITING_ALLOC}
-Job is waiting for resources to be allocated to it
+Job is waiting for resources to be allocated to it.
 %
 \declareconstitemNEW{PMIX_JOB_STATE_LAUNCH_UNDERWAY}
-Job launch is underway
+Job launch is underway.
 %
 \declareconstitemNEW{PMIX_JOB_STATE_RUNNING}
-All processes in the job have been spawned and are executing
+All processes in the job have been spawned and are executing.
 %
 \declareconstitemNEW{PMIX_JOB_STATE_SUSPENDED}
-All processes in the job have been suspended
+All processes in the job have been suspended.
 %
 \declareconstitemNEW{PMIX_JOB_STATE_CONNECTED}
-All processes in the job have connected to their \ac{PMIx} server
+All processes in the job have connected to their \ac{PMIx} server.
 %
 \declareconstitemNEW{PMIX_JOB_STATE_UNTERMINATED}
 Define a ``boundary'' between the terminated states and \refconst{PMIX_JOB_STATE_TERMINATED} so users can easily and quickly determine if a job is still running or not.
 Any value less than this constant means that the job has not terminated.
 %
 \declareconstitemNEW{PMIX_JOB_STATE_TERMINATED}
-All processes in the job have terminated and are no longer running - typically will be accompanied by the job exit status in response to a query
+All processes in the job have terminated and are no longer running - typically will be accompanied by the job exit status in response to a query.
 %
 \declareconstitemNEW{PMIX_JOB_STATE_TERMINATED_WITH_ERROR}
 Define a boundary so users can easily and quickly determine if a job abnormally terminated - typically will be accompanied by a job-related error code in response to a query
@@ -929,7 +929,7 @@ The following macros are provided to support the \refstruct{pmix_value_t} struct
 \littleheader{Initialize the value structure}
 \declaremacro{PMIX_VALUE_CONSTRUCT}
 
-Initialize the \refstruct{pmix_value_t} fields
+Initialize the \refstruct{pmix_value_t} fields.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -945,7 +945,7 @@ PMIX_VALUE_CONSTRUCT(m)
 \littleheader{Destruct the value structure}
 \declaremacro{PMIX_VALUE_DESTRUCT}
 
-Destruct the \refstruct{pmix_value_t} fields
+Destruct the \refstruct{pmix_value_t} fields.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -962,7 +962,7 @@ PMIX_VALUE_DESTRUCT(m)
 \littleheader{Create a value array}
 \declaremacro{PMIX_VALUE_CREATE}
 
-Allocate and initialize an array of \refstruct{pmix_value_t} structures
+Allocate and initialize an array of \refstruct{pmix_value_t} structures.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -981,7 +981,7 @@ PMIX_VALUE_CREATE(m, n)
 \littleheader{Free a value structure}
 \declaremacro{PMIX_VALUE_RELEASE}
 
-Release a \refstruct{pmix_value_t} structure
+Release a \refstruct{pmix_value_t} structure.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -998,7 +998,7 @@ PMIX_VALUE_RELEASE(m)
 \littleheader{Free a value array}
 \declaremacro{PMIX_VALUE_FREE}
 
-Release an array of \refstruct{pmix_value_t} structures
+Release an array of \refstruct{pmix_value_t} structures.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -1092,7 +1092,7 @@ The data will be copied into the destination \refstruct{pmix_value_t} - thus, an
 \littleheader{Retrieve a numerical value from a value struct}
 \declaremacro{PMIX_VALUE_GET_NUMBER}
 
-Retrieve a numerical value from a \refstruct{pmix_value_t} structure
+Retrieve a numerical value from a \refstruct{pmix_value_t} structure.
 
 \versionMarker{3.0}
 \cspecificstart
@@ -1135,7 +1135,7 @@ The following macros are provided to support the \refstruct{pmix_info_t} structu
 \littleheader{Initialize the info structure}
 \declaremacro{PMIX_INFO_CONSTRUCT}
 
-Initialize the \refstruct{pmix_info_t} fields
+Initialize the \refstruct{pmix_info_t} fields.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -1151,7 +1151,7 @@ PMIX_INFO_CONSTRUCT(m)
 \littleheader{Destruct the info structure}
 \declaremacro{PMIX_INFO_DESTRUCT}
 
-Destruct the \refstruct{pmix_info_t} fields
+Destruct the \refstruct{pmix_info_t} fields.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -1168,7 +1168,7 @@ PMIX_INFO_DESTRUCT(m)
 \littleheader{Create an info array}
 \declaremacro{PMIX_INFO_CREATE}
 
-Allocate and initialize an array of info structures
+Allocate and initialize an array of info structures.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -1187,7 +1187,7 @@ PMIX_INFO_CREATE(m, n)
 \littleheader{Free an info array}
 \declaremacro{PMIX_INFO_FREE}
 
-Release an array of \refstruct{pmix_info_t} structures
+Release an array of \refstruct{pmix_info_t} structures.
 
 \versionMarker{1.0}
 \cspecificstart
@@ -1254,7 +1254,7 @@ All data (including key, value, and directives) will be copied into the destinat
 \littleheader{Test a boolean info struct}
 \declaremacro{PMIX_INFO_TRUE}
 
-A special macro for checking if a boolean \refstruct{pmix_info_t} is \code{true}
+A special macro for checking if a boolean \refstruct{pmix_info_t} is \code{true}.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -1304,7 +1304,7 @@ The behavior defined in the \refstruct{pmix_info_t} array is required, and not o
 Mark that this \refstruct{pmix_info_t} struct is at the end of an array created by the \refmacro{PMIX_INFO_CREATE} macro. This is a bit-mask value.
 %
 \declareconstitemNEW{PMIX_INFO_DIR_RESERVED}
-A bit-mask identifying the bits reserved for internal use by implementers - these currently are set as 0xffff0000.
+A bit-mask identifying the bits reserved for internal use by implementers - these currently are set as \code{0xffff0000}.
 %
 \end{constantdesc}
 
@@ -1443,7 +1443,7 @@ The following macros are provided to support the \refstruct{pmix_envar_t} struct
 \littleheader{Initialize the envar structure}
 \declaremacro{PMIX_ENVAR_CONSTRUCT}
 
-Initialize the \refstruct{pmix_envar_t} fields
+Initialize the \refstruct{pmix_envar_t} fields.
 
 \versionMarker{3.0}
 \cspecificstart
@@ -1459,7 +1459,7 @@ PMIX_ENVAR_CONSTRUCT(m)
 \littleheader{Destruct the envar structure}
 \declaremacro{PMIX_ENVAR_DESTRUCT}
 
-Clear the \refstruct{pmix_envar_t} fields
+Clear the \refstruct{pmix_envar_t} fields.
 
 \versionMarker{3.0}
 \cspecificstart
@@ -1476,7 +1476,7 @@ PMIX_ENVAR_DESTRUCT(m)
 \littleheader{Create an envar array}
 \declaremacro{PMIX_ENVAR_CREATE}
 
-Allocate and initialize an array of \refstruct{pmix_envar_t} structures
+Allocate and initialize an array of \refstruct{pmix_envar_t} structures.
 
 \versionMarker{3.0}
 \cspecificstart
@@ -1494,7 +1494,7 @@ PMIX_ENVAR_CREATE(m, n)
 \littleheader{Free an envar array}
 \declaremacro{PMIX_ENVAR_FREE}
 
-Release an array of \refstruct{pmix_envar_t} structures
+Release an array of \refstruct{pmix_envar_t} structures.
 
 \versionMarker{3.0}
 \cspecificstart
@@ -1511,7 +1511,7 @@ PMIX_ENVAR_FREE(m, n)
 \littleheader{Load an envar structure}
 \declaremacro{PMIX_ENVAR_LOAD}
 
-Load values into a \refstruct{pmix_envar_t}
+Load values into a \refstruct{pmix_envar_t}.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -1551,7 +1551,7 @@ The following macros support the \refstruct{pmix_byte_object_t} structure.
 \littleheader{Initialize the byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_CONSTRUCT}
 
-Initialize the \refstruct{pmix_byte_object_t} fields
+Initialize the \refstruct{pmix_byte_object_t} fields.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -1567,7 +1567,7 @@ PMIX_BYTE_OBJECT_CONSTRUCT(m)
 \littleheader{Destruct the byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_DESTRUCT}
 
-Clear the \refstruct{pmix_byte_object_t} fields
+Clear the \refstruct{pmix_byte_object_t} fields.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -1583,7 +1583,7 @@ PMIX_BYTE_OBJECT_DESTRUCT(m)
 \littleheader{Create a byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_CREATE}
 
-Allocate and intitialize an array of \refstruct{pmix_byte_object_t} structures
+Allocate and intitialize an array of \refstruct{pmix_byte_object_t} structures.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -1600,7 +1600,7 @@ PMIX_BYTE_OBJECT_CREATE(m, n)
 \littleheader{Free a byte object array}
 \declaremacro{PMIX_BYTE_OBJECT_FREE}
 
-Release an array of \refstruct{pmix_byte_object_t} structures
+Release an array of \refstruct{pmix_byte_object_t} structures.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -1617,7 +1617,7 @@ PMIX_BYTE_OBJECT_FREE(m, n)
 \littleheader{Load a byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_LOAD}
 
-Load values into a \refstruct{pmix_byte_object_t}
+Load values into a \refstruct{pmix_byte_object_t}.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -1806,7 +1806,7 @@ The provided argument is copied into the destination array - thus, the source st
 \littleheader{Argument array release}
 \declaremacro{PMIX_ARGV_FREE}
 
-Free an argv-style array and all of the strings that it contains
+Free an argv-style array and all of the strings that it contains.
 
 \cspecificstart
 \begin{codepar}
@@ -1910,7 +1910,7 @@ Copy an argv array, including copying all of its strings.
 %%%%
 \summary
 
-Set an environment variable in a \code{NULL}-terminated, env-style array
+Set an environment variable in a \code{NULL}-terminated, env-style array.
 
 \cspecificstart
 \begin{codepar}
@@ -1950,154 +1950,154 @@ The following constants can be used to set a variable of the type \refstruct{pmi
 \begin{constantdesc}
 %
 \declareconstitem{PMIX_UNDEF}
-Undefined
+Undefined.
 %
 \declareconstitem{PMIX_BOOL}
-Boolean (converted to/from native \code{true}/\code{false}) (\code{bool})
+Boolean (converted to/from native \code{true}/\code{false}) (\code{bool}).
 %
 \declareconstitem{PMIX_BYTE}
-A byte of data (\code{uint8_t})
+A byte of data (\code{uint8_t}).
 %
 \declareconstitem{PMIX_STRING}
-\code{NULL} terminated string (\code{char*})
+\code{NULL} terminated string (\code{char*}).
 %
 \declareconstitem{PMIX_SIZE}
-Size \code{size_t}
+Size \code{size_t}.
 %
 \declareconstitem{PMIX_PID}
-Operating \ac{PID} (\code{pid_t})
+Operating \ac{PID} (\code{pid_t}).
 %
 \declareconstitem{PMIX_INT}
-Integer (\code{int})
+Integer (\code{int}).
 %
 \declareconstitem{PMIX_INT8}
-8-byte integer (\code{int8_t})
+8-byte integer (\code{int8_t}).
 %
 \declareconstitem{PMIX_INT16}
-16-byte integer (\code{int16_t})
+16-byte integer (\code{int16_t}).
 %
 \declareconstitem{PMIX_INT32}
-32-byte integer (\code{int32_t})
+32-byte integer (\code{int32_t}).
 %
 \declareconstitem{PMIX_INT64}
-64-byte integer (\code{int64_t})
+64-byte integer (\code{int64_t}).
 %
 \declareconstitem{PMIX_UINT}
-Unsigned integer (\code{unsigned int})
+Unsigned integer (\code{unsigned int}).
 %
 \declareconstitem{PMIX_UINT8}
-Unsigned 8-byte integer (\code{uint8_t})
+Unsigned 8-byte integer (\code{uint8_t}).
 %
 \declareconstitem{PMIX_UINT16}
-Unsigned 16-byte integer (\code{uint16_t})
+Unsigned 16-byte integer (\code{uint16_t}).
 %
 \declareconstitem{PMIX_UINT32}
-Unsigned 32-byte integer (\code{uint32_t})
+Unsigned 32-byte integer (\code{uint32_t}).
 %
 \declareconstitem{PMIX_UINT64}
-Unsigned 64-byte integer (\code{uint64_t})
+Unsigned 64-byte integer (\code{uint64_t}).
 %
 \declareconstitem{PMIX_FLOAT}
-Float (\code{float})
+Float (\code{float}).
 %
 \declareconstitem{PMIX_DOUBLE}
-Double (\code{double})
+Double (\code{double}).
 %
 \declareconstitem{PMIX_TIMEVAL}
-Time value (\code{struct timeval})
+Time value (\code{struct timeval}).
 %
 \declareconstitem{PMIX_TIME}
-Time (\code{time_t})
+Time (\code{time_t}).
 %
 \declareconstitem{PMIX_STATUS}
-Status code {\refstruct{pmix_status_t}}
+Status code {\refstruct{pmix_status_t}}.
 %
 \declareconstitem{PMIX_VALUE}
-Value (\refstruct{pmix_value_t})
+Value (\refstruct{pmix_value_t}).
 %
 \declareconstitem{PMIX_PROC}
-Process (\refstruct{pmix_proc_t})
+Process (\refstruct{pmix_proc_t}).
 %
 \declareconstitem{PMIX_APP}
-Application context
+Application context.
 %
 \declareconstitem{PMIX_INFO}
-Info object
+Info object.
 %
 \declareconstitem{PMIX_PDATA}
-Pointer to data
+Pointer to data.
 %
 \declareconstitem{PMIX_BUFFER}
-Buffer
+Buffer.
 %
 \declareconstitem{PMIX_BYTE_OBJECT}
-Byte object (\refstruct{pmix_byte_object_t})
+Byte object (\refstruct{pmix_byte_object_t}).
 %
 \declareconstitem{PMIX_KVAL}
-Key/value pair
+Key/value pair.
 %
 \declareconstitem{PMIX_PERSIST}
-Persistance (\refstruct{pmix_persistence_t})
+Persistance (\refstruct{pmix_persistence_t}).
 %
 \declareconstitem{PMIX_POINTER}
-Pointer to an object (\code{void*})
+Pointer to an object (\code{void*}).
 %
 \declareconstitem{PMIX_SCOPE}
-Scope (\refstruct{pmix_scope_t})
+Scope (\refstruct{pmix_scope_t}).
 %
 \declareconstitem{PMIX_DATA_RANGE}
-Range for data (\refstruct{pmix_data_range_t})
+Range for data (\refstruct{pmix_data_range_t}).
 %
 \declareconstitem{PMIX_COMMAND}
-PMIx command code (used internally)
+PMIx command code (used internally).
 %
 \declareconstitem{PMIX_INFO_DIRECTIVES}
-Directives flag for \refstruct{pmix_info_t} (\refstruct{pmix_info_directives_t})
+Directives flag for \refstruct{pmix_info_t} (\refstruct{pmix_info_directives_t}).
 %
 \declareconstitem{PMIX_DATA_TYPE}
-Data type code (\refstruct{pmix_data_type_t})
+Data type code (\refstruct{pmix_data_type_t}).
 %
 \declareconstitem{PMIX_PROC_STATE}
-Process state (\refstruct{pmix_proc_state_t})
+Process state (\refstruct{pmix_proc_state_t}).
 %
 \declareconstitem{PMIX_PROC_INFO}
-Process information (\refstruct{pmix_proc_info_t})
+Process information (\refstruct{pmix_proc_info_t}).
 %
 \declareconstitem{PMIX_DATA_ARRAY}
-Data array (\refstruct{pmix_data_array_t})
+Data array (\refstruct{pmix_data_array_t}).
 %
 \declareconstitem{PMIX_PROC_RANK}
-Process rank (\refstruct{pmix_rank_t})
+Process rank (\refstruct{pmix_rank_t}).
 %
 \declareconstitem{PMIX_QUERY}
-Query structure (\refstruct{pmix_query_t})
+Query structure (\refstruct{pmix_query_t}).
 %
 \declareconstitem{PMIX_COMPRESSED_STRING}
-String compressed with zlib (\code{char*})
+String compressed with zlib (\code{char*}).
 %
 \declareconstitem{PMIX_ALLOC_DIRECTIVE}
-Allocation directive (\refstruct{pmix_alloc_directive_t})
+Allocation directive (\refstruct{pmix_alloc_directive_t}).
 %
 \declareconstitem{PMIX_IOF_CHANNEL}
-Input/output forwarding channel (\refstruct{pmix_iof_channel_t})
+Input/output forwarding channel (\refstruct{pmix_iof_channel_t}).
 %
 \declareconstitem{PMIX_ENVAR}
-Environmental variable structure (\refstruct{pmix_envar_t})
+Environmental variable structure (\refstruct{pmix_envar_t}).
 %
 \declareconstitemNEW{PMIX_COORD}
-Structure containing fabric coordinates (\refstruct{pmix_coord_t})
+Structure containing fabric coordinates (\refstruct{pmix_coord_t}).
 %
 \declareconstitemNEW{PMIX_REGATTR}
-Structure supporting attribute registrations (\refstruct{pmix_regattr_t})
+Structure supporting attribute registrations (\refstruct{pmix_regattr_t}).
 %
 \declareconstitemNEW{PMIX_REGEX}
-Regular expressions - can be a valid NULL-terminated string or an arbitrary array of bytes
+Regular expressions - can be a valid NULL-terminated string or an arbitrary array of bytes.
 %
 \declareconstitemNEW{PMIX_JOB_STATE}
-Job state (\refstruct{pmix_job_state_t})
+Job state (\refstruct{pmix_job_state_t}).
 %
 \declareconstitemNEW{PMIX_LINK_STATE}
-Link state (\refstruct{pmix_link_state_t})
+Link state (\refstruct{pmix_link_state_t}).
 %
 \declareconstitemNEW{PMIX_DATA_TYPE_MAX}
 A starting point for implementer-specific data types.
@@ -2430,7 +2430,7 @@ PMIx_Job_state_string(pmix_job_state_t state);
 \summary
 \declareapi{PMIx_Get_attribute_string}
 
-String representation of a \ac{PMIx} attribute
+String representation of a \ac{PMIx} attribute.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -2444,7 +2444,7 @@ PMIx_Get_attribute_string(char *attributename);
 \summary
 \declareapi{PMIx_Get_attribute_name}
 
-Return the \ac{PMIx} attribute name corresponding to the given attribute string
+Return the \ac{PMIx} attribute name corresponding to the given attribute string.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -2458,7 +2458,7 @@ PMIx_Get_attribute_name(char *attributestring);
 \summary
 \declareapi{PMIx_Link_state_string}
 
-String representation of a \refstruct{pmix_link_state_t}
+String representation of a \refstruct{pmix_link_state_t}.
 
 \versionMarker{4.0}
 \cspecificstart
