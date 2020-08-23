@@ -7,22 +7,22 @@
 The job management \acp{API} provide an application with the ability to orchestrate its operation in partnership with the \ac{SMS}.
 Members of this category include the \refapi{PMIx_Allocation_request}, \refapi{PMIx_Job_control}, and \refapi{PMIx_Process_monitor} \acp{API}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Allocation Requests}
 \label{chap:api_job_mgmt:alloc}
 
 This section defines functionality to request new allocations from the \ac{RM}, and request modifications to existing allocations.
 These are primarily used in the following scenarios:
 \begin{itemize}
-\item \textit{Evolving} applications that dynamically request and return resources as they execute
-\item \textit{Malleable} environments where the scheduler redirects resources away from executing applications for higher priority jobs or load balancing
-\item \textit{Resilient} applications that need to request replacement resources in the face of failures
-\item \textit{Rigid} jobs where the user has requested a static allocation of resources for a fixed period of time, but realizes that they underestimated their required time while executing
+\item \textit{Evolving} applications that dynamically request and return resources as they execute.
+\item \textit{Malleable} environments where the scheduler redirects resources away from executing applications for higher priority jobs or load balancing.
+\item \textit{Resilient} applications that need to request replacement resources in the face of failures.
+\item \textit{Rigid} jobs where the user has requested a static allocation of resources for a fixed period of time, but realizes that they underestimated their required time while executing.
 \end{itemize}
 \ac{PMIx} attempts to address this range of use-cases with a flexible \ac{API}.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Allocation_request}}
 \declareapi{PMIx_Allocation_request}
 
@@ -61,8 +61,6 @@ Returns one of the following:
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
-
-\divider
 
 Host environments that implement support for this operation are required to support the following attributes:
 
@@ -114,7 +112,7 @@ This includes the ``loan'' of resources back to the scheduler with a promise to 
 
 If successful, the returned results for a request for additional resources must include the host resource manager's identifier (\refattr{PMIX_ALLOC_ID}) that the requester can use to specify the resources in, for example, a call to \refapi{PMIx_Spawn}.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Allocation_request_nb}}
 \declareapi{PMIx_Allocation_request_nb}
 
@@ -155,8 +153,6 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
-\divider
-
 Host environments that implement support for this operation are required to support the following attributes:
 
 \pasteAttributeItem{PMIX_ALLOC_REQ_ID}
@@ -191,111 +187,92 @@ The following attributes are optional for host environments that support this op
 Non-blocking form of the \refapi{PMIx_Allocation_request} \ac{API}.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Job Allocation attributes}
 \label{api:struct:attributes:joballoc}
 
-Attributes used to describe the job allocation - these are values passed to and/or returned by the \refapi{PMIx_Allocation_request_nb} and \refapi{PMIx_Allocation_request} \acp{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}
+Attributes used to describe the job allocation - these are values passed to and/or returned by the \refapi{PMIx_Allocation_request_nb} and \refapi{PMIx_Allocation_request} \acp{API} and are not accessed using the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_ALLOC_REQ_ID}{"pmix.alloc.reqid"}{char*}{
 User-provided string identifier for this allocation request which can later be used to query status of the request.
 }
-
 %
 \declareAttributeNEW{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
 A string identifier (provided by the host environment) for the resulting allocation which can later be used to reference the allocated resources in, for example, a call to \refapi{PMIx_Spawn}.
 }
-
 %
 \declareAttributeNEW{PMIX_ALLOC_QUEUE}{"pmix.alloc.queue"}{char*}{
 Name of the \ac{WLM} queue to which the allocation request is to be directed, or the queue being referenced in a query.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_NUM_NODES}{"pmix.alloc.nnodes"}{uint64_t}{
-The number of nodes being requested in an allocation request
+The number of nodes being requested in an allocation request.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_NODE_LIST}{"pmix.alloc.nlist"}{char*}{
-Regular expression of the specific nodes being requested in an allocation request
+Regular expression of the specific nodes being requested in an allocation request.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_NUM_CPUS}{"pmix.alloc.ncpus"}{uint64_t}{
 Number of \acp{PU} being requested in an allocation request.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_NUM_CPU_LIST}{"pmix.alloc.ncpulist"}{char*}{
 Regular expression of the number of \acp{PU} for each node being requested in an allocation request.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_CPU_LIST}{"pmix.alloc.cpulist"}{char*}{
 Regular expression of the specific \acp{PU}  being requested in an allocation request.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_MEM_SIZE}{"pmix.alloc.msize"}{float}{
 Number of Megabytes[base2] of memory (per process) being requested in an allocation request.
 }
-
-%
 %
 \declareAttribute{PMIX_ALLOC_FABRIC}{"pmix.alloc.net"}{array}{
 Array of \refstruct{pmix_info_t} describing requested fabric resources. This must include at least: \refattr{PMIX_ALLOC_FABRIC_ID}, \refattr{PMIX_ALLOC_FABRIC_TYPE}, and \refattr{PMIX_ALLOC_FABRIC_ENDPTS}, plus whatever other descriptors are desired.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_ID}{"pmix.alloc.netid"}{char*}{
 The key to be used when accessing this requested fabric allocation. The fabric allocation will be returned/stored as a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} whose first element is composed of this key and the allocated resource description.
-The type of the included value depends upon the fabric support. For example, a \ac{TCP} allocation might consist of a comma-delimited string of socket ranges such as \var{"32000-32100,33005,38123-38146"}. Additional array entries will consist of any provided resource request directives, along with their assigned values. Examples include: \refattr{PMIX_ALLOC_FABRIC_TYPE} - the type of resources provided; \refattr{PMIX_ALLOC_FABRIC_PLANE} - if applicable, what plane the resources were assigned from; \refattr{PMIX_ALLOC_FABRIC_QOS} - the assigned QoS; \refattr{PMIX_ALLOC_BANDWIDTH} - the allocated bandwidth; \refattr{PMIX_ALLOC_FABRIC_SEC_KEY} - a security key for the requested fabric allocation. NOTE: the array contents may differ from those requested, especially if \refconst{PMIX_INFO_REQD} was not set in the request.
+The type of the included value depends upon the fabric support. For example, a \ac{TCP} allocation might consist of a comma-delimited string of socket ranges such as \code{"32000-32100,\allowbreak 33005,38123-38146"}. Additional array entries will consist of any provided resource request directives, along with their assigned values. Examples include: \refattr{PMIX_ALLOC_FABRIC_TYPE} - the type of resources provided; \refattr{PMIX_ALLOC_FABRIC_PLANE} - if applicable, what plane the resources were assigned from; \refattr{PMIX_ALLOC_FABRIC_QOS} - the assigned QoS; \refattr{PMIX_ALLOC_BANDWIDTH} - the allocated bandwidth; \refattr{PMIX_ALLOC_FABRIC_SEC_KEY} - a security key for the requested fabric allocation. NOTE: the array contents may differ from those requested, especially if \refconst{PMIX_INFO_REQD} was not set in the request.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_BANDWIDTH}{"pmix.alloc.bw"}{float}{
 Fabric bandwidth (in Megabits[base2]/sec) for the job being requested in an allocation request.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_QOS}{"pmix.alloc.netqos"}{char*}{
 Fabric quality of service level for the job being requested in an allocation request.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_TIME}{"pmix.alloc.time"}{uint32_t}{
 Total session time (in seconds) being requested in an allocation request.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_TYPE}{"pmix.alloc.nettype"}{char*}{
 Type of desired transport (e.g., \var{``tcp''}, \var{``udp''}) being requested in an allocation request.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_PLANE}{"pmix.alloc.netplane"}{char*}{
-ID string for the \refterm{fabric plane} to be used for the requested allocation
+ID string for the \refterm{fabric plane} to be used for the requested allocation.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS}{"pmix.alloc.endpts"}{size_t}{
-Number of endpoints to allocate per \refterm{process} in the job
+Number of endpoints to allocate per \refterm{process} in the job.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_ENDPTS_NODE}{"pmix.alloc.endpts.nd"}{size_t}{
-Number of endpoints to allocate per \refterm{node} for the job
+Number of endpoints to allocate per \refterm{node} for the job.
 }
-
 %
 \declareAttribute{PMIX_ALLOC_FABRIC_SEC_KEY}{"pmix.alloc.nsec"}{pmix_byte_object_t}{
-Request that the allocation include a fabric security key for the spawned job
+Request that the allocation include a fabric security key for the spawned job.
 }
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Job Allocation Directives}
 \declarestruct{pmix_alloc_directive_t}
 
@@ -326,8 +303,8 @@ A value boundary above which implementers are free to define their own directive
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Job Control}
 \label{chap:api_job_mgmt:jctrl}
 
@@ -340,7 +317,7 @@ request a warning will receive an event notifying them of an impending preemptio
 their work. Once the application is ready, it calls the provided event completion callback function to indicate that
 the SMS is free to suspend or terminate it, and can include directives regarding any desired restart.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Job_control}}
 \declareapi{PMIx_Job_control}
 
@@ -358,7 +335,7 @@ Request a job control action.
 pmix_status_t
 PMIx_Job_control(const pmix_proc_t targets[], size_t ntargets,
                  const pmix_info_t directives[], size_t ndirs,
-                 pmix_info_t *results[], size_t *nresults)
+                 pmix_info_t *results[], size_t *nresults);
 \end{codepar}
 \cspecificend
 
@@ -380,8 +357,6 @@ Returns one of the following:
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
-
-\divider
 
 Host environments that implement support for this operation are required to support the following attributes:
 
@@ -427,7 +402,7 @@ The use of \refconst{PMIX_RANK_WILDCARD} can also be used to indicate that all p
 The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
 The returned \refarg{status} indicates whether or not the request was granted, and information as to the reason for any denial of the request shall be returned in the \refarg{results} array.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Job_control_nb}}
 \declareapi{PMIx_Job_control_nb}
 
@@ -445,7 +420,7 @@ Request a job control action.
 pmix_status_t
 PMIx_Job_control_nb(const pmix_proc_t targets[], size_t ntargets,
                     const pmix_info_t directives[], size_t ndirs,
-                    pmix_info_cbfunc_t cbfunc, void *cbdata)
+                    pmix_info_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -468,8 +443,6 @@ Returns one of the following:
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
-
-\divider
 
 Host environments that implement support for this operation are required to support the following attributes:
 
@@ -515,7 +488,7 @@ The use of \refconst{PMIX_RANK_WILDCARD} can also be used to indicate that all p
 The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
 The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Job control constants}
 \label{api:struct:constants:jobcontrol}
 
@@ -525,41 +498,39 @@ The following constants are specifically defined for return by the job control \
 
 %
 \declareconstitemNEW{PMIX_ERR_CONFLICTING_CLEANUP_DIRECTIVES}
-Conflicting directives given for job/process cleanup
+Conflicting directives given for job/process cleanup.
 
 \end{constantdesc}
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Job control events}
 \label{api:struct:events:jobcontrol}
 
 The following job control events may be available for registration, depending upon implementation and host environment support:
 
 \begin{constantdesc}
-
 %
 \declareconstitem{PMIX_JCTRL_CHECKPOINT}
-Monitored by \ac{PMIx} client to trigger a checkpoint operation
+Monitored by \ac{PMIx} client to trigger a checkpoint operation.
 %
 \declareconstitem{PMIX_JCTRL_CHECKPOINT_COMPLETE}
 Sent by a \ac{PMIx} client and monitored by a \ac{PMIx} server to notify that requested checkpoint operation has completed.
 %
 \declareconstitem{PMIX_JCTRL_PREEMPT_ALERT}
 Monitored by a \ac{PMIx} client to detect that an \ac{RM} intends to preempt the job.
-
 %
 \declareconstitem{PMIX_ERR_PROC_RESTART}
-Error in process restart
+Error in process restart.
 %
 \declareconstitem{PMIX_ERR_PROC_CHECKPOINT}
-Error in process checkpoint
+Error in process checkpoint.
 %
 \declareconstitem{PMIX_ERR_PROC_MIGRATE}
-Error in process migration
-
+Error in process migration.
+%
 \end{constantdesc}
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Job control attributes}
 \label{api:struct:attributes:jobcontrol}
 
@@ -569,115 +540,94 @@ Attributes used to request control operations on an executing application - thes
 \declareAttribute{PMIX_JOB_CTRL_ID}{"pmix.jctrl.id"}{char*}{
 Provide a string identifier for this request. The user can provide an identifier for the requested operation, thus allowing them to later request status of the operation or to terminate it. The host, therefore, shall track it with the request for future reference.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_PAUSE}{"pmix.jctrl.pause"}{bool}{
 Pause the specified processes.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_RESUME}{"pmix.jctrl.resume"}{bool}{
 Resume (``un-pause'') the specified processes.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_CANCEL}{"pmix.jctrl.cancel"}{char*}{
 Cancel the specified request - the provided request ID must match the \refattr{PMIX_JOB_CTRL_ID} provided to a previous call to \refapi{PMIx_Job_control}. An ID of \code{NULL} implies cancel all requests from this requestor.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_KILL}{"pmix.jctrl.kill"}{bool}{
 Forcibly terminate the specified processes and cleanup.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_RESTART}{"pmix.jctrl.restart"}{char*}{
 Restart the specified processes using the given checkpoint ID.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_CHECKPOINT}{"pmix.jctrl.ckpt"}{char*}{
 Checkpoint the specified processes and assign the given ID to it.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_EVENT}{"pmix.jctrl.ckptev"}{bool}{
 Use event notification to trigger a process checkpoint.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_SIGNAL}{"pmix.jctrl.ckptsig"}{int}{
 Use the given signal to trigger a process checkpoint.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_TIMEOUT}{"pmix.jctrl.ckptsig"}{int}{
 Time in seconds to wait for a checkpoint to complete.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_CHECKPOINT_METHOD}{"pmix.jctrl.ckmethod"}{pmix_data_array_t}{
 Array of \refstruct{pmix_info_t} declaring each method and value supported by this application.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_SIGNAL}{"pmix.jctrl.sig"}{int}{
 Send given signal to specified processes.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_PROVISION}{"pmix.jctrl.pvn"}{char*}{
 Regular expression identifying nodes that are to be provisioned.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_PROVISION_IMAGE}{"pmix.jctrl.pvnimg"}{char*}{
 Name of the image that is to be provisioned.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_PREEMPTIBLE}{"pmix.jctrl.preempt"}{bool}{
 Indicate that the job can be pre-empted.
 }
-
 %
 \declareAttribute{PMIX_JOB_CTRL_TERMINATE}{"pmix.jctrl.term"}{bool}{
 Politely terminate the specified processes.
 }
-
 %
 \declareAttribute{PMIX_REGISTER_CLEANUP}{"pmix.reg.cleanup"}{char*}{
-Comma-delimited list of files to be removed upon process termination
+Comma-delimited list of files to be removed upon process termination.
 }
-
 %
 \declareAttribute{PMIX_REGISTER_CLEANUP_DIR}{"pmix.reg.cleanupdir"}{char*}{
-Comma-delimited list of directories to be removed upon process termination
+Comma-delimited list of directories to be removed upon process termination.
 }
-
 %
 \declareAttribute{PMIX_CLEANUP_RECURSIVE}{"pmix.clnup.recurse"}{bool}{
-Recursively cleanup all subdirectories under the specified one(s)
+Recursively cleanup all subdirectories under the specified one(s).
 }
-
 %
 \declareAttribute{PMIX_CLEANUP_EMPTY}{"pmix.clnup.empty"}{bool}{
-Only remove empty subdirectories
+Only remove empty subdirectories.
 }
-
 %
 \declareAttribute{PMIX_CLEANUP_IGNORE}{"pmix.clnup.ignore"}{char*}{
-Comma-delimited list of filenames that are not to be removed
+Comma-delimited list of filenames that are not to be removed.
 }
-
 %
 \declareAttribute{PMIX_CLEANUP_LEAVE_TOPDIR}{"pmix.clnup.lvtop"}{bool}{
-When recursively cleaning subdirectories, do not remove the top-level directory (the one given in the cleanup request)
+When recursively cleaning subdirectories, do not remove the top-level directory (the one given in the cleanup request).
 }
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Process and Job Monitoring}
 \label{chap:api_job_mgmt:monitor}
 
@@ -689,7 +639,7 @@ from the application and monitoring a specified file for changes in size and/or 
 
 The following \acp{API} allow applications to request monitoring, directing what is to be monitored, the frequency of the associated check, whether or not the application is to be notified (via the event notification subsystem) of stall detection, and other characteristics of the operation.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Process_monitor}}
 \declareapi{PMIx_Process_monitor}
 
@@ -705,9 +655,10 @@ Request that application processes be monitored.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_Process_monitor(const pmix_info_t *monitor, pmix_status_t error,
+PMIx_Process_monitor(const pmix_info_t *monitor,
+                     pmix_status_t error,
                      const pmix_info_t directives[], size_t ndirs,
-                     pmix_info_t *results[], size_t *nresults)
+                     pmix_info_t *results[], size_t *nresults);
 \end{codepar}
 \cspecificend
 
@@ -764,7 +715,7 @@ The \refarg{directives} argument characterizes the monitoring request (e.g., mon
 
 The returned \refarg{status} indicates whether or not the request was granted, and information as to the reason for any denial of the request shall be returned in the \refarg{results} array.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Process_monitor_nb}}
 \declareapi{PMIx_Process_monitor_nb}
 
@@ -780,9 +731,11 @@ Request that application processes be monitored.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_Process_monitor_nb(const pmix_info_t *monitor, pmix_status_t error,
-                        const pmix_info_t directives[], size_t ndirs,
-                        pmix_info_cbfunc_t cbfunc, void *cbdata)
+PMIx_Process_monitor_nb(const pmix_info_t *monitor,
+                        pmix_status_t error,
+                        const pmix_info_t directives[],
+                        size_t ndirs,
+                        pmix_info_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -799,8 +752,8 @@ Returns one of the following:
 
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
 
 \optattrstart
@@ -824,10 +777,9 @@ The following attributes may be implemented by a \ac{PMIx} library or by the hos
 %%%%
 \descr
 
-
 Non-blocking form of the \refapi{PMIx_Process_monitor} \ac{API}. The \refarg{cbfunc} function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Heartbeat}}
 \declaremacro{PMIx_Heartbeat}
 
@@ -842,7 +794,7 @@ Send a heartbeat to the \ac{PMIx} server library
 \versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
-PMIx_Heartbeat(void)
+PMIx_Heartbeat();
 \end{codepar}
 \cspecificend
 
@@ -852,21 +804,20 @@ PMIx_Heartbeat(void)
 
 A simplified macro wrapping \refapi{PMIx_Process_monitor_nb} that sends a heartbeat to the \ac{PMIx} server library.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Monitoring events}
 \label{api:struct:events:monitor}
 
 The following monitoring events may be available for registration, depending upon implementation and host environment support:
 
 \begin{constantdesc}
-
 %
 \declareconstitem{PMIX_MONITOR_HEARTBEAT_ALERT}
 Heartbeat failed to arrive within specified window. The process that triggered this alert will be identified in the event.
 %
 \declareconstitem{PMIX_MONITOR_FILE_ALERT}
 File failed its monitoring detection criteria. The file that triggered this alert will be identified in the event.
-
+%
 \end{constantdesc}
 
 %%%%%%%%%%%
@@ -879,74 +830,63 @@ Attributes used to control monitoring of an executing application- these are val
 \declareAttribute{PMIX_MONITOR_ID}{"pmix.monitor.id"}{char*}{
 Provide a string identifier for this request.
 }
-
 %
 \declareAttribute{PMIX_MONITOR_CANCEL}{"pmix.monitor.cancel"}{char*}{
 Identifier to be canceled (\code{NULL} means cancel all monitoring for this process).
 }
-
 %
 \declareAttribute{PMIX_MONITOR_APP_CONTROL}{"pmix.monitor.appctrl"}{bool}{
-The application desires to control the response to a monitoring event - i.e., the application is requesting that the host environment not take immediate action in response to the event (e.g., terminating the job)
+The application desires to control the response to a monitoring event - i.e., the application is requesting that the host environment not take immediate action in response to the event (e.g., terminating the job).
 }
-
 %
 \declareAttribute{PMIX_MONITOR_HEARTBEAT}{"pmix.monitor.mbeat"}{void}{
 Register to have the PMIx server monitor the requestor for heartbeats.
 }
-
 %
 \declareAttribute{PMIX_SEND_HEARTBEAT}{"pmix.monitor.beat"}{void}{
 Send heartbeat to local PMIx server.
 }
-
 %
 \declareAttribute{PMIX_MONITOR_HEARTBEAT_TIME}{"pmix.monitor.btime"}{uint32_t}{
 Time in seconds before declaring heartbeat missed.
 }
-
 %
 \declareAttribute{PMIX_MONITOR_HEARTBEAT_DROPS}{"pmix.monitor.bdrop"}{uint32_t}{
 Number of heartbeats that can be missed before generating the event.
 }
-
 %
 \declareAttribute{PMIX_MONITOR_FILE}{"pmix.monitor.fmon"}{char*}{
 Register to monitor file for signs of life.
 }
-
 %
 \declareAttribute{PMIX_MONITOR_FILE_SIZE}{"pmix.monitor.fsize"}{bool}{
 Monitor size of given file is growing to determine if the application is running.
 }
-
 %
 \declareAttribute{PMIX_MONITOR_FILE_ACCESS}{"pmix.monitor.faccess"}{char*}{
 Monitor time since last access of given file to determine if the application is running.
 }
-
 %
 \declareAttribute{PMIX_MONITOR_FILE_MODIFY}{"pmix.monitor.fmod"}{char*}{
 Monitor time since last modified of given file to determine if the application is running.
 }
-
 %
 \declareAttribute{PMIX_MONITOR_FILE_CHECK_TIME}{"pmix.monitor.ftime"}{uint32_t}{
 Time in seconds between checking the file.
 }
-
 %
 \declareAttribute{PMIX_MONITOR_FILE_DROPS}{"pmix.monitor.fdrop"}{uint32_t}{
 Number of file checks that can be missed before generating the event.
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Logging}
 \label{chap:api_job_mgmt:logging}
 
 The logging interface supports posting information by applications and SMS elements to persistent storage. This function is \textit{not} intended for output of computational results, but rather for reporting status and saving state information such as inserting computation progress reports into the application's \ac{SMS} job log or error reports to the local syslog.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Log}}
 \declareapi{PMIx_Log}
 
@@ -963,7 +903,7 @@ Log data to a data service.
 \begin{codepar}
 pmix_status_t
 PMIx_Log(const pmix_info_t data[], size_t ndata,
-         const pmix_info_t directives[], size_t ndirs)
+         const pmix_info_t directives[], size_t ndirs);
 \end{codepar}
 \cspecificend
 
@@ -988,8 +928,6 @@ If the \ac{PMIx} library does not itself perform this operation, then it is requ
 
 \pasteAttributeItem{PMIX_USERID}
 \pasteAttributeItem{PMIX_GRPID}
-
-\divider
 
 Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes:
 
@@ -1030,7 +968,7 @@ Log data subject to the services offered by the host environment. The data to be
 It is strongly recommended that the \refapi{PMIx_Log} API not be used by applications for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon. Note that a return of \refconst{PMIX_SUCCESS} only denotes that the data was successfully handed to the appropriate system call (for local channels) or the host environment and does not indicate receipt at the final destination.
 \adviceuserend
 
-%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Log_nb}}
 \declareapi{PMIx_Log_nb}
 
@@ -1048,7 +986,7 @@ Log data to a data service.
 pmix_status_t
 PMIx_Log_nb(const pmix_info_t data[], size_t ndata,
             const pmix_info_t directives[], size_t ndirs,
-            pmix_op_cbfunc_t cbfunc, void *cbdata)
+            pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -1076,8 +1014,6 @@ If the \ac{PMIx} library does not itself perform this operation, then it is requ
 
 \pasteAttributeItem{PMIX_USERID}
 \pasteAttributeItem{PMIX_GRPID}
-
-\divider
 
 Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes:
 
@@ -1119,7 +1055,8 @@ The callback function will be executed when the log operation has been completed
 It is strongly recommended that the \refapi{PMIx_Log_nb} API not be used by applications for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon. Note that a return of \refconst{PMIX_SUCCESS} only denotes that the data was successfully handed to the appropriate system call (for local channels) or the host environment and does not indicate receipt at the final destination.
 \adviceuserend
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Log attributes}
 \label{api:struct:attributes:log}
 
@@ -1127,120 +1064,98 @@ Attributes used to describe \refapi{PMIx_Log} behavior - these are values passed
 
 %
 \declareAttribute{PMIX_LOG_SOURCE}{"pmix.log.source"}{pmix_proc_t*}{
-ID of source of the log request
+ID of source of the log request.
 }
-
 %
 \declareAttribute{PMIX_LOG_STDERR}{"pmix.log.stderr"}{char*}{
 Log string to \code{stderr}.
 }
-
 %
 \declareAttribute{PMIX_LOG_STDOUT}{"pmix.log.stdout"}{char*}{
 Log string to \code{stdout}.
 }
-
 %
 \declareAttribute{PMIX_LOG_SYSLOG}{"pmix.log.syslog"}{char*}{
 Log data to syslog.
-Defaults to \code{ERROR} priority.  Will log to global syslog if available, otherwise to local syslog
+Defaults to \code{ERROR} priority.  Will log to global syslog if available, otherwise to local syslog.
 }
-
 %
 \declareAttribute{PMIX_LOG_LOCAL_SYSLOG}{"pmix.log.lsys"}{char*}{
 Log data to local syslog.
 Defaults to \code{ERROR} priority.
 }
-
 %
 \declareAttribute{PMIX_LOG_GLOBAL_SYSLOG}{"pmix.log.gsys"}{char*}{
 Forward data to system ``gateway'' and log msg to that syslog
 Defaults to \code{ERROR} priority.
 }
-
 %
 \declareAttribute{PMIX_LOG_SYSLOG_PRI}{"pmix.log.syspri"}{int}{
-Syslog priority level
+Syslog priority level.
 }
-
 %
 \declareAttribute{PMIX_LOG_TIMESTAMP}{"pmix.log.tstmp"}{time_t}{
-Timestamp for log report
+Timestamp for log report.
 }
-
 %
 \declareAttribute{PMIX_LOG_GENERATE_TIMESTAMP}{"pmix.log.gtstmp"}{bool}{
-Generate timestamp for log
+Generate timestamp for log.
 }
-
 %
 \declareAttribute{PMIX_LOG_TAG_OUTPUT}{"pmix.log.tag"}{bool}{
-Label the output stream with the channel name (e.g., ``stdout'')
+Label the output stream with the channel name (e.g., ``stdout'').
 }
-
 %
 \declareAttribute{PMIX_LOG_TIMESTAMP_OUTPUT}{"pmix.log.tsout"}{bool}{
-Print timestamp in output string
+Print timestamp in output string.
 }
-
 %
 \declareAttribute{PMIX_LOG_XML_OUTPUT}{"pmix.log.xml"}{bool}{
-Print the output stream in \ac{XML} format
+Print the output stream in \ac{XML} format.
 }
-
 %
 \declareAttribute{PMIX_LOG_ONCE}{"pmix.log.once"}{bool}{
-Only log this once with whichever channel can first support it, taking the channels in priority order
+Only log this once with whichever channel can first support it, taking the channels in priority order.
 }
-
 %
 \declareAttribute{PMIX_LOG_MSG}{"pmix.log.msg"}{pmix_byte_object_t}{
 Message blob to be sent somewhere.
 }
-
 %
 \declareAttribute{PMIX_LOG_EMAIL}{"pmix.log.email"}{pmix_data_array_t}{
 Log via email based on \refstruct{pmix_info_t} containing directives.
 }
-
 %
 \declareAttribute{PMIX_LOG_EMAIL_ADDR}{"pmix.log.emaddr"}{char*}{
 Comma-delimited list of email addresses that are to receive the message.
 }
-
 %
 \declareAttribute{PMIX_LOG_EMAIL_SENDER_ADDR}{"pmix.log.emfaddr"}{char*}{
-Return email address of sender
+Return email address of sender.
 }
-
 %
 \declareAttribute{PMIX_LOG_EMAIL_SUBJECT}{"pmix.log.emsub"}{char*}{
 Subject line for email.
 }
-
 %
 \declareAttribute{PMIX_LOG_EMAIL_MSG}{"pmix.log.emmsg"}{char*}{
 Message to be included in email.
 }
-
 %
 \declareAttribute{PMIX_LOG_EMAIL_SERVER}{"pmix.log.esrvr"}{char*}{
-Hostname (or IP address) of estmp server
+Hostname (or IP address) of SMTP server.
 }
-
 %
 \declareAttribute{PMIX_LOG_EMAIL_SRVR_PORT}{"pmix.log.esrvrprt"}{int32_t}{
-Port the email server is listening to
+Port the email server is listening to.
 }
-
 %
 \declareAttribute{PMIX_LOG_GLOBAL_DATASTORE}{"pmix.log.gstore"}{bool}{
-Store the log data in a global data store (e.g., database)
+Store the log data in a global data store (e.g., database).
 }
-
 %
 \declareAttribute{PMIX_LOG_JOB_RECORD}{"pmix.log.jrec"}{bool}{
-Log the provided information to the host environment's job record
+Log the provided information to the host environment's job record.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

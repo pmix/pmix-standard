@@ -4,27 +4,28 @@
 \chapter{Server-Specific Interfaces}
 \label{chap:api_server}
 
-The process that hosts the \ac{PMIx} server library interacts with that library in two distinct manners. First, \ac{PMIx} provides a set of \acp{API} by which the host can request specific services from its library. This includes
+The process that hosts the \ac{PMIx} server library interacts with that library in two distinct manners. First, \ac{PMIx} provides a set of \acp{API} by which the host can request specific services from its library. This includes:
 
-\begin{itemize}
-    \item collecting inventory to support scheduling algorithms
-    \item providing subsystems with an opportunity to precondition their resources for optimized application support
-    \item generating regular expressions
-    \item registering information to be passed to client processes
-    \item requesting information on behalf of a remote process
-\end{itemize}
+\begin{compactitemize}
+    \item collecting inventory to support scheduling algorithms,
+    \item providing subsystems with an opportunity to precondition their resources for optimized application support,
+    \item generating regular expressions,
+    \item registering information to be passed to client processes, and
+    \item requesting information on behalf of a remote process.
+\end{compactitemize}
 
 Note that the host always has access to all \ac{PMIx} client \acp{API} - the functions listed below are in addition to those available to a \ac{PMIx} client.
 
 Second, the host can provide a set of callback functions by which the \ac{PMIx} server library can pass requests upward for servicing by the host. These include notifications of client connection and finalize, as well as requests by clients for information and/or services that the \ac{PMIx} server library does not itself provide.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Server Initialization and Finalization}
 \label{chap:api_init:server}
 
 Initialization and finalization routines for \ac{PMIx} servers.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_init}}
 \declareapi{PMIx_server_init}
 
@@ -41,7 +42,7 @@ Initialize the \ac{PMIx} server.
 \begin{codepar}
 pmix_status_t
 PMIx_server_init(pmix_server_module_t *module,
-                 pmix_info_t info[], size_t ninfo)
+                 pmix_info_t info[], size_t ninfo);
 \end{codepar}
 \cspecificend
 
@@ -67,7 +68,6 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \pasteAttributeItem{PMIX_SERVER_SCHEDULER}
 
 \reqattrend
-
 
 \optattrstart
 The following attributes are optional for implementers of \ac{PMIx} libraries:
@@ -119,7 +119,7 @@ For example, it may include the \refattr{PMIX_SERVER_TOOL_SUPPORT} attribute, th
 Providing a value of \code{NULL} for the \refarg{module} argument is permitted, as is passing an empty \refarg{module} structure. Doing so indicates that the host environment will not provide support for multi-node operations such as \refapi{PMIx_Fence}, but does intend to support local clients access to information.
 \advicermend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_finalize}}
 \declareapi{PMIx_server_finalize}
 
@@ -135,7 +135,7 @@ Finalize the PMIx server library.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_server_finalize(void)
+PMIx_server_finalize(void);
 \end{codepar}
 \cspecificend
 
@@ -147,7 +147,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 Finalize the \ac{PMIx} server support library, terminating all connections to attached tools and any local clients.
 All memory usage is released.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server Initialization Attributes}
 \label{chap:api_init:serverattrs}
 
@@ -158,94 +158,78 @@ These attributes are used to direct the configuration and operation of the \ac{P
 Provide a pointer to an implementation-specific description of the local node
 topology.
 }
-
 %
 \declareAttribute{PMIX_USOCK_DISABLE}{"pmix.usock.disable"}{bool}{
-Disable legacy UNIX socket (usock) support
+Disable legacy UNIX socket (usock) support.
 }
-
 %
 \declareAttribute{PMIX_SOCKET_MODE}{"pmix.sockmode"}{uint32_t}{
-POSIX \var{mode_t} (9 bits valid)
+POSIX \var{mode_t} (9 bits valid).
 }
-
 %
 \declareAttribute{PMIX_SINGLE_LISTENER}{"pmix.sing.listnr"}{bool}{
 Use only one rendezvous socket, letting priorities and/or environment parameters select the active transport.
 }
-
 %
 \declareAttribute{PMIX_SERVER_TOOL_SUPPORT}{"pmix.srvr.tool"}{bool}{
 The host \ac{RM} wants to declare itself as willing to accept tool connection requests.
 }
-
 %
 \declareAttribute{PMIX_SERVER_REMOTE_CONNECTIONS}{"pmix.srvr.remote"}{bool}{
 Allow connections from remote tools. Forces the PMIx server to not exclusively use loopback device.
 }
-
 %
 \declareAttribute{PMIX_SERVER_SYSTEM_SUPPORT}{"pmix.srvr.sys"}{bool}{
 The host \ac{RM} wants to declare itself as being the local system server for PMIx connection requests.
 }
-
 %
 \declareAttributeNEW{PMIX_SERVER_SESSION_SUPPORT}{"pmix.srvr.sess"}{bool}{
 The host \ac{RM} wants to declare itself as being the local session server for PMIx connection requests.
 }
-
 %
 \declareAttributeNEW{PMIX_SERVER_START_TIME}{"pmix.srvr.strtime"}{char*}{
-Time when the server started - i.e., when the server created it's rendezvous file (given in ctime string format)
+Time when the server started - i.e., when the server created it's rendezvous file (given in ctime string format).
 }
-
 %
 \declareAttribute{PMIX_SERVER_TMPDIR}{"pmix.srvr.tmpdir"}{char*}{
 Top-level temporary directory for all client processes connected to this server, and where the PMIx server will place its tool rendezvous point and contact information.
 }
-
 %
 \declareAttribute{PMIX_SYSTEM_TMPDIR}{"pmix.sys.tmpdir"}{char*}{
 Temporary directory for this system, and where a PMIx server that declares itself to be a system-level server will place a tool rendezvous point and contact information.
 }
-
 %
 \declareAttribute{PMIX_SERVER_ENABLE_MONITORING}{"pmix.srv.monitor"}{bool}{
 Enable PMIx internal monitoring by the PMIx server.
 }
-
 %
 \declareAttribute{PMIX_SERVER_NSPACE}{"pmix.srv.nspace"}{char*}{
 Name of the namespace to use for this PMIx server.
 }
-
 %
 \declareAttribute{PMIX_SERVER_RANK}{"pmix.srv.rank"}{pmix_rank_t}{
-Rank of this PMIx server
+Rank of this PMIx server.
 }
-
 %
 \declareAttribute{PMIX_SERVER_GATEWAY}{"pmix.srv.gway"}{bool}{
-Server is acting as a gateway for PMIx requests that cannot be serviced on backend nodes (e.g., logging to email)
+Server is acting as a gateway for PMIx requests that cannot be serviced on backend nodes (e.g., logging to email).
 }
-
 %
 \declareAttributeNEW{PMIX_SERVER_SCHEDULER}{"pmix.srv.sched"}{bool}{
-Server is supporting system scheduler and desires access to appropriate services
+Server is supporting system scheduler and desires access to appropriate services.
 }
-
 %
 \declareAttribute{PMIX_EVENT_BASE}{"pmix.evbase"}{struct event_base *}{
 Pointer to libevent\footnote{\url{http://libevent.org/}} \code{event_base} to use in place of the internal progress thread.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Server Support Functions}
 
 The following \acp{API} allow the \ac{RM} daemon that hosts the \ac{PMIx} server library to request specific services from the \ac{PMIx} library.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_generate_regex}}
 \declareapi{PMIx_generate_regex}
 
@@ -261,7 +245,7 @@ Generate a compressed representation of the input string.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_generate_regex(const char *input, char **output)
+PMIx_generate_regex(const char *input, char **output);
 \end{codepar}
 \cspecificend
 
@@ -286,7 +270,7 @@ Communicating the resulting output should be done by first packing the returned 
 \advicermend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_generate_ppn}}
 \declareapi{PMIx_generate_ppn}
 
@@ -301,7 +285,8 @@ Generate a compressed representation of the input identifying the processes on e
 \versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_generate_ppn(const char *input, char **ppn)
+pmix_status_t
+PMIx_generate_ppn(const char *input, char **ppn);
 \end{codepar}
 \cspecificend
 
@@ -315,7 +300,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-The input shall consist of a semicolon-separated list of ranges representing the ranks of processes on each node of the job - e.g.,  "1-4;2-5;8,10,11,12;6,7,9". Each field of the input must correspond to the node name provided at that position in the input to \refapi{PMIx_generate_regex}. Thus, in the example, ranks 1-4 would be located on the first node of the comma-separated list of names provided to \refapi{PMIx_generate_regex}, and ranks 2-5 would be on the second name in the list.
+The input shall consist of a semicolon-separated list of ranges representing the ranks of processes on each node of the job - e.g., \code{"1-4;2-5;8,10,11,12;6,7,9"}. Each field of the input must correspond to the node name provided at that position in the input to \refapi{PMIx_generate_regex}. Thus, in the example, ranks 1-4 would be located on the first node of the comma-separated list of names provided to \refapi{PMIx_generate_regex}, and ranks 2-5 would be on the second name in the list.
 
 \advicermstart
 The returned representation may be an arbitrary array of bytes as opposed to a valid \code{NULL}-terminated string. However, the method used to generate the representation shall be identified with a colon-delimited string at the beginning of the output. For example, an output starting with \code{"pmix:"} indicates that the representation is a \ac{PMIx}-defined regular expression represented as a \code{NULL}-terminated string. In contrast, an output starting with \code{"blob:\textbackslash0size=1234:"} is a compressed binary array.
@@ -323,7 +308,7 @@ The returned representation may be an arbitrary array of bytes as opposed to a v
 Communicating the resulting output should be done by first packing the returned expression using the \refapi{PMIx_Data_pack}, declaring the input to be of type \refconst{PMIX_REGEX}, and then obtaining the blob to be communicated using the \refmacro{PMIX_DATA_BUFFER_UNLOAD} macro. The pack/unpack routines will ensure proper handling of the data based on the regex prefix.
 \advicermend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_register_nspace}}
 \declareapi{PMIx_server_register_nspace}
 
@@ -340,9 +325,10 @@ Setup the data about a particular namespace.
 \begin{codepar}
 pmix_status_t
 PMIx_server_register_nspace(const pmix_nspace_t nspace,
-                        int nlocalprocs,
-                        pmix_info_t info[], size_t ninfo,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata)
+                            int nlocalprocs,
+                            pmix_info_t info[], size_t ninfo,
+                            pmix_op_cbfunc_t cbfunc,
+                            void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -398,9 +384,9 @@ Job-level information may be passed as individual \refstruct{pmix_info_t} entrie
 \begin{itemize}
     \item \pasteAttributeItemBegin{PMIX_SERVER_NSPACE}Identifies the namespace of the \ac{PMIx} server itself
     \pasteAttributeItemEnd
-    \item \pasteAttributeItemBegin{PMIX_SERVER_RANK}Identifies the rank of the \ac{PMIx} server itself
+    \item \pasteAttributeItemBegin{PMIX_SERVER_RANK}Identifies the rank of the \ac{PMIx} server itself.
     \pasteAttributeItemEnd
-    \item \pasteAttributeItemBegin{PMIX_NSPACE}Identifies the namespace of the job being registered
+    \item \pasteAttributeItemBegin{PMIX_NSPACE}Identifies the namespace of the job being registered.
     \pasteAttributeItemEnd
     \item \pasteAttributeItem{PMIX_JOBID}
     \item \pasteAttributeItem{PMIX_JOB_SIZE}
@@ -414,7 +400,7 @@ plus the following optional information:
 
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_NPROC_OFFSET}
-    \item \pasteAttributeItemBegin{PMIX_JOB_NUM_APPS}This is a required attribute if more than one application is included in the job
+    \item \pasteAttributeItemBegin{PMIX_JOB_NUM_APPS}This is a required attribute if more than one application is included in the job.
     \pasteAttributeItemEnd
     \item \pasteAttributeItem{PMIX_MAPBY}
     \item \pasteAttributeItem{PMIX_RANKBY}
@@ -426,7 +412,7 @@ plus the following optional information:
 Application-level information is accessed by providing the namespace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. If application-level information is requested for an application other than the one the caller belongs to, then the \refattr{PMIX_APPNUM} attribute must be provided. If more than one application is included in the namespace, then the host environment is also required to supply data consisting of the following items for each application in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_APP_INFO_ARRAY} attribute:
 
 \begin{itemize}
-    \item \pasteAttributeItemBegin{PMIX_APPNUM}This attribute must appear at the beginning of the array
+    \item \pasteAttributeItemBegin{PMIX_APPNUM}This attribute must appear at the beginning of the array.
     \pasteAttributeItemEnd
     \item \pasteAttributeItem{PMIX_APP_SIZE}
     \item \pasteAttributeItemBegin{PMIX_MAX_PROCS}Requires use of the \refattr{PMIX_APP_INFO} attribute to avoid ambiguity when retrieving it.
@@ -519,6 +505,7 @@ and the following optional information - note that this information can be deriv
 \divider
 
 Attributes not directly provided by the host environment may be derived by the \ac{PMIx} server library from other required information and included in the data made available to the server library's clients.
+\reqattrend
 
 
 %%%%
@@ -541,7 +528,8 @@ This is required for the \ac{PMIx} server library to correctly handle collective
 The number of local processes for any given namespace is generally fixed at the time of application launch. Calls to \refapi{PMIx_Spawn} result in processes launched in their own namespace, not that of their parent. However, it is possible for processes to \textit{migrate} to another node via a call to \refapi{PMIx_Job_control_nb}, thus resulting in a change to the number of local processes on both the initial node and the node to which the process moved. It is therefore critical that applications not migrate processes without first ensuring that \ac{PMIx}-based collective operations are not in progress, and that no such operations be initiated until process migration has completed.
 \adviceuserend
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Information storage attributes}
 \label{api:struct:attributes:storage}
 
@@ -551,22 +539,18 @@ The following attributes are used to assemble information by its level (e.g., \r
 \declareAttribute{PMIX_SESSION_INFO_ARRAY}{"pmix.ssn.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing session-level information. The \refattr{PMIX_SESSION_ID} attribute is required to be included in the array.
 }
-
 %
 \declareAttributeNEW{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing job-level information. The \refattr{PMIX_SESSION_ID} attribute of the \refterm{session} containing the \refterm{job} is required to be included in the array whenever the \ac{PMIx} server library may host multiple sessions (e.g., when executing with a host \ac{RM} daemon). As information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes when used in that context (though either or both of them may be included). At least one of the job identifiers must be provided in all other contexts where the job being referenced is ambiguous.
 }
-
 %
 \declareAttributeNEW{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, must to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
 }
-
 %
 \declareAttributeNEW{PMIX_PROC_INFO_ARRAY}{"pmix.pdata"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing process-level information. The \refattr{PMIX_RANK} and \refattr{PMIX_NSPACE} attributes, or the \refattr{PMIX_PROCID} attribute, are required to be included in the array when the array is not included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the process is ambiguous. All three may be included if desired. When the array is included in some broader structure that identifies the job, then only the \refattr{PMIX_RANK} or the \refattr{PMIX_PROCID} attribute must be included (the others are optional).
 }
-
 %
 \declareAttributeNEW{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is required to be included in the array, though both may be included.
@@ -575,9 +559,9 @@ Provide an array of \refstruct{pmix_info_t} containing node-level information. A
 Note that these assemblages can be used hierarchically:
 
 \begin{itemize}
-\item a \refattr{PMIX_JOB_INFO_ARRAY} might contain multiple \refattr{PMIX_APP_INFO_ARRAY} elements, each describing values for a specific application within the job
-\item a \refattr{PMIX_JOB_INFO_ARRAY} could contain a \refattr{PMIX_NODE_INFO_ARRAY} for each node hosting processes from that job, each array describing job-level values for that node
-\item a \refattr{PMIX_SESSION_INFO_ARRAY} might contain multiple \refattr{PMIX_JOB_INFO_ARRAY} elements, each describing a job executing within the session. Each job array could, in turn, contain both application and node arrays, thus providing a complete picture of the active operations within the allocation
+\item a \refattr{PMIX_JOB_INFO_ARRAY} might contain multiple \refattr{PMIX_APP_INFO_ARRAY} elements, each describing values for a specific application within the job.
+\item a \refattr{PMIX_JOB_INFO_ARRAY} could contain a \refattr{PMIX_NODE_INFO_ARRAY} for each node hosting processes from that job, each array describing job-level values for that node.
+\item a \refattr{PMIX_SESSION_INFO_ARRAY} might contain multiple \refattr{PMIX_JOB_INFO_ARRAY} elements, each describing a job executing within the session. Each job array could, in turn, contain both application and node arrays, thus providing a complete picture of the active operations within the allocation.
 \end{itemize}
 
 \adviceimplstart
@@ -586,35 +570,30 @@ Note that these assemblages can be used hierarchically:
 
 %
 \declareAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
-Registration is for this namespace only, do not copy job data
+Registration is for this namespace only, do not copy job data.
 }
-
 %
 \declareAttribute{PMIX_NODE_MAP}{"pmix.nmap"}{char*}{
 Regular expression of nodes - see \ref{cptr:api_server:noderegex} for an explanation of its generation.
 }
-
 %
 \declareAttribute{PMIX_PROC_MAP}{"pmix.pmap"}{char*}{
 Regular expression describing processes on each node  - see \ref{cptr:api_server:ppnregex} for an explanation of its generation.
 }
-
 %
 \declareAttribute{PMIX_ANL_MAP}{"pmix.anlmap"}{char*}{
 Process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation.
 }
-
 %
 \declareAttribute{PMIX_APP_MAP_TYPE}{"pmix.apmap.type"}{char*}{
 Type of mapping used to layout the application (e.g., \code{cyclic}).
 }
-
 %
 \declareAttribute{PMIX_APP_MAP_REGEX}{"pmix.apmap.regex"}{char*}{
 Regular expression describing the result of the process mapping.
 }
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Assembling the registration information}
 \label{chap:api_server:assemble}
 
@@ -637,12 +616,12 @@ pmix_info_t info;
 
 /* loop over an array of nodes, adding each
  * name to the array */
-for (n=0; n < num_nodes; n++) {
+for (n=0; n < num_nodes; n++) \{
     /* filter the nodes to ignore those not included
      * in the target range (session, job, etc.). In
      * this example, all nodes are accepted */
     PMIX_ARGV_APPEND(&nodes, node[n]->name);
-}
+\}
 
 /* join into a comma-delimited string */
 nodelist = PMIX_ARGV_JOIN(nodes, ',');
@@ -660,7 +639,6 @@ free(nodelist);
 PMIX_INFO_LOAD(&info, PMIX_NODE_MAP, regex, PMIX_STRING);
 /* release the regex */
 free(regex);
-
 \end{codepar}
 \cspecificend
 
@@ -681,17 +659,17 @@ pmix_status_t rc;
 pmix_info_t info;
 
 /* loop over an array of nodes */
-for (n=0; n < num_nodes; n++) {
+for (n=0; n < num_nodes; n++) \{
     /* for each node, construct an array of ranks on that node */
     ndppn = NULL;
-    for (m=0; m < node[n]->num_procs; m++) {
+    for (m=0; m < node[n]->num_procs; m++) \{
         /* ignore processes that are not part of the target job */
-        if (!PMIX_CHECK_NSPACE(targetjob,node[n]->proc[m].nspace)) {
+        if (!PMIX_CHECK_NSPACE(targetjob,node[n]->proc[m].nspace)) \{
             continue;
-        }
+        \}
         snprintf(rank, 30, "%d", node[n]->proc[m].rank);
         PMIX_ARGV_APPEND(&ndppn, rank);
-    }
+    \}
     /* convert the array into a comma-delimited string of ranks */
     localranks = PMIX_ARGV_JOIN(ndppn, ',');
     /* release the local array */
@@ -700,7 +678,7 @@ for (n=0; n < num_nodes; n++) {
     PMIX_ARGV_APPEND(&ppnarray, localranks);
     /* release the local list */
     free(localranks);
-}
+\}
 
 /* join into a semicolon-delimited string */
 ppn = PMIX_ARGV_JOIN(ppnarray, ';');
@@ -718,14 +696,13 @@ free(ppn);
 PMIX_INFO_LOAD(&info, PMIX_PROC_MAP, regex, PMIX_STRING);
 /* release the regex */
 free(regex);
-
 \end{codepar}
 \cspecificend
 
 Note that the \refattr{PMIX_NODE_MAP} and \refattr{PMIX_PROC_MAP} attributes are linked in that the order of entries in the process map must match the ordering of nodes in the node map - i.e., there is no provision in the \ac{PMIx} process map regular expression generator/parser pair supporting an out-of-order node or a node that has no corresponding process map entry (e.g., a node with no processes on it). Armed with these tools, the registration \refarg{info} array can be constructed as follows:
 
 \begin{itemize}
-\item Session-level information includes all session-specific values. In many cases, only two values (\refattr{PMIX_SESSION_ID} and \refattr{PMIX_UNIV_SIZE}) are included in the registration array. Since both of these values are session-specific, they can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute and identifed by including the \refattr{PMIX_SESSION_ID} attribute in the array - this is required in cases where non-specific attributes (e.g., \refattr{PMIX_NUM_NODES} or \refattr{PMIX_NODE_MAP}) are passed to describe aspects of the session. Note that the node map can include nodes not used by the job being registered as no corresponding process map is specified.
+\item Session-level information includes all session-specific values. In many cases, only two values (~\refattr{PMIX_SESSION_ID} and \refattr{PMIX_UNIV_SIZE}) are included in the registration array. Since both of these values are session-specific, they can be specified independently - i.e., in their own \refstruct{pmix_info_t} elements of the \refarg{info} array. Alternatively, they can be provided as a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute and identifed by including the \refattr{PMIX_SESSION_ID} attribute in the array - this is required in cases where non-specific attributes (e.g., \refattr{PMIX_NUM_NODES} or \refattr{PMIX_NODE_MAP}~) are passed to describe aspects of the session. Note that the node map can include nodes not used by the job being registered as no corresponding process map is specified.
 
 The \refarg{info} array at this point might look like (where the labels identify the corresponding attribute - e.g., ``Session ID'' corresponds to the \refattr{PMIX_SESSION_ID} attribute):
 
@@ -779,7 +756,7 @@ Upon conclusion of this step, the \refarg{info} array might look like that shown
 \begingroup
 \begin{figure*}[ht!]
   \begin{center}
-    \includegraphics[clip,width=0.5\textwidth]{figs/procinfo.pdf}
+    \includegraphics[clip,width=0.8\textwidth]{figs/procinfo.pdf}
   \end{center}
   \caption{Process-level information elements}
   \label{fig:procinfo}
@@ -798,14 +775,14 @@ char *localranks;
 size_t m;
 pmix_info_t info;
 
-for (m=0; m < mynode->num_procs; m++) {
+for (m=0; m < mynode->num_procs; m++) \{
     /* ignore processes that are not part of the target job */
-    if (!PMIX_CHECK_NSPACE(targetjob,mynode->proc[m].nspace)) {
+    if (!PMIX_CHECK_NSPACE(targetjob,mynode->proc[m].nspace)) \{
         continue;
-    }
+    \}
     snprintf(rank, 30, "%d", mynode->proc[m].rank);
     PMIX_ARGV_APPEND(&ndppn, rank);
-}
+\}
 /* convert the array into a comma-delimited string of ranks */
 localranks = PMIX_ARGV_JOIN(ndppn, ',');
 /* release the local array */
@@ -813,9 +790,9 @@ PMIX_ARGV_FREE(ndppn);
 
 /* pass the string as the value to the PMIX_LOCAL_PEERS key */
 PMIX_INFO_LOAD(&info, PMIX_LOCAL_PEERS, localranks, PMIX_STRING);
+
 /* release the list */
 free(localranks);
-
 \end{codepar}
 \cspecificend
 
@@ -828,13 +805,13 @@ char *localcpus;
 size_t m;
 pmix_info_t info;
 
-for (m=0; m < mynode->num_procs; m++) {
+for (m=0; m < mynode->num_procs; m++) \{
     /* ignore processes that are not part of the target job */
-    if (!PMIX_CHECK_NSPACE(targetjob,mynode->proc[m].nspace)) {
+    if (!PMIX_CHECK_NSPACE(targetjob,mynode->proc[m].nspace)) \{
         continue;
-    }
+    \}
     PMIX_ARGV_APPEND(&ndcpus, mynode->proc[m].cpuset);
-}
+\}
 /* convert the array into a colon-delimited string */
 localcpus = PMIX_ARGV_JOIN(ndcpus, ':');
 /* release the local array */
@@ -842,9 +819,9 @@ PMIX_ARGV_FREE(ndcpus);
 
 /* pass the string as the value to the PMIX_LOCAL_CPUSETS key */
 PMIX_INFO_LOAD(&info, PMIX_LOCAL_CPUSETS, localcpus, PMIX_STRING);
+
 /* release the list */
 free(localcpus);
-
 \end{codepar}
 \cspecificend
 
@@ -865,7 +842,7 @@ The final \refarg{info} array might therefore look like the diagram in \ref{fig:
 \endgroup
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_deregister_nspace}}
 \declareapi{PMIx_server_deregister_nspace}
 
@@ -881,7 +858,7 @@ Deregister a namespace.
 \cspecificstart
 \begin{codepar}
 void PMIx_server_deregister_nspace(const pmix_nspace_t nspace,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata)
+                        pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -898,7 +875,7 @@ Deregister the specified \refarg{nspace} and purge all objects relating to it, i
 This is intended to support persistent \ac{PMIx} servers by providing an opportunity for the host \ac{RM} to tell the \ac{PMIx} server library to release all memory for a completed job. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_register_client}}
 \declareapi{PMIx_server_register_client}
 
@@ -917,7 +894,7 @@ pmix_status_t
 PMIx_server_register_client(const pmix_proc_t *proc,
                         uid_t uid, gid_t gid,
                         void *server_object,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata)
+                        pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -938,7 +915,6 @@ Returns one of the following:
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
 
-
 %%%%
 \descr
 
@@ -957,7 +933,8 @@ The expected user ID and group ID of the child process allows the server library
 For security purposes, the \ac{PMIx} server library should check the user and group ID's of a connecting process against those provided for the declared client process identifier via the \refapi{PMIx_server_register_client} prior to completing the connection.
 \adviceimplend
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_deregister_client}}
 \declareapi{PMIx_server_deregister_client}
 
@@ -974,7 +951,7 @@ Deregister a client and purge all data relating to it.
 \begin{codepar}
 void
 PMIx_server_deregister_client(const pmix_proc_t *proc,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata)
+                        pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -992,7 +969,7 @@ The \refapi{PMIx_server_deregister_nspace} \ac{API} will delete all client infor
 This \ac{API} is therefore intended primarily for use in exception cases, but can be called in non-exception cases if desired. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_setup_fork}}
 \declareapi{PMIx_server_setup_fork}
 
@@ -1009,7 +986,7 @@ Setup the environment of a child process to be forked by the host.
 \begin{codepar}
 pmix_status_t
 PMIx_server_setup_fork(const pmix_proc_t *proc,
-                        char ***env)
+                        char ***env);
 \end{codepar}
 \cspecificend
 
@@ -1025,15 +1002,15 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 
 Setup the environment of a child process to be forked by the host so it can correctly interact with the PMIx server.
 
+The \ac{PMIx} client needs some setup information so it can properly connect back to the server.
+This function will set appropriate environmental variables for this purpose, and will also provide any environmental variables that were specified in the launch command (e.g., via \refapi{PMIx_Spawn}) plus other values (e.g., variables required to properly initialize the client's fabric library).
+
 \advicermstart
 Host environments are required to execute this operation prior to starting the client process.
 \advicermend
 
-The \ac{PMIx} client needs some setup information so it can properly connect back to the server.
-This function will set appropriate environmental variables for this purpose, and will also provide any environmental variables that were specified in the launch command (e.g., via \refapi{PMIx_Spawn}) plus other values (e.g., variables required to properly initialize the client's fabric library).
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_dmodex_request}}
 \declareapi{PMIx_server_dmodex_request}
 
@@ -1048,9 +1025,10 @@ Define a function by which the host server can request modex data from the local
 \versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_server_dmodex_request(const pmix_proc_t *proc,
-                        pmix_dmodex_response_fn_t cbfunc,
-                        void *cbdata)
+pmix_status_t
+PMIx_server_dmodex_request(const pmix_proc_t *proc,
+                           pmix_dmodex_response_fn_t cbfunc,
+                           void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -1079,7 +1057,7 @@ Define a function by which the host server can request modex data from the local
 While direct modex allows for faster launch times by eliminating the barrier operation, per-peer retrieval of posted information is less efficient. Optimizations can be implemented - e.g., by returning posted information from all processes on a node upon first request - but in general direct modex remains best suited for sparsely connected applications.
 \adviceuserend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Server Direct Modex Response Callback Function}
 \declareapi{pmix_dmodex_response_fn_t}
 
@@ -1096,12 +1074,12 @@ Provide a function by which the local \ac{PMIx} server library can return connec
 \versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
-typedef void (*pmix_dmodex_response_fn_t)(pmix_status_t status,
-                        char *data, size_t sz,
-                        void *cbdata);
+typedef void (*pmix_dmodex_response_fn_t)(
+                    pmix_status_t status,
+                    char *data, size_t sz,
+                    void *cbdata);
 \end{codepar}
 \cspecificend
-
 
 \begin{arglist}
 \argin{status}{Returned status of the request (\refstruct{pmix_status_t})}
@@ -1110,12 +1088,11 @@ typedef void (*pmix_dmodex_response_fn_t)(pmix_status_t status,
 \argin{cbdata}{Data passed into the initial call to \refapi{PMIx_server_dmodex_request} (memory reference)}
 \end{arglist}
 
-
 \descr
 Define a function to be called by the PMIx server library for return of information posted by a local application process (via \refapi{PMIx_Put} with subsequent \refapi{PMIx_Commit}) in response to a request from the host RM. The returned \refarg{data} blob is owned by the PMIx server library and will be free’d upon return from the function.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_setup_application}}
 \declareapi{PMIx_server_setup_application}
 
@@ -1134,7 +1111,7 @@ pmix_status_t
 PMIx_server_setup_application(const pmix_nspace_t nspace,
                         pmix_info_t info[], size_t ninfo,
                         pmix_setup_application_cbfunc_t cbfunc,
-                        void *cbdata)
+                        void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -1193,19 +1170,19 @@ The following optional attributes may be provided by the host environment to ide
 
 Provide a function by which the \ac{RM} can request application-specific setup data (e.g., environmental variables, fabric configuration and security credentials) from supporting \ac{PMIx} server library subsystems prior to initiating launch of a job.
 
+This is defined as a non-blocking operation in case contributing subsystems need to perform some potentially time consuming action (e.g., query a remote service) before responding. The returned data must be distributed by the host environment and subsequently delivered to the local \ac{PMIx} server on each node where application processes will execute, prior to initiating execution of those processes.
+
 \advicermstart
 Host environments are required to execute this operation prior to launching a job. In addition to supported directives, the \refarg{info} array must include a description of the \refterm{job} using the \refattr{PMIX_NODE_MAP} and \refattr{PMIX_PROC_MAP} attributes.
 
 Note that the function can be called on a per-application basis if the \refattr{PMIX_PROC_MAP} and \refattr{PMIX_NODE_MAP} are provided only for the corresponding application (as opposed to the entire job) each time.
 \advicermend
 
-This is defined as a non-blocking operation in case contributing subsystems need to perform some potentially time consuming action (e.g., query a remote service) before responding. The returned data must be distributed by the host environment and subsequently delivered to the local \ac{PMIx} server on each node where application processes will execute, prior to initiating execution of those processes.
-
 \adviceimplstart
 Support for harvesting of environmental variables and providing of local configuration information by the \ac{PMIx} implementation is optional.
 \adviceimplend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Server Setup Application Callback Function}
 \declareapi{pmix_setup_application_cbfunc_t}
 
@@ -1226,7 +1203,7 @@ typedef void (*pmix_setup_application_cbfunc_t)(
                         pmix_status_t status,
                         pmix_info_t info[], size_t ninfo,
                         void *provided_cbdata,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata)
+                        pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -1244,7 +1221,7 @@ typedef void (*pmix_setup_application_cbfunc_t)(
 Define a function to be called by the \ac{PMIx} server library for return of application-specific setup data in response to a request from the host \ac{RM}. The returned \refarg{info} array is owned by the \ac{PMIx} server library and will be free'd when the provided \refarg{cbfunc} is called.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Server Setup Application Attributes}
 \label{api:struct:attributes:security}
 
@@ -1253,21 +1230,19 @@ Attributes specifically defined for controlling contents of application setup da
 
 %
 \declareAttribute{PMIX_SETUP_APP_ENVARS}{"pmix.setup.env"}{bool}{
-Harvest and include relevant environmental variables
+Harvest and include relevant environmental variables.
 }
-
 %
 \declareAttribute{PMIX_SETUP_APP_NONENVARS}{""pmix.setup.nenv"}{bool}{
-Include all relevant data other than environmental variables
+Include all relevant data other than environmental variables.
 }
-
 %
 \declareAttribute{PMIX_SETUP_APP_ALL}{"pmix.setup.all"}{bool}{
-Include all relevant data
+Include all relevant data.
 }
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Register_attributes}}
 \declareapi{PMIx_Register_attributes}
 
@@ -1285,7 +1260,7 @@ Register host environment attribute support for a function.
 pmix_status_t
 PMIx_Register_attributes(char *function,
                          pmix_regattr_t attrs[],
-                         size_t nattrs)
+                         size_t nattrs);
 \end{codepar}
 \cspecificend
 
@@ -1316,17 +1291,20 @@ It is the implementation's responsibility to associate registered attributes for
 Note that attributes can/will be registered on an \ac{API} for each level. It is \emph{required} that the implementation support user queries for supported attributes on a per-level basis. Duplicate registrations at the \emph{same} level for a function \emph{shall} return an error - however, duplicate registrations at \emph{different} levels \emph{shall} be independently tracked.
 \adviceimplend
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Attribute registration constants}
 
-\begin{constantdesc}
+Constants supporting attribute registration.
 
+\begin{constantdesc}
 %
 \declareconstitemNEW{PMIX_ERR_REPEAT_ATTR_REGISTRATION}
-The attributes for an identical function have already been registered at the specified level (host, server, or client)
-
+The attributes for an identical function have already been registered at the specified level (host, server, or client).
+%
 \end{constantdesc}
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Attribute registration structure}
 \declarestruct{pmix_regattr_t}
 
@@ -1361,7 +1339,7 @@ The attribute \refarg{name} and \refarg{string} fields must be \code{NULL}-termi
 
 Although not strictly required, both \ac{PMIx} library implementers and host environments are strongly encouraged to provide both human-readable and machine-parsable descriptions of supported attributes when registering them.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Attribute registration structure descriptive attributes}
 \label{api:struct:attributes:descr}
 
@@ -1371,17 +1349,18 @@ in the \refstruct{pmix_regattr_t} structures.
 \declareAttributeNEW{PMIX_MAX_VALUE}{"pmix.descr.maxval"}{varies}{
 Used in \refstruct{pmix_regattr_t} to describe the maximum valid value for the associated attribute.
 }
-
+%
 \declareAttributeNEW{PMIX_MIN_VALUE}{"pmix.descr.minval"}{varies}{
 Used in \refstruct{pmix_regattr_t} to describe the minimum valid value for the associated attribute.
 }
-
+%
 \declareAttributeNEW{PMIX_ENUM_VALUE}{"pmix.descr.enum"}{char*}{
 Used in \refstruct{pmix_regattr_t} to describe accepted values for the associated attribute. Numerical values shall be presented in a form convertible to the attribute's declared data type. Named values (i.e., values defined by constant names via a typical C-language enum declaration) must be provided as their numerical equivalent.
 }
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Attribute registration structure support macros}
+
 The following macros are provided to support the \refstruct{pmix_regattr_t} structure.
 
 %%%%%%%%%%%
@@ -1422,7 +1401,7 @@ PMIX_REGATTR_DESTRUCT(m)
 \littleheader{Create a regattr array}
 \declaremacro{PMIX_REGATTR_CREATE}
 
-Allocate and initialize an array of \refstruct{pmix_regattr_t} structures
+Allocate and initialize an array of \refstruct{pmix_regattr_t} structures.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -1440,7 +1419,7 @@ PMIX_REGATTR_CREATE(m, n)
 \littleheader{Free a regattr array}
 \declaremacro{PMIX_REGATTR_FREE}
 
-Release an array of \refstruct{pmix_regattr_t} structures
+Release an array of \refstruct{pmix_regattr_t} structures.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -1495,7 +1474,7 @@ PMIX_REGATTR_XFER(m, n)
 \end{arglist}
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_setup_local_support}}
 \declareapi{PMIx_server_setup_local_support}
 
@@ -1544,7 +1523,7 @@ Provide a function by which the local \ac{PMIx} server can perform any applicati
 Host environments are required to execute this operation prior to starting any local application processes from the specified namespace if information was obtained from a call to \refapi{PMIx_server_setup_application}.
 \advicermend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_IOF_deliver}}
 \declareapi{PMIx_server_IOF_deliver}
 
@@ -1591,14 +1570,14 @@ Returns one of the following:
 
 Provide a function by which the host environment can pass forwarded \ac{IO} to the \ac{PMIx} server library for distribution to its clients. The \ac{PMIx} server library is responsible for determining which of its clients have actually registered for the provided data and delivering it. The \refarg{cbfunc} callback function will be called once the \ac{PMIx} server library no longer requires access to the provided data.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_collect_inventory}}
 \declareapi{PMIx_server_collect_inventory}
 
 %%%%
 \summary
 
-Collect inventory of resources on a node
+Collect inventory of resources on a node.
 
 %%%%
 \format
@@ -1632,14 +1611,14 @@ Provide a function by which the host environment can request its \ac{PMIx} serve
 This is a non-blocking \ac{API} as it may involve somewhat lengthy operations to obtain the requested information. Inventory collection is expected to be a rare event – at system startup and upon command from a system administrator. Inventory updates are expected to initiate a smaller operation involving only the changed information. For example, replacement of a node would generate an event to notify the scheduler with an inventory update without invoking a global inventory operation.
 \advicermend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_deliver_inventory}}
 \declareapi{PMIx_server_deliver_inventory}
 
 %%%%
 \summary
 
-Pass collected inventory to the \ac{PMIx} server library for storage
+Pass collected inventory to the \ac{PMIx} server library for storage.
 
 %%%%
 \format
@@ -1680,14 +1659,14 @@ Returns one of the following:
 
 Provide a function by which the host environment can pass inventory information obtained from a node (as a result of a call to \refapi{PMIx_server_collect_inventory}) to the \ac{PMIx} server library for storage. Inventory data is subsequently used by the \ac{PMIx} server library for allocations in response to \refapi{PMIx_server_setup_application}, and may be available to the library's host via the \refapi{PMIx_Get} \ac{API} (depending upon \ac{PMIx} implementation). The \refarg{cbfunc} callback function will be called once the \ac{PMIx} server library no longer requires access to the provided data.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_generate_locality_string}}
 \declareapi{PMIx_server_generate_locality_string}
 
 %%%%
 \summary
 
-Generate a \ac{PMIx} locality string from a given cpuset
+Generate a \ac{PMIx} locality string from a given cpuset.
 
 %%%%
 \format
@@ -1716,14 +1695,14 @@ Provide a function by which the host environment can generate a \ac{PMIx} locali
 
 The function is required to return a string prefixed by the \refarg{source} field of the provided \refarg{cpuset} followed by a colon. The remainder of the string shall represent the corresponding locality as expressed by the underlying implementation.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_generate_cpuset_string}}
 \declareapi{PMIx_server_generate_cpuset_string}
 
 %%%%
 \summary
 
-Generate a \ac{PMIx} string representation of the provided cpuset
+Generate a \ac{PMIx} string representation of the provided cpuset.
 
 %%%%
 \format
@@ -1752,7 +1731,7 @@ Provide a function by which the host environment can generate a string represent
 
 The function is required to return a string prefixed by the \refarg{source} field of the provided \refarg{cpuset} followed by a colon. The remainder of the string shall represent the \acp{PU} to which the process is bound as expressed by the underlying implementation.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Cpuset Structure}
 \declarestruct{pmix_cpuset_t}
 
@@ -1768,13 +1747,14 @@ typedef struct pmix_cpuset \{
 \end{codepar}
 \cspecificend
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Cpuset support macros}
 The following macros support the \refstruct{pmix_cpuset_t} structure.
 
 \littleheader{Initialize the cpuset structure}
 \declaremacro{PMIX_CPUSET_CONSTRUCT}
 
-Initialize the \refstruct{pmix_cpuset_t} fields
+Initialize the \refstruct{pmix_cpuset_t} fields.
 
 \versionMarker{4.0}
 \cspecificstart
@@ -1788,14 +1768,14 @@ PMIX_CPUSET_CONSTRUCT(m)
 \end{arglist}
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_define_process_set}}
 \declareapi{PMIx_server_define_process_set}
 
 %%%%
 \summary
 
-Add members to a \ac{PMIx} process set
+Add members to a \ac{PMIx} process set.
 
 %%%%
 \format
@@ -1839,7 +1819,7 @@ The host environment is responsible for ensuring:
 
 \advicermend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_delete_process_set}}
 \declareapi{PMIx_server_delete_process_set}
 
@@ -1886,7 +1866,8 @@ process set membership across all involved \ac{PMIx} servers.
 \advicermend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Server Function Pointers}
 
 \ac{PMIx} utilizes a "function-shipping" approach to support for implementing the server-side of the protocol. This method allows \acp{RM} to implement the server without being burdened with \ac{PMIx} internal details. When a request is received from the client, the corresponding server function will be called with the information.
@@ -1907,7 +1888,7 @@ by the host server via callback function is owned by the host
 server, which is free to release it upon return from the callback
 \advicermend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_module_t} Module}
 \declareapi{pmix_server_module_t}
 \label{server:module_fns}
@@ -1921,7 +1902,7 @@ List of function pointers that a PMIx server passes to \refapi{PMIx_server_init}
 
 \cspecificstart
 \begin{codepar}
-typedef struct pmix_server_module_4_0_0_t {
+typedef struct pmix_server_module_4_0_0_t \{
     /* v1x interfaces */
     pmix_server_client_connected_fn_t   client_connected;  // DEPRECATED
     pmix_server_client_finalized_fn_t   client_finalized;
@@ -1954,7 +1935,7 @@ typedef struct pmix_server_module_4_0_0_t {
     pmix_server_grp_fn_t                group;
     pmix_server_fabric_fn_t             fabric;
     pmix_server_client_connected2_fn_t  client_connected2;
-} pmix_server_module_t;
+\} pmix_server_module_t;
 \end{codepar}
 \cspecificend
 
@@ -1963,14 +1944,14 @@ Note that some \ac{PMIx} implementations \emph{require} the use of C99-style
 designated initializers to clearly correlate each provided function pointer with the correct member of the \refapi{pmix_server_module_t} structure as the location/ordering of struct members may change over time.
 \advicermend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_client_connected_fn_t}}
 \declareapiDEPNODISP{pmix_server_client_connected_fn_t}
 
 %%%%
 \summary
 
-Notify the host server that a client connected to this server. This function module entry has been DEPRECATED in favor of \refapi{pmix_server_client_connected2_fn_t}.
+Notify the host server that a client connected to this server. This function module entry has been \textbf{DEPRECATED} in favor of \refapi{pmix_server_client_connected2_fn_t}.
 
 %%%%
 \format
@@ -1982,7 +1963,7 @@ typedef pmix_status_t (*pmix_server_client_connected_fn_t)(
                              const pmix_proc_t *proc,
                              void* server_object,
                              pmix_op_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2006,7 +1987,7 @@ Returns one of the following:
 
 This function module entry has been DEPRECATED in favor of \refapi{pmix_server_client_connected2_fn_t}. If both functions are provided, the \ac{PMIx} library will ignore this function module entry in favor of its replacement.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_client_connected2_fn_t}}
 \declareapi{pmix_server_client_connected2_fn_t}
 
@@ -2065,7 +2046,7 @@ connected. However, the host may rely on the
 function module entry being called for a given rank prior to any other function
 module entries being executed on behalf of that rank.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_client_finalized_fn_t}}
 \declareapi{pmix_server_client_finalized_fn_t}
 
@@ -2084,7 +2065,7 @@ typedef pmix_status_t (*pmix_server_client_finalized_fn_t)(
                              const pmix_proc_t *proc,
                              void* server_object,
                              pmix_op_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2122,7 +2103,7 @@ to update the status of the tasks it manages.  It is also a convenient and well 
 \advicermend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_abort_fn_t}}
 \declareapi{pmix_server_abort_fn_t}
 
@@ -2145,7 +2126,7 @@ typedef pmix_status_t (*pmix_server_abort_fn_t)(
                              pmix_proc_t procs[],
                              size_t nprocs,
                              pmix_op_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2179,7 +2160,7 @@ The array of \refarg{procs} indicates which processes are to be terminated.
 A \code{NULL} indicates that all processes in the client's namespace are to be terminated.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_fencenb_fn_t}}
 \declareapi{pmix_server_fencenb_fn_t}
 
@@ -2201,7 +2182,7 @@ typedef pmix_status_t (*pmix_server_fencenb_fn_t)(
                              size_t ninfo,
                              char *data, size_t ndata,
                              pmix_modex_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2228,8 +2209,6 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
 
-\divider
-
 The following attributes are required to be supported by all host environments:
 
 \pasteAttributeItem{PMIX_COLLECT_DATA}
@@ -2255,6 +2234,13 @@ In either case, the host server will be called via a non-blocking function to ex
 All processes in the specified \refarg{procs} array are required to participate in the \refapi{PMIx_Fence}/\refapi{PMIx_Fence_nb} operation.
 The callback is to be executed once every daemon hosting at least one participant has called the host server's \refapi{pmix_server_fencenb_fn_t} function.
 
+The provided data is to be collectively shared with all \ac{PMIx} servers involved in the fence operation, and returned in the modex \refarg{cbfunc}.
+A \code{NULL} data value indicates that the local processes had no data to contribute.
+
+The array of \refarg{info} structs is used to pass user-requested options to the server.
+This can include directives as to the algorithm to be used to execute the fence operation.
+The directives are optional unless the \refconst{PMIX_INFO_REQD} flag has been set - in such cases, the host \ac{RM} is required to return an error if the directive cannot be met.
+
 \adviceimplstart
 The \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
 \adviceimplend
@@ -2277,14 +2263,8 @@ memcpy(\&total[sz_blob1], blob2, sz_blob2);
 Note that the ordering of the data blobs does not matter. The host is responsible for free'ing the \refarg{data} object passed to it by the \ac{PMIx} server library.
 \advicermend
 
-The provided data is to be collectively shared with all \ac{PMIx} servers involved in the fence operation, and returned in the modex \refarg{cbfunc}.
-A \code{NULL} data value indicates that the local processes had no data to contribute.
 
-The array of \refarg{info} structs is used to pass user-requested options to the server.
-This can include directives as to the algorithm to be used to execute the fence operation.
-The directives are optional unless the \refconst{PMIX_INFO_REQD} flag has been set - in such cases, the host \ac{RM} is required to return an error if the directive cannot be met.
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Modex Callback Function}
 \declareapi{pmix_modex_cbfunc_t}
 
@@ -2301,7 +2281,7 @@ typedef void (*pmix_modex_cbfunc_t)
      const char *data, size_t ndata,
      void *cbdata,
      pmix_release_cbfunc_t release_fn,
-     void *release_cbdata)
+     void *release_cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2321,14 +2301,14 @@ A callback function that is solely used by PMIx servers, and not clients, to ret
 The returned blob contains the data collected from each server participating in the operation.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_dmodex_req_fn_t}}
 \declareapi{pmix_server_dmodex_req_fn_t}
 
 %%%%
 \summary
 
-Used by the PMIx server to request its local host contact the \ac{PMIx} server on the remote node that hosts the specified proc to obtain and return a direct modex blob for that proc.
+Used by the PMIx server to request its local host contact the \ac{PMIx} server on the remote node that hosts the specified process to obtain and return a direct modex blob for that process.
 
 %%%%
 \format
@@ -2341,7 +2321,7 @@ typedef pmix_status_t (*pmix_server_dmodex_req_fn_t)(
                              const pmix_info_t info[],
                              size_t ninfo,
                              pmix_modex_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2381,12 +2361,12 @@ The array of \refarg{info} structs is used to pass user-requested options to the
 This can include a timeout to preclude an indefinite wait for data that may never become available.
 The directives are optional unless the \emph{mandatory} flag has been set - in such cases, the host \ac{RM} is required to return an error if the directive cannot be met.
 
-
-\subsubsection{Dmodex required key}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Dmodex attributes}
 
 %
 \declareAttribute{PMIX_REQUIRED_KEY}{"pmix.req.key"}{char*}{
-Key the user needs prior to responding from a dmodex request
+Key the user needs prior to responding from a dmodex request.
 }
 
 
@@ -2410,7 +2390,7 @@ typedef pmix_status_t (*pmix_server_publish_fn_t)(
                              const pmix_info_t info[],
                              size_t ninfo,
                              pmix_op_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2470,7 +2450,7 @@ However, the server must return an error (a) if the key is duplicative within th
 The \refattr{PMIX_USERID} and \refattr{PMIX_GRPID} of the publishing process will be provided to support authorization-based access to published information and must be returned on any subsequent lookup request.
 \advicermend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_lookup_fn_t}}
 \declareapi{pmix_server_lookup_fn_t}
 
@@ -2491,7 +2471,7 @@ typedef pmix_status_t (*pmix_server_lookup_fn_t)(
                              const pmix_info_t info[],
                              size_t ninfo,
                              pmix_lookup_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2550,7 +2530,7 @@ In addition, a timeout can be specified on the wait to preclude an indefinite wa
 The \refattr{PMIX_USERID} and \refattr{PMIX_GRPID} of the requesting process will be provided to support authorization-based access to published information. The host environment is not required to guarantee support for any specific range - i.e., the environment does not need to return an error if the data store doesn't support a specified range so long as it is covered by some internally defined range.
 \advicermend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_unpublish_fn_t}}
 \declareapi{pmix_server_unpublish_fn_t}
 
@@ -2571,7 +2551,7 @@ typedef pmix_status_t (*pmix_server_unpublish_fn_t)(
                              const pmix_info_t info[],
                              size_t ninfo,
                              pmix_op_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2626,7 +2606,7 @@ The \refattr{PMIX_USERID} and \refattr{PMIX_GRPID} of the requesting process wil
 \advicermend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_spawn_fn_t}}
 \declareapi{pmix_server_spawn_fn_t}
 
@@ -2648,7 +2628,7 @@ typedef pmix_status_t (*pmix_server_spawn_fn_t)(
                              const pmix_app_t apps[],
                              size_t napps,
                              pmix_spawn_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2741,22 +2721,20 @@ An error in starting any application or process in this request shall cause all 
 
 Note that a timeout can be specified in the job_info array to indicate that failure to start the requested job within the given time should result in termination to avoid hangs.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Server spawn attributes}
 
 %
 \declareAttribute{PMIX_REQUESTOR_IS_TOOL}{"pmix.req.tool"}{bool}{
 The requesting process is a \ac{PMIx} tool.
 }
-
 %
 \declareAttribute{PMIX_REQUESTOR_IS_CLIENT}{"pmix.req.client"}{bool}{
 The requesting process is a \ac{PMIx} client.
 }
 
 
-
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_connect_fn_t}}
 \declareapi{pmix_server_connect_fn_t}
 
@@ -2777,7 +2755,7 @@ typedef pmix_status_t (*pmix_server_connect_fn_t)(
                              const pmix_info_t info[],
                              size_t ninfo,
                              pmix_op_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2824,7 +2802,7 @@ The host will receive a single call for each collective operation. It is the res
 \advicermend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_disconnect_fn_t}}
 \declareapi{pmix_server_disconnect_fn_t}
 
@@ -2845,7 +2823,7 @@ typedef pmix_status_t (*pmix_server_disconnect_fn_t)(
                              const pmix_info_t info[],
                              size_t ninfo,
                              pmix_op_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2894,7 +2872,7 @@ A \refconst{PMIX_ERR_INVALID_OPERATION} error must be returned if the specified 
 \advicermend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_register_events_fn_t}}
 \declareapi{pmix_server_register_events_fn_t}
 
@@ -2915,7 +2893,7 @@ Register to receive notifications for the specified events.
                               const pmix_info_t info[],
                               size_t ninfo,
                               pmix_op_cbfunc_t cbfunc,
-                              void *cbdata)
+                              void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -2950,7 +2928,6 @@ Returns one of the following:
 
 Register to receive notifications for the specified status codes. The \refarg{info} array included in this API is reserved for possible future directives to further steer notification.
 
-
 \adviceimplstart
 The \ac{PMIx} server library must track all client registrations for subsequent notification. This module function shall only be called when:
 
@@ -2966,7 +2943,7 @@ The host environment is required to pass to its \ac{PMIx} server library all non
 \advicermend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_deregister_events_fn_t}}
 \declareapi{pmix_server_deregister_events_fn_t}
 
@@ -2985,7 +2962,7 @@ Deregister to receive notifications for the specified events.
                               pmix_status_t *codes,
                               size_t ncodes,
                               pmix_op_cbfunc_t cbfunc,
-                              void *cbdata)
+                              void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3021,7 +2998,7 @@ The \ac{PMIx} server library must track all client registrations. This module fu
 \adviceimplend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_notify_event_fn_t}}
 \declareapi{pmix_server_notify_event_fn_t}
 
@@ -3036,7 +3013,8 @@ Notify the specified processes of an event.
 \versionMarker{2.0}
 \cspecificstart
 \begin{codepar}
-typedef pmix_status_t (*pmix_server_notify_event_fn_t)(pmix_status_t code,
+typedef pmix_status_t (*pmix_server_notify_event_fn_t)(
+                             pmix_status_t code,
                              const pmix_proc_t *source,
                              pmix_data_range_t range,
                              pmix_info_t info[],
@@ -3068,8 +3046,6 @@ Returns one of the following:
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
 
-\divider
-
 Host environments that provide this module entry point are required to support the following attributes:
 
 \pasteAttributeItem{PMIX_RANGE}
@@ -3090,7 +3066,7 @@ The callback function is to be executed once the host environment no longer requ
 \advicermend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_listener_fn_t}}
 \declareapi{pmix_server_listener_fn_t}
 
@@ -3108,7 +3084,7 @@ Register a socket the host server can monitor for connection requests.
 typedef pmix_status_t (*pmix_server_listener_fn_t)(
                              int listening_sd,
                              pmix_connection_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3128,14 +3104,14 @@ A listener thread is essential to efficiently harvesting connection requests fro
 The host server listener is required to call accept on the incoming connection request, and then pass the resulting socket to the provided cbfunc.
 A \code{NULL} for this function will cause the internal \ac{PMIx} server to spawn its own listener thread.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{PMIx Client Connection Callback Function}
 \declareapi{pmix_connection_cbfunc_t}
 
 %%%%
 \summary
 
-Callback function for incoming connection request from a local client
+Callback function for incoming connection request from a local client.
 
 %%%%
 \format
@@ -3144,7 +3120,7 @@ Callback function for incoming connection request from a local client
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_connection_cbfunc_t)(
-                             int incoming_sd, void *cbdata)
+                    int incoming_sd, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3159,8 +3135,7 @@ typedef void (*pmix_connection_cbfunc_t)(
 Callback function for incoming connection requests from local clients - only used by host environments that wish to directly handle socket connection requests.
 
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_query_fn_t}}
 \declareapi{pmix_server_query_fn_t}
 
@@ -3177,9 +3152,10 @@ Query information from the resource manager.
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_query_fn_t)(
                              pmix_proc_t *proct,
-                             pmix_query_t *queries, size_t nqueries,
+                             pmix_query_t *queries,
+                             size_t nqueries,
                              pmix_info_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3239,8 +3215,7 @@ The \ac{PMIx} server library should not block in this function as the host envir
 \adviceimplend
 
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_tool_connection_fn_t}}
 \declareapi{pmix_server_tool_connection_fn_t}
 
@@ -3258,7 +3233,7 @@ Register that a tool has connected to the server.
 typedef void (*pmix_server_tool_connection_fn_t)(
                              pmix_info_t info[], size_t ninfo,
                              pmix_tool_connection_cbfunc_t cbfunc,
-                             void *cbdata)
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3319,27 +3294,25 @@ the connection is refused, the \ac{PMIx} server library must terminate the
 connection attempt. The host must not execute the callback function prior to
 returning from the \ac{API}.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Tool connection attributes}
+
+Attributes associated with tool connections.
 
 %
 \declareAttribute{PMIX_USERID}{"pmix.euid"}{uint32_t}{
-Effective user id of the connecting process
+Effective user ID of the connecting process.
 }
-
 %
 \declareAttribute{PMIX_GRPID}{"pmix.egid"}{uint32_t}{
-Effective group id of the connecting process
+Effective group ID of the connecting process.
 }
-
 %
 \declareAttribute{PMIX_VERSION_INFO}{"pmix.version"}{char*}{
-\ac{PMIx} version of the library being used by the connecting process
+\ac{PMIx} version of the library being used by the connecting process.
 }
 
-
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{PMIx Tool Connection Callback Function}
 \declareapi{pmix_tool_connection_cbfunc_t}
 
@@ -3355,8 +3328,8 @@ Callback function for incoming tool connections.
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_tool_connection_cbfunc_t)(
-                             pmix_status_t status,
-                             pmix_proc_t *proc, void *cbdata)
+                    pmix_status_t status,
+                    pmix_proc_t *proc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3377,7 +3350,7 @@ It is assumed that \code{rank=0} will be the normal assignment, but allow for th
 \advicermend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_log_fn_t}}
 \declareapi{pmix_server_log_fn_t}
 
@@ -3393,10 +3366,10 @@ Log data on behalf of a client.
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_server_log_fn_t)(
-                             const pmix_proc_t *client,
-                             const pmix_info_t data[], size_t ndata,
-                             const pmix_info_t directives[], size_t ndirs,
-                             pmix_op_cbfunc_t cbfunc, void *cbdata)
+                    const pmix_proc_t *client,
+                    const pmix_info_t data[], size_t ndata,
+                    const pmix_info_t directives[], size_t ndirs,
+                    pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3444,7 +3417,7 @@ The following attributes are optional for host environments that support this op
 Log data on behalf of a client. This function is not intended for output of computational results, but rather for reporting status and error messages. The host must not execute the callback function prior to returning from the \ac{API}.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_alloc_fn_t}}
 \declareapi{pmix_server_alloc_fn_t}
 
@@ -3462,8 +3435,10 @@ Request allocation operations on behalf of a client.
 typedef pmix_status_t (*pmix_server_alloc_fn_t)(
                              const pmix_proc_t *client,
                              pmix_alloc_directive_t directive,
-                             const pmix_info_t data[], size_t ndata,
-                             pmix_info_cbfunc_t cbfunc, void *cbdata)
+                             const pmix_info_t data[],
+                             size_t ndata,
+                             pmix_info_cbfunc_t cbfunc,
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3536,7 +3511,7 @@ This includes the \textit{loan} of resources back to the scheduler with a promis
 The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_job_control_fn_t}}
 \declareapi{pmix_server_job_control_fn_t}
 
@@ -3553,9 +3528,12 @@ Execute a job control action on behalf of a client.
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_job_control_fn_t)(
                              const pmix_proc_t *requestor,
-                             const pmix_proc_t targets[], size_t ntargets,
-                             const pmix_info_t directives[], size_t ndirs,
-                             pmix_info_cbfunc_t cbfunc, void *cbdata)
+                             const pmix_proc_t targets[],
+                             size_t ntargets,
+                             const pmix_info_t directives[],
+                             size_t ndirs,
+                             pmix_info_cbfunc_t cbfunc,
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3624,7 +3602,7 @@ The directives are provided as \refstruct{pmix_info_t} structures in the \refarg
 The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_monitor_fn_t}}
 \declareapi{pmix_server_monitor_fn_t}
 
@@ -3641,9 +3619,12 @@ Request that a client be monitored for activity.
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_monitor_fn_t)(
                              const pmix_proc_t *requestor,
-                             const pmix_info_t *monitor, pmix_status_t error,
-                             const pmix_info_t directives[], size_t ndirs,
-                             pmix_info_cbfunc_t cbfunc, void *cbdata);
+                             const pmix_info_t *monitor,
+                             pmix_status_t error,
+                             const pmix_info_t directives[],
+                             size_t ndirs,
+                             pmix_info_cbfunc_t cbfunc,
+                             void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3674,8 +3655,6 @@ If supported by the \ac{PMIx} server library, then the library must not pass any
 \pasteAttributeItem{PMIX_USERID}
 \pasteAttributeItem{PMIX_GRPID}
 
-\divider
-
 Host environments are not required to support any specific monitoring attributes.
 
 \reqattrend
@@ -3705,14 +3684,14 @@ Request that a client be monitored for activity.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%  v3 Module Functions
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_get_cred_fn_t}}
 \declareapi{pmix_server_get_cred_fn_t}
 
 %%%%
 \summary
 
-Request a credential from the host environment
+Request a credential from the host environment.
 
 %%%%
 \format
@@ -3762,10 +3741,10 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Request a credential from the host environment
+Request a credential from the host environment.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Credential callback function}
 \declareapi{pmix_credential_cbfunc_t}
 
@@ -3781,10 +3760,10 @@ Callback function to return a requested security credential
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_credential_cbfunc_t)(
-                             pmix_status_t status,
-                             pmix_byte_object_t *credential,
-                             pmix_info_t info[], size_t ninfo,
-                             void *cbdata)
+                    pmix_status_t status,
+                    pmix_byte_object_t *credential,
+                    pmix_info_t info[], size_t ninfo,
+                    void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3812,14 +3791,14 @@ The credential is opaque and therefore understandable only by a service compatib
 \adviceuserend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_validate_cred_fn_t}}
 \declareapi{pmix_server_validate_cred_fn_t}
 
 %%%%
 \summary
 
-Request validation of a credential
+Request validation of a credential.
 
 %%%%
 \format
@@ -3880,14 +3859,14 @@ The following attributes are optional for host environments that support this op
 Request validation of a credential obtained from the host environment via a prior call to the \refapi{pmix_server_get_cred_fn_t} module entry.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Credential validation callback function}
 \declareapi{pmix_validation_cbfunc_t}
 
 %%%%
 \summary
 
-Callback function for security credential validation
+Callback function for security credential validation.
 
 %%%%
 \format
@@ -3896,9 +3875,9 @@ Callback function for security credential validation
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_validation_cbfunc_t)(
-                             pmix_status_t status,
-                             pmix_info_t info[], size_t ninfo,
-                             void *cbdata);
+                    pmix_status_t status,
+                    pmix_info_t info[], size_t ninfo,
+                    void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -3926,7 +3905,7 @@ The precise contents of the array will depend on the host environment and its as
 \adviceuserend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_iof_fn_t}}
 \declareapi{pmix_server_iof_fn_t}
 
@@ -3942,8 +3921,10 @@ Request the specified IO channels be forwarded from the given array of processes
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_iof_fn_t)(
-                        const pmix_proc_t procs[], size_t nprocs,
-                        const pmix_info_t directives[], size_t ndirs,
+                        const pmix_proc_t procs[],
+                        size_t nprocs,
+                        const pmix_info_t directives[],
+                        size_t ndirs,
                         pmix_iof_channel_t channels,
                         pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
@@ -4002,14 +3983,14 @@ Request the specified IO channels be forwarded from the given array of processes
 The forwarding of stdin is a \textit{push} process - processes cannot request that it be \textit{pulled} from some other source. Requests including the \refconst{PMIX_FWD_STDIN_CHANNEL} channel will return a \refconst{PMIX_ERR_NOT_SUPPORTED} error.
 \adviceimplend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{IOF delivery function}
 \declareapi{pmix_iof_cbfunc_t}
 
 %%%%
 \summary
 
-Callback function for delivering forwarded \ac{IO} to a process
+Callback function for delivering forwarded \ac{IO} to a process.
 
 %%%%
 \format
@@ -4018,9 +3999,9 @@ Callback function for delivering forwarded \ac{IO} to a process
 \cspecificstart
 \begin{codepar}
 typedef void (*pmix_iof_cbfunc_t)(
-                             size_t iofhdlr, pmix_iof_channel_t channel,
-                             pmix_proc_t *source, char *payload,
-                             pmix_info_t info[], size_t ninfo);
+                    size_t iofhdlr, pmix_iof_channel_t channel,
+                    pmix_proc_t *source, char *payload,
+                    pmix_info_t info[], size_t ninfo);
 \end{codepar}
 \cspecificend
 
@@ -4044,8 +4025,7 @@ Multiple strings may be included in a given \refarg{payload}, and the \refarg{pa
 \adviceuserend
 
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_stdin_fn_t}}
 \declareapi{pmix_server_stdin_fn_t}
 
@@ -4104,7 +4084,7 @@ The following attributes are required to be included in the passed \refarg{info}
 
 Passes stdin to the host environment for transmission to specified recipients. The host environment is responsible for forwarding the data to all locations that host the specified \refarg{targets} and delivering the payload to the \ac{PMIx} server library connected to those clients.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_grp_fn_t}}
 \declareapi{pmix_server_grp_fn_t}
 
@@ -4120,11 +4100,14 @@ Request group operations (construct, destruct, etc.) on behalf of a set of proce
 \cspecificstart
 \begin{codepar}
 typedef pmix_status_t (*pmix_server_grp_fn_t)(
-                           pmix_group_operation_t op, char grp[],
-                           const pmix_proc_t procs[], size_t nprocs,
+                           pmix_group_operation_t op,
+                           char grp[],
+                           const pmix_proc_t procs[],
+                           size_t nprocs,
                            const pmix_info_t directives[],
                            size_t ndirs,
-                           pmix_info_cbfunc_t cbfunc, void *cbdata);
+                           pmix_info_cbfunc_t cbfunc,
+                           void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -4170,10 +4153,9 @@ The following attributes may be included in the host's response:
 %%%%
 \descr
 
-Perform the specified operation across the identified processes, plus any special actions included in the directives. Return the result of any special action requests in the callback function when the operation is completed. Actions may include a request (\refattr{PMIX_GROUP_ASSIGN_CONTEXT_ID}) that the host assign a unique numerical (size_t) ID to this group - if given, the \refattr{PMIX_RANGE} attribute will specify the range across which the ID must be unique (default to \refconst{PMIX_RANGE_SESSION}).
+Perform the specified operation across the identified processes, plus any special actions included in the directives. Return the result of any special action requests in the callback function when the operation is completed. Actions may include a request (\refattr{PMIX_GROUP_ASSIGN_CONTEXT_ID}~) that the host assign a unique numerical (size_t) ID to this group - if given, the \refattr{PMIX_RANGE} attribute will specify the range across which the ID must be unique (default to \refconst{PMIX_RANGE_SESSION}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%
 \subsubsection{Group Operation Constants}
 \declarestruct{pmix_group_operation_t}
 
@@ -4183,15 +4165,15 @@ The \refstruct{pmix_group_operation_t} structure is a \code{uint8_t} value for s
 \begin{constantdesc}
 %
 \declareconstitemNEW{PMIX_GROUP_CONSTRUCT}
-Construct a group composed of the specified processes - used by a \ac{PMIx} server library to direct host operation
+Construct a group composed of the specified processes - used by a \ac{PMIx} server library to direct host operation.
 %
 \declareconstitemNEW{PMIX_GROUP_DESTRUCT}
-Destruct the specified group - used by a \ac{PMIx} server library to direct host operation
+Destruct the specified group - used by a \ac{PMIx} server library to direct host operation.
 %
 \end{constantdesc}
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_fabric_fn_t}}
 \declareapi{pmix_server_fabric_fn_t}
 
@@ -4211,7 +4193,8 @@ typedef pmix_status_t (*pmix_server_fabric_fn_t)(
                            pmix_fabric_operation_t op,
                            const pmix_info_t directives[],
                            size_t ndirs,
-                           pmix_info_cbfunc_t cbfunc, void *cbdata);
+                           pmix_info_cbfunc_t cbfunc,
+                           void *cbdata);
 \end{codepar}
 \cspecificend
 
