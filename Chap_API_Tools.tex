@@ -19,8 +19,8 @@ Enabling these capabilities requires some extensions to the \ac{PMIx} Standard (
 
 This chapter defines specific \acp{API} related to tools, provides tool developers with an overview of the support provided by \ac{PMIx}, and serves to guide \ac{RM} vendors regarding roles and responsibilities of \acp{RM} to support tools. As the number of tool-specific \acp{API} and attributes is fairly small, the bulk of the chapter serves to provide a "theory of operation" for tools and debuggers. Description of the \acp{API} themselves is therefore deferred to the Section \ref{chap:api_tools:apis} later in the chapter.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Connection Mechanisms}
 \label{chap:api_tools:cnct}
 
@@ -35,7 +35,7 @@ Tools can connect to any local or remote \ac{PMIx} server provided they are eith
 \begingroup
 \begin{figure*}[ht!]
   \begin{center}
-    \includegraphics[clip,width=0.8\textwidth]{figs/rndvz.pdf}
+    \includegraphics[clip,width=0.9\textwidth]{figs/rndvz.pdf}
   \end{center}
   \caption{Tool rendezvous files}
   \label{fig:rndvz}
@@ -49,8 +49,8 @@ The top of the directory tree is defined by either the \refattr{PMIX_SYSTEM_TMPD
 Non-system \ac{PMIx} servers will create a set of three rendezvous files in the directory defined by either the \refattr{PMIX_SERVER_TMPDIR} attribute or the \code{TMPDIR} environmental variable:
 
 \begin{itemize}
-    \item \emph{pmix.host.tool.nspace} where \emph{host} is the string returned by the \code{gethostname} system call and \emph{nspace} is the namespace of the server
-    \item \emph{pmix.host.tool.pid} where \emph{host} is the string returned by the \code{gethostname} system call and \emph{pid} is the \ac{PID} of the server
+    \item \emph{pmix.host.tool.nspace} where \emph{host} is the string returned by the \code{gethostname} system call and \emph{nspace} is the namespace of the server.
+    \item \emph{pmix.host.tool.pid} where \emph{host} is the string returned by the \code{gethostname} system call and \emph{pid} is the \ac{PID} of the server.
     \item \emph{pmix.host.tool}  where \emph{host} is the string returned by the \code{gethostname} system call. Note that servers which are not given a namespace-specific \refattr{PMIX_SERVER_TMPDIR} attribute may not generate this file due to conflicts should multiple servers be present on the node.
 \end{itemize}
 
@@ -67,12 +67,12 @@ Tools are allowed to change their primary server at any time via the \refapi{PMI
 Tool process identifiers are assigned by one of the following methods:
 
 \begin{itemize}
-    \item If \refattr{PMIX_TOOL_NSPACE} is given, then the namespace of the tool will be assigned that value
+    \item If \refattr{PMIX_TOOL_NSPACE} is given, then the namespace of the tool will be assigned that value.
     \begin{itemize}
-        \item If \refattr{PMIX_TOOL_RANK} is also given, then the rank of the tool will be assigned that value
-        \item If \refattr{PMIX_TOOL_RANK} is not given, then the rank will be set to a default value of zero
+        \item If \refattr{PMIX_TOOL_RANK} is also given, then the rank of the tool will be assigned that value.
+        \item If \refattr{PMIX_TOOL_RANK} is not given, then the rank will be set to a default value of zero.
     \end{itemize}
-    \item If a process ID has not been provided, then one will be assigned by the host environment upon connection to a server. Users should note that the tool's process ID will be \emph{invalid} until a connection has been established
+    \item If a process ID has not been provided, then one will be assigned by the host environment upon connection to a server. Users should note that the tool's process ID will be \emph{invalid} until a connection has been established.
 \end{itemize}
 
 Tool process identifiers remain constant across servers. Thus, it is critical that a system-wide unique namespace be provided if the tool itself sets the identifier, and that host environments provide a system-wide unique identifier in the case where the identifier is set by the server upon connection. The host environment is required to reject any connection request that fails to meet this criterion.
@@ -81,51 +81,52 @@ For simplicity, the following descriptions will refer to the:
 
 \begin{itemize}
     \item \code{PMIX_SYSTEM_TMPDIR} as the directory specified by either the \refattr{PMIX_SYSTEM_TMPDIR} attribute (if given) or the \code{TMPDIR} environmental variable.
-    \item \code{PMIX_SERVER_TMPDIR} as the directory specified by either the \refattr{PMIX_SERVER_TMPDIR} attribute or the \code{TMPDIR} environmental variable
+    \item \code{PMIX_SERVER_TMPDIR} as the directory specified by either the \refattr{PMIX_SERVER_TMPDIR} attribute or the \code{TMPDIR} environmental variable.
 \end{itemize}
 
 The rendezvous methods are automatically employed for the initial tool connection during \refapi{PMIx_tool_init} unless the \refattr{PMIX_TOOL_DO_NOT_CONNECT} attribute is specified, and on all subsequent calls to \refapi{PMIx_tool_connect_to_server}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Rendezvousing with a local server}
 
 Connection to a local \ac{PMIx} server is pursued according to the following precedence chain based on attributes contained in the call to the \refapi{PMIx_tool_init} or \refapi{PMIx_tool_connect_to_server} \acp{API}. Servers to which the tool already holds a connection will be ignored. Except where noted, the \ac{PMIx} library will return an error if the specified file cannot be found, the caller lacks permissions to read it, or the server specified within the file does not respond to or accept the connection — the library will not proceed to check for other connection options as the user specified a particular one to use.
 
 \begin{itemize}
-
+%
 \item If \refattr{PMIX_TOOL_ATTACHMENT_FILE} is given, then the tool will attempt to read the specified file and connect to the server based on the information contained within it. The format of the attachment file is identical to the rendezvous files described in earlier in this section.
-
+%
 \item If \refattr{PMIX_SERVER_URI} or \refattr{PMIX_TCP_URI} is given, then connection will be attempted to the server at the specified \ac{URI}. Note that it is an error for both of these attributes to be specified. \refattr{PMIX_SERVER_URI} is the preferred method as it is more generalized — \refattr{PMIX_TCP_URI} is provided for those cases where the user specifically wants to use a \ac{TCP} transport for the connection and wants to error out if one isn’t available or cannot be used.
-
-\item If \refattr{PMIX_SERVER_PIDINFO} was provided, then the tool will search for a rendezvous file created by a \ac{PMIx} server of the given \ac{PID} in the \code{PMIX_SERVER_TMPDIR} directory..
-
+%
+\item If \refattr{PMIX_SERVER_PIDINFO} was provided, then the tool will search for a rendezvous file created by a \ac{PMIx} server of the given \ac{PID} in the \code{PMIX_SERVER_TMPDIR} directory.
+%
 \item If \refattr{PMIX_SERVER_NSPACE} is given, then the tool will search for a rendezvous file created by a \ac{PMIx} server of the given namespace in the \code{PMIX_SERVER_TMPDIR} directory.
-
+%
 \item If \refattr{PMIX_CONNECT_TO_SYSTEM} is given, then the tool will search for a system-level rendezvous file created by a \ac{PMIx} server in the \code{PMIX_SYSTEM_TMPDIR} directory.
-
-\item If \refattr{PMIX_CONNECT_SYSTEM_FIRST} is given, then the tool will look for a system-level rendezvous file created by a \ac{PMIx} server in the \code{PMIX_SYSTEM_TMPDIR} directory. If found, then the tool will attempt to connect to it. In this case, no error will be returned if the rendezvous file is not found or connection is refused — the \ac{PMIx} library will silently continue to the next option
-
+%
+\item If \refattr{PMIX_CONNECT_SYSTEM_FIRST} is given, then the tool will look for a system-level rendezvous file created by a \ac{PMIx} server in the \code{PMIX_SYSTEM_TMPDIR} directory. If found, then the tool will attempt to connect to it. In this case, no error will be returned if the rendezvous file is not found or connection is refused — the \ac{PMIx} library will silently continue to the next option.
+%
 \item By default, the tool will search the directory tree under the \code{PMIX_SERVER_TMPDIR} directory for rendezvous files of \ac{PMIx} servers, attempting to connect to each it finds until one accepts the connection. If no rendezvous files are found, or all contacted servers refuse connection, then the \ac{PMIx} library will return an error.
+%
 \end{itemize}
 
 Note that there can be multiple local servers - one from the system plus others from launchers and active jobs. The \ac{PMIx} tool connection search method is not guaranteed to pick a particular server unless directed to do so. Tools can obtain a list of servers available on their local node using the \refapi{PMIx_Query_info} \acp{API} with the \refattr{PMIX_QUERY_AVAIL_SERVERS} key.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Connecting to a remote server}
 
 Connecting to remote servers is complicated due to the lack of access to the previously-described rendezvous files. Two methods are required to be supported, both based on the caller having explicit knowledge of either connection information or a path to a local file that contains such information:
 
-
 \begin{itemize}
-
+%
 \item If \refattr{PMIX_TOOL_ATTACHMENT_FILE} is given, then the tool will attempt to read the specified file and connect to the server based on the information contained within it. The format of the attachment file is identical to the rendezvous files described in earlier in this section.
-
+%
 \item If \refattr{PMIX_SERVER_URI} or \refattr{PMIX_TCP_URI} is given, then connection will be attempted to the server at the specified \ac{URI}. Note that it is an error for both of these attributes to be specified. \refattr{PMIX_SERVER_URI} is the preferred method as it is more generalized — \refattr{PMIX_TCP_URI} is provided for those cases where the user specifically wants to use the \ac{TCP} transport for the connection and wants to error out if it isn’t available or cannot be used.
-
+%
 \end{itemize}
 
 Additional methods may be provided by particular \ac{PMIx} implementations. For example, the tool may use \emph{ssh} to launch a \emph{probe} process onto the remote node so that the probe can search the \code{PMIX_SYSTEM_TMPDIR} and \code{PMIX_SERVER_TMPDIR} directories for rendezvous files, relaying the discovered information back to the requesting tool. If sufficient information is found to allow for remote connection, then the tool can use it to establish the connection. Note that this method is not required to be supported - it is provided here as an example and left to the discretion of \ac{PMIx} implementors.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Attaching to running jobs}
 
 When attaching to a running job, the tool must connect to a \ac{PMIx} server that is associated with that job - e.g., a server residing in the host environment's local daemon that spawned one or more of the job's processes, or the server residing in the launcher that is overseeing the job. Identifying an appropriate server can sometimes prove challenging, particularly in an environment where multiple job launchers may be in operation, possibly under control of the same user.
@@ -137,15 +138,15 @@ The most common method, therefore, for attaching to a running job is to specify 
 Identifying the correct \ac{PID} or namespace can be accomplished in a variety of ways, including:
 
 \begin{itemize}
-    \item Using typical \ac{OS} or host environment tools to obtain a listing of active jobs and perusing those to find the target launcher
-    \item Using a \ac{PMIx}-based tool attached to a system-level server to query the active jobs and their command lines, thereby identifying the application of interest and its associated launcher
-    \item Manually recording the \ac{PID} of the launcher upon starting the job
+    \item Using typical \ac{OS} or host environment tools to obtain a listing of active jobs and perusing those to find the target launcher.
+    \item Using a \ac{PMIx}-based tool attached to a system-level server to query the active jobs and their command lines, thereby identifying the application of interest and its associated launcher.
+    \item Manually recording the \ac{PID} of the launcher upon starting the job.
 \end{itemize}
 
 Once the namespace and/or \ac{PID} of the target server has been identified, either of the previous methods can be used to connect to it.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool initialization attributes}
 \label{api:tools:attributes:tool}
 
@@ -155,18 +156,16 @@ The following attributes are passed to the \refapi{PMIx_tool_init} \ac{API} for 
 \declareAttribute{PMIX_TOOL_NSPACE}{"pmix.tool.nspace"}{char*}{
 Name of the namespace to use for this tool.
 }
-
 %
 \declareAttribute{PMIX_TOOL_RANK}{"pmix.tool.rank"}{uint32_t}{
 Rank of this tool.
 }
-
 %
 \declareAttribute{PMIX_LAUNCHER}{"pmix.tool.launcher"}{bool}{
-Tool is a launcher and needs to create rendezvous files
+Tool is a launcher and needs to create rendezvous files.
 }
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool initialization environmental variables}
 \label{api:tools:envars:tool}
 
@@ -176,83 +175,69 @@ The following environmental variables are used during \refapi{PMIx_tool_init} to
 \declareEnvarNEW{PMIX_LAUNCHER_PAUSE_FOR_TOOL}{
 Upon completing \refapi{PMIx_server_init}, the spawned launcher is to generate the \refconst{PMIX_LAUNCHER_READY} event and then pause until the spawning tool can connect to it and provide directives.
 }
-
 %
 \declareEnvarNEW{PMIX_LAUNCHER_RENDEZVOUS_FILE}{
 Absolute path of file where the launcher is to store its connection information so that the spawning tool can connect to it.
 }
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool connection attributes}
 \label{api:struct:attributes:connection}
 
 These attributes are defined to assist PMIx-enabled tools to connect with a \ac{PMIx} server by passing them into either the \refapi{PMIx_tool_init} or the \refapi{PMIx_tool_connect_to_server} \acp{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
 
-
 %
 \declareAttribute{PMIX_SERVER_PIDINFO}{"pmix.srvr.pidinfo"}{pid_t}{
 \ac{PID} of the target PMIx server for a tool.
 }
-
 %
 \declareAttribute{PMIX_CONNECT_TO_SYSTEM}{"pmix.cnct.sys"}{bool}{
 The requester requires that a connection be made only to a local, system-level PMIx server.
 }
-
 %
 \declareAttribute{PMIX_CONNECT_SYSTEM_FIRST}{"pmix.cnct.sys.first"}{bool}{
 Preferentially, look for a system-level PMIx server first.
 }
-
 %
 \declareAttribute{PMIX_SERVER_URI}{"pmix.srvr.uri"}{char*}{
 \ac{URI} of the PMIx server to be contacted.
 }
-
 %
 \declareAttribute{PMIX_SERVER_HOSTNAME}{"pmix.srvr.host"}{char*}{
 Host where target PMIx server is located.
 }
-
 %
 \declareAttribute{PMIX_CONNECT_MAX_RETRIES}{"pmix.tool.mretries"}{uint32_t}{
 Maximum number of times to try to connect to PMIx server - the default value is implementation specific.
 }
-
 %
 \declareAttribute{PMIX_CONNECT_RETRY_DELAY}{"pmix.tool.retry"}{uint32_t}{
 Time in seconds between connection attempts to a PMIx server - the default value is implementation specific.
 }
-
 %
 \declareAttribute{PMIX_TOOL_DO_NOT_CONNECT}{"pmix.tool.nocon"}{bool}{
 The tool wants to use internal PMIx support, but does not want to connect to a PMIx server.
 }
-
 %
 \declareAttributeNEW{PMIX_TOOL_CONNECT_OPTIONAL}{"pmix.tool.conopt"}{bool}{
-The tool shall connect to a server if available, but otherwise continue to operate unconnected
+The tool shall connect to a server if available, but otherwise continue to operate unconnected.
 }
-
 %
 \declareAttributeNEW{PMIX_TOOL_ATTACHMENT_FILE}{"pmix.tool.attach"}{char*}{
-Pathname of file containing connection information to be used for attaching to a specific server
+Pathname of file containing connection information to be used for attaching to a specific server.
 }
-
 %
 \declareAttributeNEW{PMIX_LAUNCHER_RENDEZVOUS_FILE}{"pmix.tool.lncrnd"}{char*}{
 Pathname of file where the launcher is to store its connection information so that the spawning tool can connect to it.
 }
-
 %
 \declareAttributeNEW{PMIX_PRIMARY_SERVER}{"pmix.pri.srvr"}{bool}{
 The server to which the tool is connecting shall be designated the \emph{primary} server once connection has been accomplished.
 }
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Launching Applications with Tools}
 \label{chap:api_tools:launch}
 
@@ -265,7 +250,7 @@ Tool-directed launches require that the tool include the \refattr{PMIX_LAUNCHER}
 
 Either of these methods can be executed interactively or by a batch script. Note that not all host environments may support the direct launch method.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Direct launch}
 \label{chap:api_tools:direct}
 
@@ -336,7 +321,7 @@ termination if requested to do so. The event shall include:
     \item any other info provided by the host environment.
 \end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Indirect launch}
 \label{chap:api_tools:indirect}
 
@@ -390,13 +375,13 @@ The tool then calls the \refapi{PMIx_Spawn} \ac{API} so that the \ac{PMIx} libra
 Upon successful return from \refapi{PMIx_Spawn}:
 
 \begin{itemize}
-    \item The namespace of the \ac{IL} shall be returned in the \emph{nspace} parameter of the \refapi{PMIx_Spawn} \ac{API} (or in the \refapi{pmix_spawn_cbfunc_t} for the non-blocking form of that \ac{API})
-    \item The tool shall be connected to the \ac{IL} with the \ac{IL} acting as the tool's \emph{primary} server
+    \item The namespace of the \ac{IL} shall be returned in the \emph{nspace} parameter of the \refapi{PMIx_Spawn} \ac{API} (or in the \refapi{pmix_spawn_cbfunc_t} for the non-blocking form of that \ac{API}).
+    \item The tool shall be connected to the \ac{IL} with the \ac{IL} acting as the tool's \emph{primary} server.
 \end{itemize}
 
 Once \refapi{PMIx_Spawn} has returned, the tool can proceed to spawn the actual application according to the procedure described in Section \ref{chap:api_tools:direct}.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool spawn-related attributes}
 \label{api:tools:attributes:spawn}
 
@@ -411,9 +396,8 @@ indicated process. The local spawn agent should, therefore, ensure that the
 are potential recipients. The requester will issue a call to
 \refapi{PMIx_IOF_push} to initiate the actual forwarding of information to
 specified targets - this attribute simply requests that the \ac{IL} retain the
-ability to forward the information to the designated targets
+ability to forward the information to the designated targets.
 }
-
 %
 \declareAttribute{PMIX_FWD_STDOUT}{"pmix.fwd.stdout"}{bool}{
 Requests that the ability to forward the \code{stdout} of the spawned
@@ -422,7 +406,6 @@ maintained. The requester will issue a call to \refapi{PMIx_IOF_pull} to
 specify the callback function and other options for delivery of the forwarded
 output.
 }
-
 %
 \declareAttribute{PMIX_FWD_STDERR}{"pmix.fwd.stderr"}{bool}{
 Requests that the ability to forward the \code{stderr} of the spawned
@@ -431,7 +414,6 @@ maintained. The requester will issue a call to \refapi{PMIx_IOF_pull} to
 specify the callback function and other options for delivery of the forwarded
 output.
 }
-
 %
 \declareAttribute{PMIX_FWD_STDDIAG}{"pmix.fwd.stddiag"}{bool}{
 Requests that the ability to forward the diagnostic channel (if it exists) of
@@ -440,52 +422,44 @@ maintained. The requester will issue a call to \refapi{PMIx_IOF_pull} to
 specify the callback function and other options for delivery of the forwarded
 output.
 }
-
 %
 \declareAttributeNEW{PMIX_NOHUP}{"pmix.nohup"}{bool}{
-Any processes started on behalf of the calling tool (or the specified namespace, if such specification is included in the list of attributes) should continue after the tool disconnects from its server
+Any processes started on behalf of the calling tool (or the specified namespace, if such specification is included in the list of attributes) should continue after the tool disconnects from its server.
 }
-
 %
 \declareAttributeNEW{PMIX_LAUNCHER_DAEMON}{"pmix.lnch.dmn"}{char*}{
 Path to executable that is to be used as the backend daemon for the launcher. This replaces the launcher's own daemon with the specified executable. Note that the user is therefore responsible for ensuring compatibility of the specified executable and the host launcher.
 }
-
 %
 \declareAttributeNEW{PMIX_FORKEXEC_AGENT}{"pmix.frkex.agnt"}{char*}{
 Path to executable that the launcher's backend daemons are to fork/exec in place of the actual application processes. The fork/exec agent shall connect back (as a \ac{PMIx} tool) to the launcher's daemon to receive its spawn instructions, and is responsible for starting the actual application process it replaced. See Section \ref{api:tools:debugger:agent} for details.
 }
-
 %
 \declareAttributeNEW{PMIX_EXEC_AGENT}{"pmix.exec.agnt"}{char*}{
-Path to executable that the launcher's backend daemons are to fork/exec in place of the actual application processes. The launcher's daemon shall pass the full command line of the application on the command line of the exec agent, which shall not connect back to the launcher's daemon. The exec agent is responsible for exec'ing the specified application process in its own place. See Section \ref{api:tools:debugger:agent} for details
+Path to executable that the launcher's backend daemons are to fork/exec in place of the actual application processes. The launcher's daemon shall pass the full command line of the application on the command line of the exec agent, which shall not connect back to the launcher's daemon. The exec agent is responsible for exec'ing the specified application process in its own place. See Section \ref{api:tools:debugger:agent} for details.
 }
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool rendezvous-related events}
 \label{api:tools:attributes:spawnconst}
 
 These constants refer to events relating to rendezvous of a tool and launcher during spawn of the \ac{IL}. The events serve as a form of event-driven "handshake" between the two processes, thereby allowing the tool to provide directives to the \ac{IL} prior to the \ac{IL} launching any processes.
 
 \begin{constantdesc}
-
 %
 \declareconstitemNEW{PMIX_LAUNCH_DIRECTIVE}
 When a launcher wishes to capture directives sent to it by a \ac{PMIx}-enabled tool, it shall register to receive this event. The specified callback function will be invoked when the event is received from the tool, thereby allowing the launcher to harvest the directives for its purposes.
-
 %
 \declareconstitemNEW{PMIX_LAUNCHER_READY}
 When an application launcher (e.g., \emph{mpiexec}) is ready to receive directives from a \ac{PMIx}-enabled tool, it shall generate this event to signal the tool to send the directives. Directives are conveyed to the launcher via the tool generating the \refconst{PMIX_LAUNCH_DIRECTIVE} event - see \refapi{PMIx_Notify_event} for details.
-
-
+%
 \end{constantdesc}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{IO Forwarding}
 \label{chap:api_tools:iof}
-
 
 Underlying the operation of many tools is a common need to forward \code{stdin} from the tool to targeted processes, and to return \code{stdout}/\code{stderr} from those processes to the tool (e.g., for display on the user’s console). Historically, each tool developer was responsible for creating their own \ac{IO} forwarding subsystem. However, the introduction of \ac{PMIx} as a standard mechanism for interacting between applications and the host environment has made it possible to relieve tool developers of this burden.
 
@@ -494,7 +468,7 @@ This section defines functions by which tools can request forwarding of input/ou
 \begin{itemize}
     \item provide tool developers with an overview of the expected behavior of the \ac{PMIx} \ac{IO} forwarding support;
     \item guide \ac{RM} vendors regarding roles and responsibilities expected of the \ac{RM} to support \ac{IO} forwarding; and
-    \item provide insight into the thinking of the \ac{PMIx} community behind the definition of the \ac{PMIx} \ac{IO} forwarding \acp{API}
+    \item provide insight into the thinking of the \ac{PMIx} community behind the definition of the \ac{PMIx} \ac{IO} forwarding \acp{API}.
 \end{itemize}
 
 Note that the forwarding of \ac{IO} via \ac{PMIx} requires that both the host environment and the tool support \ac{PMIx}, but does not impose any similar requirements on the application itself.
@@ -502,15 +476,15 @@ Note that the forwarding of \ac{IO} via \ac{PMIx} requires that both the host en
 The responsibility of the host environment in forwarding of \ac{IO} falls into the following areas:
 
 \begin{itemize}
-    \item Capturing output from specified processes
-    \item Forwarding that output to the host of the \ac{PMIx} server library that requested it
-    \item Delivering that payload to the \ac{PMIx} server library via the \refapi{PMIx_server_IOF_deliver} \ac{API} for final dispatch to the requesting tool
+    \item Capturing output from specified processes.
+    \item Forwarding that output to the host of the \ac{PMIx} server library that requested it.
+    \item Delivering that payload to the \ac{PMIx} server library via the \refapi{PMIx_server_IOF_deliver} \ac{API} for final dispatch to the requesting tool.
 \end{itemize}
 
 It is the responsibility of the \ac{PMIx} library to buffer, format, and deliver the payload to the requesting client. This may require caching of output until a forwarding registration is received, as governed by the corresponding \ac{IO} forwarding attributes of Section \ref{api:tools:attributes:iof} that are supported by the implementation.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Forwarding stdout/stderr}
 
 At an appropriate point in its operation (usually during startup), a tool will utilize the \refapi{PMIx_tool_init} function to connect to a \ac{PMIx} server. The \ac{PMIx} server can be hosted by an \ac{RM} daemon or could be embedded in a library-provided starter program such as \textit{mpiexec} - in terms of \ac{IO} forwarding, the operations remain the same either way. For purposes of this discussion, we will assume the server is in an \ac{RM} daemon and that the application processes are directly launched by the \ac{RM}, as shown in Fig \ref{fig:stdouterr}.
@@ -558,7 +532,7 @@ When requesting to forward \code{stdout}/\code{stderr}, the tool can specify sev
 
 The \ac{PMIx} client in the tool is responsible for formatting the output stream. Note that output from multiple processes will often be interleaved due to variations in arrival time - ordering of output is not guaranteed across processes and/or nodes.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Forwarding stdin}
 
 A tool is not necessarily a child of the \ac{RM} as it may have been started directly from the command line. Thus, provision must be made for the tool to collect its \code{stdin} and pass it to the host \ac{RM} (via the \ac{PMIx} server) for forwarding. Two methods of support for forwarding of \code{stdin} are defined:
@@ -587,7 +561,7 @@ Scalable forwarding of \code{stdin} represents a significant challenge. Most env
 \adviceuserend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{IO Forwarding Channels}
 \declarestruct{pmix_iof_channel_t}
 
@@ -597,41 +571,39 @@ The \refstruct{pmix_iof_channel_t} structure is a \code{uint16_t} type that defi
 \begin{constantdesc}
 %
 \declareconstitem{PMIX_FWD_NO_CHANNELS}
-Forward no channels
+Forward no channels.
 %
 \declareconstitem{PMIX_FWD_STDIN_CHANNEL}
-Forward stdin
+Forward \code{stdin}.
 %
 \declareconstitem{PMIX_FWD_STDOUT_CHANNEL}
-Forward stdout
+Forward \code{stdout}.
 %
 \declareconstitem{PMIX_FWD_STDERR_CHANNEL}
-Forward stderr
+Forward \code{stderr}.
 %
 \declareconstitem{PMIX_FWD_STDDIAG_CHANNEL}
-Forward stddiag, if available
+Forward \code{stddiag}, if available.
 %
 \declareconstitem{PMIX_FWD_ALL_CHANNELS}
-Forward all available channels
+Forward all available channels.
 %
 \end{constantdesc}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{IO Forwarding constants}
 
 \begin{constantdesc}
-
 %
 \declareconstitemNEW{PMIX_ERR_IOF_FAILURE}
-An \ac{IO} forwarding operation failed - the affected channel will be included in the notification
-
+An \ac{IO} forwarding operation failed - the affected channel will be included in the notification.
 %
 \declareconstitemNEW{PMIX_ERR_IOF_COMPLETE}
-\ac{IO} forwarding of the standard input for this process has completed - i.e., the stdin file descriptor has closed
-
+\ac{IO} forwarding of the standard input for this process has completed - i.e., the stdin file descriptor has closed.
+%
 \end{constantdesc}
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{IO Forwarding attributes}
 \label{api:tools:attributes:iof}
 
@@ -641,61 +613,54 @@ The following attributes are used to control \ac{IO} forwarding behavior at the 
 \declareAttribute{PMIX_IOF_CACHE_SIZE}{"pmix.iof.csize"}{uint32_t}{
 The requested size of the \ac{PMIx} server cache in bytes for each specified channel. By default, the server is allowed (but not required) to drop all bytes received beyond the max size.
 }
-
 %
 \declareAttribute{PMIX_IOF_DROP_OLDEST}{"pmix.iof.old"}{bool}{
 In an overflow situation, the \ac{PMIx} server is to drop the oldest bytes to make room in the cache.
 }
-
 %
 \declareAttribute{PMIX_IOF_DROP_NEWEST}{"pmix.iof.new"}{bool}{
 In an overflow situation, the \ac{PMIx} server is to drop any new bytes received until room becomes available in the cache (default).
 }
-
 %
 \declareAttribute{PMIX_IOF_BUFFERING_SIZE}{"pmix.iof.bsize"}{uint32_t}{
 Requests that \ac{IO} on the specified channel(s) be aggregated in the \ac{PMIx} tool library until the specified number of bytes is collected to avoid being called every time a block of \ac{IO} arrives. The \ac{PMIx} tool library will execute the callback and reset the collection counter whenever the specified number of bytes becomes available. Any remaining buffered data will be \emph{flushed} to the callback upon a call to deregister the respective channel.
 }
-
 %
 \declareAttribute{PMIX_IOF_BUFFERING_TIME}{"pmix.iof.btime"}{uint32_t}{
 Max time in seconds to buffer \ac{IO} before delivering it. Used in conjunction with buffering size, this prevents \ac{IO} from being held indefinitely while waiting for another payload to arrive.
 }
-
 %
 \declareAttribute{PMIX_IOF_COMPLETE}{"pmix.iof.cmp"}{bool}{
 Indicates that the specified \ac{IO} channel has been closed by the source.
 }
-
 %
 \declareAttribute{PMIX_IOF_TAG_OUTPUT}{"pmix.iof.tag"}{bool}{
-Requests that output be prefixed with the nspace,rank of the source and a string identifying the channel (\code{stdout}, \code{stderr}, etc.)
+Requests that output be prefixed with the nspace,rank of the source and a string identifying the channel (\code{stdout}, \code{stderr}, etc.).
 }
-
 %
 \declareAttribute{PMIX_IOF_TIMESTAMP_OUTPUT}{"pmix.iof.ts"}{bool}{
-Requests that output be marked with the time at which the data was received by the tool - note that this will differ from the time at which the data was collected from the source
+Requests that output be marked with the time at which the data was received by the tool - note that this will differ from the time at which the data was collected from the source.
 }
-
 %
 \declareAttribute{PMIX_IOF_XML_OUTPUT}{"pmix.iof.xml"}{bool}{
-Requests that output be formatted in \ac{XML}
+Requests that output be formatted in \ac{XML}.
 }
-
+%
 \declareAttributeNEW{PMIX_IOF_PUSH_STDIN}{"pmix.iof.stdin"}{bool}{
 Requests that the \ac{PMIx} library collect the \code{stdin} of the requester and forward it to the processes specified in the \refapi{PMIx_IOF_push} call. All collected data is sent to the same targets until \code{stdin} is closed, or a subsequent call to \refapi{PMIx_IOF_push} is made that includes the \refattr{PMIX_IOF_COMPLETE} attribute indicating that forwarding of \code{stdin} is to be terminated.
 }
-
+%
 \declareAttributeNEW{PMIX_IOF_COPY}{"pmix.iof.cpy"}{bool}{
 Requests that the host environment deliver a copy of the specified output stream(s) to the tool, letting the stream(s) continue to also be delivered to the default location. This allows the tool to tap into the output stream(s) without redirecting it from its current final destination.
 }
-
+%
 \declareAttributeNEW{PMIX_IOF_REDIRECT}{"pmix.iof.redir"}{bool}{
 Requests that the host environment intercept the specified output stream(s) and deliver it to the requesting tool instead of its current final destination. This might be used, for example, during a debugging procedure to avoid injection of debugger-related output into the application’s results file. The original output stream(s) destination is restored upon termination of the tool.
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Debugger Support}
 \label{chap:api_tools:debuggers}
 
@@ -721,12 +686,11 @@ A key element of the debugging process is the ability of the debugger to require
     \pasteAttributeItemEnd{}
 \end{itemize}
 
-
-If the \ac{PMIx} implementation and/or the host environment support it, debuggers can utilize the \refapi{PMIx_Query_info} \ac{API} to determine which features are available via the \refattr{PMIX_QUERY_ATTRIBUTE_SUPPORT} attribute:
+If the \ac{PMIx} implementation and/or the host environment support it, debuggers can utilize the \refapi{PMIx_Query_info} \ac{API} to determine which features are available via the \refattr{PMIX_QUERY_ATTRIBUTE_SUPPORT} attribute.
 
 \begin{itemize}
-    \item \refattr{PMIX_DEBUG_STOP_IN_INIT} by checking \refattr{PMIX_CLIENT_ATTRIBUTES} for the \refapi{PMIx_Init} \ac{API}
-    \item \refattr{PMIX_DEBUG_STOP_ON_EXEC} by checking \refattr{PMIX_HOST_ATTRIBUTES} for the \refapi{PMIx_Spawn} \ac{API}
+    \item \refattr{PMIX_DEBUG_STOP_IN_INIT} by checking \refattr{PMIX_CLIENT_ATTRIBUTES} for the \refapi{PMIx_Init} \ac{API}.
+    \item \refattr{PMIX_DEBUG_STOP_ON_EXEC} by checking \refattr{PMIX_HOST_ATTRIBUTES} for the \refapi{PMIx_Spawn} \ac{API}.
 \end{itemize}
 
 The target namespace or process (as given by the debugger in the spawn request) shall be provided to each daemon in its job-level information via the \refattr{PMIX_DEBUG_TARGET} attribute. Debugger daemons are responsible for self-determining their specific target process(es), and can then utilize the \refapi{PMIx_Query_info} \ac{API} to obtain information about them (see Fig \ref{fig:dbgptable}) - e.g., to obtain the \acp{PID} of the local processes to which they need to attach. \ac{PMIx} provides the \refstruct{pmix_proc_info_t} structure for organizing information about a process' \ac{PID}, location, and state. Debuggers may request information on a given job at two levels:
@@ -750,7 +714,7 @@ Note that the information provided in the returned proctable represents a snapsh
 
 Debugger daemons can be started in two ways - either at the same time the application is spawned, or separately at a later time.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Co-Location of Debugger Daemons}
 \label{chap:api_tools:colocate}
 
@@ -765,7 +729,7 @@ adding the following attributes to the \refapi{PMIx_Spawn} used to spawn them:
 
 \begin{itemize}
     \item \refattr{PMIX_DEBUGGER_DAEMONS} - indicating that the launcher is
-    being asked to spawn debugger daemons
+    being asked to spawn debugger daemons.
     \item \refattr{PMIX_DEBUG_TARGET} - indicating the job or process that is
     to be debugged. This allows the launcher to identify the processes to be
     debugged and their location. Note that the debugger job shall be assigned
@@ -794,7 +758,7 @@ to attaching the debugger. Users are referred to the \refapi{PMIx_Job_control}
 Note that the tool calling \refapi{PMIx_Spawn} to request the launch of the debugger daemons is \emph{not} included in the resulting job - i.e., the debugger daemons do not inherit the namespace of the tool. Thus, collective operations and notifications that target the debugger daemon job will not include the tool unless the namespace/rank of the tool is explicitly included.
 \adviceuserend
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Co-Spawn of Debugger Daemons}
 \label{chap:api_tools:cospawn}
 
@@ -803,7 +767,7 @@ In the case where a job is being spawned under the control of a debugger, \ac{PM
 The launcher must not include information regarding the debugger daemons in
 the job-level info
 provided to the rest of the \refstruct{pmix_app_t}s, nor in any calculated rank
-values (e.g., PMIX_NODE_RANK or PMIX_LOCAL_RANK) in those applications. The
+values (e.g., \refattr{PMIX_NODE_RANK} or \refattr{PMIX_LOCAL_RANK}) in those applications. The
 debugger job is to be assigned its own namespace and each debugger daemon shall
 receive a unique rank - i.e., the debugger application is to be treated as a
 completely separate \ac{PMIx} job that is simply being started in parallel with
@@ -835,7 +799,7 @@ Note that the tool calling \refapi{PMIx_Spawn} to request the launch of the debu
 The \refapi{PMIx_Spawn} \ac{API} only supports the return of a single namespace resulting from the spawn request. In the case where the debugger job is co-spawned with the application, the spawn function shall return the namespace of the application and not the debugger job. Tools requiring access to the namespace of the debugger job must query the launcher for the spawned namespaces to find the one belonging to the debugger job.
 \adviceuserend
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Debugger Agents}
 \label{api:tools:debugger:agent}
 
@@ -861,9 +825,9 @@ The \refattr{PMIX_FORKEXEC_AGENT} attribute allows the debugger to specify an in
 \label{fig:dbginta}
 \end{figure*}
 
-In contrast, the \refattr{PMIX_EXEC_AGENT} attribute (Fig. \ref{fig:dbgea}) allows the debugger to specify an agent that will perform some preparatory actions and then exec the eventual application process to replace itself. In this scenario, the exec agent is provided with the application process' command line as arguments on its command line (e.g., "./agent appargv[0] appargv[1]") and does not connect back to the host's \ac{PMIx} server. It is the responsibility of the exec agent to properly separate its own command line arguments (if any) from the application description.
+In contrast, the \refattr{PMIX_EXEC_AGENT} attribute (Fig. \ref{fig:dbgea}) allows the debugger to specify an agent that will perform some preparatory actions and then exec the eventual application process to replace itself. In this scenario, the exec agent is provided with the application process' command line as arguments on its command line (e.g., \code{"./agent appargv[0] appargv[1]"}) and does not connect back to the host's \ac{PMIx} server. It is the responsibility of the exec agent to properly separate its own command line arguments (if any) from the application description.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tracking the job lifecycle}
 \label{api:tools:trkjob}
 
@@ -872,11 +836,11 @@ are specifically defined for tracking a job's progress:
 
 \begin{itemize}
     \item \refconst{PMIX_EVENT_JOB_START} indicates when the first process in
-    the job has been spawned
+    the job has been spawned.
     \item \refconst{PMIX_LAUNCH_COMPLETE} indicates when the last process in
-    the job has been spawned
+    the job has been spawned.
     \item \refconst{PMIX_EVENT_JOB_END} indicates that all processes have
-    terminated
+    terminated.
 \end{itemize}
 
 Each event is required to contain at least the namespace of the corresponding
@@ -913,11 +877,10 @@ to the \refapi{PMIx_Register_event_handler} \ac{API}.
 
 \adviceuserend
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Job lifecycle events}
 
 \begin{constantdesc}
-
 %
 \declareconstitemNEW{PMIX_EVENT_JOB_START}
 The first process in the job has been spawned - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
@@ -933,88 +896,92 @@ The allocation has been instantiated and is ready for use - includes \refattr{PM
 %
 \declareconstitemNEW{PMIX_EVENT_SESSION_END}
 The allocation has terminated - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_SESSION_ID} of the allocation. This event is issued after any user-specified actions have completed, but before any system-controlled epilogue is performed.
+%
+\end{constantdesc}
 
 The following events relate to processes within a job:
+
+\begin{constantdesc}
 %
 \declareconstitem{PMIX_EVENT_PROC_TERMINATED}
 The specified process(es) terminated - normal or abnormal
 termination will be indicated by the \refattr{PMIX_PROC_TERM_STATUS} in the
 \refarg{info} array of the notification. Note that a request for individual
 process events can generate a significant event volume from large-scale jobs.
-
 %
 \declareconstitemNEW{PMIX_ERR_PROC_TERM_WO_SYNC}
 Process terminated without calling \refapi{PMIx_Finalize}, or was a member of an assemblage formed via \refapi{PMIx_Connect} and terminated or called \refapi{PMIx_Finalize} without first calling \refapi{PMIx_Disconnect} (or its non-blocking form) from that assemblage.
+%
+\end{constantdesc}
 
 The following constants may be included via the
 \refattr{PMIX_JOB_TERM_STATUS} attributed in the \refarg{info} array in the
 \refconst{PMIX_EVENT_JOB_END} event notification to provide more detailed
 information regarding the reason for job abnormal termination:
 
+\begin{constantdesc}
+%
 \declareconstitemNEW{PMIX_ERR_JOB_CANCELED}
-The job was canceled by the host environment
+The job was canceled by the host environment.
 %
 \declareconstitemNEW{PMIX_ERR_JOB_ABORTED}
-One or more processes in the job called abort, causing the job to be terminated
+One or more processes in the job called abort, causing the job to be terminated.
 %
 \declareconstitemNEW{PMIX_ERR_JOB_KILLED_BY_CMD}
-The job was killed by user command
+The job was killed by user command.
 %
 \declareconstitemNEW{PMIX_ERR_JOB_ABORTED_BY_SIG}
-The job was aborted due to receipt of an error signal (e.g., SIGKILL)
+The job was aborted due to receipt of an error signal (e.g., SIGKILL).
 %
 \declareconstitemNEW{PMIX_ERR_JOB_TERM_WO_SYNC}
 The job was terminated due to at least one process terminating without calling \refapi{PMIx_Finalize}, or was a member of an assemblage formed via \refapi{PMIx_Connect} and terminated or called \refapi{PMIx_Finalize} without first calling \refapi{PMIx_Disconnect} (or its non-blocking form) from that assemblage.
 %
 \declareconstitemNEW{PMIX_ERR_JOB_SENSOR_BOUND_EXCEEDED}
-The job was terminated due to one or more processes exceeding a specified sensor limit
+The job was terminated due to one or more processes exceeding a specified sensor limit.
 %
 \declareconstitemNEW{PMIX_ERR_JOB_NON_ZERO_TERM}
-The job was terminated due to one or more processes exiting with a non-zero status
+The job was terminated due to one or more processes exiting with a non-zero status.
 %
 \declareconstitemNEW{PMIX_ERR_JOB_ABORTED_BY_SYS_EVENT}
-The job was aborted due to receipt of a system event
-
+The job was aborted due to receipt of a system event.
+%
 \end{constantdesc}
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Job lifecycle attributes}
 
 \declareAttribute{PMIX_JOB_TERM_STATUS}{"pmix.job.term.status"}{pmix_status_t}{
 Status returned by job upon its termination. The status will be communicated as part of a \ac{PMIx} event payload provided by the host environment upon termination of a job. Note that generation of the \refconst{PMIX_EVENT_JOB_END} event is optional and host environments may choose to provide it only upon request.
 }
-
 %
 \declareAttribute{PMIX_PROC_STATE_STATUS}{"pmix.proc.state"}{pmix_proc_state_t}{
 State of the specified process as of the last report - may not be the actual current state based on update rate.
 }
-
+%
 \declareAttribute{PMIX_PROC_TERM_STATUS}{"pmix.proc.term.status"}{pmix_status_t}{
 Status returned by a process upon its termination. The status will be communicated as part of a \ac{PMIx} event payload provided by the host environment upon termination of a process. Note that generation of the \refconst{PMIX_EVENT_PROC_TERMINATED} event is optional and host environments may choose to provide it only upon request.
 }
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Debugger-related constants}
 \label{api:tools:attributes:dbgconst}
 
 The following constants are used in events used to coordinate applications and the debuggers attaching to them.
 
 \begin{constantdesc}
-
 %
 \declareconstitemNEW{PMIX_DEBUG_WAITING_FOR_NOTIFY}
 All processes in the job to be debugged are paused waiting for a release at some point within the application. The application shall remain in a paused
 state awaiting release until receipt of the \refconst{PMIX_DEBUGGER_RELEASE}.
-
-
+%
 \declareconstitemNEW{PMIX_DEBUGGER_RELEASE}
 Release processes that are paused at the \refattr{PMIX_DEBUG_WAIT_FOR_NOTIFY}
 point in the target application.
-
+%
 \end{constantdesc}
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Debugger attributes}
 \label{api:struct:attributes:debugger}
 
@@ -1022,35 +989,29 @@ Attributes used to assist debuggers - these are values that can either be passed
 
 %
 \declareAttribute{PMIX_DEBUG_STOP_ON_EXEC}{"pmix.dbg.exec"}{bool}{
-Included in either the \emph{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the application is being spawned under a debugger, and that the local launch agent is to pause the resulting application processes on first instruction for debugger attach. The launcher (\ac{RM} or \ac{IL}) is to generate the \refconst{PMIX_LAUNCH_COMPLETE} event when all processes are stopped at the exec point.
+Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the application is being spawned under a debugger, and that the local launch agent is to pause the resulting application processes on first instruction for debugger attach. The launcher (\ac{RM} or \ac{IL}) is to generate the \refconst{PMIX_LAUNCH_COMPLETE} event when all processes are stopped at the exec point.
 }
-
 %
 \declareAttribute{PMIX_DEBUG_STOP_IN_INIT}{"pmix.dbg.init"}{bool}{
-Included in either the \emph{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The \ac{PMIx} client library in each resulting application process shall notify its \ac{PMIx} server that it is pausing and then pause during \refapi{PMIx_Init} of the spawned processes until receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event when all processes have reached the pause point.
+Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The \ac{PMIx} client library in each resulting application process shall notify its \ac{PMIx} server that it is pausing and then pause during \refapi{PMIx_Init} of the spawned processes until receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event when all processes have reached the pause point.
 }
-
 %
 \declareAttribute{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
-Included in either the \emph{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The resulting application processes are to notify their server (by generating
+Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The resulting application processes are to notify their server (by generating
 the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event) when they reach some application-determined location and pause at that point until receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event when all processes have indicated they are at the pause point.
 }
-
 %
 \declareAttributeNEW{PMIX_DEBUG_TARGET}{"pmix.dbg.tgt"}{pmix_proc_t*}{
 Identifier of process(es) to be debugged - a rank of \refconst{PMIX_RANK_WILDCARD} indicates that all processes in the specified namespace are to be included.
 }
-
 %
 \declareAttribute{PMIX_DEBUGGER_DAEMONS}{"pmix.debugger"}{bool}{
-Included in the \emph{info} array of a \refstruct{pmix_app_t}, this attribute declares that the application consists of debugger daemons and shall be governed accordingly. If used as the sole \refstruct{pmix_app_t} in a \refapi{PMIx_Spawn} request, then the \refattr{PMIX_DEBUG_TARGET} attribute must also be provided (in either the \emph{job_info} or in the \emph{info} array of the \refstruct{pmix_app_t}) to identify the namespace to be debugged so that the launcher can determine where to place the spawned daemons. If neither \refattr{PMIX_DEBUG_DAEMONS_PER_PROC} nor \refattr{PMIX_DEBUG_DAEMONS_PER_NODE} is specified, then the launcher shall default to a placement policy of one daemon per process in the target job.
+Included in the \refstruct{pmix_info_t} array of a \refstruct{pmix_app_t}, this attribute declares that the application consists of debugger daemons and shall be governed accordingly. If used as the sole \refstruct{pmix_app_t} in a \refapi{PMIx_Spawn} request, then the \refattr{PMIX_DEBUG_TARGET} attribute must also be provided (in either the \emph{job_info} or in the \emph{info} array of the \refstruct{pmix_app_t}) to identify the namespace to be debugged so that the launcher can determine where to place the spawned daemons. If neither \refattr{PMIX_DEBUG_DAEMONS_PER_PROC} nor \refattr{PMIX_DEBUG_DAEMONS_PER_NODE} is specified, then the launcher shall default to a placement policy of one daemon per process in the target job.
 }
-
 %
 \declareAttribute{PMIX_COSPAWN_APP}{"pmix.cospawn"}{bool}{
 Designated application is to be spawned as a disconnected job - i.e., the launcher shall not include the application in any of the job-level values (e.g., \refattr{PMIX_RANK} within the job) provided to any other application process generated by the same spawn request. Typically used to cospawn debugger daemons alongside an application.
 }
-
 %
 \declareAttributeNEW{PMIX_DEBUG_DAEMONS_PER_PROC}{"pmix.dbg.dpproc"}{uint16_t}{
 Number of debugger daemons to be spawned per application process. The launcher
@@ -1060,7 +1021,6 @@ self-determining their specific target process(es) - e.g., by referencing
 their own \refattr{PMIX_LOCAL_RANK} in the daemon debugger job versus the
 corresponding \refattr{PMIX_LOCAL_RANK} of the target processes on the node.
 }
-
 %
 \declareAttributeNEW{PMIX_DEBUG_DAEMONS_PER_NODE}{"pmix.dbg.dpnd"}{uint16_t}{
 Number of debugger daemons to be spawned on each node where the target job is
@@ -1070,33 +1030,33 @@ job-level information. The debugger daemons spawned on a given node are
 responsible for self-determining their specific target process(es) - e.g., by
 referencing their own \refattr{PMIX_LOCAL_RANK} in the daemon debugger job
 versus the corresponding \refattr{PMIX_LOCAL_RANK} of the target processes on
-the node. }
-
+the node.
+}
 %
 \declareAttribute{PMIX_QUERY_PROC_TABLE}{"pmix.qry.ptable"}{char*}{
 Returns a (\refstruct{pmix_data_array_t}) array of \refstruct{pmix_proc_info_t}, one entry for each process in the specified namespace, ordered by process job rank. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose process table is being queried.
 }
-
 %
 \declareAttribute{PMIX_QUERY_LOCAL_PROC_TABLE}{"pmix.qry.lptable"}{char*}{
 Returns a (\refstruct{pmix_data_array_t}) array of \refstruct{pmix_proc_info_t}, one entry for each process in the specified namespace executing on the same node as the requester, ordered by process job rank. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose local process table is being queried. OPTIONAL QUALIFIER: \refattr{PMIX_HOSTNAME} indicating the host whose local process table is being queried. By default, the query assumes that the host upon which the request was made is to be used.
 }
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Tool-Specific APIs}
 \label{chap:api_tools:apis}
 
 \ac{PMIx}-based tools automatically have access to all \ac{PMIx} client functions. Tools designated as a \emph{launcher} or a \emph{server} will also have access to all \ac{PMIx} server functions. There are, however, an additional set of functions (described in this section) that are specific to a \ac{PMIx} tool. Access to those functions require use of the tool initialization routine.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_tool_init}}
 \declareapi{PMIx_tool_init}
 
 %%%%
 \summary
 
-Initialize the \ac{PMIx} library for operating as a tool, optionally connecting to a specified \ac{PMIx} server
+Initialize the \ac{PMIx} library for operating as a tool, optionally connecting to a specified \ac{PMIx} server.
 
 %%%%
 \format
@@ -1106,7 +1066,7 @@ Initialize the \ac{PMIx} library for operating as a tool, optionally connecting 
 \begin{codepar}
 pmix_status_t
 PMIx_tool_init(pmix_proc_t *proc,
-               pmix_info_t info[], size_t ninfo)
+               pmix_info_t info[], size_t ninfo);
 \end{codepar}
 \cspecificend
 
@@ -1171,7 +1131,7 @@ In all other cases, the \ac{PMIx} tool library will automatically attempt to con
 Note that the \ac{PMIx} tool library is referenced counted, and so multiple calls to \refapi{PMIx_tool_init} are allowed. If the tool is not connected to any server when this \ac{API} is called, then the tool will attempt to connect to a server unless the \refattr{PMIX_TOOL_DO_NOT_CONNECT} is included in the call to \ac{API}.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_tool_finalize}}
 \declareapi{PMIx_tool_finalize}
 
@@ -1187,7 +1147,7 @@ Finalize the \ac{PMIx} tool library.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_tool_finalize(void)
+PMIx_tool_finalize(void);
 \end{codepar}
 \cspecificend
 
@@ -1204,7 +1164,7 @@ detecting loss of the connection, the \ac{PMIx} server shall cleanup all
 associated records of the tool.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_tool_disconnect}}
 \declareapi{PMIx_tool_disconnect}
 
@@ -1220,7 +1180,7 @@ Disconnect the \ac{PMIx} tool from the specified server connection while leaving
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_tool_disconnect(pmix_proc_t *server)
+PMIx_tool_disconnect(pmix_proc_t *server);
 \end{codepar}
 \cspecificend
 
@@ -1241,7 +1201,7 @@ associated records of the tool.
 Note that if the server being disconnected is the current \emph{primary} server, then all operations requiring support from a server will return the \refconst{PMIX_ERR_UNREACH} error until the tool either designates an existing connection to be the \emph{primary} server or, if no other connections exist, the tool establishes a connection to a \ac{PMIx} server.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_tool_attach_to_server}}
 \declareapi{PMIx_tool_attach_to_server}
 
@@ -1257,8 +1217,10 @@ Establish a connection to a \ac{PMIx} server.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_tool_attach_to_server(pmix_proc_t *proc, pmix_proc_t *server,
-                           pmix_info_t info[], size_t ninfo)
+PMIx_tool_attach_to_server(pmix_proc_t *proc,
+                           pmix_proc_t *server,
+                           pmix_info_t info[],
+                           size_t ninfo);
 \end{codepar}
 \cspecificend
 
@@ -1308,7 +1270,7 @@ Some \ac{PMIx} implementations may not support connecting to a server that is no
 \adviceuserend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_tool_get_servers}}
 \declareapi{PMIx_tool_get_servers}
 
@@ -1324,7 +1286,7 @@ Get an array containing the \refstruct{pmix_proc_t} process identifiers of all s
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_tool_get_servers(pmix_proc_t *servers[], size_t *nservers)
+PMIx_tool_get_servers(pmix_proc_t *servers[], size_t *nservers);
 \end{codepar}
 \cspecificend
 
@@ -1341,7 +1303,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 Return an array containing the \refstruct{pmix_proc_t} process identifiers of all servers to which the tool is currently connected. The process identifier of the current primary server shall be the first entry in the array, with the remaining entries in order of attachment from earliest to most recent.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_tool_set_server}}
 \declareapi{PMIx_tool_set_server}
 
@@ -1357,7 +1319,7 @@ Designate a server as the tool's \emph{primary} server.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_tool_set_server(pmix_proc_t *server)
+PMIx_tool_set_server(pmix_proc_t *server);
 \end{codepar}
 \cspecificend
 
@@ -1373,7 +1335,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 Designate the specified server to be the tool's \emph{primary} server for all subsequent \ac{API} calls.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_IOF_pull}}
 \declareapi{PMIx_IOF_pull}
 
@@ -1391,8 +1353,10 @@ Register to receive output forwarded from a set of remote processes.
 pmix_status_t
 PMIx_IOF_pull(const pmix_proc_t procs[], size_t nprocs,
               const pmix_info_t directives[], size_t ndirs,
-              pmix_iof_channel_t channel, pmix_iof_cbfunc_t cbfunc,
-              pmix_hdlr_reg_cbfunc_t regcbfunc, void *regcbdata)
+              pmix_iof_channel_t channel,
+              pmix_iof_cbfunc_t cbfunc,
+              pmix_hdlr_reg_cbfunc_t regcbfunc,
+              void *regcbdata);
 \end{codepar}
 \cspecificend
 
@@ -1439,7 +1403,7 @@ Providing a \code{NULL} function pointer for the \refarg{cbfunc} parameter will 
 \adviceuserend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_IOF_deregister}}
 \declareapi{PMIx_IOF_deregister}
 
@@ -1457,7 +1421,7 @@ Deregister from output forwarded from a set of remote processes.
 pmix_status_t
 PMIx_IOF_deregister(size_t iofhdlr,
                     const pmix_info_t directives[], size_t ndirs,
-                    pmix_op_cbfunc_t cbfunc, void *cbdata)
+                    pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -1487,7 +1451,7 @@ Any currently buffered \ac{IO} should be flushed upon receipt of a deregistratio
 \adviceimplend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_IOF_push}}
 \declareapi{PMIx_IOF_push}
 
@@ -1506,7 +1470,7 @@ pmix_status_t
 PMIx_IOF_push(const pmix_proc_t targets[], size_t ntargets,
               pmix_byte_object_t *bo,
               const pmix_info_t directives[], size_t ndirs,
-              pmix_op_cbfunc_t cbfunc, void *cbdata)
+              pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -1525,8 +1489,8 @@ Returns one of the following:
 
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
 
 \reqattrstart
@@ -1561,3 +1525,5 @@ Called either to:
 \adviceuserstart
 Execution of the \refarg{cbfunc} callback function serves as notice that the \ac{PMIx} library no longer requires the caller to maintain the \refarg{bo} data object - it does \textit{not} indicate delivery of the payload to the targets. Use of \refconst{PMIX_RANK_WILDCARD} to specify all processes in a given namespace is supported but should be used carefully due to bandwidth and memory footprint considerations.
 \adviceuserend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

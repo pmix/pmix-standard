@@ -9,17 +9,19 @@ While the \ac{PMIx} Standard is defined in terms of C-based \acp{API}, there is 
 Note: the \ac{PMIx} \acp{API} have been loosely collected into three Python classes based on their \ac{PMIx} “class” (i.e., client, server, and tool). All processes have access to a basic set of the \acp{API}, and therefore those have been included in the “client” class. Servers can utilize any of those functions plus a set focused on operations not commonly executed by an application process. Finally, tools can also act as servers but have their own initialization function.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Design Considerations}
 \label{app:python:design}
 
 Several issues arose during design of the Python bindings:
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Error Codes vs Python Exceptions}
 \label{app:python:exceptions}
 
 The C programming language reports errors through the return of the corresponding integer status codes. \ac{PMIx} has defined a range of negative values for this purpose. However, Python has the option of raising \emph{exceptions} that effectively operate as interrupts that can be trapped if the program appropriately tests for them. The \ac{PMIx} Python bindings opted to follow the C-based standard and return \ac{PMIx} status codes in lieu of raising exceptions as this method was considered more consistent for those working in both domains.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Representation of Structured Data}
 \label{app:python:rep}
 
@@ -92,9 +94,11 @@ Table~\ref{app:python:ctopy} lists the correspondence between datatypes in the t
 \end{small}
 \end{landscape}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Example}
 Converting a C-based program to its Python equivalent requires translation of the relevant datatypes as well as use of the appropriate \ac{API} form. An example small program may help illustrate the changes. Consider the following C-based program snippet:
 
+\cspecificstart
 \begin{codepar}
 
 #include <pmix.h>
@@ -109,13 +113,13 @@ rc = PMIx_Init(&myproc, info, 2);
 
 PMIX_INFO_DESTRUCT(&info[0]);  // free the copied string
 PMIX_INFO_DESTRUCT(&info[1]);  // free the copied string
-
 \end{codepar}
+\cspecificend
 
 Moving to the Python version requires that the \refstruct{pmix_info_t} be translated to the Python \refpy{info} equivalent, and that the returned information be captured in the return parameters as opposed to a pointer parameter in the function call, as shown below:
 
+\pyspecificstart
 \begin{codepar}
-
 import pmix
 ...
 
@@ -125,16 +129,18 @@ info = [\{'key':PMIX_PROGRAMMING_MODEL,
         \{'key':PMIX_MODEL_LIBRARY_NAME,
           'value':'PMIX', 'val_type':PMIX_STRING\}]
 (rc,myproc) = myclient.init(info)
-
 \end{codepar}
+\pyspecificend
 
 Note the use of the \refconst{PMIX_STRING} identifier to ensure the Python bindings interpret the provided string value as a \ac{PMIx} "string" and not an array of bytes.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Callback Function Definitions}
 \label{app:python:fns}
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{IOF Delivery Function}
 \pylabel{iofcbfunc}
 
@@ -167,7 +173,7 @@ Returns: nothing
 See \refapi{pmix_iof_cbfunc_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Event Handler}
 \pylabel{evhandler}
 
@@ -204,13 +210,14 @@ Returns:
 See \refapi{pmix_notification_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server Module Functions}
 \pylabel{server module}
 
 The following definitions represent functions that may be provided to the \ac{PMIx} server library at time of initialization for servicing of client requests. Module functions that are not provided default to returning "not supported" to the caller.
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Client Connected}
 
 %%%%
@@ -240,7 +247,8 @@ Returns:
 
 See \refapi{pmix_server_client_connected2_fn_t} for details
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Client Finalized}
 
 %%%%
@@ -267,7 +275,7 @@ Returns: nothing
 See \refapi{pmix_server_client_finalized_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Client Aborted}
 
 %%%%
@@ -303,7 +311,7 @@ Returns:
 See \refapi{pmix_server_abort_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Fence}
 
 %%%%
@@ -338,7 +346,8 @@ Returns:
 
 See \refapi{pmix_server_fencenb_fn_t} for details
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Direct Modex}
 
 %%%%
@@ -372,7 +381,8 @@ Returns:
 
 See \refapi{pmix_server_dmodex_req_fn_t} for details
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Publish}
 
 %%%%
@@ -406,7 +416,7 @@ Returns:
 See \refapi{pmix_server_publish_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Lookup}
 
 %%%%
@@ -442,7 +452,7 @@ Returns:
 See \refapi{pmix_server_lookup_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Unpublish}
 
 %%%%
@@ -477,7 +487,7 @@ Returns:
 See \refapi{pmix_server_unpublish_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Spawn}
 
 %%%%
@@ -513,7 +523,7 @@ Returns:
 See \refapi{pmix_server_spawn_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Connect}
 
 %%%%
@@ -547,7 +557,7 @@ Returns:
 See \refapi{pmix_server_connect_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Disconnect}
 
 %%%%
@@ -581,7 +591,7 @@ Returns:
 See \refapi{pmix_server_disconnect_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Register Events}
 
 %%%%
@@ -615,7 +625,7 @@ Returns:
 See \refapi{pmix_server_register_events_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Deregister Events}
 
 %%%%
@@ -648,7 +658,7 @@ Returns:
 See \refapi{pmix_server_deregister_events_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Notify Event}
 
 %%%%
@@ -684,7 +694,7 @@ Returns:
 See \refapi{pmix_server_notify_event_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Query}
 
 %%%%
@@ -719,7 +729,7 @@ Returns:
 See \refapi{pmix_server_query_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Tool Connected}
 
 %%%%
@@ -753,7 +763,7 @@ Returns:
 See \refapi{pmix_server_tool_connection_fn_t} for details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Log}
 
 %%%%
@@ -785,10 +795,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
 \end{itemize}
 
-See \refapi{pmix_server_log_fn_t} for details
+See \refapi{pmix_server_log_fn_t} for details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Allocate Resources}
 
 %%%%
@@ -821,10 +831,10 @@ Returns:
     \item refarg{info} - List of Python \refpy{info} containing results of requested operation (list)
 \end{itemize}
 
-See \refapi{pmix_server_alloc_fn_t} for details
+See \refapi{pmix_server_alloc_fn_t} for details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Job Control}
 
 %%%%
@@ -856,10 +866,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
 \end{itemize}
 
-See \refapi{pmix_server_job_control_fn_t} for details
+See \refapi{pmix_server_job_control_fn_t} for details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Monitor}
 
 %%%%
@@ -892,16 +902,16 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
 \end{itemize}
 
-See \refapi{pmix_server_monitor_fn_t} for details
+See \refapi{pmix_server_monitor_fn_t} for details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Get Credential}
 
 %%%%
 \summary
 
-Request a credential from the host environment
+Request a credential from the host environment.
 
 %%%%
 \format
@@ -928,10 +938,10 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing any additional info about the credential (list)
 \end{itemize}
 
-See \refapi{pmix_server_get_cred_fn_t} for details
+See \refapi{pmix_server_get_cred_fn_t} for details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Validate Credential}
 
 %%%%
@@ -964,10 +974,10 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing any additional info from the credential (list)
 \end{itemize}
 
-See \refapi{pmix_server_validate_cred_fn_t} for details
+See \refapi{pmix_server_validate_cred_fn_t} for details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{IO Forward}
 
 %%%%
@@ -999,10 +1009,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
 \end{itemize}
 
-See \refapi{pmix_server_iof_fn_t} for details
+See \refapi{pmix_server_iof_fn_t} for details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{IO Push}
 
 %%%%
@@ -1035,10 +1045,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a \ac{PMIx} error code indicating the operation failed (integer)
 \end{itemize}
 
-See \refapi{pmix_server_stdin_fn_t} for details
+See \refapi{pmix_server_stdin_fn_t} for details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Group Operations}
 
 %%%%
@@ -1072,10 +1082,10 @@ Returns:
     \item refarg{info} - List of Python \refpy{info} containing results of requested operation (list)
 \end{itemize}
 
-See \refapi{pmix_server_grp_fn_t} for details
+See \refapi{pmix_server_grp_fn_t} for details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Fabric Operations}
 
 %%%%
@@ -1109,21 +1119,22 @@ Returns:
     \item refarg{info} - List of Python \refpy{info} containing results of requested operation (list)
 \end{itemize}
 
-See \refapi{pmix_server_fabric_fn_t} for details
+See \refapi{pmix_server_fabric_fn_t} for details.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{PMIxClient}
 \label{app:python:client}
 
 The client Python class is by far the richest in terms of \acp{API} as it houses all the \acp{API} that an application might utilize. Due to the datatype translation requirements of the C-Python interface, only the blocking form of each \ac{API} is supported – providing a Python callback function directly to the C interface underlying the bindings was not a supportable option.
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.init}
 \declareapibinding{PMIxClient.init}{PMIx_Init}{Python}
 
-\summary Initialize the \ac{PMIx} client library after obtaining a new PMIxClient object
+\summary Initialize the \ac{PMIx} client library after obtaining a new PMIxClient object.
 
 \format
 
@@ -1147,9 +1158,10 @@ Returns:
 \end{itemize}
 
 
-See \refapi{PMIx_Init} for description of all relevant attributes and behaviors
+See \refapi{PMIx_Init} for description of all relevant attributes and behaviors.
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.initialized}
 \declareapibinding{PMIxClient.initialized}{PMIx_Initialized}{Python}
 
@@ -1162,8 +1174,6 @@ rc = myclient.initialized()
 \end{codepar}
 \pyspecificend
 
-
-
 Returns:
 
 \begin{itemize}
@@ -1171,10 +1181,10 @@ Returns:
 
 \end{itemize}
 
+See \refapi{PMIx_Initialized} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Initialized} for description of all relevant attributes and behaviors
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.get_version}
 \declareapibinding{PMIxClient.get_version}{PMIx_Get_version}{Python}
 
@@ -1187,8 +1197,6 @@ vers = myclient.get_version()
 \end{codepar}
 \pyspecificend
 
-
-
 Returns:
 
 \begin{itemize}
@@ -1196,10 +1204,10 @@ Returns:
 
 \end{itemize}
 
+See \refapi{PMIx_Get_version} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Get_version} for description of all relevant attributes and behaviors
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.finalize}
 \declareapibinding{PMIxClient.finalize}{PMIx_Finalize}{Python}
 
@@ -1228,18 +1236,17 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Finalize} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Finalize} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.abort}
 \declareapibinding{PMIxClient.abort}{PMIx_Abort}{Python}
 
 %%%%
 \summary
 
-Request that the provided list of procs be aborted
+Request that the provided list of processes be aborted.
 
 %%%%
 \format
@@ -1263,11 +1270,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Abort} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Abort} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.store_internal}
 \declareapibinding{PMIxClient.store_internal}{PMIx_Store_internal}{Python}
 
@@ -1298,11 +1304,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Store_internal} for details.
 
-See \refapi{PMIx_Store_internal} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.put}
 \declareapibinding{PMIxClient.put}{PMIx_Put}{Python}
 
@@ -1333,11 +1338,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Put} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Put} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.commit}
 \declareapibinding{PMIxClient.commit}{PMIx_Commit}{Python}
 
@@ -1362,18 +1366,17 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Commit} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Commit} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.fence}
 \declareapibinding{PMIxClient.fence}{PMIx_Fence}{Python}
 
 %%%%
 \summary
 
-Execute a blocking barrier across the processes identified in the specified list
+Execute a blocking barrier across the processes identified in the specified list.
 
 %%%%
 \format
@@ -1396,18 +1399,17 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Fence} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Fence} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.get}
 \declareapibinding{PMIxClient.get}{PMIx_Get}{Python}
 
 %%%%
 \summary
 
-Retrieve a key/value pair
+Retrieve a key/value pair.
 
 %%%%
 \format
@@ -1432,11 +1434,10 @@ Returns:
     \item \refarg{val} - Python \refpy{value} containing the returned data (dict)
 \end{itemize}
 
+See \refapi{PMIx_Get} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Get} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.publish}
 \declareapibinding{PMIxClient.publish}{PMIx_Publish}{Python}
 
@@ -1465,12 +1466,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
-
-See \refapi{PMIx_Publish} for description of all relevant attributes and behaviors
-
+See \refapi{PMIx_Publish} for description of all relevant attributes and behaviors.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.lookup}
 \declareapibinding{PMIxClient.lookup}{PMIx_Lookup}{Python}
 
@@ -1501,11 +1500,10 @@ Returns:
     \item \refarg{info} - Python list of \refpy{info} containing the returned data (list)
 \end{itemize}
 
+See \refapi{PMIx_Lookup} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Lookup} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.unpublish}
 \declareapibinding{PMIxClient.unpublish}{PMIx_Unpublish}{Python}
 
@@ -1535,11 +1533,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Unpublish} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Unpublish} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.spawn}
 \declareapibinding{PMIxClient.spawn}{PMIx_Spawn}{Python}
 
@@ -1570,11 +1567,10 @@ Returns:
     \item \refarg{nspace} - Python \refpy{nspace} of the new job (dict)
 \end{itemize}
 
+See \refapi{PMIx_Spawn} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Spawn} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.connect}
 \declareapibinding{PMIxClient.connect}{PMIx_Connect}{Python}
 
@@ -1604,11 +1600,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Connect} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Connect} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.disconnect}
 \declareapibinding{PMIxClient.disconnect}{PMIx_Disconnect}{Python}
 
@@ -1638,11 +1633,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Disconnect} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Disconnect} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.resolve_peers}
 \declareapibinding{PMIxClient.resolve_peers}{PMIx_Resolve_peers}{Python}
 
@@ -1673,11 +1667,10 @@ Returns:
     \item \refarg{procs} - List of Python \refpy{proc} dictionaries (list)
 \end{itemize}
 
+See \refapi{PMIx_Resolve_peers} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Resolve_peers} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.resolve_nodes}
 \declareapibinding{PMIxClient.resolve_nodes}{PMIx_Resolve_nodes}{Python}
 
@@ -1707,18 +1700,17 @@ Returns:
     \item \refarg{nodes} - List of Python string node names (list)
 \end{itemize}
 
+See \refapi{PMIx_Resolve_nodes} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Resolve_nodes} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.query}
 \declareapibinding{PMIxClient.query}{PMIx_Query_info_nb}{Python}
 
 %%%%
 \summary
 
-Query information about the system in general
+Query information about the system in general.
 
 %%%%
 \format
@@ -1741,18 +1733,17 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the query (list)
 \end{itemize}
 
+See \refapi{PMIx_Query_info_nb} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Query_info_nb} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.log}
 \declareapibinding{PMIxClient.log}{PMIx_Log}{Python}
 
 %%%%
 \summary
 
-Log data to a central data service/store
+Log data to a central data service/store.
 
 %%%%
 \format
@@ -1775,11 +1766,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Log} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Log} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.allocate}
 \declareapibinding{PMIxClient.allocate}{PMIx_Allocation_request_nb}{Python}
 
@@ -1810,18 +1800,17 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
 \end{itemize}
 
+See \refapi{PMIx_Allocation_request_nb} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Allocation_request_nb} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.job_ctrl}
 \declareapibinding{PMIxClient.job_ctrl}{PMIx_Job_control_nb}{Python}
 
 %%%%
 \summary
 
-Request a job control action
+Request a job control action.
 
 %%%%
 \format
@@ -1845,18 +1834,17 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
 \end{itemize}
 
+See \refapi{PMIx_Job_control_nb} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Job_control_nb} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.monitor}
 \declareapibinding{PMIxClient.monitor}{PMIx_Process_monitor_nb}{Python}
 
 %%%%
 \summary
 
-Request that something be monitored
+Request that something be monitored.
 
 %%%%
 \format
@@ -1881,18 +1869,17 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
 \end{itemize}
 
+See \refapi{PMIx_Process_monitor_nb} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Process_monitor_nb} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.get_credential}
 \declareapibinding{PMIxClient.get_credential}{PMIx_Get_credential}{Python}
 
 %%%%
 \summary
 
-Request a credential from the PMIx server/SMS
+Request a credential from the PMIx server/SMS.
 
 %%%%
 \format
@@ -1915,18 +1902,17 @@ Returns:
     \item \refarg{cred} - Python \refpy{byteobject} containing returned credential (dict)
 \end{itemize}
 
+See \refapi{PMIx_Get_credential} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Get_credential} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.validate_credential}
 \declareapibinding{PMIxClient.validate_credential}{PMIx_Validate_credential}{Python}
 
 %%%%
 \summary
 
-Request validation of a credential by the PMIx server/SMS
+Request validation of a credential by the PMIx server/SMS.
 
 %%%%
 \format
@@ -1950,11 +1936,10 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing additional results of the request (list)
 \end{itemize}
 
+See \refapi{PMIx_Validate_credential} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Validate_credential} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.group_construct}
 \declareapibinding{PMIxClient.group_construct}{PMIx_Group_construct}{Python}
 
@@ -1962,7 +1947,7 @@ See \refapi{PMIx_Validate_credential} for description of all relevant attributes
 \summary
 
 Construct a new group composed of the specified processes and identified with
-the provided group identifier
+the provided group identifier.
 
 %%%%
 \format
@@ -1988,18 +1973,17 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
 \end{itemize}
 
+See \refapi{PMIx_Group_construct} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Group_construct} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.group_invite}
 \declareapibinding{PMIxClient.group_invite}{PMIx_Group_invite}{Python}
 
 %%%%
 \summary
 
-Explicitly invite specified processes to join a group
+Explicitly invite specified processes to join a group.
 
 %%%%
 \format
@@ -2025,18 +2009,17 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
 \end{itemize}
 
+See \refapi{PMIx_Group_invite} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Group_invite} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.group_join}
 \declareapibinding{PMIxClient.group_join}{PMIx_Group_join}{Python}
 
 %%%%
 \summary
 
-Respond to an invitation to join a group that is being asynchronously constructed
+Respond to an invitation to join a group that is being asynchronously constructed.
 
 %%%%
 \format
@@ -2064,18 +2047,17 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
 \end{itemize}
 
+See \refapi{PMIx_Group_join} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Group_join} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.group_leave}
 \declareapibinding{PMIxClient.group_leave}{PMIx_Group_leave}{Python}
 
 %%%%
 \summary
 
-Leave a PMIx Group
+Leave a PMIx Group.
 
 %%%%
 \format
@@ -2098,18 +2080,17 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Group_leave} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Group_leave} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.group_destruct}
 \declareapibinding{PMIxClient.group_destruct}{PMIx_Group_destruct}{Python}
 
 %%%%
 \summary
 
-Destruct a PMIx Group
+Destruct a PMIx Group.
 
 %%%%
 \format
@@ -2132,11 +2113,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Group_destruct} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Group_destruct} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.register_event_handler}
 \declareapibinding{PMIxClient.register_event_handler}{PMIx_Register_event_handler}{Python}
 
@@ -2169,18 +2149,17 @@ Returns:
     \item \refarg{id} - \ac{PMIx} reference identifier for handler (integer)
 \end{itemize}
 
+See \refapi{PMIx_Register_event_handler} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_Register_event_handler} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.deregister_event_handler}
 \declareapibinding{PMIxClient.deregister_event_handler}{PMIx_Deregister_event_handler}{Python}
 
 %%%%
 \summary
 
-Deregister an event handler
+Deregister an event handler.
 
 %%%%
 \format
@@ -2198,10 +2177,10 @@ myclient.deregister_event_handler(id:integer)
 
 Returns: None
 
-See \refapi{PMIx_Deregister_event_handler} for description of all relevant attributes and behaviors
+See \refapi{PMIx_Deregister_event_handler} for description of all relevant attributes and behaviors.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.notify_event}
 \declareapibinding{PMIxClient.notify_event}{PMIx_Notify_event}{Python}
 
@@ -2233,10 +2212,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
-See \refapi{PMIx_Notify_event} for description of all relevant attributes and behaviors
+See \refapi{PMIx_Notify_event} for description of all relevant attributes and behaviors.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.fabric_register}
 \declareapibinding{PMIxClient.fabric_register}{PMIx_Fabric_register}{Python}
 
@@ -2265,11 +2244,10 @@ Returns:
     \item \refarg{fabricinfo} - List of Python \refpy{info} containing fabric info (list)
 \end{itemize}
 
+See \refapi{PMIx_Fabric_register} for details.
 
-See \refapi{PMIx_Fabric_register} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.fabric_update}
 \declareapibinding{PMIxClient.fabric_update}{PMIx_Fabric_update}{Python}
 
@@ -2297,16 +2275,15 @@ Returns:
     \item \refarg{fabricinfo} - List of Python \refpy{info} containing updated fabric info (list)
 \end{itemize}
 
+See \refapi{PMIx_Fabric_update} for details.
 
-See \refapi{PMIx_Fabric_update} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.fabric_deregister}
 \declareapibinding{PMIxClient.fabric_deregister}{PMIx_Fabric_deregister}{Python}
 
 \summary
-Deregister fabric
+Deregister fabric.
 
 \format
 
@@ -2328,11 +2305,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Fabric_deregister} for details.
 
-See \refapi{PMIx_Fabric_deregister} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.fabric_get_vertex_info}
 \declareapibinding{PMIxClient.fabric_get_vertex_info}{PMIx_Fabric_get_vertex_info}{Python}
 
@@ -2362,16 +2338,15 @@ Returns:
     \item \refarg{nicinfo} - List of Python \refpy{info} describing the referenced \ac{NIC} (list)
 \end{itemize}
 
+See \refapi{PMIx_Fabric_get_vertex_info} for details.
 
-See \refapi{PMIx_Fabric_get_vertex_info} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.fabric_get_device_index}
 \declareapibinding{PMIxClient.fabric_get_device_index}{PMIx_Fabric_get_device_index}{Python}
 
 \summary
-Given info describing a given vertex, return the corresponding communication cost matrix index
+Given info describing a given vertex, return the corresponding communication cost matrix index.
 
 \format
 
@@ -2394,16 +2369,15 @@ Returns:
     \item \refarg{index} - Index of corresponding \ac{NIC} (integer)
 \end{itemize}
 
+See \refapi{PMIx_Fabric_get_device_index} for details.
 
-See \refapi{PMIx_Fabric_get_device_index} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.load_topology}
 \declareapibinding{PMIxClient.load_topology}{PMIx_Load_topology}{Python}
 
 \summary
-Load the local hardware topology into the \ac{PMIx} library
+Load the local hardware topology into the \ac{PMIx} library.
 
 \format
 
@@ -2420,16 +2394,15 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Load_topology} for details - note that the topology loaded into the \ac{PMIx} library may be utilized by \ac{PMIx} and other libraries, but is not accessible by Python.
 
-See \refapi{PMIx_Load_topology} for details - note that the topology loaded into the \ac{PMIx} library may be utilized by \ac{PMIx} and other libraries, but is not accessible by Python
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.get_relative_locality}
 \declareapibinding{PMIxClient.get_relative_locality}{PMIx_Get_relative_locality}{Python}
 
 \summary
-Get the relative locality of two local processes
+Get the relative locality of two local processes.
 
 \format
 
@@ -2453,11 +2426,10 @@ Returns:
     \item \refarg{locality} - \refpy{locality} bitarray containing the relative locality of the two processes (bitarray)
 \end{itemize}
 
+See \refapi{PMIx_Get_relative_locality} for details.
 
-See \refapi{PMIx_Get_relative_locality} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.error_string}
 \declareapibinding{PMIxClient.error_string}{PMIx_Error_string}{Python}
 
@@ -2485,10 +2457,10 @@ Returns:
     \item \refarg{rep} - String representation of the provided status code (str)
 \end{itemize}
 
-See \refapi{PMIx_Error_string} for further details
+See \refapi{PMIx_Error_string} for further details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.proc_state_string}
 \declareapibinding{PMIxClient.proc_state_string}{PMIx_Proc_state_string}{Python}
 
@@ -2516,10 +2488,10 @@ Returns:
     \item \refarg{rep} - String representation of the provided process state (str)
 \end{itemize}
 
-See \refapi{PMIx_Proc_state_string} for further details
+See \refapi{PMIx_Proc_state_string} for further details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.scope_string}
 \declareapibinding{PMIxClient.scope_string}{PMIx_Scope_string}{Python}
 
@@ -2550,7 +2522,7 @@ Returns:
 See \refapi{PMIx_Scope_string} for further details
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.persistence_string}
 \declareapibinding{PMIxClient.persistence_string}{PMIx_Persistence_string}{Python}
 
@@ -2578,10 +2550,10 @@ Returns:
     \item \refarg{rep} - String representation of the provided persistence (str)
 \end{itemize}
 
-See \refapi{PMIx_Persistence_string} for further details
+See \refapi{PMIx_Persistence_string} for further details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.data_range_string}
 \declareapibinding{PMIxClient.data_range_string}{PMIx_Data_range_string}{Python}
 
@@ -2609,10 +2581,10 @@ Returns:
     \item \refarg{rep} - String representation of the provided data range (str)
 \end{itemize}
 
-See \refapi{PMIx_Data_range_string} for further details
+See \refapi{PMIx_Data_range_string} for further details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.info_directives_string}
 \declareapibinding{PMIxClient.info_directives_string}{PMIx_Info_directives_string}{Python}
 
@@ -2640,10 +2612,10 @@ Returns:
     \item \refarg{rep} - String representation of the provided info directives (str)
 \end{itemize}
 
-See \refapi{PMIx_Info_directives_string} for further details
+See \refapi{PMIx_Info_directives_string} for further details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.data_type_string}
 \declareapibinding{PMIxClient.data_type_string}{PMIx_Data_type_string}{Python}
 
@@ -2671,10 +2643,10 @@ Returns:
     \item \refarg{rep} - String representation of the provided datatype (str)
 \end{itemize}
 
-See \refapi{PMIx_Data_type_string} for further details
+See \refapi{PMIx_Data_type_string} for further details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.alloc_directive_string}
 \declareapibinding{PMIxClient.alloc_directive_string}{PMIx_Alloc_directive_string}{Python}
 
@@ -2702,10 +2674,10 @@ Returns:
     \item \refarg{rep} - String representation of the provided allocation directive (str)
 \end{itemize}
 
-See \refapi{PMIx_Alloc_directive_string} for further details
+See \refapi{PMIx_Alloc_directive_string} for further details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.iof_channel_string}
 \declareapibinding{PMIxClient.iof_channel_string}{PMIx_IOF_channel_string}{Python}
 
@@ -2733,10 +2705,10 @@ Returns:
     \item \refarg{rep} - String representation of the provided IOF channel (str)
 \end{itemize}
 
-See \refapi{PMIx_IOF_channel_string} for further details
+See \refapi{PMIx_IOF_channel_string} for further details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.job_state_string}
 \declareapibinding{PMIxClient.job_state_string}{PMIx_Job_state_string}{Python}
 
@@ -2764,11 +2736,10 @@ Returns:
     \item \refarg{rep} - String representation of the provided job state (str)
 \end{itemize}
 
-See \refapi{PMIx_Job_state_string} for further details
+See \refapi{PMIx_Job_state_string} for further details.
 
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.get_attribute_string}
 \declareapibinding{PMIxClient.get_attribute_string}{PMIx_Get_attribute_string}{Python}
 
@@ -2796,17 +2767,17 @@ Returns:
     \item \refarg{rep} - String representation of the provided attribute (str)
 \end{itemize}
 
-See \refapi{PMIx_Get_attribute_string} for further details
+See \refapi{PMIx_Get_attribute_string} for further details.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.get_attribute_name}
 \declareapibinding{PMIxClient.get_attribute_name}{PMIx_Get_attribute_name}{Python}
 
 %%%%
 \summary
 
-Pretty-print name of a \ac{PMIx} attribute corresponding to the provided string
+Pretty-print name of a \ac{PMIx} attribute corresponding to the provided string.
 
 %%%%
 \format
@@ -2827,11 +2798,10 @@ Returns:
     \item \refarg{rep} - Attribute name corresponding to the provided string (str)
 \end{itemize}
 
-See \refapi{PMIx_Get_attribute_name} for further details
+See \refapi{PMIx_Get_attribute_name} for further details.
 
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.link_state_string}
 \declareapibinding{PMIxClient.link_state_string}{PMIx_Link_state_string}{Python}
 
@@ -2859,22 +2829,22 @@ Returns:
     \item \refarg{rep} - String representation of the provided link state (str)
 \end{itemize}
 
-See \refapi{PMIx_Link_state_string} for further details
+See \refapi{PMIx_Link_state_string} for further details.
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{PMIxServer}
 \label{app:python:server}
 
 The server Python class inherits the Python "client" class as its parent. Thus, it includes all client functions in addition to the ones defined in this section.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.init}
 \declareapibinding{PMIxServer.init}{PMIx_server_init}{Python}
 
-\summary Initialize the \ac{PMIx} server library after obtaining a new PMIxServer object
+\summary Initialize the \ac{PMIx} server library after obtaining a new PMIxServer object.
 
 \format
 
@@ -2897,15 +2867,14 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_server_init} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_server_init} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.finalize}
 \declareapibinding{PMIxServer.finalize}{PMIx_server_finalize}{Python}
 
-\summary Finalize the \ac{PMIx} server library
+\summary Finalize the \ac{PMIx} server library.
 
 \format
 
@@ -2923,11 +2892,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_server_finalize} for details.
 
-See \refapi{PMIx_server_finalize} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.generate_regex}
 \declareapibinding{PMIxServer.generate_regex}{PMIx_generate_regex}{Python}
 
@@ -2955,11 +2923,10 @@ Returns:
     \item \refarg{regex} - Python \code{bytearray} containing regular expression representation of the input list (\code{bytearray})
 \end{itemize}
 
+See \refapi{PMIx_generate_regex} for details.
 
-See \refapi{PMIx_generate_regex} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.generate_ppn}
 \declareapibinding{PMIxServer.generate_ppn}{PMIx_generate_ppn}{Python}
 
@@ -2987,11 +2954,10 @@ Returns:
     \item \refarg{regex} - Python \code{bytearray} containing regular expression representation of the input list (\code{bytearray})
 \end{itemize}
 
+See \refapi{PMIx_generate_ppn} for details.
 
-See \refapi{PMIx_generate_ppn} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.register_nspace}
 \declareapibinding{PMIxServer.register_nspace}{PMIx_server_register_nspace}{Python}
 
@@ -3021,15 +2987,16 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_server_register_nspace} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_server_register_nspace} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.deregister_nspace}
 \declareapibinding{PMIxServer.deregister_nspace}{PMIx_server_deregister_nspace}{Python}
 
-\summary Deregister a namespace.
+\summary
+
+Deregister a namespace.
 
 \format
 
@@ -3047,17 +3014,15 @@ myserver.deregister_nspace(nspace:str)
 
 Returns: None
 
+See \refapi{PMIx_server_deregister_nspace} for details.
 
-See \refapi{PMIx_server_deregister_nspace} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.register_client}
 \declareapibinding{PMIxServer.register_client}{PMIx_server_register_client}{Python}
 
 \summary
 Register a client process with the PMIx server library.
-
 
 \format
 
@@ -3081,16 +3046,15 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_server_register_client} for details.
 
-See \refapi{PMIx_server_register_client} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.deregister_client}
 \declareapibinding{PMIxServer.deregister_client}{PMIx_server_deregister_client}{Python}
 
 \summary
-Dergister a client process and purge all data relating to it
+Deregister a client process and purge all data relating to it.
 
 
 \format
@@ -3109,17 +3073,16 @@ myserver.deregister_client(proc:dict)
 
 Returns: None
 
+See \refapi{PMIx_server_deregister_client} for details.
 
-See \refapi{PMIx_server_deregister_client} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.setup_fork}
 \declareapibinding{PMIxServer.setup_fork}{PMIx_server_setup_fork}{Python}
 
 \summary
 Setup the environment of a child process that is to be forked
-by the host
+by the host.
 
 \format
 
@@ -3142,11 +3105,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_server_setup_fork} for details.
 
-See \refapi{PMIx_server_setup_fork} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.dmodex_request}
 \declareapibinding{PMIxServer.dmodex_request}{PMIx_server_dmodex_request}{Python}
 
@@ -3174,11 +3136,10 @@ Returns:
     \item \refarg{data} - Python \refpy{byteobject} containing the returned data (dict)
 \end{itemize}
 
+See \refapi{PMIx_server_dmodex_request} for details.
 
-See \refapi{PMIx_server_dmodex_request} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.setup_application}
 \declareapibinding{PMIxServer.setup_application}{PMIx_server_setup_application}{Python}
 
@@ -3207,11 +3168,10 @@ Returns:
     \item \refarg{info} - Python list of \refpy{info} dictionaries containing the returned data (list)
 \end{itemize}
 
+See \refapi{PMIx_server_setup_application} for details.
 
-See \refapi{PMIx_server_setup_application} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.register_attributes}
 \declareapibinding{PMIxServer.register_attributes}{PMIx_Register_attributes}{Python}
 
@@ -3239,16 +3199,15 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_Register_attributes} for details.
 
-See \refapi{PMIx_Register_attributes} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.setup_local_support}
 \declareapibinding{PMIxServer.setup_local_support}{PMIx_server_setup_local_support}{Python}
 
 \summary
-Function by which the local \ac{PMIx} server can perform any application-specific operations prior to spawning local clients of a given application
+Function by which the local \ac{PMIx} server can perform any application-specific operations prior to spawning local clients of a given application.
 
 \format
 
@@ -3271,11 +3230,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_server_setup_local_support} for details.
 
-See \refapi{PMIx_server_setup_local_support} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.iof_deliver}
 \declareapibinding{PMIxServer.iof_deliver}{PMIx_server_IOF_deliver}{Python}
 
@@ -3306,16 +3264,15 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_server_IOF_deliver} for details.
 
-See \refapi{PMIx_server_IOF_deliver} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.collect_inventory}
 \declareapibinding{PMIxServer.collect_inventory}{PMIx_server_collect_inventory}{Python}
 
 \summary
-Collect inventory of resources on a node
+Collect inventory of resources on a node.
 
 \format
 
@@ -3338,16 +3295,15 @@ Returns:
     \item \refarg{info} - Python list of \refpy{info} containing the returned data (list)
 \end{itemize}
 
+See \refapi{PMIx_server_collect_inventory} for details.
 
-See \refapi{PMIx_server_collect_inventory} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.deliver_inventory}
 \declareapibinding{PMIxServer.deliver_inventory}{PMIx_server_deliver_inventory}{Python}
 
 \summary
-Pass collected inventory to the \ac{PMIx} server library for storage
+Pass collected inventory to the \ac{PMIx} server library for storage.
 
 \format
 
@@ -3370,15 +3326,15 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_server_deliver_inventory} for details.
 
-See \refapi{PMIx_server_deliver_inventory} for details
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.generate_locality_string}
 \declareapibinding{PMIxServer.generate_locality_string}{PMIx_server_generate_locality_string}{Python}
 
 \summary
-Generate a \ac{PMIx} locality string from a given cpuset
+Generate a \ac{PMIx} locality string from a given cpuset.
 
 \format
 
@@ -3401,16 +3357,15 @@ Returns:
     \item \refarg{locality} - string representation of the locality corresponding to the provided \refarg{cpuset} (str)
 \end{itemize}
 
+See \refapi{PMIx_server_generate_locality_string} for details.
 
-See \refapi{PMIx_server_generate_locality_string} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.define_process_set}
 \declareapibinding{PMIxServer.define_process_set}{PMIx_server_define_process_set}{Python}
 
 \summary
-Add members to a \ac{PMIx} process set
+Add members to a \ac{PMIx} process set.
 
 \format
 
@@ -3433,16 +3388,15 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_server_define_process_set} for details.
 
-See \refapi{PMIx_server_define_process_set} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.delete_process_set}
 \declareapibinding{PMIxServer.delete_process_set}{PMIx_server_delete_process_set}{Python}
 
 \summary
-Delete members from a \ac{PMIx} process set
+Delete members from a \ac{PMIx} process set.
 
 \format
 
@@ -3465,24 +3419,24 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_server_delete_process_set} for details.
 
-See \refapi{PMIx_server_delete_process_set} for details
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{PMIxTool}
 \label{app:python:tool}
 
 The tool Python class inherits the Python "server" class as its parent. Thus, it includes all client and server functions in addition to the ones defined in this section.
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool.init}
 \declareapibinding{PMIxTool.init}{PMIx_tool_init}{Python}
 
 \summary
 
-Initialize the \ac{PMIx} tool library after obtaining a new PMIxTool object
+Initialize the \ac{PMIx} tool library after obtaining a new PMIxTool object.
 
 \format
 
@@ -3505,11 +3459,10 @@ Returns:
     \item \refarg{proc} - a Python \refpy{proc} (dict)
 \end{itemize}
 
+See \refapi{PMIx_tool_init} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_tool_init} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool.finalize}
 \declareapibinding{PMIxTool.finalize}{PMIx_tool_finalize}{Python}
 
@@ -3534,10 +3487,10 @@ Returns:
 \end{itemize}
 
 
-See \refapi{PMIx_tool_finalize} for description of all relevant attributes and behaviors
+See \refapi{PMIx_tool_finalize} for description of all relevant attributes and behaviors.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool.disconnect}
 \declareapibinding{PMIxTool.disconnect}{PMIx_tool_disconnect}{Python}
 
@@ -3564,11 +3517,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_tool_disconnect} for details.
 
-See \refapi{PMIx_tool_disconnect} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool.attach_to_server}
 \declareapibinding{PMIxTool.attach_to_server}{PMIx_tool_attach_to_server}{Python}
 
@@ -3598,11 +3550,10 @@ Returns:
     \item \refarg{server} - a Python \refpy{proc} containing the identifier of the server to which the tool attached (dict)
 \end{itemize}
 
+See \refapi{PMIx_tool_attach_to_server} for details.
 
-See \refapi{PMIx_tool_attach_to_server} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool.get_servers}
 \declareapibinding{PMIxTool.get_servers}{PMIx_tool_get_servers}{Python}
 
@@ -3626,11 +3577,10 @@ Returns:
     \item \refarg{servers} - a list of Python \refpy{proc} containing the identifiers of the servers to which the tool is currently attached (dict)
 \end{itemize}
 
+See \refapi{PMIx_tool_get_servers} for details.
 
-See \refapi{PMIx_tool_get_servers} for details
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool.iof_pull}
 \declareapibinding{PMIxTool.iof_pull}{PMIx_IOF_pull}{Python}
 
@@ -3664,11 +3614,10 @@ Returns:
     \item \refarg{id} - \ac{PMIx} reference identifier for request (integer)
 \end{itemize}
 
+See \refapi{PMIx_IOF_pull} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_IOF_pull} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool.iof_deregister}
 \declareapibinding{PMIxTool.iof_deregister}{PMIx_IOF_deregister}{Python}
 
@@ -3698,11 +3647,10 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_IOF_deregister} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_IOF_deregister} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool.iof_push}
 \declareapibinding{PMIxTool.iof_push}{PMIx_IOF_push}{Python}
 
@@ -3710,7 +3658,7 @@ See \refapi{PMIx_IOF_deregister} for description of all relevant attributes and 
 \summary
 
 Push data collected locally (typically from stdin) to
-stdin of target recipients
+stdin of target recipients.
 
 %%%%
 \format
@@ -3734,11 +3682,11 @@ Returns:
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
 \end{itemize}
 
+See \refapi{PMIx_IOF_push} for description of all relevant attributes and behaviors.
 
-See \refapi{PMIx_IOF_push} for description of all relevant attributes and behaviors
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Example Usage}
 \label{app:python:examples}
 
@@ -3844,6 +3792,8 @@ if __name__ == '__main__':
 \end{codepar}
 \pyspecificend
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Python Server}
 
 The following example contains a minimum-level server host program that instantiates and initializes the PMIxServer class. The program illustrates passing several server module functions to the bindings and includes code to setup and spawn a simple client application, waiting until the spawned client terminates before finalizing and exiting itself. Note that the example has been formatted to fit the document layout.
@@ -3966,3 +3916,5 @@ if __name__ == '__main__':
     main()
 \end{codepar}
 \pyspecificend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
