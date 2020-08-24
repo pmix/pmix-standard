@@ -1784,7 +1784,8 @@ Add members to a \ac{PMIx} process set.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_server_define_process_set(const pmix_proc_t *members,
+PMIx_server_define_process_set(const pmix_proc_t members[],
+                               size_t nmembers,
                                char *pset_name);
 \end{codepar}
 \cspecificend
@@ -1792,6 +1793,7 @@ PMIx_server_define_process_set(const pmix_proc_t *members,
 \begin{arglist}
 \argin{members}{Pointer to an array of \refstruct{pmix_proc_t} containing the
 identifiers of the processes to be added to the process set (handle)}
+\argin{nmembers}{Number of elements in \refarg{members} (integer)}
 \argin{pset_name}{String name of the process set to which the specified
 processes are to be added (\code{char*})}
 \end{arglist}
@@ -1835,7 +1837,8 @@ Delete members from a \ac{PMIx} process set
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_server_delete_process_set(const pmix_proc_t *members,
+PMIx_server_delete_process_set(const pmix_proc_t members[],
+                               size_t nmembers,
                                char *pset_name);
 \end{codepar}
 \cspecificend
@@ -1843,6 +1846,7 @@ PMIx_server_delete_process_set(const pmix_proc_t *members,
 \begin{arglist}
 \argin{members}{Pointer to an array of \refstruct{pmix_proc_t} containing the
 identifiers of the processes to be removed from the process set (handle)}
+\argin{nmembers}{Number of  elements in \refarg{members} (integer)}
 \argin{pset_name}{String name of the process set from which the specified
 processes are to be removed (\code{char*})}
 \end{arglist}
