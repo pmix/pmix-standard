@@ -106,12 +106,12 @@ Several attributes are provided for querying the system regarding process sets u
 %
 \declareAttributeNEW{PMIX_QUERY_NUM_PSETS}{"pmix.qry.psetnum"}{size_t}{
 Return the number of process sets defined in the specified range (defaults
-to session).
+to \refconst{PMIX_RANGE_SESSION}).
 }
 %
 \declareAttributeNEW{PMIX_QUERY_PSET_NAMES}{"pmix.qry.psets"}{pmix_data_array_t*}{
 Return a \refstruct{pmix_data_array_t} containing an array of strings of the
-process set names defined in the specified range (defaults to session).
+process set names defined in the specified range (defaults to \refconst{PMIX_RANGE_SESSION}).
 }
 %
 \declareAttributeNEW{PMIX_QUERY_PSET_MEMBERSHIP}{"pmix.qry.pmems"}{pmix_proc_t*}{
