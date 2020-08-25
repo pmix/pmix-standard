@@ -405,4 +405,6 @@ The v3.2 update includes clarifications and corrections from the v3.1 document:
     \item Correct an error in the \refapi{PMIx_Allocation_request} function signature, and clarify the allocation ID attributes
     \item Rename the \refattr{PMIX_ALLOC_ID} attribute to \refattr{PMIX_ALLOC_REQ_ID} to clarify that this is a string the user provides as a means to identify their request to query status
     \item Add a new \refattr{PMIX_ALLOC_ID} attribute that contains the identifier (provided by the host environment) for the resulting allocation which can later be used to reference the allocated resources in, for example, a call to \refapi{PMIx_Spawn}
+    \item Update the \refapi{PMIx_generate_regex} and \refapi{PMIx_generate_ppn} descriptions to clarify that the output from these generator functions may not be a NULL-terminated string, but instead could be a byte array of arbitrary binary content.
+    \item Add a new \refconst{PMIX_REGEX} constant that represents a regular expression data type.
 \end{itemize}
