@@ -212,10 +212,10 @@
 {\begin{description}[itemsep=-1.3ex,itemindent=\dimexpr-17pt-\labelsep\relax]}
 {\end{description}}
 
-\newcommand{\declareconstitem}[1]{\item[\code{#1}] \index{#1} \hspace{1em}}
+\newcommand{\declareconstitem}[1]{\item[\code{#1}] \index{#1} \label{const:#1} \hspace{1em}}
 \newcommand{\declareconstitemvalue}[2]{\item[\code{#1}] \index{#1} \hspace{0.25em} \code{#2}  \hspace{1em}}
-\newcommand{\declareconstitemDEP}[2]{\item[\code{#1} (Deprecated in PMIx #2)] \index{#1} \hspace{1em}}
-\newcommand{\declareconstitemNEW}[1]{\item[\color{magenta}\code{#1}] \index{#1} \hspace{1em}}
+\newcommand{\declareconstitemDEP}[2]{\item[\code{#1} (Deprecated in PMIx #2)] \index{#1} \label{const:#1} \hspace{1em}}
+\newcommand{\declareconstitemNEW}[1]{\item[\color{magenta}\code{#1}] \index{#1} \label{const:#1} \hspace{1em}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -280,7 +280,7 @@
 
 \titleformat{\subsubsection}[hang]{\needspace{1\baselineskip}%
 \Large\bfseries\sffamily\fontsize{12}{12}\selectfont}{\thesubsubsection}{1.0em}{}
-\titlespacing{\subsubsection}{-5em}{0.5em plus 1em minus 1em}{0.5em plus 0.5em minus 0em}[10em]
+\titlespacing{\subsubsection}{-5em}{1em plus 0.8em minus 0.8em}{0.5em plus 0.5em minus 0em}[10em]
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -383,10 +383,10 @@
 	\pasteAttributeItemBegin{#1}
 	\pasteAttributeItemEnd{}
 }
-\newcommand{\refAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\code{#1}} }
+\newcommand{\refAttributeItem}[1]{\index{#1}\hyperref[attr:#1]{\code{#1}}}
 \newcommand{\refattr}[1]{\refAttributeItem{#1}}
 
-\newcommand{\refPRIAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\color{red}\code{#1}} }
+\newcommand{\refPRIAttributeItem}[1]{\index{#1}\hyperref[attr:#1]{\color{red}\code{#1}}}
 
 \newcommand{\pastePRIAttributeItemBegin}[1]{
   \refPRIAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
@@ -404,7 +404,7 @@
     \pastePRIAttributeItemEnd{}
 }
 
-\newcommand{\refPRRTEAttributeItem}[1]{\index{#1} \hyperref[attr:#1]{\color{green!60!black}\code{#1}} }
+\newcommand{\refPRRTEAttributeItem}[1]{\index{#1}\hyperref[attr:#1]{\color{green!60!black}\code{#1}}}
 
 \newcommand{\pastePRRTEAttributeItemBegin}[1]{
   \refPRRTEAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
@@ -680,15 +680,15 @@
 \newcommand{\refsection}[2]{\hyperref[#1]{#2}}
 
 \newcommand{\declarestruct}[1]{\index{#1!Definition|textbf} \label{struct:#1}}
-\newcommand{\refstruct}[1]{\index{#1} \hyperref[struct:#1]{\code{#1} }}
+\newcommand{\refstruct}[1]{\index{#1}\hyperref[struct:#1]{\code{#1}}}
 \newcommand{\structref}[1] {\refstruct{#1}}
 \newcommand{\specrefstruct}[1]{Section~\ref{struct:#1} on page~\pageref{struct:#1}}
 
 \newcommand{\declareapi}[1]{\index{#1!Definition|textbf} \label{api:#1}}
-\newcommand{\refapi}[1]{\index{#1} \hyperref[api:#1]{\code{#1} }}
+\newcommand{\refapi}[1]{\index{#1}\hyperref[api:#1]{\code{#1}}}
 \newcommand{\argapi}[1] {\refapi{#1}}
 
-\newcommand{\refconst}[1]{\hyperref[chap:struct]{\code{#1} }}
+\newcommand{\refconst}[1]{\hyperref[const:#1]{\code{#1}}}
 
 \newcommand{\declareattr}[1]{\index{#1!Definition|textbf} \label{attr:#1}}
 
@@ -696,10 +696,10 @@
 \newcommand{\argref}[1] {\refarg{#1}}
 
 \newcommand{\declaremacro}[1]{\index{#1!Definition|textbf} \label{macro:#1}}
-\newcommand{\refmacro}[1]{\index{#1} \hyperref[macro:#1]{\code{#1} }}
+\newcommand{\refmacro}[1]{\index{#1}\hyperref[macro:#1]{\code{#1}}}
 
 \newcommand{\declareterm}[1]{\index{#1!Definition|textbf} \label{macro:#1}}
-\newcommand{\refterm}[1]{\index{#1} \hyperref[macro:#1]{\code{#1} }}
+\newcommand{\refterm}[1]{\index{#1}\hyperref[macro:#1]{\code{#1}}}
 
 % Place in text for in-text questions during review
 \newcommand{\rcomment}[1]{(REVIEW COMMENT: \textbf{#1})}
