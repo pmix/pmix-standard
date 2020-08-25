@@ -19,8 +19,8 @@ messaging protocols.
 This chapter covers both the synchronization and data retrieval functions
 provided under the \ac{PMIx} Standard.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{\code{PMIx_Fence}}
 \declareapi{PMIx_Fence}
 
@@ -37,15 +37,15 @@ Execute a blocking barrier across the processes identified in the specified arra
 \begin{codepar}
 pmix_status_t
 PMIx_Fence(const pmix_proc_t procs[], size_t nprocs,
-           const pmix_info_t info[], size_t ninfo)
+           const pmix_info_t info[], size_t ninfo);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
-\argin{nprocs}{Number of element in the \refarg{procs} array (integer)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
 \argin{info}{Array of info structures (array of handles)}
-\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
@@ -80,7 +80,9 @@ The \refarg{info} array is used to pass user directives regarding the behavior o
 The host will receive a single call for each collective operation. It is the responsibility of the host to identify the nodes containing participating processes, execute the collective across all participating nodes, and notify the local \ac{PMIx} server library upon completion of the global collective.
 \advicermend
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{\code{PMIx_Fence_nb}}
 \declareapi{PMIx_Fence_nb}
 
@@ -98,15 +100,15 @@ Execute a nonblocking \refapi{PMIx_Fence} across the processes identified in the
 pmix_status_t
 PMIx_Fence_nb(const pmix_proc_t procs[], size_t nprocs,
               const pmix_info_t info[], size_t ninfo,
-              pmix_op_cbfunc_t cbfunc, void *cbdata)
+              pmix_op_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{procs}{Array of \refstruct{pmix_proc_t} structures (array of handles)}
-\argin{nprocs}{Number of element in the \refarg{procs} array (integer)}
+\argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
 \argin{info}{Array of info structures (array of handles)}
-\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \argin{cbfunc}{Callback function (function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
@@ -116,7 +118,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called. This can occur if the collective involved only processes on the local node.
-    \item a \ac{PMIx} error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
 
 
@@ -139,7 +141,7 @@ The following attributes are optional for host environments that support this op
 
 Nonblocking version of the \refapi{PMIx_Fence} routine. See the \refapi{PMIx_Fence} description for further details.
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fence-related attributes}
 
 The following attributes are defined specifically to support the fence operation:
@@ -152,7 +154,8 @@ available to each participant at the end of the operation.
 }
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{\code{PMIx_Get}}
 \declareapi{PMIx_Get}
 
@@ -170,7 +173,7 @@ Retrieve a key/value pair from the client's namespace.
 pmix_status_t
 PMIx_Get(const pmix_proc_t *proc, const pmix_key_t key,
          const pmix_info_t info[], size_t ninfo,
-         pmix_value_t **val)
+         pmix_value_t **val);
 \end{codepar}
 \cspecificend
 
@@ -178,19 +181,19 @@ PMIx_Get(const pmix_proc_t *proc, const pmix_key_t key,
 \argin{proc}{Process identifier - a \code{NULL} value may be used in place of the caller's ID (handle)}
 \argin{key}{Key to retrieve (\refstruct{pmix_key_t})}
 \argin{info}{Array of info structures (array of handles)}
-\argin{ninfo}{Number of element in the \refarg{info} array (integer)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \argout{val}{value (handle)}
 \end{arglist}
 
 Returns one of the following:
 
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} The requested data has been returned
-\item \refconst{PMIX_ERR_NOT_FOUND} The requested data was not available
+\item \refconst{PMIX_SUCCESS} The requested data has been returned.
+\item \refconst{PMIX_ERR_NOT_FOUND} The requested data was not available.
 \item \refconst{PMIX_ERR_GET_MALLOC_REQD} Indicating that the returned value
 involves dynamically allocated memory instead of pointing to a static location
-as requested (only applies if \refattr{PMIX_GET_STATIC_VALUES} was included in the request)
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure
+as requested (only applies if \refattr{PMIX_GET_STATIC_VALUES} was included in the request).
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure.
 \end{itemize}
 
 \reqattrstart
@@ -219,11 +222,11 @@ The following attributes are optional for host environments:
 
 Retrieve information for the specified \refarg{key} associated with the process identified in the given \refstruct{pmix_proc_t}, returning a pointer to the \refstruct{pmix_value_t} containing the result in the given address. See Chapters \ref{chap:api_rsvd_keys} and \ref{chap:nrkeys} for details on rules governing retrieval of information.
 
-This is a blocking operation - the caller will block until the retrieval rules of Chapters \ref{chap:api_rsvd_keys} or \ref{chap:nrkeys} are met .
+This is a blocking operation - the caller will block until the retrieval rules of Chapters \ref{chap:api_rsvd_keys} or \ref{chap:nrkeys} are met.
 
 The \refarg{info} array is used to pass user directives regarding the get operation.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Get_nb}}
 \declareapi{PMIx_Get_nb}
 
@@ -241,7 +244,7 @@ Nonblocking \refapi{PMIx_Get} operation.
 pmix_status_t
 PMIx_Get_nb(const pmix_proc_t *proc, const char key[],
             const pmix_info_t info[], size_t ninfo,
-            pmix_value_cbfunc_t cbfunc, void *cbdata)
+            pmix_value_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -258,19 +261,19 @@ Returns one of the following:
 
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a \ac{PMIx} error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
+    \item a \ac{PMIx} error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
 
 If executed, the status returned in the provided callback function will be one of the following constants:
 
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} The requested data has been returned
-\item \refconst{PMIX_ERR_NOT_FOUND} The requested data was not available
+\item \refconst{PMIX_SUCCESS} The requested data has been returned.
+\item \refconst{PMIX_ERR_NOT_FOUND} The requested data was not available.
 \item \refconst{PMIX_ERR_GET_MALLOC_REQD} Indicating that the returned value
 involves dynamically allocated memory instead of pointing to a static location
-as requested  (only applies if \refattr{PMIX_GET_STATIC_VALUES} was included in the request)
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure
+as requested  (only applies if \refattr{PMIX_GET_STATIC_VALUES} was included in the request).
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure.
 \end{itemize}
 
 \reqattrstart
@@ -307,6 +310,8 @@ The following attributes are optional for host environments that support this op
 The callback function will be executed once the retrieval rules of Chapters \ref{chap:api_rsvd_keys} or \ref{chap:nrkeys} are met.
 See \refapi{PMIx_Get} for a full description.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Retrieval-specific constants}
 
 The following constants are defined for use by retrieval \acp{API}:
@@ -315,9 +320,11 @@ The following constants are defined for use by retrieval \acp{API}:
 %
 \declareconstitemNEW{PMIX_ERR_GET_MALLOC_REQD}
 The data returned by \refapi{PMIx_Get} contains values that required dynamic memory allocations (i.e., "malloc"), despite a request for static pointers to the values in the key-value store. User is responsible for releasing the memory when done with the information.
-
+%
 \end{constantdesc}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Retrieval attributes}
 \label{chap:api_kg:attr}
 
@@ -327,52 +334,48 @@ The following attributes are defined for use by retrieval \acp{API}:
 \declareAttribute{PMIX_OPTIONAL}{"pmix.optional"}{bool}{
 Look only in the client's local data store for the requested value - do not request data from the \ac{PMIx} server if not found.
 }
-
 %
 \declareAttribute{PMIX_IMMEDIATE}{"pmix.immediate"}{bool}{
 Specified operation should immediately return an error from the \ac{PMIx} server if the requested data cannot be found - do not request it from the host \ac{RM}.
 }
-
 %
 \declareAttributeNEW{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
 Request that any pointers in the returned value point directly to values in the key-value store. The user \emph{must not} release any returned data pointers. Note that a return status of \refconst{PMIX_ERR_GET_MALLOC_REQD} indicates that direct pointers could not be supported - thus, the returned data contains allocated memory that the user must release.
 }
-
+%
 \declareAttributeNEW{PMIX_GET_REFRESH_CACHE}{"pmix.get.refresh"}{bool}{
-When retrieving data for a remote process, refresh the existing local data cache for the process in case new values have been put and committed by the process since the last refresh
+When retrieving data for a remote process, refresh the existing local data cache for the process in case new values have been put and committed by the process since the last refresh.
 }
-
 %
 \declareAttribute{PMIX_DATA_SCOPE}{"pmix.scope"}{pmix_scope_t}{
 Scope of the data to be searched in a \refapi{PMIx_Get} call.
 }
-
 %
 \declareAttribute{PMIX_TIMEOUT}{"pmix.timeout"}{int}{
 Time in seconds before the specified operation should time out (zero indicating infinite) and return the \refconst{PMIX_ERR_TIMEOUT} error.
 Care should be taken to avoid race conditions caused by multiple layers (client, server, and host) simultaneously timing the operation.
 }
-
 %
 \declareAttribute{PMIX_WAIT}{"pmix.wait"}{int}{
 Caller requests that the \ac{PMIx} server wait until at least the specified number of values are found (a value of zero indicates \emph{all} and is the default).
 }
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Query}
 \label{chap:api_proc_mgmt:query}
 
 As the level of interaction between applications and the host \ac{SMS} grows, so too does the need for the application to query the \ac{SMS} regarding its capabilities and state information. \ac{PMIx} provides a generalized query interface for this purpose, along with a set of standardized attribute keys to support a range of requests. This includes requests to determine the status of scheduling queues and active allocations, the scope of \ac{API} and attribute support offered by the \ac{SMS}, namespaces of active jobs, location and information about a job's processes, and information regarding available resources.
 
-An example use-case for the \refapi{PMIx_Query_info_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully, e.g., to write a checkpoint before termination, it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
+An example use-case for the \refapi{PMIx_Query_info_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully (e.g., to write a checkpoint before termination) it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
 
 \ac{PMIx} supports this use-case by defining an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_info_nb} interface to obtain the number of seconds remaining in the current job allocation. Note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time. \ac{PMIx} provides such alternate methods as a means of maximizing the probability of a host system supporting at least one method by which the application can obtain the desired service.
 
 The following \acp{API} support query of various session and environment values.
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Resolve_peers}}
 \declareapi{PMIx_Resolve_peers}
 
@@ -390,7 +393,7 @@ Obtain the array of processes within the specified namespace that are executing 
 pmix_status_t
 PMIx_Resolve_peers(const char *nodename,
                    const pmix_nspace_t nspace,
-                   pmix_proc_t **procs, size_t *nprocs)
+                   pmix_proc_t **procs, size_t *nprocs);
 \end{codepar}
 \cspecificend
 
@@ -413,7 +416,8 @@ If the specified node does not currently host any processes, then the returned a
 The caller is responsible for releasing the \refarg{procs} array when done with it.
 The \refmacro{PMIX_PROC_FREE} macro is provided for this purpose.
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Resolve_nodes}}
 \declareapi{PMIx_Resolve_nodes}
 
@@ -429,7 +433,7 @@ Return a list of nodes hosting processes within the given namespace.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_Resolve_nodes(const char *nspace, char **nodelist)
+PMIx_Resolve_nodes(const char *nspace, char **nodelist);
 \end{codepar}
 \cspecificend
 
@@ -448,7 +452,7 @@ The returned string will contain a comma-delimited list of nodenames.
 The caller is responsible for releasing the string when done with it.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Query_info}}
 \declareapi{PMIx_Query_info}
 
@@ -465,7 +469,7 @@ Query information about the system in general.
 \begin{codepar}
 pmix_status_t
 PMIx_Query_info(pmix_query_t queries[], size_t nqueries,
-                pmix_info_t *info[], size_t *ninfo)
+                pmix_info_t *info[], size_t *ninfo);
 \end{codepar}
 \cspecificend
 
@@ -554,7 +558,8 @@ The returned \refarg{status} indicates if requested data was found or not. The r
 Information returned from \refapi{PMIx_Query_info} shall be locally cached so that retrieval by subsequent calls to \refapi{PMIx_Get}, \refapi{PMIx_Query_info}, or \refapi{PMIx_Query_info_nb} can succeed with minimal overhead. The local cache shall be checked prior to querying the \ac{PMIx} server and/or the host environment. Queries that include the \refattr{PMIX_QUERY_REFRESH_CACHE} attribute shall bypass the local cache and retrieve a new value for the query, refreshing the values in the cache upon return.
 \adviceimplend
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Query_info_nb}}
 \declareapi{PMIx_Query_info_nb}
 
@@ -571,7 +576,7 @@ Query information about the system in general.
 \begin{codepar}
 pmix_status_t
 PMIx_Query_info_nb(pmix_query_t queries[], size_t nqueries,
-                   pmix_info_cbfunc_t cbfunc, void *cbdata)
+                   pmix_info_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -586,7 +591,7 @@ Returns one of the following:
 
 \begin{itemize}
 \item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed.
 \end{itemize}
 
 If executed, the status returned in the provided callback function will be one of the following constants:
@@ -657,21 +662,22 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Non-blocking form of the \refapi{PMIx_Query_info} \ac{API}
+Non-blocking form of the \refapi{PMIx_Query_info} \ac{API}.
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Query-specific constants}
 \label{api:struct:constants:query}
 
 \begin{constantdesc}
-
 %
 \declareconstitem{PMIX_QUERY_PARTIAL_SUCCESS}
-Some, but not all, of the requested information was returned
-
+Some, but not all, of the requested information was returned.
+%
 \end{constantdesc}
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Query attributes}
 \label{api:struct:attributes:query}
 
@@ -679,117 +685,93 @@ Attributes used to direct behavior of the \refapi{PMIx_Query_info} \acp{API}.
 
 %
 \declareAttributeNEW{PMIX_QUERY_QUALIFIERS}{"pmix.qry.quals"}{pmix_data_array_t}{
-Contains an array of qualifiers that were included in the query that produced the provided results. NO QUALIFIERS
+Contains an array of qualifiers that were included in the query that produced the provided results. NO QUALIFIERS.
 }
 %
 \declareAttributeNEW{PMIX_QUERY_SUPPORTED_KEYS}{"pmix.qry.keys"}{char*}{
-Returns comma-delimited list of keys supported by the query function. NO QUALIFIERS
+Returns comma-delimited list of keys supported by the query function. NO QUALIFIERS.
 }
-
 %
 \declareAttributeNEW{PMIX_QUERY_SUPPORTED_QUALIFIERS}{"pmix.qry.quals"}{char*}{
-Return comma-delimited list of qualifiers supported by a query on the provided key, instead of actually performing the query on the key. NO QUALIFIERS
+Return comma-delimited list of qualifiers supported by a query on the provided key, instead of actually performing the query on the key. NO QUALIFIERS.
 }
-
 %
 \declareAttribute{PMIX_QUERY_REFRESH_CACHE}{"pmix.qry.rfsh"}{bool}{
-Retrieve updated information from server. NO QUALIFIERS
+Retrieve updated information from server. NO QUALIFIERS.
 }
-
 %
 \declareAttribute{PMIX_QUERY_NAMESPACES}{"pmix.qry.ns"}{char*}{
-Request a comma-delimited list of active namespaces. NO QUALIFIERS
+Request a comma-delimited list of active namespaces. NO QUALIFIERS.
 }
-
 %
 \declareAttributeNEW{PMIX_QUERY_NAMESPACE_INFO}{"pmix.qry.nsinfo"}{pmix_data_array_t*}{
-Return an array of active namespace information - each element will itself contain an array including the namespace plus the command line of the application executing within it. OPTIONAL QUALIFIERS: \refattr{PMIX_NSPACE} of specific namespace whose info is being requested}
-
+Return an array of active namespace information - each element will itself contain an array including the namespace plus the command line of the application executing within it. OPTIONAL QUALIFIERS: \refattr{PMIX_NSPACE} of specific namespace whose info is being requested}.
 %
 \declareAttribute{PMIX_QUERY_JOB_STATUS}{"pmix.qry.jst"}{pmix_status_t}{
-Status of a specified, currently executing job. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose status is being queried
+Status of a specified, currently executing job. REQUIRED QUALIFIER: \refattr{PMIX_NSPACE} indicating the namespace whose status is being queried.
 }
-
 %
 \declareAttribute{PMIX_QUERY_QUEUE_LIST}{"pmix.qry.qlst"}{char*}{
-Request a comma-delimited list of scheduler queues. NO QUALIFIERS
+Request a comma-delimited list of scheduler queues. NO QUALIFIERS.
 }
-
 %
 \declareAttribute{PMIX_QUERY_QUEUE_STATUS}{"pmix.qry.qst"}{char*}{
-Returns status of a specified scheduler queue, expressed as a string. OPTIONAL QUALIFIERS: \refattr{PMIX_ALLOC_QUEUE} naming specific queue whose status is being requested
+Returns status of a specified scheduler queue, expressed as a string. OPTIONAL QUALIFIERS: \refattr{PMIX_ALLOC_QUEUE} naming specific queue whose status is being requested.
 }
-
 %
 \pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
-
 %
 \pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
-
 %
 \declareAttribute{PMIX_QUERY_AUTHORIZATIONS}{"pmix.qry.auths"}{bool}{
-Return operations the \ac{PMIx} tool is authorized to perform.  NO QUALIFIERS
+Return operations the \ac{PMIx} tool is authorized to perform.  NO QUALIFIERS.
 }
-
 %
 \declareAttribute{PMIX_QUERY_SPAWN_SUPPORT}{"pmix.qry.spawn"}{bool}{
-Return a comma-delimited list of supported spawn attributes. NO QUALIFIERS
+Return a comma-delimited list of supported spawn attributes. NO QUALIFIERS.
 }
-
 %
 \declareAttribute{PMIX_QUERY_DEBUG_SUPPORT}{"pmix.qry.debug"}{bool}{
-Return a comma-delimited list of supported debug attributes. NO QUALIFIERS
+Return a comma-delimited list of supported debug attributes. NO QUALIFIERS.
 }
-
 %
 \declareAttribute{PMIX_QUERY_MEMORY_USAGE}{"pmix.qry.mem"}{bool}{
-Return information on memory usage for the processes indicated in the qualifiers. OPTIONAL QUALIFIERS: \refattr{PMIX_NSPACE} and \refattr{PMIX_RANK}, or \refattr{PMIX_PROCID} of specific process(es) whose memory usage is being requested
+Return information on memory usage for the processes indicated in the qualifiers. OPTIONAL QUALIFIERS: \refattr{PMIX_NSPACE} and \refattr{PMIX_RANK}, or \refattr{PMIX_PROCID} of specific process(es) whose memory usage is being requested.
 }
-
 %
 \declareAttribute{PMIX_QUERY_LOCAL_ONLY}{"pmix.qry.local"}{bool}{
-Constrain the query to local information only. NO QUALIFIERS
+Constrain the query to local information only. NO QUALIFIERS.
 }
-
 %
 \declareAttribute{PMIX_QUERY_REPORT_AVG}{"pmix.qry.avg"}{bool}{
-Report only average values for sampled information. NO QUALIFIERS
+Report only average values for sampled information. NO QUALIFIERS.
 }
-
 %
 \declareAttribute{PMIX_QUERY_REPORT_MINMAX}{"pmix.qry.minmax"}{bool}{
-Report minimum and maximum values. NO QUALIFIERS
+Report minimum and maximum values. NO QUALIFIERS.
 }
-
 %
 \declareAttribute{PMIX_QUERY_ALLOC_STATUS}{"pmix.query.alloc"}{char*}{
-String identifier of the allocation whose status is being requested. NO QUALIFIERS
+String identifier of the allocation whose status is being requested. NO QUALIFIERS.
 }
-
 %
 \declareAttribute{PMIX_TIME_REMAINING}{"pmix.time.remaining"}{char*}{
-Query number of seconds (\code{uint32_t}) remaining in allocation for the specified namespace. OPTIONAL QUALIFIERS: \refattr{PMIX_NSPACE} of the namespace whose info is being requested (defaults to allocation containing the caller)
+Query number of seconds (\code{uint32_t}) remaining in allocation for the specified namespace. OPTIONAL QUALIFIERS: \refattr{PMIX_NSPACE} of the namespace whose info is being requested (defaults to allocation containing the caller).
 }
-
 %
 \declareAttributeNEW{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
-Query list of supported attributes for specified \acp{API}. REQUIRED QUALIFIERS: one or more of \refattr{PMIX_CLIENT_FUNCTIONS}, \refattr{PMIX_SERVER_FUNCTIONS}, \refattr{PMIX_TOOL_FUNCTIONS}, and \refattr{PMIX_HOST_FUNCTIONS}
+Query list of supported attributes for specified \acp{API}. REQUIRED QUALIFIERS: one or more of \refattr{PMIX_CLIENT_FUNCTIONS}, \refattr{PMIX_SERVER_FUNCTIONS}, \refattr{PMIX_TOOL_FUNCTIONS}, and \refattr{PMIX_HOST_FUNCTIONS}.
 }
-
 %
 \pasteAttributeItem{PMIX_QUERY_NUM_PSETS}
-
 %
 \pasteAttributeItem{PMIX_QUERY_PSET_NAMES}
-
 %
 \pasteAttributeItem{PMIX_QUERY_PSET_MEMBERSHIP}
-
 %
 \declareAttributeNEW{PMIX_QUERY_AVAIL_SERVERS}{"pmix.qry.asrvrs"}{pmix_data_array_t*}{
 Return an array of \refstruct{pmix_info_t}, each element itself containing a \refattr{PMIX_SERVER_INFO_ARRAY} entry holding all available data for a server on this node to which the caller might be able to connect.
 }
-
 %
 \declareAttributeNEW{PMIX_SERVER_INFO_ARRAY}{"pmix.srv.arr"}{pmix_data_array_t}{
 Array of \refstruct{pmix_info_t} about a given server, starting with its \refattr{PMIX_NSPACE} and including at least one of the rendezvous-required pieces of information.
@@ -800,56 +782,54 @@ These attributes are used to query memory available and used in the system.
 
 %
 \declareAttribute{PMIX_AVAIL_PHYS_MEMORY}{"pmix.pmem"}{uint64_t}{
-Total available physical memory on a node. OPTIONAL QUALIFERS: \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} (defaults to caller's node)
+Total available physical memory on a node. OPTIONAL QUALIFERS: \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} (defaults to caller's node).
 }
-
 %
 \declareAttribute{PMIX_DAEMON_MEMORY}{"pmix.dmn.mem"}{float}{
-Megabytes of memory currently used by the \ac{RM} daemon on the node. OPTIONAL QUALIFERS: \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} (defaults to caller's node)
+Megabytes of memory currently used by the \ac{RM} daemon on the node. OPTIONAL QUALIFERS: \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} (defaults to caller's node).
 }
-
 %
 \declareAttribute{PMIX_CLIENT_AVG_MEMORY}{"pmix.cl.mem.avg"}{float}{
-Average Megabytes of memory used by client processes on node. OPTIONAL QUALIFERS: \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} (defaults to caller's node)
+Average Megabytes of memory used by client processes on node. OPTIONAL QUALIFERS: \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} (defaults to caller's node).
 }
 
 \vspace{\baselineskip}
 The following attributes are used as qualifiers in queries regarding attribute support within the \ac{PMIx} implementation and/or the host environment:
 
 \declareAttributeNEW{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
-Request a list of functions supported by the \ac{PMIx} client library
+Request a list of functions supported by the \ac{PMIx} client library.
 }
-
+%
 \declareAttributeNEW{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
-Request attributes supported by the \ac{PMIx} client library
+Request attributes supported by the \ac{PMIx} client library.
 }
-
+%
 \declareAttributeNEW{PMIX_SERVER_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
-Request a list of functions supported by the \ac{PMIx} server library
+Request a list of functions supported by the \ac{PMIx} server library.
 }
-
+%
 \declareAttributeNEW{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
-Request attributes supported by the \ac{PMIx} server library
+Request attributes supported by the \ac{PMIx} server library.
 }
-
+%
 \declareAttributeNEW{PMIX_HOST_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
-Request a list of functions supported by the host environment
+Request a list of functions supported by the host environment.
 }
-
+%
 \declareAttributeNEW{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
-Request attributes supported by the host environment
+Request attributes supported by the host environment.
 }
-
+%
 \declareAttributeNEW{PMIX_TOOL_FUNCTIONS}{"pmix.tool.fns"}{bool}{
-Request a list of functions supported by the \ac{PMIx} tool library
+Request a list of functions supported by the \ac{PMIx} tool library.
 }
-
+%
 \declareAttributeNEW{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
-Request attributes supported by the \ac{PMIx} tool library functions
+Request attributes supported by the \ac{PMIx} tool library functions.
 }
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Query Structure}
 \declarestruct{pmix_query_t}
 
@@ -874,6 +854,7 @@ where:
     \item \emph{nqual} is the number of elements in the \refarg{qualifiers} array
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Query structure support macros}
 The following macros are provided to support the \refstruct{pmix_query_t} structure.
 
@@ -982,14 +963,16 @@ PMIX_QUERY_QUALIFIERS_CREATE(m, n)
 \end{arglist}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Using Get vs Query}
 \label{chap:api_job_mgmt:query}
 
 Both \refapi{PMIx_Get} and \refapi{PMIx_Query_info} can be used to retrieve information about the system. In general, the \emph{get} operation should be used to retrieve:
 
 \begin{itemize}
-\item information provided by the host environment at time of job start. This includes information on the number of processes in the job, their location, and possibly their communication endpoints
-\item information posted by processes via the \refapi{PMIx_Put} function
+\item information provided by the host environment at time of job start. This includes information on the number of processes in the job, their location, and possibly their communication endpoints.
+\item information posted by processes via the \refapi{PMIx_Put} function.
 \end{itemize}
 
 This information is largely considered to be \emph{static}, although this will not necessarily be true for environments supporting dynamic programming models or fault tolerance. Note that the \refapi{PMIx_Get} function only accesses information about execution environments - i.e., its scope is limited to values pertaining to a specific \refterm{session}, \refterm{job}, \refterm{application}, \refterm{process}, or \refterm{node}. It cannot be used to obtain information about areas such as the status of queues in the \ac{WLM}.
@@ -997,19 +980,22 @@ This information is largely considered to be \emph{static}, although this will n
 In contrast, the \emph{query} option should be used to access:
 
 \begin{itemize}
-\item system-level information (such as the available \ac{WLM} queues) that would generally not be included in job-level information provided at job start
-\item dynamic information such as application and queue status, and resource utilization statistics. Note that the \refattr{PMIX_QUERY_REFRESH_CACHE} attribute must be provided on each query to ensure current data is returned
-\item information created post job start, such as process tables
-\item information requiring more complex search criteria than supported by the simpler \refapi{PMIx_Get} \ac{API}
-\item queries focused on retrieving multi-attribute blocks of data with a single request, thus bypassing the single-key limitation of the \refapi{PMIx_Get} \ac{API}
+\item system-level information (such as the available \ac{WLM} queues) that would generally not be included in job-level information provided at job start.
+\item dynamic information such as application and queue status, and resource utilization statistics. Note that the \refattr{PMIX_QUERY_REFRESH_CACHE} attribute must be provided on each query to ensure current data is returned.
+\item information created post job start, such as process tables.
+\item information requiring more complex search criteria than supported by the simpler \refapi{PMIx_Get} \ac{API}.
+\item queries focused on retrieving multi-attribute blocks of data with a single request, thus bypassing the single-key limitation of the \refapi{PMIx_Get} \ac{API}.
 \end{itemize}
 
 In theory, all information can be accessed via \refapi{PMIx_Query_info} as the local cache is typically the same datastore searched by \refapi{PMIx_Get}. However, in practice, the overhead associated with the \emph{query} operation may (depending upon implementation) be higher than the simpler \emph{get} operation due to the need to construct and process the more complex \refstruct{pmix_query_t} structure. Thus, requests for a single key value are likely to be accomplished faster with \refapi{PMIx_Get} versus the \emph{query} operation.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Accessing attribute support information}
 \label{chap:api_job_mgmt:queryattrs}
 
-Information as to attributes supported by either the \ac{PMIx} implementation or its host environment can be obtained via the \refapi{PMIx_Query_info} \acp{API}. The \refattr{PMIX_QUERY_ATTRIBUTE_SUPPORT} attribute must be listed as the first entry in the \refarg{keys} field of the \refstruct{pmix_query_t} structure, followed by the name of the function whose attribute support is being requested - support for multiple functions can be requested simultaneously by simply adding the function names to the array of \refarg{keys}. Function names \emph{must} be given as user-level \ac{API} names - e.g., ``PMIx_Get'', ``PMIx_server_setup_application'', or ``PMIx_tool_connect_to_server''.
+Information as to which attributes are supported by either the \ac{PMIx} implementation or its host environment can be obtained via the \refapi{PMIx_Query_info} \acp{API}. The \refattr{PMIX_QUERY_ATTRIBUTE_SUPPORT} attribute must be listed as the first entry in the \refarg{keys} field of the \refstruct{pmix_query_t} structure, followed by the name of the function whose attribute support is being requested - support for multiple functions can be requested simultaneously by simply adding the function names to the array of \refarg{keys}. Function names \emph{must} be given as user-level \ac{API} names - e.g., ``PMIx_Get'', ``PMIx_server_setup_application'', or ``PMIx_tool_connect_to_server''.
 
 The desired levels of attribute support are provided as qualifiers. Multiple levels can be requested simultaneously by simply adding elements to the \refarg{qualifiers} array. Each qualifier should contain the desired level attribute with the boolean value set to indicate whether or not that level is to be included in the returned information. Failure to provide any levels is equivalent to a request for all levels. Supported levels include:
 
@@ -1029,7 +1015,7 @@ Unlike other queries, queries for attribute support can result in the number of 
 \begingroup
 \begin{figure*}[ht!]
   \begin{center}
-    \includegraphics[clip,width=0.75\textwidth]{figs/attrquery.pdf}
+    \includegraphics[clip,width=0.8\textwidth]{figs/attrquery.pdf}
   \end{center}
   \caption{Returned information hierarchy for attribute support request}
   \label{fig:attrquery}

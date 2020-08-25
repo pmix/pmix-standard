@@ -5,7 +5,7 @@
 \label{chap:nrkeys}
 
 \emph{Non-reserved keys} are keys whose string representation begin with a
-prefix other than ``\code{"pmix"}''. Such keys are typically defined by an
+prefix other than \code{"pmix"}. Such keys are typically defined by an
 application when information needs to be exchanged between processes (e.g.,
 where connection information is required and the host environment does not
 support the \refterm{instant on} option) or where the host environment does not
@@ -34,21 +34,23 @@ otherwise locate the source for the information.
 
 Note that the retrieval rules for non-reserved keys (detailed in Section \ref{chap:nrkeys:retrules}) differ significantly from those used for reserved keys.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Posting Key/Value Pairs}
 \label{chap:api_kv_mgmt:set}
 
 \ac{PMIx} clients can post non-reserved key-value pairs associated with themselves by using \refapi{PMIx_Put}. Alternatively, \ac{PMIx} clients can cache arbitrary key-value pairs accessible only by the caller via the \refapi{PMIx_Store_internal} \ac{API}.
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Put}}
 \declareapi{PMIx_Put}
 
 %%%%
 \summary
 
-Post a key/value pair for distribution
+Post a key/value pair for distribution.
 
 %%%%
 \format
@@ -59,7 +61,7 @@ Post a key/value pair for distribution
 pmix_status_t
 PMIx_Put(pmix_scope_t scope,
          const pmix_key_t key,
-         pmix_value_t *val)
+         pmix_value_t *val);
 \end{codepar}
 \cspecificend
 
@@ -70,6 +72,7 @@ PMIx_Put(pmix_scope_t scope,
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+If a reserved key is provided in the \refarg{key} argument then \refapi{PMIx_Put} will return \refconst{PMIX_ERR_BAD_PARAM}.
 
 %%%%
 \descr
@@ -82,16 +85,12 @@ Specific implementations may support different scope values, but all implementat
 The \refstruct{pmix_value_t} structure supports both string and binary values.
 \ac{PMIx} implementations are required to support heterogeneous environments by properly converting binary values between host architectures, and will copy the provided \refarg{value} into internal memory prior to returning from \refapi{PMIx_Put}.
 
-\adviceimplstart
-Calls to \refapi{PMIx_Put} that contain a reserved key are required to return the \refconst{PMIX_ERR_BAD_PARAM} error constant.
-\adviceimplend
-
 \adviceuserstart
-
 Note that keys starting with a string of ``\code{pmix}'' must not be used in calls to \refapi{PMIx_Put}. Thus, applications should never use a defined ``PMIX'' attribute as the key in a call to \refapi{PMIx_Put}.
 \adviceuserend
 
-%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Scope of Put Data}
 \declarestruct{pmix_scope_t}
 
@@ -105,7 +104,7 @@ If a specified scope value is not supported, then the \refapi{PMIx_Put} call mus
 \begin{constantdesc}
 %
 \declareconstitem{PMIX_SCOPE_UNDEF}
-Undefined scope
+Undefined scope.
 %
 \declareconstitem{PMIX_LOCAL}
 The data is intended only for other application processes on the same node.
@@ -125,14 +124,14 @@ The data is intended solely for this process and is not shared with other proces
 \end{constantdesc}
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Store_internal}}
 \declareapi{PMIx_Store_internal}
 
 %%%%
 \summary
 
-Store some data locally for retrieval by other areas of the process
+Store some data locally for retrieval by other areas of the process.
 
 %%%%
 \format
@@ -154,6 +153,7 @@ PMIx_Store_internal(const pmix_proc_t *proc,
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+If a reserved key is provided in the \refarg{key} argument then \refapi{PMIx_Store_internal} will return \refconst{PMIX_ERR_BAD_PARAM}.
 
 %%%%
 \descr
@@ -162,7 +162,7 @@ Store some data locally for retrieval by other areas of the process.
 This is data that has only internal scope - it will never be posted externally. Typically used to cache data obtained by means outside of \ac{PMIx} so that it can be accessed by various areas of the process.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Commit}}
 \declareapi{PMIx_Commit}
 
@@ -177,7 +177,7 @@ Post all previously \refapi{PMIx_Put} values for distribution.
 \versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
-pmix_status_t PMIx_Commit(void)
+pmix_status_t PMIx_Commit(void);
 \end{codepar}
 \cspecificend
 
@@ -193,7 +193,7 @@ Users are advised to always include the call to \refapi{PMIx_Commit} in case the
 \adviceuserend
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Retrieval rules for non-reserved keys}
 \label{chap:nrkeys:retrules}
 
@@ -212,7 +212,7 @@ following precedence search:
     \item Check the local \ac{PMIx} client cache for the requested key - if not found and either the \refattr{PMIX_OPTIONAL} or \refattr{PMIX_GET_REFRESH_CACHE} attribute was given, the search will stop at this point and return the \refconst{PMIX_ERR_NOT_FOUND} status.
 
     \item Request the information from the local \ac{PMIx} server. The server
-    will check its cache for the specified key for the requested key. If the
+    will check its cache for the specified key. If the
     value still isn't found and the \refattr{PMIX_IMMEDIATE} attribute was
     given, then the library shall return the \refconst{PMIX_ERR_NOT_FOUND}
     error constant to the requester. Otherwise, the \ac{PMIx} server library
@@ -276,9 +276,10 @@ client-server paradigm used in the above description, implementers are
 required to provide behaviors consistent with the described search pattern.
 \adviceimplend
 
-
 \adviceuserstart
 Users are advised to always specify the \refattr{PMIX_TIMEOUT} value when
 retrieving non-reserved keys to avoid potential deadlocks should the specified
 key not become available.
 \adviceuserend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
