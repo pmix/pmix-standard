@@ -2259,143 +2259,7 @@ PMIX_BYTE_OBJECT_LOAD(b, d, s)
 \end{arglist}
 
 
-%%%%%%%%%%%
-\subsection{Data Buffer Type}
-\declarestruct{pmix_data_buffer_t}
-
-The \refstruct{pmix_data_buffer_t} structure describes a data buffer used for packing and unpacking.
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_data_buffer \{
-    /** Start of my memory */
-    char *base_ptr;
-    /** Where the next data will be packed to
-        (within the allocated memory starting
-        at base_ptr) */
-    char *pack_ptr;
-    /** Where the next data will be unpacked
-        from (within the allocated memory
-        starting as base_ptr) */
-    char *unpack_ptr;
-    /** Number of bytes allocated (starting
-        at base_ptr) */
-    size_t bytes_allocated;
-    /** Number of bytes used by the buffer
-        (i.e., amount of data -- including
-        overhead -- packed in the buffer) */
-    size_t bytes_used;
-\} pmix_data_buffer_t;
-\end{codepar}
-\cspecificend
-
-\subsection{Data buffer support macros}
-The following macros support the \refstruct{pmix_data_buffer_t} structure.
-
-\subsubsection{Initialize the \refstruct{pmix_data_buffer_t} structure}
-\declaremacro{PMIX_DATA_BUFFER_CONSTRUCT}
-
-Initialize the \refstruct{pmix_data_buffer_t} fields
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_data_buffer_t})}
-\end{arglist}
-
-\subsubsection{Destruct the \refstruct{pmix_data_buffer_t} structure}
-\declaremacro{PMIX_DATA_BUFFER_DESTRUCT}
-
-Clear the \refstruct{pmix_data_buffer_t} fields
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_DESTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_data_buffer_t})}
-\end{arglist}
-
-\subsubsection{Create a \refstruct{pmix_data_buffer_t} structure}
-\declaremacro{PMIX_DATA_BUFFER_CREATE}
-
-Allocate and intitialize a \refstruct{pmix_data_buffer_t} structure
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_CREATE(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{m}{Address where the pointer to the \refstruct{pmix_data_buffer_t} structure shall be stored (handle)}
-\end{arglist}
-
-\subsubsection{Free a \refstruct{pmix_data_buffer_t}}
-\declaremacro{PMIX_DATA_BUFFER_RELEASE}
-
-Release a \refstruct{pmix_data_buffer_t} structure
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_RELEASE(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the \refstruct{pmix_data_buffer_t} structure to be released (handle)}
-\end{arglist}
-
-\subsubsection{Load a \refstruct{pmix_data_buffer_t}}
-\declaremacro{PMIX_DATA_BUFFER_LOAD}
-
-Load data into a \refstruct{pmix_data_buffer_t} structure
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_LOAD(b, d, s)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{b}{Pointer to the \refstruct{pmix_data_buffer_t} structure to be loaded (handle)}
-\argin{d}{Pointer to the data to be loaded into \refarg{b} (\code{void*})}
-\argin{s}{Number of bytes in \refarg{d} (\code{size_t})}
-\end{arglist}
-
-
-\subsubsection{Unload a \refstruct{pmix_data_buffer_t}}
-\declaremacro{PMIX_DATA_BUFFER_UNLOAD}
-
-Unload the data from a \refstruct{pmix_data_buffer_t} structure
-
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
-PMIX_DATA_BUFFER_UNLOAD(b, d, s)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{b}{Pointer to the \refstruct{pmix_data_buffer_t} structure to be unloaded (handle)}
-\arginout{d}{Pointer to be set to the data region after unloading (\code{void*})}
-\arginout{s}{Variable to be set to the number of bytes in the returned data region (\code{size_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%
+%%%%%%%%%%
 \subsection{Data Array Structure}
 \declarestruct{pmix_data_array_t}
 
@@ -2638,6 +2502,10 @@ Input/output forwarding channel (\refstruct{pmix_iof_channel_t})
 \declareconstitemNEW{PMIX_ENVAR}
 Environmental variable structure (\refstruct{pmix_envar_t})
 %
+\declareconstitemNEW{PMIX_REGEX}
+Regular expressions - can be a valid NULL-terminated string or an arbitrary array of bytes
+%
+
 \end{constantdesc}
 
 %%%%%%%%%%%
@@ -4860,7 +4728,7 @@ typedef void (*pmix_event_notification_cbfunc_fn_t)
 %%%%
 \descr
 
-Define a callback by which an event handler can notify the \ac{PMIx} library that it has completed its response to the notification. The handler is \textit{required} to execute this callback so the library can determine if additional handlers need to be called. The handler shall return \refconst{PMIX_ERR_EVENT_COMPLETE} if no further action is required. The return status of each event handler and any returned \refstruct{pmix_info_t} structures will be added to the \textit{results} array of \refstruct{pmix_info_t} passed to any subsequent event handlers to help guide their operation.
+Define a callback by which an event handler can notify the \ac{PMIx} library that it has completed its response to the notification. The handler is \textit{required} to execute this callback so the library can determine if additional handlers need to be called. The handler shall return \refconst{PMIX_EVENT_ACTION_COMPLETE} if no further action is required. The return status of each event handler and any returned \refstruct{pmix_info_t} structures will be added to the \textit{results} array of \refstruct{pmix_info_t} passed to any subsequent event handlers to help guide their operation.
 
 If non-NULL, the provided callback function will be called to allow the event handler to release the provided info array and execute any other required cleanup operations.
 
@@ -5181,7 +5049,7 @@ typedef void (*pmix_iof_cbfunc_t)(
 \argin{channel}{bitmask identifying the channel the data arrived on (\refstruct{pmix_iof_channel_t})}
 \argin{source}{Pointer to a \refstruct{pmix_proc_t} identifying the namespace/rank of the process that generated the data (\code{char*})}
 \argin{payload}{Pointer to character array containing the data.}
-\argin{info}{Array of \refstruct{pmix_info_t} provided by the source containing metadata about the payload. This could include \refconst{PMIX_IOF_COMPLETE} (handle)}
+\argin{info}{Array of \refstruct{pmix_info_t} provided by the source containing metadata about the payload. This could include \refattr{PMIX_IOF_COMPLETE} (handle)}
 \argin{ninfo}{Number of elements in \refarg{info} (\code{size_t})}
 \end{arglist}
 

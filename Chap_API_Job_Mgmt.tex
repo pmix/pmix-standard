@@ -136,7 +136,6 @@ If executed, the status returned in the provided callback function will be one o
 \begin{itemize}
 \item \refconst{PMIX_SUCCESS} All data has been returned
 \item \refconst{PMIX_ERR_NOT_FOUND} None of the requested data was available
-\item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the data has been returned
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The host \ac{RM} does not support this function
 \item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure
 \end{itemize}
@@ -523,7 +522,7 @@ The following attributes are optional for host environments that support this op
 Request a job control action.
 The \refarg{targets} array identifies the processes to which the requested job control action is to be applied.
 A \code{NULL} value can be used to indicate all processes in the caller's namespace.
-The use of \refconst{PMIX_RANK_WILDARD} can also be used to indicate that all processes in the given namespace are to be included.
+The use of \refconst{PMIX_RANK_WILDCARD} can also be used to indicate that all processes in the given namespace are to be included.
 
 The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
 The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
@@ -611,7 +610,7 @@ The following attributes are optional for host environments that support this op
 Non-blocking form of the \refapi{PMIx_Job_control} \ac{API}.
 The \refarg{targets} array identifies the processes to which the requested job control action is to be applied.
 A \code{NULL} value can be used to indicate all processes in the caller's namespace.
-The use of \refconst{PMIX_RANK_WILDARD} can also be used to indicate that all processes in the given namespace are to be included.
+The use of \refconst{PMIX_RANK_WILDCARD} can also be used to indicate that all processes in the given namespace are to be included.
 
 The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
 The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
@@ -697,7 +696,7 @@ For example, \refattr{PMIX_MONITOR_FILE} to indicate that the requestor is askin
 
 The \refarg{error} argument is the status code to be used when generating an event notification alerting that the monitor has been triggered.
 The range of the notification defaults to \refconst{PMIX_RANGE_NAMESPACE}.
-This can be changed by providing a \refconst{PMIX_RANGE} directive.
+This can be changed by providing a \refattr{PMIX_RANGE} directive.
 
 The \refarg{directives} argument characterizes the monitoring request (e.g., monitor file size) and frequency of checking to be done
 

@@ -6,16 +6,48 @@
 
 \ac{PMIx} intentionally does not include support for internode communications in the standard, instead relying on its host \ac{SMS} environment to transfer any needed data and/or requests between nodes. These operations frequently involve PMIx-defined public data structures that include binary data. Many \ac{HPC} clusters are homogeneous, and so transferring the structures can be done rather simply. However, greater effort is required in heterogeneous environments to ensure binary data is correctly transferred. \ac{PMIx} buffer manipulation functions are provided for this purpose via standardized interfaces to ease adoption.
 
+%%%%%%%%%%%
+\section{Data Buffer Type}
+\declarestruct{pmix_data_buffer_t}
+
+The \refstruct{pmix_data_buffer_t} structure describes a data buffer used for packing and unpacking.
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_data_buffer \{
+    /** Start of my memory */
+    char *base_ptr;
+    /** Where the next data will be packed to
+        (within the allocated memory starting
+        at base_ptr) */
+    char *pack_ptr;
+    /** Where the next data will be unpacked
+        from (within the allocated memory
+        starting as base_ptr) */
+    char *unpack_ptr;
+    /** Number of bytes allocated (starting
+        at base_ptr) */
+    size_t bytes_allocated;
+    /** Number of bytes used by the buffer
+        (i.e., amount of data -- including
+        overhead -- packed in the buffer) */
+    size_t bytes_used;
+\} pmix_data_buffer_t;
+\end{codepar}
+\cspecificend
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Support Macros}
-\label{chap:api_init:macros}
+\label{chap:datamgt:macros}
 
 \ac{PMIx} provides a set of convenience macros for creating, initiating, and releasing data buffers.
 
 %%%%%%%%%%%
 \subsection{\code{PMIX_DATA_BUFFER_CREATE}}
-\declareapi{PMIX_DATA_BUFFER_CREATE}
+\declaremacro{PMIX_DATA_BUFFER_CREATE}
 
 %%%%
 \summary
@@ -44,7 +76,7 @@ This macro uses \textit{calloc} to allocate memory for the buffer and initialize
 
 %%%%%%%%%%%
 \subsection{\code{PMIX_DATA_BUFFER_RELEASE}}
-\declareapi{PMIX_DATA_BUFFER_RELEASE}
+\declaremacro{PMIX_DATA_BUFFER_RELEASE}
 
 %%%%
 \summary
@@ -73,7 +105,7 @@ Free's the data contained in the buffer, and then free's the buffer itself
 
 %%%%%%%%%%%
 \subsection{\code{PMIX_DATA_BUFFER_CONSTRUCT}}
-\declareapi{PMIX_DATA_BUFFER_CONSTRUCT}
+\declaremacro{PMIX_DATA_BUFFER_CONSTRUCT}
 
 %%%%
 \summary
@@ -102,7 +134,7 @@ Initialize a pre-allocated buffer object
 
 %%%%%%%%%%%
 \subsection{\code{PMIX_DATA_BUFFER_DESTRUCT}}
-\declareapi{PMIX_DATA_BUFFER_DESTRUCT}
+\declaremacro{PMIX_DATA_BUFFER_DESTRUCT}
 
 %%%%
 \summary
@@ -131,7 +163,7 @@ Free's the data contained in a \refstruct{pmix_data_buffer_t} object
 
 %%%%%%%%%%%
 \subsection{\code{PMIX_DATA_BUFFER_LOAD}}
-\declareapi{PMIX_DATA_BUFFER_LOAD}
+\declaremacro{PMIX_DATA_BUFFER_LOAD}
 
 %%%%
 \summary
@@ -162,7 +194,7 @@ Load the given data into the provided \refstruct{pmix_data_buffer_t} object, usu
 
 %%%%%%%%%%%
 \subsection{\code{PMIX_DATA_BUFFER_UNLOAD}}
-\declareapi{PMIX_DATA_BUFFER_UNLOAD}
+\declaremacro{PMIX_DATA_BUFFER_UNLOAD}
 
 %%%%
 \summary
@@ -243,7 +275,7 @@ Returns one of the following:
 \descr
 
 The pack function packs one or more values of a specified type into the specified buffer.  The buffer must have already been
-initialized via the \refapi{PMIX_DATA_BUFFER_CREATE} or \refapi{PMIX_DATA_BUFFER_CONSTRUCT}
+initialized via the \refmacro{PMIX_DATA_BUFFER_CREATE} or \refmacro{PMIX_DATA_BUFFER_CONSTRUCT}
 macros --- otherwise, \refapi{PMIx_Data_pack} will return an error.
 Providing an unsupported type flag will likewise be reported as an error.
 
@@ -311,7 +343,7 @@ Returns one of the following:
 %%%%
 \descr
 
-The unpack function unpacks the next value (or values) of a specified type from the given buffer. The buffer must have already been initialized via an \refapi{PMIX_DATA_BUFFER_CREATE} or \refapi{PMIX_DATA_BUFFER_CONSTRUCT} call (and assumedly filled with some data) --- otherwise, the unpack_value function will return an error. Providing an unsupported type flag will likewise be reported as an error, as will specifying a data type that \textit{does not} match the type of the next item in the buffer. An attempt to read beyond the end of the stored data held in the buffer will also return an error.
+The unpack function unpacks the next value (or values) of a specified type from the given buffer. The buffer must have already been initialized via an \refmacro{PMIX_DATA_BUFFER_CREATE} or \refmacro{PMIX_DATA_BUFFER_CONSTRUCT} call (and assumedly filled with some data) --- otherwise, the unpack_value function will return an error. Providing an unsupported type flag will likewise be reported as an error, as will specifying a data type that \textit{does not} match the type of the next item in the buffer. An attempt to read beyond the end of the stored data held in the buffer will also return an error.
 
 NOTE: it is possible for the buffer to be corrupted and that \ac{PMIx} will \textit{think} there is a proper variable type at the beginning of an unpack region --- but that the value is bogus (e.g., just a byte field in a string array that so happens to have a value that matches the specified data type flag). Therefore, the data type error check is \textit{not} completely safe.
 
