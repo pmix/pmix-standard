@@ -1454,7 +1454,7 @@ The following attributes are optional for host environments that support this op
 
 Publish data per the \refapi{PMIx_Publish} specification.
 The callback is to be executed upon completion of the operation.
-The default data range is left to the host environment, but expected to be \refconst{PMIX_SESSION}, and the default persistence \refconst{PMIX_PERSIST_SESSION} or their equivalent.
+The default data range is left to the host environment, but expected to be \refconst{PMIX_RANGE_SESSION}, and the default persistence \refconst{PMIX_PERSIST_SESSION} or their equivalent.
 These values can be specified by including the respective attributed in the \refarg{info} array.
 
 The persistence indicates how long the server should retain the data.
@@ -1537,7 +1537,7 @@ The following attributes are optional for host environments that support this op
 Lookup published data.
 The host server will be passed a \code{NULL}-terminated array of string keys identifying the data being requested.
 
-The array of \refarg{info} structs is used to pass user-requested options to the server. The default data range is left to the host environment, but expected to be \refconst{PMIX_SESSION}.
+The array of \refarg{info} structs is used to pass user-requested options to the server. The default data range is left to the host environment, but expected to be \refconst{PMIX_RANGE_SESSION}.
 This can include a wait flag to indicate that the server should wait for all data to become available before executing the callback function, or should immediately callback with whatever data is available.
 In addition, a timeout can be specified on the wait to preclude an indefinite wait for data that may never be published.
 
@@ -1612,7 +1612,7 @@ The following attributes are optional for host environments that support this op
 \descr
 
 Delete data from the data store.
-The host server will be passed a \code{NULL}-terminated array of string keys, plus potential directives such as the data range within which the keys should be deleted. The default data range is left to the host environment, but expected to be \refconst{PMIX_SESSION}.
+The host server will be passed a \code{NULL}-terminated array of string keys, plus potential directives such as the data range within which the keys should be deleted. The default data range is left to the host environment, but expected to be \refconst{PMIX_RANGE_SESSION}.
 The callback is to be executed upon completion of the delete procedure.
 
 \advicermstart
@@ -1929,14 +1929,14 @@ Register to receive notifications for the specified status codes. The \refarg{in
 The \ac{PMIx} server library must track all client registrations for subsequent notification. This module function shall only be called when:
 
 \begin{itemize}
-    \item the client has requested notification of an environmental code (i.e., a \ac{PMIx} code in the range between \refconst{PMIX_ERR_SYS_BASE} and \refconst{PMIX_ERR_SYS_OTHER}, inclusive) or a code that lies outside the defined \ac{PMIx} range of constants; and
+    \item the client has requested notification of an environmental code or a code that lies outside the defined \ac{PMIx} range of constants; and
     \item the \ac{PMIx} server library has not previously requested notification of that code - i.e., the host environment is to be contacted only once a given unique code value
 \end{itemize}
 
 \adviceimplend
 
 \advicermstart
-The host environment is must to pass to its \ac{PMIx} server library all non-environmental events that directly relate to a registered namespace without the \ac{PMIx} server library explicitly requesting them. Environmental events are to be translated to their nearest \ac{PMIx} equivalent code as defined in the range between \refconst{PMIX_ERR_SYS_BASE} and \refconst{PMIX_ERR_SYS_OTHER} (inclusive).
+The host environment is must to pass to its \ac{PMIx} server library all non-environmental events that directly relate to a registered namespace without the \ac{PMIx} server library explicitly requesting them. Environmental events are to be translated to their nearest \ac{PMIx} equivalent code.
 \advicermend
 
 
@@ -1987,7 +1987,7 @@ Deregister to receive notifications for the specified events to which the \ac{PM
 The \ac{PMIx} server library must track all client registrations. This module function shall only be called when:
 
 \begin{itemize}
-    \item the library is deregistering environmental codes (i.e., a \ac{PMIx} codes in the range between \refconst{PMIX_ERR_SYS_BASE} and \refconst{PMIX_ERR_SYS_OTHER}, inclusive) or codes that lies outside the defined \ac{PMIx} range of constants; and
+    \item the library is deregistering an environmental code or a code that lies outside the defined \ac{PMIx} range of constants; and
     \item no client (including the server library itself) remains registered for notifications on any included code - i.e., a code should be included in this call only when no registered notifications against it remain.
 \end{itemize}
 
@@ -2476,7 +2476,7 @@ The following attributes are optional for host environments that support this op
 
 Execute a job control action on behalf of a client. The \refarg{targets} array identifies the processes to which the requested job control action is to be applied.
 A \code{NULL} value can be used to indicate all processes in the caller's namespace.
-The use of \refconst{PMIX_RANK_WILDARD} can also be used to indicate that all processes in the given namespace are to be included.
+The use of \refconst{PMIX_RANK_WILDCARD} can also be used to indicate that all processes in the given namespace are to be included.
 
 The directives are provided as \refstruct{pmix_info_t} structures in the \refarg{directives} array.
 The callback function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.

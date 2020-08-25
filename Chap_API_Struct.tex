@@ -4728,7 +4728,7 @@ typedef void (*pmix_event_notification_cbfunc_fn_t)
 %%%%
 \descr
 
-Define a callback by which an event handler can notify the \ac{PMIx} library that it has completed its response to the notification. The handler is \textit{required} to execute this callback so the library can determine if additional handlers need to be called. The handler shall return \refconst{PMIX_ERR_EVENT_COMPLETE} if no further action is required. The return status of each event handler and any returned \refstruct{pmix_info_t} structures will be added to the \textit{results} array of \refstruct{pmix_info_t} passed to any subsequent event handlers to help guide their operation.
+Define a callback by which an event handler can notify the \ac{PMIx} library that it has completed its response to the notification. The handler is \textit{required} to execute this callback so the library can determine if additional handlers need to be called. The handler shall return \refconst{PMIX_EVENT_ACTION_COMPLETE} if no further action is required. The return status of each event handler and any returned \refstruct{pmix_info_t} structures will be added to the \textit{results} array of \refstruct{pmix_info_t} passed to any subsequent event handlers to help guide their operation.
 
 If non-NULL, the provided callback function will be called to allow the event handler to release the provided info array and execute any other required cleanup operations.
 
@@ -5049,7 +5049,7 @@ typedef void (*pmix_iof_cbfunc_t)(
 \argin{channel}{bitmask identifying the channel the data arrived on (\refstruct{pmix_iof_channel_t})}
 \argin{source}{Pointer to a \refstruct{pmix_proc_t} identifying the namespace/rank of the process that generated the data (\code{char*})}
 \argin{payload}{Pointer to character array containing the data.}
-\argin{info}{Array of \refstruct{pmix_info_t} provided by the source containing metadata about the payload. This could include \refconst{PMIX_IOF_COMPLETE} (handle)}
+\argin{info}{Array of \refstruct{pmix_info_t} provided by the source containing metadata about the payload. This could include \refattr{PMIX_IOF_COMPLETE} (handle)}
 \argin{ninfo}{Number of elements in \refarg{info} (\code{size_t})}
 \end{arglist}
 
