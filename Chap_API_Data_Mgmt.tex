@@ -6,7 +6,7 @@
 
 \ac{PMIx} intentionally does not include support for internode communications in the standard, instead relying on its host \ac{SMS} environment to transfer any needed data and/or requests between nodes. These operations frequently involve PMIx-defined public data structures that include binary data. Many \ac{HPC} clusters are homogeneous, and so transferring the structures can be done rather simply. However, greater effort is required in heterogeneous environments to ensure binary data is correctly transferred. \ac{PMIx} buffer manipulation functions are provided for this purpose via standardized interfaces to ease adoption.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Buffer Type}
 \declarestruct{pmix_data_buffer_t}
 
@@ -38,24 +38,19 @@ typedef struct pmix_data_buffer \{
 \cspecificend
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Support Macros}
 \label{chap:datamgt:macros}
 
 \ac{PMIx} provides a set of convenience macros for creating, initiating, and releasing data buffers.
 
 %%%%%%%%%%%
-\subsection{\code{PMIX_DATA_BUFFER_CREATE}}
+\littleheader{\code{PMIX_DATA_BUFFER_CREATE}}
 \declaremacro{PMIX_DATA_BUFFER_CREATE}
 
-%%%%
-\summary
-
-Allocate memory for a \refstruct{pmix_data_buffer_t} object and initialize it
-
-%%%%
-\format
+Allocate memory for a \refstruct{pmix_data_buffer_t} object and initialize it.
+This macro uses \textit{calloc} to allocate memory for the buffer and initialize all fields in it
 
 \versionMarker{2.0}
 \cspecificstart
@@ -68,23 +63,12 @@ PMIX_DATA_BUFFER_CREATE(buffer);
 \argout{buffer}{Variable to be assigned the pointer to the allocated \refstruct{pmix_data_buffer_t} (handle)}
 \end{arglist}
 
-%%%%
-\descr
-
-This macro uses \textit{calloc} to allocate memory for the buffer and initialize all fields in it
-
-
 %%%%%%%%%%%
-\subsection{\code{PMIX_DATA_BUFFER_RELEASE}}
+\littleheader{\code{PMIX_DATA_BUFFER_RELEASE}}
 \declaremacro{PMIX_DATA_BUFFER_RELEASE}
 
-%%%%
-\summary
-
-Free a \refstruct{pmix_data_buffer_t} object and the data it contains
-
-%%%%
-\format
+Free a \refstruct{pmix_data_buffer_t} object and the data it contains.
+Free's the data contained in the buffer, and then free's the buffer itself
 
 \versionMarker{2.0}
 \cspecificstart
@@ -97,23 +81,12 @@ PMIX_DATA_BUFFER_RELEASE(buffer);
 \argin{buffer}{Pointer to the \refstruct{pmix_data_buffer_t} to be released (handle)}
 \end{arglist}
 
-%%%%
-\descr
-
-Free's the data contained in the buffer, and then free's the buffer itself
-
 
 %%%%%%%%%%%
-\subsection{\code{PMIX_DATA_BUFFER_CONSTRUCT}}
+\littleheader{\code{PMIX_DATA_BUFFER_CONSTRUCT}}
 \declaremacro{PMIX_DATA_BUFFER_CONSTRUCT}
 
-%%%%
-\summary
-
-Initialize a statically declared \refstruct{pmix_data_buffer_t} object
-
-%%%%
-\format
+Initialize a statically declared \refstruct{pmix_data_buffer_t} object.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -126,23 +99,11 @@ PMIX_DATA_BUFFER_CONSTRUCT(buffer);
 \argin{buffer}{Pointer to the allocated \refstruct{pmix_data_buffer_t} that is to be initialized (handle)}
 \end{arglist}
 
-%%%%
-\descr
-
-Initialize a pre-allocated buffer object
-
-
 %%%%%%%%%%%
-\subsection{\code{PMIX_DATA_BUFFER_DESTRUCT}}
+\littleheader{\code{PMIX_DATA_BUFFER_DESTRUCT}}
 \declaremacro{PMIX_DATA_BUFFER_DESTRUCT}
 
-%%%%
-\summary
-
-Release the data contained in a \refstruct{pmix_data_buffer_t} object
-
-%%%%
-\format
+Release the data contained in a \refstruct{pmix_data_buffer_t} object.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -155,23 +116,13 @@ PMIX_DATA_BUFFER_DESTRUCT(buffer);
 \argin{buffer}{Pointer to the \refstruct{pmix_data_buffer_t} whose data is to be released (handle)}
 \end{arglist}
 
-%%%%
-\descr
-
-Free's the data contained in a \refstruct{pmix_data_buffer_t} object
-
 
 %%%%%%%%%%%
-\subsection{\code{PMIX_DATA_BUFFER_LOAD}}
+\littleheader{\code{PMIX_DATA_BUFFER_LOAD}}
 \declaremacro{PMIX_DATA_BUFFER_LOAD}
 
-%%%%
-\summary
-
-Load a blob into a \refstruct{pmix_data_buffer_t} object
-
-%%%%
-\format
+Load a blob into a \refstruct{pmix_data_buffer_t} object.
+Load the given data into the provided \refstruct{pmix_data_buffer_t} object, usually done in preparation for unpacking the provided data. Note that the data is \textit{not} copied into the buffer - thus, the blob must not be released until after operations on the buffer have completed.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -186,23 +137,12 @@ PMIX_DATA_BUFFER_LOAD(buffer, data, size);
 \argin{size}{Number of bytes in the blob {\code{size_t}}}
 \end{arglist}
 
-%%%%
-\descr
-
-Load the given data into the provided \refstruct{pmix_data_buffer_t} object, usually done in preparation for unpacking the provided data. Note that the data is \textit{not} copied into the buffer - thus, the blob must not be released until after operations on the buffer have completed.
-
-
 %%%%%%%%%%%
-\subsection{\code{PMIX_DATA_BUFFER_UNLOAD}}
+\littleheader{\code{PMIX_DATA_BUFFER_UNLOAD}}
 \declaremacro{PMIX_DATA_BUFFER_UNLOAD}
 
-%%%%
-\summary
-
-Unload the data from a \refstruct{pmix_data_buffer_t} object
-
-%%%%
-\format
+Unload the data from a \refstruct{pmix_data_buffer_t} object.
+Extract the data in a buffer, assigning the pointer to the data (and the number of bytes in the blob) to the provided variables, usually done to transmit the blob to a remote process for unpacking. The buffer's internal pointer will be set to NULL to protect the data upon buffer destruct or release - thus, the user is responsible for releasing the blob when done with it.
 
 \versionMarker{2.0}
 \cspecificstart
@@ -217,27 +157,22 @@ PMIX_DATA_BUFFER_UNLOAD(buffer, data, size);
 \argout{size}{Variable to be assigned the number of bytes in the blob {\code{size_t}}}
 \end{arglist}
 
-%%%%
-\descr
 
-Extract the data in a buffer, assigning the pointer to the data (and the number of bytes in the blob) to the provided variables, usually done to transmit the blob to a remote process for unpacking. The buffer's internal pointer will be set to NULL to protect the data upon buffer destruct or release - thus, the user is responsible for releasing the blob when done with it.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{General Routines}
 \label{chap:data_mgmt:general}
 
 The following routines are provided to support internode transfers in heterogeneous environments.
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Data_pack}}
 \declareapi{PMIx_Data_pack}
 
 %%%%
 \summary
 
-Pack one or more values of a specified type into a buffer, usually for transmission to another process
+Pack one or more values of a specified type into a buffer, usually for transmission to another process.
 
 %%%%
 \format
@@ -297,7 +232,7 @@ version --- thus, the caller must only know at least one process from the
 target's namespace.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Data_unpack}}
 \declareapi{PMIx_Data_unpack}
 
@@ -345,7 +280,7 @@ Returns one of the following:
 
 The unpack function unpacks the next value (or values) of a specified type from the given buffer. The buffer must have already been initialized via an \refmacro{PMIX_DATA_BUFFER_CREATE} or \refmacro{PMIX_DATA_BUFFER_CONSTRUCT} call (and assumedly filled with some data) --- otherwise, the unpack_value function will return an error. Providing an unsupported type flag will likewise be reported as an error, as will specifying a data type that \textit{does not} match the type of the next item in the buffer. An attempt to read beyond the end of the stored data held in the buffer will also return an error.
 
-NOTE: it is possible for the buffer to be corrupted and that \ac{PMIx} will \textit{think} there is a proper variable type at the beginning of an unpack region --- but that the value is bogus (e.g., just a byte field in a string array that so happens to have a value that matches the specified data type flag). Therefore, the data type error check is \textit{not} completely safe.
+Note that it is possible for the buffer to be corrupted and that \ac{PMIx} will \textit{think} there is a proper variable type at the beginning of an unpack region --- but that the value is bogus (e.g., just a byte field in a string array that so happens to have a value that matches the specified data type flag). Therefore, the data type error check is \textit{not} completely safe.
 
 Unpacking values is a "nondestructive" process --- i.e., the values are not removed from the buffer. It is therefore possible for the caller to re-unpack a value from the same buffer by resetting the unpack_ptr.
 
@@ -362,7 +297,7 @@ version --- thus, the caller must only know at least one process from the
 packer's namespace.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Data_copy}}
 \declareapi{PMIx_Data_copy}
 
@@ -405,7 +340,7 @@ Returns one of the following:
 Since registered data types can be complex structures, the system needs some way to know how to copy the data from one location to another (e.g., for storage in the registry). This function, which can call other copy functions to build up complex data types, defines the method for making a copy of the specified data type.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Data_print}}
 \declareapi{PMIx_Data_print}
 
@@ -446,7 +381,7 @@ Returns one of the following:
 Since registered data types can be complex structures, the system needs some way to know how to print them (i.e., convert them to a string representation). Primarily for debug purposes.
 
 
-%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Data_copy_payload}}
 \declareapi{PMIx_Data_copy_payload}
 

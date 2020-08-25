@@ -4,40 +4,62 @@
 \chapter{PMIx Terms and Conventions}
 \label{chap:terms}
 
-The \ac{PMIx} Standard has adopted the widespread use of key-value \textit{attributes} to add flexibility to the functionality expressed in the existing \acp{API}. Accordingly, the community has chosen to require that the definition of each standard \ac{API} include the passing of an array of attributes. These provide a means of customizing the behavior of the \ac{API} as future needs emerge without having to alter or create new variants of it. In addition, attributes provide a mechanism by which researchers can easily explore new approaches to a given operation without having to modify the \ac{API} itself.
+In this chapter we describe some common terms and conventions used throughout
+this document. The \ac{PMIx} Standard has adopted the widespread use of
+key-value \textit{attributes} to add flexibility to the functionality expressed
+in the existing \acp{API}. Accordingly, the \ac{ASC} has chosen to require that
+the definition of each standard \ac{API} include the passing of an array of
+attributes. These provide a means of customizing the behavior of the \ac{API}
+as future needs emerge without having to alter or create new variants of it. In
+addition, attributes provide a mechanism by which researchers can easily
+explore new approaches to a given operation without having to modify the
+\ac{API} itself.
 
-The \ac{PMIx} community has further adopted a policy that modification of existing released \acp{API} will only be permitted under extreme circumstances. In its effort to avoid introduction of any such backward incompatibility, the community has avoided the definitions of large numbers of \acp{API} that each focus on a narrow scope of functionality, and instead relied on the definition of fewer generic \acp{API} that include arrays of directives for ``tuning'' the function's behavior. Thus, modifications to the PMIx standard increasingly consist of the definition of new attributes along with a description of the \acp{API} to which they relate and the expected behavior when used with those \acp{API}.
+In an effort to maintain long-term backward compatibility, \ac{PMIx} does not include large numbers of \acp{API} that each focus on a narrow scope of functionality, but instead relies on the definition of fewer generic \acp{API} that include arrays of key-value attributes for ``tuning'' the function's behavior. Thus, modifications to the \ac{PMIx} standard primarily consist of the definition of new attributes along with a description of the \acp{API} to which they relate and the expected behavior when used with those \acp{API}.
 
-One area where this can become more complicated relates to the attributes that provide directives to the client process and/or control the behavior of a \ac{PMIx} standard \ac{API}. For example, the \refattr{PMIX_TIMEOUT} attribute can be used to specify the time (in seconds) before the requested operation should time out.
-The intent of this attribute is to allow the client to avoid hanging in a request that takes longer than the client wishes to wait, or may never return (e.g., a \refapi{PMIx_Fence} that a blocked participant never enters).
-
-If an application truly relies on the \refattr{PMIX_TIMEOUT} attribute in a call to \refapi{PMIx_Fence}, it should set the \textit{required} flag in the \refstruct{pmix_info_t} for that attribute. This informs the library and its \ac{SMS} host that it must return an immediate error if this attribute is not supported. By not setting the flag, the library and \ac{SMS} host are allowed to treat the attribute as optional, silently ignoring it if support is not available.
-
-\adviceuserstart
-It is critical that users and application developers consider whether or not a given attribute is required (marking it accordingly) and always check the return status on all \ac{PMIx} function calls to ensure support was present and that the request was accepted. Note that for non-blocking \acp{API}, a return of \refconst{PMIX_SUCCESS} only indicates that the request had no obvious errors and is being processed. The eventual callback will return the status of the requested operation itself.
-\adviceuserend
-
-While a \ac{PMIx} library implementer, or an \ac{SMS} component server, may choose to support a particular \ac{PMIx} \ac{API}, they are not required to support every attribute that might apply to it. This would pose a significant barrier to entry for an implementer as there can be a broad range of applicable attributes to a given \ac{API}, at least some of which may rarely be used in a specific market area. The \ac{PMIx} community is attempting to help differentiate the attributes by indicating in the standard those that are generally used (and therefore, of higher importance to support) versus those that a ``complete implementation'' would support.
-
-In addition, the document refers to the following entities and process stages when describing use-cases or operations involving \ac{PMIx}:
+The following terminology is used throughout this document:
 
 \begin{itemize}
-\item \declareterm{session}\emph{session} refers to an allocated set of resources assigned to a particular user by the system \ac{WLM}. Historically, \ac{HPC} sessions have consisted of a static allocation of resources - i.e., a block of resources are assigned to a user in response to a specific request and managed as a unified collection. However, this is changing in response to the growing use of dynamic programming models that require on-the-fly allocation and release of system resources. Accordingly, the term \emph{session} in this document refers to the current block of assigned resources and is a potentially dynamic entity.
-\item \declareterm{slot}\declareterm{slots}\emph{slot} refers to an allocated entry for a process. \acp{WLM} frequently allocate entire nodes to a \emph{session}, but can also be configured to define the maximum number of processes that can simultaneously be executed on each node. This often corresponds to the number of hardware \acp{PU} (typically cores, but can also be defined as hardware threads) on the node. However, the correlation between hardware \acp{PU} and slot allocations strictly depends upon system configuration.
-\item \declareterm{job}\emph{job} refers to a set of one or more \emph{applications} executed as a single invocation by the user within a session. For example, ``\textit{mpiexec -n 1 app1 : -n 2 app2}'' is considered a single \ac{MPMD} job containing two applications.
-\item \declareterm{namespace}\emph{namespace} refers to a character string value assigned by the \ac{RM} to a \textit{job}. All \textit{applications} executed as part of that \textit{job} share the same \emph{namespace}. The \emph{namespace} assigned to each \emph{job} must be unique within the scope of the governing \ac{RM}.
-\item \declareterm{application}\emph{application} refers to a single executable (binary, script, etc.) member of a \emph{job}. Applications consist of one or more \emph{processes}, either operating independently or in parallel at any given time during their execution.
-\item \declareterm{rank}\emph{rank} refers to the numerical location (starting from zero) of a process within the defined scope. Thus, {global rank} is the rank of a process within its \emph{job}, while \emph{application rank} is the rank of that process within its \emph{application}.
-\item \declareterm{workflow}\declareterm{workflows}\emph{workflow} refers to an orchestrated execution plan frequently spanning multiple \emph{jobs} carried out under the control of a \emph{workflow manager} process. An example workflow might first execute a computational job to generate the flow of liquid through a complex cavity, followed by a visualization job that takes the output of the first job as its input to produce an image output.
-\item \declareterm{scheduler}\emph{scheduler} refers to the component of the \ac{SMS} responsible for scheduling of resource allocations. This is also generally referred to as the \emph{system workflow manager} - for the purposes of this document, the \emph{WLM} acronym will be used interchangeably to refer to the scheduler.
-\item \declareterm{resource manager}\emph{resource manager} is used in a generic sense to represent the subsystem that will host the \ac{PMIx} server library. This could be a vendor's \ac{RM}, a programming library's \ac{RTE}, or some other agent.
-\item \declareterm{host environment}\emph{host environment} is used interchangeably with \emph{resource manager} to refer to the process hosting the \ac{PMIx} server library.
-\item \declareterm{fabric}\declareterm{fabrics}\emph{fabric} is used in a generic sense to refer to the networks within the system regardless of speed or protocol. Any use of the term \emph{network} in the document should be considered interchangeable with \emph{fabric}.
-\item \declareterm{fabric plane}\declareterm{fabric planes}\emph{fabric plane} refers to a collection of devices (\acp{NIC}) and switches in a common logical or physical configuration. Fabric planes are often implemented in \ac{HPC} clusters as separate overlay or physical networks controlled by a dedicated fabric manager.
+\item \declareterm{session} refers to a pool of resources with a unique identifier (a.k.a., the \emph{session ID}) assigned by the \ac{WLM} that has been reserved for one or more users. Historically, \ac{HPC} sessions have consisted of a static allocation of resources - e.g., a block of nodes assigned to a user in response to a specific request and managed as a unified collection. However, this is changing in response to the growing use of dynamic programming models that require on-the-fly allocation and release of system resources. Accordingly, the term \emph{session} in this document refers to a potentially dynamic entity, perhaps comprised of resources accumulated as a result of multiple allocation requests that are managed as a single unit by the \ac{WLM}.
+
+\item \declareterm{job} refers to a set of one or more \emph{applications} executed as a single invocation by the user within a session with a unique identifier (a.k.a, the \emph{job ID}) assigned by the \ac{RM} or launcher. For example, the command line ``\textit{mpiexec -n 1 app1 : -n 2 app2}'' generates a single \ac{MPMD} job containing two applications. A user may execute multiple \emph{jobs} within a given session, either sequentially or in parallel.
+
+\item \declareterm{namespace} refers to a character string value assigned by the \ac{RM} or launcher (e.g., \code{mpiexec}) to a \textit{job}. All \textit{applications} executed as part of that \textit{job} share the same \emph{namespace}. The \emph{namespace} assigned to each \emph{job} must be unique within the scope of the governing \ac{RM} and often is implemented as a string representation of a numerical job ID. The \emph{namespace} and \emph{job} terms will be used interchangeably throughout the document.
+
+\item \declareterm{application} refers to a single executable (binary, script, etc.) member of a \emph{job}.
+
+\item \declareterm{process} refers to an operating system process, also commonly referred to as a \emph{heavyweight} process. A process is often comprised of multiple \emph{lightweight threads}, commonly known as simply \declaretermAlt{threads}{thread}.
+
+\item \declaretermAlt{slot}{slots} refers to an allocated entry for a process. \acp{WLM} frequently allocate entire nodes to a \emph{session}, but can also be configured to define the maximum number of processes that can simultaneously be executed on each node. This often corresponds to the number of hardware \acp{PU} (typically cores, but can also be defined as hardware threads) on the node. However, the correlation between hardware \acp{PU} and slot allocations strictly depends upon system configuration.
+
+\item \declareterm{rank} refers to the numerical location (starting from zero) of a process within the defined scope. Thus, \emph{job rank} is the rank of a process within its \emph{job} and is synonymous with its unqualified \emph{rank}, while \emph{application rank} is the rank of that process within its \emph{application}.
+
+\item \declaretermAlt{peer}{peers} refers to another process within the same \refterm{job}.
+
+\item \declaretermAlt{workflow}{workflows} refers to an orchestrated execution plan frequently involving multiple \emph{jobs} carried out under the control of a \emph{workflow manager} process. An example workflow might first execute a computational job to generate the flow of liquid through a complex cavity, followed by a visualization job that takes the output of the first job as its input to produce an image output.
+
+\item \declareterm{scheduler} refers to the component of the \ac{SMS} responsible for scheduling of resource allocations. This is also generally referred to as the \emph{system workflow manager} - for the purposes of this document, the \emph{WLM} acronym will be used interchangeably to refer to the scheduler.
+
+\item \declaretermAlt{resource manager}{RM} is used in a generic sense to represent the subsystem that will host the \ac{PMIx} server library. This could be a vendor-supplied resource manager or a third-party agent such as a programming model's runtime library.
+
+\item \declareterm{host environment} is used interchangeably with \emph{resource manager} to refer to the process hosting the \ac{PMIx} server library.
+
+\item \declareterm{node} refers to a single operating system instance. Note that this may encompass one or more physical objects.
+
+\item \declaretermAlt{fabric}{fabrics} is used in a generic sense to refer to the networks within the system regardless of speed or protocol. Any use of the term \emph{network} in the document should be considered interchangeable with \emph{fabric}.
+
+\item \declaretermAlt{fabric plane}{fabric planes} refers to a collection of devices (\acp{NIC}) and switches in a common logical or physical configuration. Fabric planes are often implemented in \ac{HPC} clusters as separate overlay or physical networks controlled by a dedicated fabric manager.
+
+\item \declareterm{attribute} refers to a key-datatype pair comprised of a string key (represented by a \refstruct{pmix_key_t} structure) and an associated \ac{PMIx} data type (e.g., boolean, integer, or a more complex \ac{PMIx} structure). Attributes are used both as directives when passed as qualifiers to \acp{API} (e.g., in a \refstruct{pmix_info_t} array), and to identify the contents of information (e.g., to specify that the contents of the corresponding \refstruct{pmix_value_t} in a \refstruct{pmix_info_t} represent the \refattr{PMIX_UNIV_SIZE}).
+
+\item \declareterm{key} refers to the string component of a defined \emph{attribute}. The \ac{PMIx} Standard will often refer to passing of a \emph{key} to an \ac{API} (e.g., to the \refapi{PMIx_Query_info} or \refapi{PMIx_Get} \acp{API}) as a means of identifying the information the caller wishes to obtain. In this context, the \emph{datatype} portion of the associated \emph{attribute} indicates the datatype the caller should expect to receive in return. Note that not all \emph{attributes} can be used as \emph{keys} as some have specific uses solely as \ac{API} qualifiers.
+
+\item \declareterm{instant on} refers to a \ac{PMIx} concept stating that: "All information required for setup and communication (including the address vector of endpoints for every process) is available to each process at start of execution"
+
 \end{itemize}
 
 
-This document borrows freely from other standards (most notably from the \ac{MPI} and OpenMP standards) in its use of notation and conventions in an attempt to reduce confusion. The following sections provide an overview of the conventions used throughout the \ac{PMIx} Standard document.
+The following sections provide an overview of the conventions used throughout the \ac{PMIx} Standard document.
 
 %%%%%%%%%%%
 \section{Notational Conventions}
@@ -80,6 +102,8 @@ Throughout this document, material that is primarily commentary aimed at host en
 Some readers may wish to skip these sections, while readers interested in integrating \ac{PMIx} servers into their environment may want to read them carefully.
 \advicermend
 
+Attributes added in this version of the standard are shown in \textit{\textbf{\color{magenta}magenta}} to distinguish them from those defined in prior versions, which are shown in \textit{\textbf{black}}. Deprecated attributes are shown in \textit{\textbf{\color{green!80!black}green}} and may be removed in a future version of the standard.
+
 %%%%%%%%%%%
 \section{Semantics}
 
@@ -106,12 +130,12 @@ For example, \refapi{PMIx_Get_version}.
 \item The \code{pmix_} prefix is used to denote function pointer and type definitions.
 \end{itemize}
 
-Users should not use the \textbf{\code{PMIX}}, \textbf{\code{PMIx}}, or \textbf{\code{pmix}} prefixes in their applications or libraries so as to avoid symbol conflicts with current and later versions of the \ac{PMIx} standard and implementations such as the \ac{PRI}.
+Users should not use the \textbf{\code{"PMIX"}}, \textbf{\code{"PMIx"}}, or \textbf{\code{"pmix"}} prefixes in their applications or libraries so as to avoid symbol conflicts with current and later versions of the \ac{PMIx} Standard.
 
 %%%%%%%%%%%
 \section{Procedure Conventions}
 
-While the current \acf{PRI} is solely based on the C programming language, it is not the intent of the \ac{PMIx} Standard to preclude the use of other languages.
+While the current \acp{API} are based on the C programming language, it is not the intent of the \ac{PMIx} Standard to preclude the use of other languages.
 Accordingly, the procedure specifications in the \ac{PMIx} Standard are written in a language-independent syntax with the arguments marked as IN, OUT, or INOUT.
 The meanings of these are:
 \begin{itemize}
@@ -126,12 +150,3 @@ The call may both use and update the argument.
 Many \ac{PMIx} interfaces, particularly nonblocking interfaces, use a \code{void*}cbdata object passed to the function that is then passed to the associated callback. In a client-side \ac{API}, the cbdata is a client-provided context (opaque object) that the client can pass to the nonblocking call (e.g., \refapi{PMIx_Get_nb}). When the nonblocking call (e.g., \refapi{pmix_value_cbfunc_t}) completes, the cbdata is passed back to the client without modification by the \ac{PMIx} library, thus allowing the client to associate a context with that callback. This is useful if there are many outstanding nonblocking calls.
 
 A similar model is used for the server module functions (see \ref{server:module_fns}). In this case, the \ac{PMIx} library is making an upcall into its host via the \ac{PMIx} server module function and passing a specific cbfunc and cbdata. The \ac{PMIx} library expects the host to call the cbfunc with the necessary arguments and pass back the original cbdata upon completing the operation. This gives the server-side \ac{PMIx} library the ability to associate a context with the call back (since multiple operations may be outstanding). The host has no visibility into the contents of the cbdata object, nor is permitted to alter it in any way.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Standard vs Reference Implementation}
-
-The \textit{PMIx Standard} is implementation independent. The \textit{PMIx Reference Implementation} (PRI) is one implementation of the Standard and the \ac{PMIx} community strives to ensure that it fully implements the Standard. Given its role as the community's testbed and its widespread use, this document cites the attributes supported by the \ac{PRI} for each \ac{API} where relevant by marking them in {\color{red}red}. This is not meant to imply nor confer any special role to the \ac{PRI} with respect to the Standard itself, but instead to provide a convenience to users of the Standard and \ac{PRI}.
-
-Similarly, the \textit{PMIx Reference RunTime Environment} (PRRTE) is provided by the community to enable users operating in non-\ac{PMIx} environments to develop and execute \ac{PMIx}-enabled applications and tools. Attributes supported by the \ac{PRRTE} are marked in {\color{green!60!black}green}.
-
