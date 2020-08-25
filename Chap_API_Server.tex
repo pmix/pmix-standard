@@ -2936,7 +2936,7 @@ Register to receive notifications for the specified status codes. The \refarg{in
 The \ac{PMIx} server library must track all client registrations for subsequent notification. This module function shall only be called when:
 
 \begin{itemize}
-    \item the client has requested notification of an environmental code (i.e., a \ac{PMIx} code in the range beyond \refconst{PMIX_EVENT_SYS_OTHER}) or a code that lies outside the defined \ac{PMIx} range of constants; and
+    \item the client has requested notification of an environmental code (i.e., a \ac{PMIx} codes in the range between \refconst{PMIX_EVENT_SYS_BASE} and \refconst{PMIX_EVENT_SYS_OTHER}, inclusive) or codes that lies outside the defined \ac{PMIx} range of constants; and
     \item the \ac{PMIx} server library has not previously requested notification of that code - i.e., the host environment is to be contacted only once a given unique code value
 \end{itemize}
 
