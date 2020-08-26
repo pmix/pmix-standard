@@ -106,16 +106,13 @@ Several datatype definitions have been created to support fabric-related operati
 
 The \refstruct{pmix_endpoint_t} structure contains an assigned endpoint for a given fabric device.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_endpoint \{
-    char *uuid;
-    char *osname;
-    pmix_byte_object_t endpt;
+\copySignature{pmix_endpoint_t}{4.0}{
+typedef struct pmix_endpoint \{ \\
+\hspace*{4\sigspace}char *uuid; \\
+\hspace*{4\sigspace}char *osname; \\
+\hspace*{4\sigspace}pmix_byte_object_t endpt; \\
 \} pmix_endpoint_t;
-\end{codepar}
-\cspecificend
+}
 
 The \refarg{uuid} field contains the \ac{UUID} of the fabric device, the \refarg{osname} is the local operating system's name for the device, and the \refarg{endpt} field contains a fabric vendor-specific object identifying the communication endpoint assigned to the process.
 
@@ -132,12 +129,9 @@ The following macros are provided to support the \refstruct{pmix_endpoint_t} str
 
 Initialize the \refstruct{pmix_endpoint_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_ENDPOINT_CONSTRUCT}{4.0}{
 PMIX_ENDPOINT_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_endpoint_t})}
@@ -149,12 +143,9 @@ PMIX_ENDPOINT_CONSTRUCT(m)
 
 Destruct the \refstruct{pmix_endpoint_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_ENDPOINT_DESTRUCT}{4.0}{
 PMIX_ENDPOINT_DESTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_endpoint_t})}
@@ -166,12 +157,9 @@ PMIX_ENDPOINT_DESTRUCT(m)
 
 Allocate and initialize a \refstruct{pmix_endpoint_t} array.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_ENDPOINT_CREATE}{4.0}{
 PMIX_ENDPOINT_CREATE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_endpoint_t} structures shall be stored (handle)}
@@ -184,12 +172,9 @@ PMIX_ENDPOINT_CREATE(m, n)
 
 Release an array of \refstruct{pmix_endpoint_t} structures.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_ENDPOINT_FREE}{4.0}{
 PMIX_ENDPOINT_FREE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the array of \refstruct{pmix_endpoint_t} structures (handle)}
@@ -203,15 +188,13 @@ PMIX_ENDPOINT_FREE(m, n)
 
 The \refstruct{pmix_coord_t} structure describes the fabric coordinates of a specified device in a given view.
 
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_coord \{
-    pmix_coord_view_t view;
-    uint32_t *coord;
-    size_t dims;
+\copySignature{pmix_coord_t}{4.0}{
+typedef struct pmix_coord \{ \\
+\hspace*{4\sigspace}pmix_coord_view_t view; \\
+\hspace*{4\sigspace}uint32_t *coord; \\
+\hspace*{4\sigspace}size_t dims; \\
 \} pmix_coord_t;
-\end{codepar}
-\cspecificend
+}
 
 All coordinate values shall be expressed as unsigned integers due to their units being defined in fabric devices and not physical distances. The coordinate is therefore an indicator of connectivity and not relative communication distance.
 
@@ -233,12 +216,9 @@ The following macros are provided to support the \refstruct{pmix_coord_t} struct
 
 Initialize the \refstruct{pmix_coord_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_COORD_CONSTRUCT}{4.0}{
 PMIX_COORD_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_coord_t})}
@@ -250,12 +230,9 @@ PMIX_COORD_CONSTRUCT(m)
 
 Destruct the \refstruct{pmix_coord_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_COORD_DESTRUCT}{4.0}{
 PMIX_COORD_DESTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_coord_t})}
@@ -267,12 +244,9 @@ PMIX_COORD_DESTRUCT(m)
 
 Allocate and initialize a \refstruct{pmix_coord_t} array.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_COORD_CREATE}{4.0}{
 PMIX_COORD_CREATE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_coord_t} structures shall be stored (handle)}
@@ -285,12 +259,9 @@ PMIX_COORD_CREATE(m, n)
 
 Release an array of \refstruct{pmix_coord_t} structures.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_COORD_FREE}{4.0}{
 PMIX_COORD_FREE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the array of \refstruct{pmix_coord_t} structures (handle)}
@@ -304,18 +275,15 @@ PMIX_COORD_FREE(m, n)
 
 The \refstruct{pmix_geometry_t} structure describes the fabric coordinates of a specified device.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_geometry \{
-    size_t fabric;
-    char *uuid;
-    char *osname;
-    pmix_coord_t *coordinates;
-    size_t ncoords;
+\copySignature{pmix_geometry_t}{4.0}{
+typedef struct pmix_geometry \{ \\
+\hspace*{4\sigspace}size_t fabric; \\
+\hspace*{4\sigspace}char *uuid; \\
+\hspace*{4\sigspace}char *osname; \\
+\hspace*{4\sigspace}pmix_coord_t *coordinates; \\
+\hspace*{4\sigspace}size_t ncoords; \\
 \} pmix_geometry_t;
-\end{codepar}
-\cspecificend
+}
 
 All coordinate values shall be expressed as unsigned integers due to their units being defined in fabric devices and not physical distances. The coordinate is therefore an indicator of connectivity and not relative communication distance.
 
@@ -338,12 +306,9 @@ The following macros are provided to support the \refstruct{pmix_geometry_t} str
 
 Initialize the \refstruct{pmix_geometry_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_GEOMETRY_CONSTRUCT}{4.0}{
 PMIX_GEOMETRY_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_geometry_t})}
@@ -355,12 +320,9 @@ PMIX_GEOMETRY_CONSTRUCT(m)
 
 Destruct the \refstruct{pmix_geometry_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_GEOMETRY_DESTRUCT}{4.0}{
 PMIX_GEOMETRY_DESTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_geometry_t})}
@@ -372,12 +334,9 @@ PMIX_GEOMETRY_DESTRUCT(m)
 
 Allocate and initialize a \refstruct{pmix_geometry_t} array.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_GEOMETRY_CREATE}{4.0}{
 PMIX_GEOMETRY_CREATE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_geometry_t} structures shall be stored (handle)}
@@ -390,12 +349,9 @@ PMIX_GEOMETRY_CREATE(m, n)
 
 Release an array of \refstruct{pmix_geometry_t} structures.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_GEOMETRY_FREE}{4.0}{
 PMIX_GEOMETRY_FREE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the array of \refstruct{pmix_geometry_t} structures (handle)}
@@ -407,15 +363,12 @@ PMIX_GEOMETRY_FREE(m, n)
 \subsection{Fabric Coordinate Views}
 \declarestruct{pmix_coord_view_t}
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef uint8_t pmix_coord_view_t;
-#define PMIX_COORD_VIEW_UNDEF       0x00
-#define PMIX_COORD_LOGICAL_VIEW     0x01
-#define PMIX_COORD_PHYSICAL_VIEW    0x02
-\end{codepar}
-\cspecificend
+\copySignature{pmix_coord_view_t}{4.0}{
+typedef uint8_t pmix_coord_view_t; \\
+\#define PMIX_COORD_VIEW_UNDEF       0x00 \\
+\#define PMIX_COORD_LOGICAL_VIEW     0x01 \\
+\#define PMIX_COORD_PHYSICAL_VIEW    0x02
+}
 
 Fabric coordinates can be reported based on different \emph{views} according to user preference at the time of request. The following views have been defined:
 
@@ -440,12 +393,9 @@ If the requester does not specify a view, coordinates shall default to the \emph
 
 The \refstruct{pmix_link_state_t} is a \code{uint32_t} type for fabric link states.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{pmix_link_state_t}{4.0}{
 typedef uint8_t pmix_link_state_t;
-\end{codepar}
-\cspecificend
+}
 
 The following constants can be used to set a variable of the type \refstruct{pmix_link_state_t}. All definitions were introduced in version 4 of the standard unless otherwise marked. Valid link state values start at zero.
 
@@ -485,18 +435,15 @@ Update information on a specific fabric - the index of the fabric (\refattr{PMIX
 
 The \refstruct{pmix_fabric_t} structure is used by a \ac{WLM} to interact with fabric-related \ac{PMIx} interfaces, and to provide information about the fabric for use in scheduling algorithms or other purposes.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_fabric_s \{
-    char *name;
-    size_t index;
-    pmix_info_t *info;
-    size_t ninfo;
-    void *module;
+\copySignature{pmix_fabric_t}{4.0}{
+typedef struct pmix_fabric_s \{ \\
+\hspace*{4\sigspace}char *name; \\
+\hspace*{4\sigspace}size_t index; \\
+\hspace*{4\sigspace}pmix_info_t *info; \\
+\hspace*{4\sigspace}size_t ninfo; \\
+\hspace*{4\sigspace}void *module; \\
 \} pmix_fabric_t;;
-\end{codepar}
-\cspecificend
+}
 
 Note that in this structure:
 
@@ -552,12 +499,9 @@ While unusual due to scaling issues, implementations may include an array of \re
 
 Initialize the \refstruct{pmix_fabric_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_FABRIC_CONSTRUCT}{4.0}{
 PMIX_FABRIC_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_fabric_t})}
@@ -737,15 +681,12 @@ Register for access to fabric-related information.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Fabric_register(pmix_fabric_t *fabric,
-                     const pmix_info_t directives[],
-                     size_t ndirs);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Fabric_register}{4.0}{
+pmix_status_t \\
+PMIx_Fabric_register(pmix_fabric_t *fabric, \\
+\hspace*{21\sigspace}const pmix_info_t directives[], \\
+\hspace*{21\sigspace}size_t ndirs);
+}
 
 \begin{arglist}
 \arginout{fabric}{address of a \refstruct{pmix_fabric_t} (backed by storage). User may populate the "name" field at will - \ac{PMIx} does not utilize this field (handle)}
@@ -793,16 +734,13 @@ Register for access to fabric-related information.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Fabric_register_nb(pmix_fabric_t *fabric,
-                        const pmix_info_t directives[],
-                        size_t ndirs,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Fabric_register_nb}{4.0}{
+pmix_status_t \\
+PMIx_Fabric_register_nb(pmix_fabric_t *fabric, \\
+\hspace*{24\sigspace}const pmix_info_t directives[], \\
+\hspace*{24\sigspace}size_t ndirs, \\
+\hspace*{24\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \arginout{fabric}{address of a \refstruct{pmix_fabric_t} (backed by storage). User may populate the "name" field at will - \ac{PMIx} does not utilize this field (handle)}
@@ -837,13 +775,10 @@ Update fabric-related information.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
+\copySignature{PMIx_Fabric_update}{4.0}{
+pmix_status_t \\
 PMIx_Fabric_update(pmix_fabric_t *fabric);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{fabric}{address of a \refstruct{pmix_fabric_t} (backed by storage) (handle)}
@@ -869,14 +804,11 @@ Update fabric-related information.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Fabric_update_nb(pmix_fabric_t *fabric,
-                      pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Fabric_update_nb}{4.0}{
+pmix_status_t \\
+PMIx_Fabric_update_nb(pmix_fabric_t *fabric, \\
+\hspace*{22\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \arginout{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
@@ -909,13 +841,10 @@ Deregister a fabric object.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
+\copySignature{PMIx_Fabric_deregister}{4.0}{
+pmix_status_t \\
 PMIx_Fabric_deregister(pmix_fabric_t *fabric);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
@@ -941,14 +870,11 @@ Deregister a fabric object.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t PMIx_Fabric_deregister_nb(pmix_fabric_t *fabric,
-                                        pmix_op_cbfunc_t cbfunc,
-                                        void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Fabric_deregister_nb}{4.0}{
+pmix_status_t PMIx_Fabric_deregister_nb(pmix_fabric_t *fabric, \\
+\hspace*{40\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{40\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
@@ -970,4 +896,4 @@ Non-blocking form of \refapi{PMIx_Fabric_deregister}. Provided \refarg{fabric} m
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

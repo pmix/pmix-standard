@@ -78,17 +78,14 @@ Register an event handler.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes,
-                            pmix_info_t info[], size_t ninfo,
-                            pmix_notification_fn_t evhdlr,
-                            pmix_hdlr_reg_cbfunc_t cbfunc,
-                            void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Register_event_handler}{2.0}{
+pmix_status_t \\
+PMIx_Register_event_handler(pmix_status_t codes[], size_t ncodes, \\
+\hspace*{28\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{28\sigspace}pmix_notification_fn_t evhdlr, \\
+\hspace*{28\sigspace}pmix_hdlr_reg_cbfunc_t cbfunc, \\
+\hspace*{28\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{codes}{Array of status codes (array of \refstruct{pmix_status_t})}
@@ -190,12 +187,9 @@ Mark the end of a dedicated range of constants for system event reporting.
 
 Test a given event constant to see if it falls within the dedicated range of constants for system event reporting.
 
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_SYSTEM_EVENT}{2.2}{
 PMIX_SYSTEM_EVENT(a)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{a}{Error constant to be checked (\refstruct{pmix_status_t})}
@@ -333,19 +327,16 @@ The \ac{PMIx} \textit{ad hoc} v1.0 Standard defined an error notification functi
 \adviceuserend
 
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_notification_fn_t)
-    (size_t evhdlr_registration_id,
-     pmix_status_t status,
-     const pmix_proc_t *source,
-     pmix_info_t info[], size_t ninfo,
-     pmix_info_t results[], size_t nresults,
-     pmix_event_notification_cbfunc_fn_t cbfunc,
-     void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_notification_fn_t}{2.0}{
+typedef void (*pmix_notification_fn_t) \\
+\hspace*{4\sigspace}(size_t evhdlr_registration_id, \\
+\hspace*{5\sigspace}pmix_status_t status, \\
+\hspace*{5\sigspace}const pmix_proc_t *source, \\
+\hspace*{5\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{5\sigspace}pmix_info_t results[], size_t nresults, \\
+\hspace*{5\sigspace}pmix_event_notification_cbfunc_fn_t cbfunc, \\
+\hspace*{5\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{evhdlr_registration_id}{Registration number of the handler being called (\code{size_t})}
@@ -397,15 +388,12 @@ Deregister an event handler.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Deregister_event_handler(size_t evhdlr_ref,
-                              pmix_op_cbfunc_t cbfunc,
-                              void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Deregister_event_handler}{2.0}{
+pmix_status_t \\
+PMIx_Deregister_event_handler(size_t evhdlr_ref, \\
+\hspace*{30\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{30\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{evhdlr_ref}{Event handler ID returned by registration (\code{size_t})}
@@ -449,17 +437,14 @@ registered event handler.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Notify_event(pmix_status_t status,
-                  const pmix_proc_t *source,
-                  pmix_data_range_t range,
-                  pmix_info_t info[], size_t ninfo,
-                  pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Notify_event}{2.0}{
+pmix_status_t \\
+PMIx_Notify_event(pmix_status_t status, \\
+\hspace*{18\sigspace}const pmix_proc_t *source, \\
+\hspace*{18\sigspace}pmix_data_range_t range, \\
+\hspace*{18\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{18\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{status}{Status code of the event (\refstruct{pmix_status_t})}
@@ -536,16 +521,13 @@ data until the callback function has been executed --- the sole purpose of the c
 
 The \refapi{pmix_event_notification_cbfunc_fn_t} is called by event handlers to indicate completion of their operations.
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_event_notification_cbfunc_fn_t)
-    (pmix_status_t status,
-     pmix_info_t *results, size_t nresults,
-     pmix_op_cbfunc_t cbfunc, void *thiscbdata,
-     void *notification_cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_event_notification_cbfunc_fn_t}{2.0}{
+typedef void (*pmix_event_notification_cbfunc_fn_t) \\
+\hspace*{4\sigspace}(pmix_status_t status, \\
+\hspace*{5\sigspace}pmix_info_t *results, size_t nresults, \\
+\hspace*{5\sigspace}pmix_op_cbfunc_t cbfunc, void *thiscbdata, \\
+\hspace*{5\sigspace}void *notification_cbdata);
+}
 
 \begin{arglist}
 \argin{status}{Status returned by the event handler's operation (\refstruct{pmix_status_t})}

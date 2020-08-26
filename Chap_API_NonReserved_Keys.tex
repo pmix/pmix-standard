@@ -55,15 +55,12 @@ Post a key/value pair for distribution.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Put(pmix_scope_t scope,
-         const pmix_key_t key,
-         pmix_value_t *val);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Put}{1.0}{
+pmix_status_t \\
+PMIx_Put(pmix_scope_t scope, \\
+\hspace*{9\sigspace}const pmix_key_t key, \\
+\hspace*{9\sigspace}pmix_value_t *val);
+}
 
 \begin{arglist}
 \argin{scope}{Distribution scope of the provided value (handle)}
@@ -137,15 +134,12 @@ Store some data locally for retrieval by other areas of the process.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Store_internal(const pmix_proc_t *proc,
-                    const pmix_key_t key,
-                    pmix_value_t *val);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Store_internal}{1.0}{
+pmix_status_t \\
+PMIx_Store_internal(const pmix_proc_t *proc, \\
+\hspace*{20\sigspace}const pmix_key_t key, \\
+\hspace*{20\sigspace}pmix_value_t *val);
+}
 
 \begin{arglist}
 \argin{proc}{process reference (handle)}
@@ -175,12 +169,9 @@ Post all previously \refapi{PMIx_Put} values for distribution.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIx_Commit}{1.0}{
 pmix_status_t PMIx_Commit(void);
-\end{codepar}
-\cspecificend
+}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
