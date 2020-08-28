@@ -29,8 +29,7 @@ command line:
 
 In this example, the processes in the first application will be labeled with a \refattr{PMIX_PSET_NAMES} attribute of \emph{ocean} while those in the second application will be labeled with an \emph{ice} value. During the execution, application processes could lookup the process set attribute for any process using \refapi{PMIx_Get}. Alternatively, other executing applications could utilize the \refapi{PMIx_Query_info} \acp{API} to obtain the number of declared process sets in the system, a list of their names, and other information about them. In other words, the \emph{process set} identifier provides a label by which an application can derive information about a process and its application - it does \emph{not}, however, confer any operational function.
 
-Host environments can create or delete process sets at any time, as well as
-add and delete members from existing process sets, through the
+Host environments can create or delete process sets at any time through the
 \refapi{PMIx_server_define_process_set} and
 \refapi{PMIx_server_delete_process_set} \acp{API}. \ac{PMIx} servers shall
 notify all local clients of process set operations via the
@@ -47,6 +46,8 @@ Process \emph{sets} differ from process \emph{groups} in several key ways:
     change a process \emph{set} membership. In contrast, \ac{PMIx} process
     \emph{groups} can only be defined dynamically by the application.
     %
+    \item Process \emph{sets} are immutable - members cannot be added or removed once the set has been defined. In contrast, \ac{PMIx} process \emph{groups} can dynamically change their membership using the appropriate \acp{API}.
+    %
     \item Process \emph{groups} can be used in calls to \ac{PMIx} operations. Members of process \emph{groups} that are involved in an operation are translated by their \ac{PMIx} server into their \emph{native} identifier prior to the operation being passed to the host environment. For example, an application can define a process group to consist of ranks 0 and 1 from the host-assigned namespace of \emph{210456}, identified by the group id of \emph{foo}. If the application subsequently calls the \refapi{PMIx_Fence} \ac{API} with a process identifier of \code{\{foo, PMIX_RANK_WILDCARD\}}, the \ac{PMIx} server will replace that identifier with an array consisting of \code{\{210456, 0\}} and \code{\{210456, 1\}} - the host-assigned identifiers of the participating processes - prior to processing the request.
     %
     \item Process \emph{groups} can request that the host environment assign a unique \code{size_t} \ac{PGCID} to the group at time of group construction. An \ac{MPI} library may, for example, use the \ac{PGCID} as the \ac{MPI} communicator identifier for the group.
@@ -59,8 +60,8 @@ based on a process set could, for example, obtain the membership array of the
 process set and use that as input to \refapi{PMIx_Group_construct}, perhaps
 including the process set name as the group identifier for clarity. Note that
 no linkage between the set and group of the same name is implied nor
-maintained - e.g., changes in process set membership would not automatically be
-reflected in the process group using the same identifier.
+maintained - e.g., changes in process group membership can not be
+reflected in the process set using the same identifier.
 
 \advicermstart
 The host environment is responsible for ensuring:
@@ -78,21 +79,16 @@ The host environment is responsible for ensuring:
 \subsection{Process Set Constants}
 
 \versionMarker{4.0}
-The \ac{PMIx} server is required to notify all local clients of changes to
-process set membership, including the creation of new process sets as well as
-their complete deletion. Client processes wishing to receive such
-notifications must register for one or more of the following events:
+The \ac{PMIx} server is required to notify all local clients of the creation or deletion of process sets. Client processes wishing to receive such
+notifications must register for the corresponding event:
 
 \begin{constantdesc}
 %
 \declareconstitemNEW{PMIX_PROCESS_SET_DEFINE}
-The host environment has defined a new process set, or has added members to
-an existing process set.
+The host environment has defined a new process set - the event will include the process set name (\refattr{PMIX_PSET_NAME}) and the membership (\refattr{PMIX_PSET_MEMBERS}).
 %
 \declareconstitemNEW{PMIX_PROCESS_SET_DELETE}
-The host environment has removed members from an existing process set. If all
-members of the set have been removed, then the set definition has been
-deleted from the system.
+The host environment has deleted a process set - the event will include the process set name (\refattr{PMIX_PSET_NAME}).
 %
 \end{constantdesc}
 
@@ -114,17 +110,29 @@ Return a \refstruct{pmix_data_array_t} containing an array of strings of the
 process set names defined in the specified range (defaults to \refconst{PMIX_RANGE_SESSION}).
 }
 %
-\declareAttributeNEW{PMIX_QUERY_PSET_MEMBERSHIP}{"pmix.qry.pmems"}{pmix_proc_t*}{
-Return a \refstruct{pmix_data_array_t} of \refstruct{pmix_proc_t} containing
+\declareAttributeNEW{PMIX_QUERY_PSET_MEMBERSHIP}{"pmix.qry.pmems"}{pmix_data_array_t*}{
+Return an array of \refstruct{pmix_proc_t} containing
 the members of the specified process set.
 }
 %
 
 \vspace{\baselineskip}
+The \refconst{PMIX_PROCESS_SET_DEFINE} event shall include the name of the newly defined process set and its members:
+%
+\declareAttributeNEW{PMIX_PSET_NAME}{"pmix.pset.nm"}{char*}{
+The name of the newly defined process set.
+}
+%
+\declareAttributeNEW{PMIX_PSET_MEMBERS}{"pmix.pset.mems"}{pmix_data_array_t*}{
+An array of \refstruct{pmix_proc_t} containing
+the members of the newly defined process set.
+}
+
+\vspace{\baselineskip}
 In addition, a process can request (via \refapi{PMIx_Get}) the process sets to which a given process (including itself) belongs:
 
 %
-\declareAttributeNEW{PMIX_PSET_NAMES}{"pmix.pset.nm"}{pmix_data_array_t*}{
+\declareAttributeNEW{PMIX_PSET_NAMES}{"pmix.pset.nms"}{pmix_data_array_t*}{
 Returns an array of \code{char*} string names of the process sets in which the given process is a member.
 }
 

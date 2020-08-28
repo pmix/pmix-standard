@@ -94,7 +94,8 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemBegin{PMIX_SERVER_REMOTE_CONNECTIONS} If the library supports connections from remote tools, this attribute may be supported for enabling or disabling it.
 \pasteAttributeItemEnd{}
 \pasteAttributeItem{PMIX_EVENT_BASE}
-\pasteAttributeItemBegin{PMIX_TOPOLOGY2}If provided, the \ac{PMIx} server will
+\pasteAttributeItem{PMIX_TOPOLOGY2}
+\pasteAttributeItemBegin{PMIX_SERVER_SHARE_TOPOLOGY}The \ac{PMIx} server will
 perform the necessary actions to scalably expose the description to the local
 clients. This includes creating any required shared memory backing stores and/
 or \ac{XML} representations, plus ensuring that all necessary key-value pairs
@@ -157,6 +158,10 @@ These attributes are used to direct the configuration and operation of the \ac{P
 \declareAttributeNEW{PMIX_TOPOLOGY2}{"pmix.topo2"}{pmix_topology_t}{
 Provide a pointer to an implementation-specific description of the local node
 topology.
+}
+%
+\declareAttributeNEW{PMIX_SERVER_SHARE_TOPOLOGY}{"pmix.srvr.share"}{bool}{
+The \ac{PMIx} server is to share its copy of the local node topology (whether given to it or self-discovered) with any clients.
 }
 %
 \declareAttribute{PMIX_USOCK_DISABLE}{"pmix.usock.disable"}{bool}{
@@ -1775,7 +1780,7 @@ PMIX_CPUSET_CONSTRUCT(m)
 %%%%
 \summary
 
-Add members to a \ac{PMIx} process set.
+Define a \ac{PMIx} process set.
 
 %%%%
 \format
@@ -1792,10 +1797,9 @@ PMIx_server_define_process_set(const pmix_proc_t members[],
 
 \begin{arglist}
 \argin{members}{Pointer to an array of \refstruct{pmix_proc_t} containing the
-identifiers of the processes to be added to the process set (handle)}
+identifiers of the processes in the process set (handle)}
 \argin{nmembers}{Number of elements in \refarg{members} (integer)}
-\argin{pset_name}{String name of the process set to which the specified
-processes are to be added (\code{char*})}
+\argin{pset_name}{String name of the process set being defined (\code{char*})}
 \end{arglist}
 
 Returns either \refconst{PMIX_SUCCESS} or an appropriate \ac{PMIx} error constant.
@@ -1804,10 +1808,10 @@ Returns either \refconst{PMIX_SUCCESS} or an appropriate \ac{PMIx} error constan
 %%%%
 \descr
 
-Provide a function by which the host environment can add processes to a
-process set, creating the set if it doesn't already exist. The \ac{PMIx}
-server shall alert all local clients of the new process set (including process
-set name and membership) via the \refconst{PMIX_PROCESS_SET_DEFINE} event.
+Provide a function by which the host environment can create a process set. The
+\ac{PMIx} server shall alert all local clients of the new process set
+(including process set name and membership) via the
+\refconst{PMIX_PROCESS_SET_DEFINE} event.
 
 \advicermstart
 The host environment is responsible for ensuring:
@@ -1828,7 +1832,7 @@ The host environment is responsible for ensuring:
 %%%%
 \summary
 
-Delete members from a \ac{PMIx} process set
+Delete a \ac{PMIx} process set name
 
 %%%%
 \format
@@ -1837,18 +1841,12 @@ Delete members from a \ac{PMIx} process set
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_server_delete_process_set(const pmix_proc_t members[],
-                               size_t nmembers,
-                               char *pset_name);
+PMIx_server_delete_process_set(char *pset_name);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\argin{members}{Pointer to an array of \refstruct{pmix_proc_t} containing the
-identifiers of the processes to be removed from the process set (handle)}
-\argin{nmembers}{Number of  elements in \refarg{members} (integer)}
-\argin{pset_name}{String name of the process set from which the specified
-processes are to be removed (\code{char*})}
+\argin{pset_name}{String name of the process set being deleted (\code{char*})}
 \end{arglist}
 
 Returns either \refconst{PMIX_SUCCESS} or an appropriate \ac{PMIx} error
@@ -1858,11 +1856,9 @@ constant.
 %%%%
 \descr
 
-Provide a function by which the host environment can remove processes from a
-process set. If the array of members is \code{NULL}, then all current members
-are to be removed and the process set name deleted from the \ac{PMIx} server.
-The \ac{PMIx} server shall alert all local clients of the process set
-modifications via the \refconst{PMIX_PROCESS_SET_DELETE} event.
+Provide a function by which the host environment can delete a process set name.
+The \ac{PMIx} server shall alert all local clients of the process set name
+being deleted via the \refconst{PMIX_PROCESS_SET_DELETE} event. Deletion of the name has no impact on the member processes.
 
 \advicermstart
 The host environment is responsible for ensuring consistent knowledge of
