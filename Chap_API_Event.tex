@@ -55,6 +55,16 @@ Note that the \textit{last} handler is called \textit{after} all registered defa
 
 Upon completing its work and prior to returning, each handler \textit{must} call the event handler completion function provided when it was invoked (including a status code plus any information to be passed to later handlers) so that the chain can continue being progressed. \ac{PMIx} automatically aggregates the status and any results of each handler (as provided in the completion callback) with status from all prior handlers so that each step in the chain has full knowledge of what preceded it. An event handler can terminate all further progress along the chain by passing the \refconst{PMIX_EVENT_ACTION_COMPLETE} status to the completion callback function.
 
+\subsection{Events versus status constants}
+\label{api:event:evssc}
+
+Return status constants (see Section \ref{api:struct:errors}) represent values that can be returned from or passed into \ac{PMIx}
+\acp{API}. These are distinct from \ac{PMIx} \emph{events} in that they are
+not values that can be registered against event handlers. In general, the two
+types of constants are distinguished by inclusion of an "ERR" in the name of
+error constants versus an "EVENT" in events, though there are exceptions (e.g,
+the \refconst{PMIX_SUCCESS} constant).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Register_event_handler}}

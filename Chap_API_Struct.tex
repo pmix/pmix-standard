@@ -14,7 +14,7 @@ A PMIx implementation may define additional attributes beyond those specified in
 Structures, types, and macros in the \ac{PMIx} Standard are defined in terms of the C-programming language. Implementers wishing to support other languages should provide the equivalent definitions in a language-appropriate manner.
 
 If a PMIx implementation chooses to define additional attributes they should avoid using the \code{"PMIX"} prefix in their name or starting the attribute string with a \code{"pmix"} prefix.
-This helps the end user distinguish between what is defined by the PMIx standard and what is specific to that PMIx implementation, and avoids potential conflicts with attributes defined by the standard.
+This helps the end user distinguish between what is defined by the PMIx standard and what is specific to that PMIx implementation, and avoids potential conflicts with attributes defined by the Standard.
 \adviceimplend
 
 \adviceuserstart
@@ -95,19 +95,12 @@ A value to indicate that the user wants the data for the given key from every ap
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{PMIx Error Constants}
+\subsection{PMIx Return Status Constants}
 \label{api:struct:errors}
 \declarestruct{pmix_status_t}
 
 The \refstruct{pmix_status_t} structure is an \code{int} type for return status. The tables shown in this section define the possible values for \refstruct{pmix_status_t}.
 PMIx errors are required to always be negative, with \code{0} reserved for \refconst{PMIX_SUCCESS}. Values in the list that were deprecated in later standards are denoted as such. Values added to the list in this version of the standard are shown in \textbf{\color{magenta}magenta}.
-
-Constants represent values that can be returned from or passed into \ac{PMIx}
-\acp{API}. These are distinct from \ac{PMIx} \emph{events} in that they are
-not values that can be registered against event handlers. In general, the two
-types of constants are distinguished by inclusion of an "ERR" in the name of
-error constants versus an "EVENT" in events, though there are exceptions (e.g,
-the \refconst{PMIX_SUCCESS} constant).
 
 \adviceimplstart
 A PMIx implementation must define all of the constants defined in this section, even if they will never return the specific value to the caller.
@@ -399,7 +392,7 @@ Special rank value used to define groups of ranks.
 This constant defines the group of all ranks on a local node.
 %
 \declareconstitem{PMIX_RANK_LOCAL_PEERS}
-Special rank value used to define groups of rankss.
+Special rank value used to define groups of ranks.
 This constant defines the group of all ranks on a local node within the same namespace as the current process.
 %
 \declareconstitem{PMIX_RANK_INVALID}
@@ -463,7 +456,7 @@ PMIX_PROC_DESTRUCT(m)
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_proc_t})}
 \end{arglist}
 
-There is nothing to release here as the fields in \refstruct{pmix_proc_t} are all declared \emph{static}. However, the macro is provided for symmetry in the code and for future-proofing should some allocated field be included some day.
+There is nothing to release here as the fields in \refstruct{pmix_proc_t} are either a statically-declared array (the namespace) or a single value (the rank). However, the macro is provided for symmetry in the code and for future-proofing should some allocated field be included some day.
 
 \littleheader{Create a proc array}
 \declaremacro{PMIX_PROC_CREATE}

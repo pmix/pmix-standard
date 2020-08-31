@@ -58,6 +58,11 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \reqattrend
 
 \optattrstart
+The following attributes are optional for \ac{PMIx} implementations:
+
+\pasteAttributeItem{PMIX_ALL_CLONES_PARTICIPATE}
+
+
 The following attributes are optional for host environments:
 
 \pasteAttributeItem{PMIX_TIMEOUT}
@@ -130,6 +135,11 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \reqattrend
 
 \optattrstart
+The following attributes are optional for \ac{PMIx} implementations:
+
+\pasteAttributeItem{PMIX_ALL_CLONES_PARTICIPATE}
+
+
 The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_TIMEOUT}
@@ -151,6 +161,10 @@ The following attributes are defined specifically to support the fence operation
 Collect all data posted by the participants using \refapi{PMIx_Put} that
 has been committed via \refapi{PMIx_Commit}, making the collection locally
 available to each participant at the end of the operation.
+}
+%
+\declareAttributeNEW{PMIX_ALL_CLONES_PARTICIPATE}{"pmix.clone.part"}{bool}{
+All \refterm{clones} of the calling process must participate in the collective operation.
 }
 
 
@@ -319,7 +333,7 @@ The following constants are defined for use by retrieval \acp{API}:
 \begin{constantdesc}
 %
 \declareconstitemNEW{PMIX_ERR_GET_MALLOC_REQD}
-The data returned by \refapi{PMIx_Get} contains values that required dynamic memory allocations (i.e., "malloc"), despite a request for static pointers to the values in the key-value store. User is responsible for releasing the memory when done with the information.
+The data returned by \refapi{PMIx_Get} contains values that include dynamic memory allocations (i.e., "malloc"), despite a request for static pointers to the values in the key-value store. User is responsible for releasing the memory when done with the information.
 %
 \end{constantdesc}
 
@@ -340,7 +354,7 @@ Specified operation should immediately return an error from the \ac{PMIx} server
 }
 %
 \declareAttributeNEW{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
-Request that any pointers in the returned value point directly to values in the key-value store. The user \emph{must not} release any returned data pointers. Note that a return status of \refconst{PMIX_ERR_GET_MALLOC_REQD} indicates that direct pointers could not be supported - thus, the returned data contains allocated memory that the user must release.
+Request that any pointers in the returned value point directly to values in the key-value store. The user \emph{must not} release any returned data pointers. Note that a return status of \refconst{PMIX_ERR_GET_MALLOC_REQD} indicates that direct pointers could not be supported - in which case, the returned data contains allocated memory that the user must release.
 }
 %
 \declareAttributeNEW{PMIX_GET_REFRESH_CACHE}{"pmix.get.refresh"}{bool}{

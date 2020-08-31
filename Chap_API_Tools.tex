@@ -4,7 +4,7 @@
 \chapter{Tools and Debuggers}
 \label{chap:api_tools}
 
-The term \textit{tool} widely refers to non-computational programs executed by the user or system administrator on a command line. Tools almost always interact with either the \ac{SMS}, user applications, or both to perform administrative and support functions. For example, a debugger tool might be used to remotely control the processes of a parallel application, monitoring their behavior on a step-by-step basis. Historically, such tools were custom-written for each specific host environment due to the customized and/or proprietary nature of the environment's interfaces.
+The term \textit{tool} widely refers to programs executed by the user or system administrator on a command line. Tools frequently interact with either the \ac{SMS}, user applications, or both to perform administrative and support functions. For example, a debugger tool might be used to remotely control the processes of a parallel application, monitoring their behavior on a step-by-step basis. Historically, such tools were custom-written for each specific host environment due to the customized and/or proprietary nature of the environment's interfaces.
 
 The advent of \ac{PMIx} offers the possibility for creating portable tools capable of interacting with multiple \acp{RM} without modification. Possible use-cases include:
 
@@ -244,7 +244,7 @@ The server to which the tool is connecting shall be designated the \emph{primary
 Tool-directed launches require that the tool include the \refattr{PMIX_LAUNCHER} attribute when calling \refapi{PMIx_tool_init}. Two launch modes are supported:
 
 \begin{itemize}
-    \item \emph{Direct launch} where the tool itself is directly responsible for launching all processes, including debugger daemons, using either the \ac{RM} or daemons launched by the tool – i.e., there is no \ac{IL} such as \emph{mpiexec}. The case where the tool is self-contained (i.e., uses its own daemons without interacting with an external entity such as the \ac{RM}) lies outside the scope of this Standard; and
+    \item \emph{Direct launch} where the tool itself is directly responsible for launching all processes, including debugger daemons, using either the \ac{RM} or daemons launched by the tool – i.e., there is no \emph{intermediate launcher} (IL) such as \emph{mpiexec}. The case where the tool is self-contained (i.e., uses its own daemons without interacting with an external entity such as the \ac{RM}) lies outside the scope of this Standard; and
     \item \emph{Indirect launch} where all processes are started via an \ac{IL} such as \emph{mpiexec} and the tool itself is not directly involved in launching application processes or debugger daemons. Note that the \ac{IL} may utilize the \ac{RM} to launch processes and/or daemons under the tool's direction.
 \end{itemize}
 

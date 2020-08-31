@@ -24,18 +24,18 @@ for a list of any custom prefixes they must avoid, and to learn of any non-stand
 \section{Data realms}
 \label{api:struct:attributes:retrieval}
 
-\ac{PMIx} information spans a wide range of topics and sources. In some cases,
+\ac{PMIx} information spans a wide range of sources. In some cases,
 there are multiple overlapping sources for the same type of data - e.g., the
 session, job, and application can each provide information on the number of
 nodes involved in their respective area. In order to resolve the ambiguity,
-\ac{PMIx} introduced the concept of a \declaretermAlt{data realm}{realm,realms,data realm,data realms}
-that identifies the scope to which the referenced data applies. Thus, reference
+a \declaretermAlt{data realm}{realm,realms,data realm,data realms}
+is used to identify the scope to which the referenced data applies. Thus, a reference
 to an attribute that isn't specific to a realm (e.g., the
 \refattr{PMIX_NUM_NODES} attribute) must be accompanied by a corresponding
 attribute identifying the realm to which the request pertains if it differs
 from the default.
 
-\ac{PMIx} has defined five \emph{data realms} to resolve the ambiguities, as
+\ac{PMIx} defines five \emph{data realms} to resolve the ambiguities, as
 captured in the following attributes used in \refapi{PMIx_Get} for retrieving
 information from each of the realms:
 
@@ -55,9 +55,7 @@ belongs - the namespace of the target process serves to identify the job
 containing the target application. If information about an application other
 than the one containing the target process is desired, then the attribute array
 must contain a \refattr{PMIX_APPNUM} attribute identifying the desired target
-application - this is useful when the requesting process knows there are
-multiple applications, but doesn't know which processes belong to which
-application.
+application. This is useful in cases where there are multiple applications and the mapping of processes to applications is unclear.
 }
 %
 \declareAttribute{PMIX_PROC_INFO}{"pmix.proc.info"}{bool}{
@@ -71,7 +69,7 @@ completeness.
 Return information from the node realm regarding the node upon which the specified process is executing. If information about
 a node other than the one containing the specified process is desired, then
 the attribute array must also contain either the \refattr{PMIX_NODEID} or
-\refattr{PMIX_HOSTNAME} attribute identifying the desired target - this is useful when the requesting process wants to know something about a specific node, but isn't sure what processes might be executing upon it.
+\refattr{PMIX_HOSTNAME} attribute identifying the desired target. This is useful for requesting information about a specific node even if the identity of processes running on that node are not known..
 }
 
 \adviceuserstart
@@ -341,7 +339,7 @@ Rank of the specified process on its node spanning all jobs- refers to the numer
 }
 %
 \declareAttributeNEW{PMIX_PACKAGE_RANK}{"pmix.pkgrank"}{uint16_t}{
-Rank of the specified process on the package where this process resides - refers to the numerical location (starting from zero) of the process on its package when counting only those processes from the same job that share the package, ordered by their overall rank within that job. Note that processes that are not bound to \acp{PU} within a single specific package cannot have a package rank.
+Rank of the specified process on the \refterm{package} where this process resides - refers to the numerical location (starting from zero) of the process on its package when counting only those processes from the same job that share the package, ordered by their overall rank within that job. Note that processes that are not bound to \acp{PU} within a single specific package cannot have a package rank.
 }
 %
 \declareAttribute{PMIX_PROC_PID}{"pmix.ppid"}{pid_t}{
