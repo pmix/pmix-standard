@@ -395,7 +395,7 @@ The following attributes are optional for host environments that support this op
 \descr
 
 Request a job control action.
-The \refarg{targets} array identifies the processes to which the requested job control action is to be applied.
+The \refarg{targets} array identifies the processes to which the requested job control action is to be applied. All \refterm{clones} of an identified process are to have the requested action applied to them.
 A \code{NULL} value can be used to indicate all processes in the caller's namespace.
 The use of \refconst{PMIX_RANK_WILDCARD} can also be used to indicate that all processes in the given namespace are to be included.
 
@@ -481,7 +481,7 @@ The following attributes are optional for host environments that support this op
 \descr
 
 Non-blocking form of the \refapi{PMIx_Job_control} \ac{API}.
-The \refarg{targets} array identifies the processes to which the requested job control action is to be applied.
+The \refarg{targets} array identifies the processes to which the requested job control action is to be applied. All \refterm{clones} of an identified process are to have the requested action applied to them.
 A \code{NULL} value can be used to indicate all processes in the caller's namespace.
 The use of \refconst{PMIX_RANK_WILDCARD} can also be used to indicate that all processes in the given namespace are to be included.
 

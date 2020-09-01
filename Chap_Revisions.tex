@@ -313,16 +313,16 @@ NOTE: The PMIx Standard document has undergone significant reorganization in an
 effort to become more user-friendly. Highlights include:
 
 \begin{compactitemize}
-    \item Moving all deprecated and removed items to this revision log section
-    to make them more visible
+    \item Moving all added, deprecated, and removed items to this revision log
+    section to make them more visible
     \item Co-locating constants and attribute definitions with the primary
     API that uses them - citations and hyperlinks are retained elsewhere
     \item Splitting the Key-Value Management chapter into separate chapters on
     the use of reserved keys, non-reserved keys, and non-process-related
     key-value data exchange
     \item Creating a new chapter on synchronization and data access methods
-    \item Removing references to any specific implementation or to any features
-    and/or behaviors that might be implementation specific
+    \item Removing references to specific implementations of \ac{PMIx} and to implementation-specific features
+    and/or behaviors
 \end{compactitemize}
 
 In addition to the reorganization, the following changes were introduced in v4.0 of the PMIx Standard:
@@ -399,6 +399,269 @@ The above changes included introduction of the following \acp{API} and data type
     \end{compactitemize}
 \end{itemize}
 
+\subsection{Added Constants}
+
+\littleheader{Query constants}
+\refconst{PMIX_ERR_GET_MALLOC_REQD}
+%
+%
+\littleheader{Server constants}
+\refconst{PMIX_ERR_REPEAT_ATTR_REGISTRATION}
+%
+%
+\littleheader{Job-Mgmt constants}
+\refconst{PMIX_ERR_CONFLICTING_CLEANUP_DIRECTIVES}
+%
+%
+\littleheader{Publish constants}
+\refconst{PMIX_ERR_DUPLICATE_KEY}
+%
+%
+\littleheader{Tool constants}
+%
+\refconst{PMIX_LAUNCH_DIRECTIVE} \\
+\refconst{PMIX_LAUNCHER_READY} \\
+\refconst{PMIX_ERR_IOF_FAILURE} \\
+\refconst{PMIX_ERR_IOF_COMPLETE} \\
+\refconst{PMIX_EVENT_JOB_START} \\
+\refconst{PMIX_LAUNCH_COMPLETE} \\
+\refconst{PMIX_EVENT_JOB_END} \\
+\refconst{PMIX_EVENT_SESSION_START} \\
+\refconst{PMIX_EVENT_SESSION_END} \\
+\refconst{PMIX_ERR_PROC_TERM_WO_SYNC} \\
+\refconst{PMIX_ERR_JOB_CANCELED} \\
+\refconst{PMIX_ERR_JOB_ABORTED} \\
+\refconst{PMIX_ERR_JOB_KILLED_BY_CMD} \\
+\refconst{PMIX_ERR_JOB_ABORTED_BY_SIG} \\
+\refconst{PMIX_ERR_JOB_TERM_WO_SYNC} \\
+\refconst{PMIX_ERR_JOB_SENSOR_BOUND_EXCEEDED} \\
+\refconst{PMIX_ERR_JOB_NON_ZERO_TERM} \\
+\refconst{PMIX_ERR_JOB_ABORTED_BY_SYS_EVENT} \\
+\refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} \\
+\refconst{PMIX_DEBUGGER_RELEASE} \\
+%
+%
+\littleheader{Fabric constants}
+\refconst{PMIX_FABRIC_UPDATE_PENDING} \\
+\refconst{PMIX_FABRIC_UPDATED} \\
+\refconst{PMIX_FABRIC_UPDATE_ENDPOINTS} \\
+\refconst{PMIX_COORD_VIEW_UNDEF} \\
+\refconst{PMIX_COORD_LOGICAL_VIEW} \\
+\refconst{PMIX_COORD_PHYSICAL_VIEW} \\
+\refconst{PMIX_LINK_STATE_UNKNOWN} \\
+\refconst{PMIX_LINK_DOWN} \\
+\refconst{PMIX_LINK_UP} \\
+\refconst{PMIX_FABRIC_REQUEST_INFO} \\
+\refconst{PMIX_FABRIC_UPDATE_INFO} \\
+\refconst{PMIX_FABRIC_GET_VERTEX_INFO} \\
+\refconst{PMIX_FABRIC_GET_DEVICE_INDEX} \\
+%
+%
+\littleheader{Sets-Groups constants}
+\refconst{PMIX_PROCESS_SET_DEFINE} \\
+\refconst{PMIX_PROCESS_SET_DELETE} \\
+\refconst{PMIX_GROUP_INVITED} \\
+\refconst{PMIX_GROUP_LEFT} \\
+\refconst{PMIX_GROUP_MEMBER_FAILED} \\
+\refconst{PMIX_GROUP_INVITE_ACCEPTED} \\
+\refconst{PMIX_GROUP_INVITE_DECLINED} \\
+\refconst{PMIX_GROUP_INVITE_FAILED} \\
+\refconst{PMIX_GROUP_MEMBERSHIP_UPDATE} \\
+\refconst{PMIX_GROUP_CONSTRUCT_ABORT} \\
+\refconst{PMIX_GROUP_CONSTRUCT_COMPLETE} \\
+\refconst{PMIX_GROUP_LEADER_FAILED} \\
+\refconst{PMIX_GROUP_LEADER_SELECTED} \\
+\refconst{PMIX_GROUP_CONTEXT_ID_ASSIGNED} \\
+%
+%
+\littleheader{Process-Mgmt constants}
+\refconst{PMIX_ERR_JOB_ALLOC_FAILED} \\
+\refconst{PMIX_ERR_JOB_APP_NOT_EXECUTABLE} \\
+\refconst{PMIX_ERR_JOB_NO_EXE_SPECIFIED} \\
+\refconst{PMIX_ERR_JOB_FAILED_TO_MAP} \\
+\refconst{PMIX_ERR_JOB_FAILED_TO_LAUNCH} \\
+\refconst{PMIX_LOCALITY_UNKNOWN} \\
+\refconst{PMIX_LOCALITY_NONLOCAL} \\
+\refconst{PMIX_LOCALITY_SHARE_HWTHREAD} \\
+\refconst{PMIX_LOCALITY_SHARE_CORE} \\
+\refconst{PMIX_LOCALITY_SHARE_L1CACHE} \\
+\refconst{PMIX_LOCALITY_SHARE_L2CACHE} \\
+\refconst{PMIX_LOCALITY_SHARE_L3CACHE} \\
+\refconst{PMIX_LOCALITY_SHARE_PACKAGE} \\
+\refconst{PMIX_LOCALITY_SHARE_NUMA} \\
+\refconst{PMIX_LOCALITY_SHARE_NODE} \\
+%
+%
+\littleheader{Events}
+\refconst{PMIX_EVENT_SYS_BASE} \\
+\refconst{PMIX_EVENT_NODE_DOWN} \\
+\refconst{PMIX_EVENT_NODE_OFFLINE} \\
+\refconst{PMIX_EVENT_SYS_OTHER} \\
+%
+%
+\subsection{Added Attributes}
+%
+\littleheader{Sync-Access attributes}
+%
+\pasteAttributeItem{PMIX_ALL_CLONES_PARTICIPATE}
+\pasteAttributeItem{PMIX_GET_STATIC_VALUES}
+\pasteAttributeItem{PMIX_GET_REFRESH_CACHE}
+\pasteAttributeItem{PMIX_QUERY_QUALIFIERS}
+\pasteAttributeItem{PMIX_QUERY_SUPPORTED_KEYS}
+\pasteAttributeItem{PMIX_QUERY_SUPPORTED_QUALIFIERS}
+\pasteAttributeItem{PMIX_QUERY_NAMESPACE_INFO}
+\pasteAttributeItem{PMIX_QUERY_ATTRIBUTE_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_AVAIL_SERVERS}
+\pasteAttributeItem{PMIX_SERVER_INFO_ARRAY}
+\pasteAttributeItem{PMIX_CLIENT_FUNCTIONS}
+\pasteAttributeItem{PMIX_CLIENT_ATTRIBUTES}
+\pasteAttributeItem{PMIX_SERVER_FUNCTIONS}
+\pasteAttributeItem{PMIX_SERVER_ATTRIBUTES}
+\pasteAttributeItem{PMIX_HOST_FUNCTIONS}
+\pasteAttributeItem{PMIX_HOST_ATTRIBUTES}
+\pasteAttributeItem{PMIX_TOOL_FUNCTIONS}
+\pasteAttributeItem{PMIX_TOOL_ATTRIBUTES}
+%
+%
+\littleheader{Server attributes}
+%
+\pasteAttributeItem{PMIX_TOPOLOGY2}
+\pasteAttributeItem{PMIX_SERVER_SHARE_TOPOLOGY}
+\pasteAttributeItem{PMIX_SERVER_SESSION_SUPPORT}
+\pasteAttributeItem{PMIX_SERVER_START_TIME}
+\pasteAttributeItem{PMIX_SERVER_SCHEDULER}
+\pasteAttributeItem{PMIX_JOB_INFO_ARRAY}
+\pasteAttributeItem{PMIX_APP_INFO_ARRAY}
+\pasteAttributeItem{PMIX_PROC_INFO_ARRAY}
+\pasteAttributeItem{PMIX_NODE_INFO_ARRAY}
+\pasteAttributeItem{PMIX_MAX_VALUE}
+\pasteAttributeItem{PMIX_MIN_VALUE}
+\pasteAttributeItem{PMIX_ENUM_VALUE}
+%
+%
+\littleheader{Job-Mgmt attributes}
+%
+\pasteAttributeItem{PMIX_ALLOC_ID}
+\pasteAttributeItem{PMIX_ALLOC_QUEUE}
+%
+%
+\littleheader{Publish attributes}
+%
+\pasteAttributeItem{PMIX_ACCESS_PERMISSIONS}
+\pasteAttributeItem{PMIX_ACCESS_USERIDS}
+\pasteAttributeItem{PMIX_ACCESS_GRPIDS}
+%
+%
+\littleheader{Reserved keys}
+%
+\pasteAttributeItem{PMIX_NUM_ALLOCATED_NODES}
+\pasteAttributeItem{PMIX_NUM_NODES}
+\pasteAttributeItem{PMIX_CMD_LINE}
+\pasteAttributeItem{PMIX_APP_ARGV}
+\pasteAttributeItem{PMIX_PACKAGE_RANK}
+\pasteAttributeItem{PMIX_REINCARNATION}
+\pasteAttributeItem{PMIX_HOSTNAME_ALIASES}
+\pasteAttributeItem{PMIX_HOSTNAME_KEEP_FQDN}
+%
+%
+\littleheader{Tool attributes}
+%
+\pasteAttributeItem{PMIX_TOOL_CONNECT_OPTIONAL}
+\pasteAttributeItem{PMIX_TOOL_ATTACHMENT_FILE}
+\pasteAttributeItem{PMIX_LAUNCHER_RENDEZVOUS_FILE}
+\pasteAttributeItem{PMIX_PRIMARY_SERVER}
+\pasteAttributeItem{PMIX_NOHUP}
+\pasteAttributeItem{PMIX_LAUNCHER_DAEMON}
+\pasteAttributeItem{PMIX_FORKEXEC_AGENT}
+\pasteAttributeItem{PMIX_EXEC_AGENT}
+\pasteAttributeItem{PMIX_IOF_PUSH_STDIN}
+\pasteAttributeItem{PMIX_IOF_COPY}
+\pasteAttributeItem{PMIX_IOF_REDIRECT}
+\pasteAttributeItem{PMIX_DEBUG_TARGET}
+\pasteAttributeItem{PMIX_DEBUG_DAEMONS_PER_PROC}
+\pasteAttributeItem{PMIX_DEBUG_DAEMONS_PER_NODE}
+%
+%
+\littleheader{Fabric attributes}
+\pasteAttributeItem{PMIX_SERVER_SCHEDULER}
+\pasteAttributeItem{PMIX_FABRIC_COST_MATRIX}
+\pasteAttributeItem{PMIX_FABRIC_GROUPS}
+\pasteAttributeItem{PMIX_FABRIC_VENDOR}
+\pasteAttributeItem{PMIX_FABRIC_IDENTIFIER}
+\pasteAttributeItem{PMIX_FABRIC_INDEX}
+\pasteAttributeItem{PMIX_FABRIC_NUM_VERTICES}
+\pasteAttributeItem{PMIX_FABRIC_COORDINATE}
+\pasteAttributeItem{PMIX_FABRIC_DIMS}
+\pasteAttributeItem{PMIX_FABRIC_ENDPT}
+\pasteAttributeItem{PMIX_FABRIC_SHAPE}
+\pasteAttributeItem{PMIX_FABRIC_SHAPE_STRING}
+\pasteAttributeItem{PMIX_SWITCH_PEERS}
+\pasteAttributeItem{PMIX_FABRIC_PLANE}
+\pasteAttributeItem{PMIX_FABRIC_SWITCH}
+\pasteAttributeItem{PMIX_FABRIC_VIEW}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_INDEX}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_NAME}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_BUS_TYPE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_ID}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_DRIVER}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_FIRMWARE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_ADDRESS}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_MTU}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_SPEED}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_STATE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_TYPE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_PCI_DEVID}
+%
+%
+\littleheader{Sets-Groups attributes}
+\pasteAttributeItem{PMIX_QUERY_NUM_PSETS}
+\pasteAttributeItem{PMIX_QUERY_PSET_NAMES}
+\pasteAttributeItem{PMIX_QUERY_PSET_MEMBERSHIP}
+\pasteAttributeItem{PMIX_PSET_NAME}
+\pasteAttributeItem{PMIX_PSET_MEMBERS}
+\pasteAttributeItem{PMIX_PSET_NAMES}
+\pasteAttributeItem{PMIX_QUERY_NUM_GROUPS}
+\pasteAttributeItem{PMIX_QUERY_GROUP_NAMES}
+\pasteAttributeItem{PMIX_QUERY_GROUP_MEMBERSHIP}
+\pasteAttributeItem{PMIX_GROUP_ID}
+\pasteAttributeItem{PMIX_GROUP_LEADER}
+\pasteAttributeItem{PMIX_GROUP_OPTIONAL}
+\pasteAttributeItem{PMIX_GROUP_NOTIFY_TERMINATION}
+\pasteAttributeItem{PMIX_GROUP_FT_COLLECTIVE}
+\pasteAttributeItem{PMIX_GROUP_ASSIGN_CONTEXT_ID}
+\pasteAttributeItem{PMIX_GROUP_LOCAL_ONLY}
+\pasteAttributeItem{PMIX_GROUP_CONTEXT_ID}
+\pasteAttributeItem{PMIX_GROUP_ENDPT_DATA}
+\pasteAttributeItem{PMIX_GROUP_NAMES}
+%
+%
+\littleheader{Process Mgmt attributes}
+\pasteAttributeItem{PMIX_OUTPUT_TO_DIRECTORY}
+\pasteAttributeItem{PMIX_TIMEOUT_STACKTRACES}
+\pasteAttributeItem{PMIX_TIMEOUT_REPORT_STATE}
+\pasteAttributeItem{PMIX_NOTIFY_JOB_EVENTS}
+\pasteAttributeItem{PMIX_NOTIFY_PROC_TERMINATION}
+\pasteAttributeItem{PMIX_NOTIFY_PROC_ABNORMAL_TERMINATION}
+\pasteAttributeItem{PMIX_LOG_PROC_TERMINATION}
+\pasteAttributeItem{PMIX_LOG_PROC_ABNORMAL_TERMINATION}
+\pasteAttributeItem{PMIX_LOG_JOB_EVENTS}
+\pasteAttributeItem{PMIX_LOG_COMPLETION}
+\pasteAttributeItem{PMIX_FIRST_ENVAR}
+%
+%
+\littleheader{Event attributes}
+\pasteAttributeItem{PMIX_EVENT_TIMESTAMP}
+%
+%
+\subsection{Added Environmental Variables}
+%
+\littleheader{Tool environmental variables}
+\refenvar{PMIX_LAUNCHER_PAUSE_FOR_TOOL} \\
+\refenvar{PMIX_LAUNCHER_RENDEZVOUS_FILE} \\
+%
+%
 \subsection{Deprecated \acp{API}}
 
 \declareapiDEP{pmix_evhdlr_reg_cbfunc_t}
@@ -470,7 +733,7 @@ module \ac{API}
 \subsection{Removed constants}
 
 The following constants were removed from the \ac{PMIx} Standard in v4.0
-as they are internal to a given \ac{PMIx} implementation.
+as they are internal to a particular \ac{PMIx} implementation.
 
 \begin{constantdesc}
 %
@@ -606,14 +869,14 @@ Renamed to \refattr{PMIX_PROC_INFO_ARRAY}
 }
 %
 \declareAttributeDEP{PMIX_LOCALITY}{"pmix.loc"}{\refstruct{pmix_locality_t}}{
-Relative locality of the specified process to the requester, expressed as a bitmask as per the description in the \refstruct{pmix_locality_t} section. This value is unique to the requesting process and thus cannot be communicated by the server as part of the job-level information. Its use has therefore been deprecated and the key will be removed in a future release.
+Relative locality of the specified process to the requester, expressed as a bitmask as per the description in the \refstruct{pmix_locality_t} section. This value is unique to the requesting process and thus cannot be communicated by the server as part of the job-level information. Its use has been replaced by the \refapi{PMIx_Get_relative_locality} function.
 }
 
 \subsection{Removed attributes}
 
 The following attributes were removed from the \ac{PMIx} Standard in v4.0
 as they
-are internal to a given \ac{PMIx} implementation. Users are referred to the
+are internal to a particular \ac{PMIx} implementation. Users are referred to the
 \refapi{PMIx_Load_topology} \ac{API} for obtaining the local topology
 description.
 
@@ -670,7 +933,7 @@ Path to shared memory data storage (dstore) files. Deprecated from Standard as b
 Comma-delimited list of algorithms to use for the collective operation. \ac{PMIx} does not impose any requirements on a host environment's collective algorithms. Thus, the acceptable values for this attribute will be environment-dependent - users are encouraged to check their host environment for supported values.
 }
 %
-\pasteAttributeItemBegin{PMIX_COLLECTIVE_ALGO_REQD}This attributed was deprecated in v3.0
+\pasteAttributeItemBegin{PMIX_COLLECTIVE_ALGO_REQD}This attribute was deprecated in v3.0
 \pasteAttributeItemEnd{}
 %
 \declareAttributeDEP{PMIX_PROC_BLOB}{"pmix.pblob"}{pmix_byte_object_t}{

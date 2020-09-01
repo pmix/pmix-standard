@@ -488,7 +488,7 @@ Requests that the launcher generate the \refconst{PMIX_EVENT_PROC_TERMINATED}
 event whenever a process either normally or abnormally terminates.
 }
 %
-\declareAttributeNEW{PMIX_NOTIFY_PROC_ABNORMAL TERMINATION}{"pmix.noteabproc"}{bool}{
+\declareAttributeNEW{PMIX_NOTIFY_PROC_ABNORMAL_TERMINATION}{"pmix.noteabproc"}{bool}{
 Requests that the launcher generate the \refconst{PMIX_EVENT_PROC_TERMINATED}
 event only when a process abnormally terminates.
 }
@@ -498,7 +498,7 @@ Requests that the launcher log the \refconst{PMIX_EVENT_PROC_TERMINATED} event
 whenever a process either normally or abnormally terminates.
 }
 %
-\declareAttributeNEW{PMIX_LOG_PROC_ABNORMAL TERMINATION}{"pmix.logabproc"}{bool}{
+\declareAttributeNEW{PMIX_LOG_PROC_ABNORMAL_TERMINATION}{"pmix.logabproc"}{bool}{
 Requests that the launcher log the \refconst{PMIX_EVENT_PROC_TERMINATED} event
 only when a process abnormally terminates.
 }
@@ -782,6 +782,11 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \reqattrend
 
 \optattrstart
+The following attributes are optional for \ac{PMIx} implementations:
+
+\pasteAttributeItem{PMIX_ALL_CLONES_PARTICIPATE}
+
+
 The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_TIMEOUT}
@@ -857,6 +862,11 @@ Returns one of the following:
 \reqattrend
 
 \optattrstart
+The following attributes are optional for \ac{PMIx} implementations:
+
+\pasteAttributeItem{PMIX_ALL_CLONES_PARTICIPATE}
+
+
 The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_TIMEOUT}
@@ -912,6 +922,11 @@ Returns one of the following:
 \reqattrend
 
 \optattrstart
+The following attributes are optional for \ac{PMIx} implementations:
+
+\pasteAttributeItem{PMIX_ALL_CLONES_PARTICIPATE}
+
+
 The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_TIMEOUT}
@@ -987,6 +1002,11 @@ Returns one of the following:
 \reqattrend
 
 \optattrstart
+The following attributes are optional for \ac{PMIx} implementations:
+
+\pasteAttributeItem{PMIX_ALL_CLONES_PARTICIPATE}
+
+
 The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_TIMEOUT}
@@ -1180,6 +1200,9 @@ The two processes share at least an L3 cache
 %
 \declareconstitemNEW{PMIX_LOCALITY_SHARE_PACKAGE}
 The two processes share at least a package
+%
+\declareconstitemNEW{PMIX_LOCALITY_SHARE_NUMA}
+The two processes share at least one \ac{NUMA} region
 %
 \declareconstitemNEW{PMIX_LOCALITY_SHARE_NODE}
 The two processes are executing on the same node

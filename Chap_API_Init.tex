@@ -4,13 +4,13 @@
 \chapter{Client Initialization and Finalization}
 \label{chap:api_init}
 
-The \ac{PMIx} library is required to be initialized and finalized around the usage of most of the \acp{API}.
+The \ac{PMIx} library is required to be initialized and finalized around the usage of most \ac{PMIx} functions or macros.
 The \acp{API} that may be used outside of the initialized and finalized region are noted.
 All other \acp{API} must be used inside this region.
 
-There are three sets of initialization and finalization functions depending upon the role of the process in the \ac{PMIx} Standard - those associated with the \ac{PMIx} \emph{client} are defined in this chapter. \ac{PMIx} clients are processes that have been assigned to a particular \ac{PMIx} server at time of start, with the information required to connect to that server being provided to them.
+There are three sets of initialization and finalization functions depending upon the role of the process in the \ac{PMIx} Standard - those associated with the \ac{PMIx} \refterm{client} are defined in this chapter. Similar functions corresponding to the roles of \emph{server} and \emph{tool} are defined in Chapters \ref{chap:api_server} and \ref{chap:api_tools}, respectively.
 
-Note that a process can only call \textit{one} of the init/finalize functional pairs - e.g., a process that calls the client initialization function cannot also call the tool or server initialization functions, and must call the corresponding client finalize. Regardless of the role assumed by the process, all processes have access to the client \acp{API}. Thus, the \emph{server} and \emph{tool} roles can be considered supersets of the \ac{PMIx} client.
+Note that a process can only call \textit{one} of the initialization/finalization functional pairs from the set of three - e.g., a process that calls the client initialization function cannot also call the tool or server initialization functions, and must call the corresponding client finalization function. Regardless of the role assumed by the process, all processes have access to the client \acp{API}. Thus, the \emph{server} and \emph{tool} roles can be considered supersets of the \ac{PMIx} client.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -311,8 +311,8 @@ The following attribute influences the behavior of \refapi{PMIx_Finalize}.
 %
 \declareAttribute{PMIX_EMBED_BARRIER}{"pmix.embed.barrier"}{bool}{
 Execute a blocking fence operation before executing the specified operation.
-For example, \refapi{PMIx_Finalize} does not include an internal barrier operation by default.
-This attribute would direct \refapi{PMIx_Finalize} to execute a barrier as part of the finalize operation.
+\refapi{PMIx_Finalize} does not include an internal barrier operation by default.
+This attribute directs \refapi{PMIx_Finalize} to execute a barrier as part of the finalize operation.
 }
 
 

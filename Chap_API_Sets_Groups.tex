@@ -17,9 +17,8 @@ corresponding \acp{API}.
 
 A \ac{PMIx} \emph{Process Set} is a user-provided or host environment assigned
 label associated with a given set of application processes. Processes can
-belong to multiple process \emph{sets} at a time. Definition of a \ac{PMIx}
-process set typically occurs at time of application execution - e.g., on a
-command line:
+belong to multiple process \emph{sets} at a time. Users may define a \ac{PMIx}
+process set at time of application execution. For example, if using the command line parallel launcher "prun", one could specify process sets as follows:
 
 \cspecificstart
 \begin{codepar}
@@ -27,10 +26,9 @@ command line:
 \end{codepar}
 \cspecificend
 
-In this example, the processes in the first application will be labeled with a \refattr{PMIX_PSET_NAMES} attribute of \emph{ocean} while those in the second application will be labeled with an \emph{ice} value. During the execution, application processes could lookup the process set attribute for any process using \refapi{PMIx_Get}. Alternatively, other executing applications could utilize the \refapi{PMIx_Query_info} \acp{API} to obtain the number of declared process sets in the system, a list of their names, and other information about them. In other words, the \emph{process set} identifier provides a label by which an application can derive information about a process and its application - it does \emph{not}, however, confer any operational function.
+In this example, the processes in the first application will be labeled with a \refattr{PMIX_PSET_NAMES} attribute with a value of \emph{ocean} while those in the second application will be labeled with an \emph{ice} value. During the execution, application processes could lookup the process set attribute for any process using \refapi{PMIx_Get}. Alternatively, other executing applications could utilize the \refapi{PMIx_Query_info} \acp{API} to obtain the number of declared process sets in the system, a list of their names, and other information about them. In other words, the \emph{process set} identifier provides a label by which an application can derive information about a process and its application - it does \emph{not}, however, confer any operational function.
 
-Host environments can create or delete process sets at any time, as well as
-add and delete members from existing process sets, through the
+Host environments can create or delete process sets at any time through the
 \refapi{PMIx_server_define_process_set} and
 \refapi{PMIx_server_delete_process_set} \acp{API}. \ac{PMIx} servers shall
 notify all local clients of process set operations via the
@@ -42,10 +40,12 @@ Process \emph{sets} differ from process \emph{groups} in several key ways:
 \begin{itemize}
     \item Process \emph{sets} have no implied relationship between their members - i.e., a process in a process set has no concept of a ``pset rank'' as it would in a process \emph{group}.
     %
-    \item Process \emph{set} identifiers are set by the host environment -
-    there are no \ac{PMIx} \acp{API} provided by which an application can
+    \item Process \emph{set} identifiers are set by the host environment or by the user at time of application submission for execution -
+    there are no \ac{PMIx} \acp{API} provided by which an application can define a process set or
     change a process \emph{set} membership. In contrast, \ac{PMIx} process
     \emph{groups} can only be defined dynamically by the application.
+    %
+    \item Process \emph{sets} are immutable - members cannot be added or removed once the set has been defined. In contrast, \ac{PMIx} process \emph{groups} can dynamically change their membership using the appropriate \acp{API}.
     %
     \item Process \emph{groups} can be used in calls to \ac{PMIx} operations. Members of process \emph{groups} that are involved in an operation are translated by their \ac{PMIx} server into their \emph{native} identifier prior to the operation being passed to the host environment. For example, an application can define a process group to consist of ranks 0 and 1 from the host-assigned namespace of \emph{210456}, identified by the group id of \emph{foo}. If the application subsequently calls the \refapi{PMIx_Fence} \ac{API} with a process identifier of \code{\{foo, PMIX_RANK_WILDCARD\}}, the \ac{PMIx} server will replace that identifier with an array consisting of \code{\{210456, 0\}} and \code{\{210456, 1\}} - the host-assigned identifiers of the participating processes - prior to processing the request.
     %
@@ -59,8 +59,8 @@ based on a process set could, for example, obtain the membership array of the
 process set and use that as input to \refapi{PMIx_Group_construct}, perhaps
 including the process set name as the group identifier for clarity. Note that
 no linkage between the set and group of the same name is implied nor
-maintained - e.g., changes in process set membership would not automatically be
-reflected in the process group using the same identifier.
+maintained - e.g., changes in process group membership can not be
+reflected in the process set using the same identifier.
 
 \advicermstart
 The host environment is responsible for ensuring:
@@ -78,21 +78,16 @@ The host environment is responsible for ensuring:
 \subsection{Process Set Constants}
 
 \versionMarker{4.0}
-The \ac{PMIx} server is required to notify all local clients of changes to
-process set membership, including the creation of new process sets as well as
-their complete deletion. Client processes wishing to receive such
-notifications must register for one or more of the following events:
+The \ac{PMIx} server is required to send a notification to all local clients upon creation or deletion of process sets. Client processes wishing to receive such
+notifications must register for the corresponding event:
 
 \begin{constantdesc}
 %
 \declareconstitemNEW{PMIX_PROCESS_SET_DEFINE}
-The host environment has defined a new process set, or has added members to
-an existing process set.
+The host environment has defined a new process set - the event will include the process set name (\refattr{PMIX_PSET_NAME}) and the membership (\refattr{PMIX_PSET_MEMBERS}).
 %
 \declareconstitemNEW{PMIX_PROCESS_SET_DELETE}
-The host environment has removed members from an existing process set. If all
-members of the set have been removed, then the set definition has been
-deleted from the system.
+The host environment has deleted a process set - the event will include the process set name (\refattr{PMIX_PSET_NAME}).
 %
 \end{constantdesc}
 
@@ -114,17 +109,29 @@ Return a \refstruct{pmix_data_array_t} containing an array of strings of the
 process set names defined in the specified range (defaults to \refconst{PMIX_RANGE_SESSION}).
 }
 %
-\declareAttributeNEW{PMIX_QUERY_PSET_MEMBERSHIP}{"pmix.qry.pmems"}{pmix_proc_t*}{
-Return a \refstruct{pmix_data_array_t} of \refstruct{pmix_proc_t} containing
+\declareAttributeNEW{PMIX_QUERY_PSET_MEMBERSHIP}{"pmix.qry.pmems"}{pmix_data_array_t*}{
+Return an array of \refstruct{pmix_proc_t} containing
 the members of the specified process set.
 }
 %
 
 \vspace{\baselineskip}
+The \refconst{PMIX_PROCESS_SET_DEFINE} event shall include the name of the newly defined process set and its members:
+%
+\declareAttributeNEW{PMIX_PSET_NAME}{"pmix.pset.nm"}{char*}{
+The name of the newly defined process set.
+}
+%
+\declareAttributeNEW{PMIX_PSET_MEMBERS}{"pmix.pset.mems"}{pmix_data_array_t*}{
+An array of \refstruct{pmix_proc_t} containing
+the members of the newly defined process set.
+}
+
+\vspace{\baselineskip}
 In addition, a process can request (via \refapi{PMIx_Get}) the process sets to which a given process (including itself) belongs:
 
 %
-\declareAttributeNEW{PMIX_PSET_NAMES}{"pmix.pset.nm"}{pmix_data_array_t*}{
+\declareAttributeNEW{PMIX_PSET_NAMES}{"pmix.pset.nms"}{pmix_data_array_t*}{
 Returns an array of \code{char*} string names of the process sets in which the given process is a member.
 }
 
@@ -133,40 +140,36 @@ Returns an array of \code{char*} string names of the process sets in which the g
 \section{Process Groups}
 \label{chap:api_sets_groups:groups}
 
-\ac{PMIx} \emph{Groups} are defined as a collection of processes desiring a common, unique identifier for operational purposes such as passing events or participating in \ac{PMIx} fence operations. As with processes that assemble via \refapi{PMIx_Connect}, each member of the group is provided with both the job-level information of any other namespace represented in the group, and the contact information for all group members. However, \emph{groups} differ from \refapi{PMIx_Connect} assemblages in the following key areas:
+\ac{PMIx} \emph{Groups} are defined as a collection of processes desiring a common, unique identifier for operational purposes such as passing events or participating in \ac{PMIx} fence operations. As with processes that assemble via \refapi{PMIx_Connect}, each member of the group is provided with both the job-level information of any other namespace represented in the group, and the contact information for all group members.
 
-\begin{itemize}
-    \item Relation to the host environment:
-    \begin{itemize}
-        \item Calls to \refapi{PMIx_Connect} are relayed to the host environment. This means that the host \ac{RM} should treat the failure of any process in the specified assemblage as a reportable event and take appropriate action. However, the environment is not required to define a new identifier for the connected assemblage or any of its member processes, nor does it define a new rank for each process within that assemblage. In addition, the \ac{PMIx} server does not provide any tracking support for the assemblage. Thus, the caller is responsible for addressing members of the connected assemblage using their \ac{RM}-provided identifiers.
-        %
-        \item Calls to \ac{PMIx} Group \acp{API} are first processed within the local \ac{PMIx} server. When constructed, the server creates a tracker that associates the specified processes with the user-provided group identifier, and assigns a new \emph{group rank} based on their relative position in the array of processes provided in the call to \refapi{PMIx_Group_construct}. Members of the group can subsequently utilize the group identifier in \ac{PMIx} function calls to address the group’s members, using either \refconst{PMIX_RANK_WILDCARD} to refer to all of them or the group-level rank of specific members. The \ac{PMIx} server will translate the specified processes into their \ac{RM}-assigned identifiers prior to passing the request up to its host. Thus, the host environment has no visibility into the group’s existence or membership.
-        %
+However, members of \ac{PMIx} Groups are \emph{loosely coupled} as opposed to \emph{tightly connected} when constructed via \refapi{PMIx_Connect}. Thus, \emph{groups} differ from \refapi{PMIx_Connect} assemblages in several key areas, as detailed in the following sections.
+
+\subsection{Relation to the host environment}
+
+Calls to \ac{PMIx} Group \acp{API} are first processed within the local \ac{PMIx} server. When constructed, the server creates a tracker that associates the specified processes with the user-provided group identifier, and assigns a new \emph{group rank} based on their relative position in the array of processes provided in the call to \refapi{PMIx_Group_construct}. Members of the group can subsequently utilize the group identifier in \ac{PMIx} function calls to address the group’s members, using either \refconst{PMIX_RANK_WILDCARD} to refer to all of them or the group-level rank of specific members. The \ac{PMIx} server will translate the specified processes into their \ac{RM}-assigned identifiers prior to passing the request up to its host. Thus, the host environment has no visibility into the group’s existence or membership.
+
+In contrast, calls to \refapi{PMIx_Connect} are relayed to the host environment. This means that the host \ac{RM} should treat the failure of any process in the specified assemblage as a reportable event and take appropriate action. However, the environment is not required to define a new identifier for the connected assemblage or any of its member processes, nor does it define a new rank for each process within that assemblage. In addition, the \ac{PMIx} server does not provide any tracking support for the assemblage. Thus, the caller is responsible for addressing members of the connected assemblage using their \ac{RM}-provided identifiers.
+
 \adviceuserstart
-        User-provided group identifiers must be distinct from anything provided by the \ac{RM} so as to avoid collisions between group identifiers and \ac{RM}-assigned namespaces. This can usually be accomplished through the use of an application-specific prefix – e.g., ``myapp-foo''
+User-provided group identifiers must be distinct from both other group identifiers within the system and namespaces provided by the \ac{RM} so as to avoid collisions between group identifiers and \ac{RM}-assigned namespaces. This can usually be accomplished through the use of an application-specific prefix – e.g., ``myapp-foo''
 \adviceuserend
-    \end{itemize}
-    %
-    \item Construction procedure:
-    \begin{itemize}
-        \item \refapi{PMIx_Connect} calls require that every process call the \ac{API} before completing – i.e., it is modeled upon the bulk synchronous traditional \ac{MPI} connect/accept methodology. Thus, a given application thread can only be involved in one connect/accept operation at a time, and is blocked in that operation until all specified processes participate. In addition, there is no provision for replacing processes in the assemblage due to failure to participate, nor a mechanism by which a process might decline participation.
-        %
-        \item \ac{PMIx} Groups are designed to be more flexible in their construction procedure by relaxing these constraints. While a standard blocking form of constructing groups is provided, the event notification system is utilized to provide a designated \emph{group leader} with the ability to replace participants that fail to participate within a given timeout period. This provides a mechanism by which the application can, if desired, replace members on-the-fly or allow the group to proceed with partial membership. In such cases, the final group membership is returned to all participants upon completion of the operation.
-        %
-        Additionally, \ac{PMIx} supports dynamic definition of group membership based on an invite/join model. A process can asynchronously initiate construction of a group of any processes via the \refapi{PMIx_Group_invite} function call. Invitations are delivered via a \ac{PMIx} event (using the \refconst{PMIX_GROUP_INVITED} event) to the invited processes which can then either accept or decline the invitation using the \refapi{PMIx_Group_join} \ac{API}. The initiating process tracks responses by registering for the events generated by the call to \refapi{PMIx_Group_join}, timeouts, or process terminations, optionally replacing processes that decline the invitation, fail to respond in time, or terminate without responding. Upon completion of the operation, the final list of participants is communicated to each member of the new group.
-    \end{itemize}
-    %
-    \item Destruct procedure:
-    \begin{itemize}
-        \item Processes that assemble via \refapi{PMIx_Connect} must all depart the assemblage together – i.e., no member can depart the assemblage while leaving the remaining members in it. Even the non-blocking form of \refapi{PMIx_Disconnect} retains this requirement in that members remain a part of the assemblage until all members have called \refapi{PMIx_Disconnect_nb}
-        %
-        \item Members of a \ac{PMIx} Group may depart the group at any time via the \refapi{PMIx_Group_leave} \ac{API}. Other members are notified of the departure via the \refconst{PMIX_GROUP_LEFT} event to distinguish such events from those reporting process termination. This leaves the remaining members free to continue group operations. The \refapi{PMIx_Group_destruct} operation offers a collective method akin to \refapi{PMIx_Disconnect} for deconstructing the entire group.
 
-        Note that applications supporting dynamic group behaviors such as asynchronous departure take responsibility for ensuring global consistency in the group definition prior to executing group collective operations - i.e., it is the application's responsibility to either ensure that knowledge of the current group membership is globally consistent across the participants, or to register for appropriate events to deal with the lack of consistency during the operation.
-    \end{itemize}
-\end{itemize}
 
-In other words, members of \ac{PMIx} Groups are \emph{loosely coupled} as opposed to \emph{tightly connected} when constructed via \refapi{PMIx_Connect}. The relevant \acp{API} are explained below.
+\subsection{Construction procedure}
+
+\refapi{PMIx_Connect} calls require that every process call the \ac{API} before completing – i.e., it is modeled upon the bulk synchronous traditional \ac{MPI} connect/accept methodology. Thus, a given application thread can only be involved in one connect/accept operation at a time, and is blocked in that operation until all specified processes participate. In addition, there is no provision for replacing processes in the assemblage due to failure to participate, nor a mechanism by which a process might decline participation.
+
+In contrast, \ac{PMIx} Groups are designed to be more flexible in their construction procedure by relaxing these constraints. While a standard blocking form of constructing groups is provided, the event notification system is utilized to provide a designated \emph{group leader} with the ability to replace participants that fail to participate within a given timeout period. This provides a mechanism by which the application can, if desired, replace members on-the-fly or allow the group to proceed with partial membership. In such cases, the final group membership is returned to all participants upon completion of the operation.
+
+Additionally, \ac{PMIx} supports dynamic definition of group membership based on an invite/join model. A process can asynchronously initiate construction of a group of any processes via the \refapi{PMIx_Group_invite} function call. Invitations are delivered via a \ac{PMIx} event (using the \refconst{PMIX_GROUP_INVITED} event) to the invited processes which can then either accept or decline the invitation using the \refapi{PMIx_Group_join} \ac{API}. The initiating process tracks responses by registering for the events generated by the call to \refapi{PMIx_Group_join}, timeouts, or process terminations, optionally replacing processes that decline the invitation, fail to respond in time, or terminate without responding. Upon completion of the operation, the final list of participants is communicated to each member of the new group.
+
+\subsection{Destruct procedure}
+
+Members of a \ac{PMIx} Group may depart the group at any time via the \refapi{PMIx_Group_leave} \ac{API}. Other members are notified of the departure via the \refconst{PMIX_GROUP_LEFT} event to distinguish such events from those reporting process termination. This leaves the remaining members free to continue group operations. The \refapi{PMIx_Group_destruct} operation offers a collective method akin to \refapi{PMIx_Disconnect} for deconstructing the entire group.
+
+In contrast, processes that assemble via \refapi{PMIx_Connect} must all depart the assemblage together – i.e., no member can depart the assemblage while leaving the remaining members in it. Even the non-blocking form of \refapi{PMIx_Disconnect} retains this requirement in that members remain a part of the assemblage until all members have called \refapi{PMIx_Disconnect_nb}
+
+Note that applications supporting dynamic group behaviors such as asynchronous departure take responsibility for ensuring global consistency in the group definition prior to executing group collective operations - i.e., it is the application's responsibility to either ensure that knowledge of the current group membership is globally consistent across the participants, or to register for appropriate events to deal with the lack of consistency during the operation.
 
 \adviceuserstart
 The reliance on \ac{PMIx} events in the \ac{PMIx} Group concept dictates that processes utilizing these \acp{API} must register for the corresponding events. Failure to do so will likely lead to operational failures. Users are recommended to utilize the \refattr{PMIX_TIMEOUT} directive (or retain an internal timer) on calls to \ac{PMIx} Group \acp{API} (especially the blocking form of those functions) as processes that have not registered for required events will never respond.
