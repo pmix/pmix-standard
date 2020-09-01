@@ -749,10 +749,10 @@ the \refattr{PMIX_DEBUG_TARGET} attribute. The debugger daemons spawned on a
 given node are responsible for self-determining their specific target
 process(es) - e.g., by referencing their own \refattr{PMIX_LOCAL_RANK} in the
 daemon debugger job versus the corresponding \refattr{PMIX_LOCAL_RANK} of the
-target processes on the node. Note that this method for starting the debugger
-precludes the use of \ac{PMIx} attributes to \emph{pause} the application prior
-to attaching the debugger. Users are referred to the \refapi{PMIx_Job_control}
-\ac{API} for possible alternative methods.
+target processes on the node. Note that the debugger will be attaching to the application processes
+at some arbitrary point in the application's execution unless some method for pausing the application
+(e.g., by providing a \ac{PMIx} directive at time of launch, or via a tool using the
+\refapi{PMIx_Job_control} \ac{API} to direct that the process be paused) has been employed.
 
 \adviceuserstart
 Note that the tool calling \refapi{PMIx_Spawn} to request the launch of the debugger daemons is \emph{not} included in the resulting job - i.e., the debugger daemons do not inherit the namespace of the tool. Thus, collective operations and notifications that target the debugger daemon job will not include the tool unless the namespace/rank of the tool is explicitly included.
