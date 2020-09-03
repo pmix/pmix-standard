@@ -777,13 +777,14 @@ may stage the launches as required. The launcher shall not return from the
 \refapi{PMIx_Spawn} command until all included applications and the debugger
 daemons have been started.
 
-Attributes that apply to both the debugger and the application processes can
+Attributes that apply to both the debugger daemons and the application processes can
 be specified in the \refarg{job_info} array passed into the
 \refapi{PMIx_Spawn} \ac{API}. Attributes that either (a) apply solely to the
 debugger daemons or to one of the applications included in the spawn request,
 or (b) have values that differ from those provided in the \refarg{job_info}
 array, should be specified in the \refarg{info} array in the corresponding
 \refstruct{pmix_app_t}.
+Note that \ac{PMIx} job \emph{pause} attributes (e.g., \refattr{PMIX_DEBUG_STOP_IN_INIT}) do not apply to applications (defined in \refstruct{pmix_app_t}) where the \refattr{PMIX_DEBUGGER_DAEMONS} attribute is set to \code{true}.
 
 Debugger daemons spawned in this manner shall be provided with the typical
 \ac{PMIx} information for their own job plus the target they are to debug via
