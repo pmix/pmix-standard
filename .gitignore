@@ -11,9 +11,12 @@
 *.synctex.gz
 *.DS_Store
 *.xwm
+*.mw
 datetime-defaults.sty
 datetime.sty
 check-openpmix
 figs/~$drawings.pptx
 *.loc
 *.soc
+_minted*
+sources/_autogen_/
