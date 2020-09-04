@@ -7,7 +7,7 @@ High Performance Computing (HPC) libraries and programming models with
 portable and well-defined access to commonly available
 distributed computing system services.
 
-This repository contains the LaTeX source for the PMIx standard document 
+This repository contains the LaTeX source for the PMIx standard document
 and discussions regarding the PMIx standard.
 
 ## Contributing to the PMIx Standard
@@ -15,8 +15,8 @@ and discussions regarding the PMIx standard.
 We welcome participation in development of the PMIx Standard. To find out
 more about how to participate, visit our web site at https://pmix.org/
 
-On the web site, you will find [background documents and 
-publications](https://pmix.org/publications/), and information 
+On the web site, you will find [background documents and
+publications](https://pmix.org/publications/), and information
 about [joining our mailing lists, meetings,
 and working groups](https://pmix.org/contribute/).
 Additionally, you will find our governance document,
@@ -24,3 +24,22 @@ Additionally, you will find our governance document,
 rules for participation and making changes to the PMIx Standard.
 The governance document includes instructions for how to raise questions
 about the standard as well as how to propose changes to the standard.
+
+## Building the PMIx Standard
+
+### Building with Docker
+
+The community maintains a [Docker container image](https://github.com/jjhursey/pmix-standard-dockerfile) that can be used to build the standard using the included script. This is the same container image that is used in CI.
+
+```
+./bin/build-with-docker.sh
+```
+
+### Building on Your System
+
+ * If you are building on Ubuntu then take a look at [this Dockerfile](https://github.com/jjhursey/pmix-standard-dockerfile/blob/master/Dockerfile)
+ * If you are building on Mac OSX start with [MacTeX](https://www.tug.org/mactex/) then add the rest of the dependencies:
+```
+sudo pip2 install --upgrade pip setuptools
+sudo pip2 install Pygments
+```
