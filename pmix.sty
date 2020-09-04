@@ -790,3 +790,109 @@
 \newcounter{pycounter}
 \newcommand{\pylabel}[1]{\refstepcounter{pycounter} \label{appB:#1}}
 \newcommand{\refpy}[1]{\hyperref[appB:#1]{\code{#1}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Code examples
+% Install: (if using Python 3 then use pip3)
+%   sudo pip2 install --upgrade pip setuptools
+%   sudo pip2 install Pygments
+% Ubuntu:
+%   sudo apt update
+%   sudo apt install python-pip
+%   sudo pip3 install Pygments
+%
+% package to work around "No room for a new \write" message
+\usepackage{morewrites}
+\morewritessetup{allocate=10}
+% package for code highlighting
+\usepackage[chapter]{minted}
+\usemintedstyle{default}
+\usepackage{xcolor}
+
+% Background: Light Gray
+\definecolor{pmixbg}{rgb}{0.95,0.95,0.95}
+% Highlight: Yellow
+\definecolor{pmixhl}{rgb}{0.95,0.95,0}
+
+%-----------------------
+% C Code
+%
+% block of code
+%  \begin{pmixCodeC}
+%  return 0;
+%  \end{pmixCodeC}
+%
+% Inline C code
+%  The code \pmixCodeInlineC{printf("Hello World");} prints ``Hello World''.
+%
+% Import C code from a file:
+% - Whole file: \pmixCodeImportC{sources/hello.c}
+% - Selection of a file: \pmixCodeImportC[firstline=73, lastline=84]{sources/hello.c}
+% - Highlight selection of a file: \pmixCodeImportC[firstline=73, lastline=84, highlightlines={2-4,6}]{sources/hello.c}
+%
+\newminted[pmixCodeC]{c}{fontsize=\small,
+                       bgcolor=pmixbg,
+                       highlightcolor=pmixhl,
+                       breaklines,
+                       autogobble,
+                       linenos,
+                       numbersep=3pt,
+                       firstnumber=1}
+\newmintinline[pmixCodeInlineC]{c}{bgcolor=pmixbg,
+                                   highlightcolor=pmixhl,
+                                   breaklines,
+                                   autogobble,
+                                   linenos,
+                                   firstnumber=1}
+\newmintedfile[pmixCodeImportC]{c}{fontsize=\small,
+                                   bgcolor=pmixbg,
+                                   highlightcolor=pmixhl,
+                                   breaklines,
+                                   autogobble,
+                                   linenos,
+                                   numbersep=3pt,
+                                   firstnumber=1}
+
+%-----------------------
+% Python Code
+%
+% block of code
+%  \begin{pmixCodePy}
+%  print("Hello")
+%  \end{pmixCodePy}
+%
+% Inline C code
+%  The code \pmixCodeInlinePy{print("Hello World")} prints ``Hello World''.
+%
+% Import C code from a file:
+% - Whole file: \pmixCodeImportPy{sources/hello.py}
+% - Selection of a file: \pmixCodeImportPy[firstline=73, lastline=84]{sources/hello.py}
+% - Highlight selection of a file: \pmixCodeImportPy[firstline=73, lastline=84, highlightlines={2-4,6}]{sources/hello.py}
+%
+\newminted[pmixCodepPy]{python}{fontsize=\small,
+                       bgcolor=pmixbg,
+                       highlightcolor=pmixhl,
+                       breaklines,
+                       autogobble,
+                       linenos,
+                       numbersep=3pt,
+                       firstnumber=1}
+\newmintinline[pmixCodeInlinePy]{python}{bgcolor=pmixbg,
+                                   highlightcolor=pmixhl,
+                                   breaklines,
+                                   autogobble,
+                                   linenos,
+                                   firstnumber=1}
+\newmintedfile[pmixCodeImportPy]{python}{fontsize=\small,
+                                   bgcolor=pmixbg,
+                                   highlightcolor=pmixhl,
+                                   breaklines,
+                                   autogobble,
+                                   linenos,
+                                   numbersep=3pt,
+                                   firstnumber=1}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
