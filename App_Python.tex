@@ -2309,8 +2309,8 @@ See \refapi{PMIx_Fabric_deregister} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Client.fabric_get_vertex_info}
-\declareapibinding{PMIxClient.fabric_get_vertex_info}{PMIx_Fabric_get_vertex_info}{Python}
+\subsection{Client.fabric_get_device_info}
+\declareapibinding{PMIxClient.fabric_get_device_info}{PMIx_Fabric_get_device_info}{Python}
 
 \summary
 Given a communication cost matrix index for a specified fabric, return an array of information describing the corresponding \ac{NIC}.
@@ -2320,15 +2320,15 @@ Given a communication cost matrix index for a specified fabric, return an array 
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,nicinfo = myclient.fabric_get_vertex_info(fabric:integer,
-                        vertex:integer)
+rc,nicinfo = myclient.fabric_get_device_info(fabric:integer,
+                        device:integer)
 \end{codepar}
 \pyspecificend
 
 
 \begin{arglist}
 \argin{fabric}{Index of the registered fabric (list)}
-\argin{fabric}{Index of the vertex within that fabric (list)}
+\argin{fabric}{Index of the device within the communication cost matrix for the fabric (list)}
 \end{arglist}
 
 Returns:
@@ -2338,7 +2338,7 @@ Returns:
     \item \refarg{nicinfo} - List of Python \refpy{info} describing the referenced \ac{NIC} (list)
 \end{itemize}
 
-See \refapi{PMIx_Fabric_get_vertex_info} for details.
+See \refapi{PMIx_Fabric_get_device_info} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2346,7 +2346,7 @@ See \refapi{PMIx_Fabric_get_vertex_info} for details.
 \declareapibinding{PMIxClient.fabric_get_device_index}{PMIx_Fabric_get_device_index}{Python}
 
 \summary
-Given info describing a given vertex, return the corresponding communication cost matrix index.
+Given info describing a given device, return the corresponding communication cost matrix index.
 
 \format
 
@@ -2359,14 +2359,14 @@ rc,index = myclient.fabric_get_device_index(fabric:integer, info:list)
 
 \begin{arglist}
 \argin{fabric}{Index of the registered fabric (list)}
-\argin{info}{List of Python \refpy{info} containing vertex description (list)}
+\argin{info}{List of Python \refpy{info} containing device description (list)}
 \end{arglist}
 
 Returns:
 
 \begin{itemize}
     \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{index} - Index of corresponding \ac{NIC} (integer)
+    \item \refarg{index} - Index of corresponding device within the communication cost matrix of the fabric (integer)
 \end{itemize}
 
 See \refapi{PMIx_Fabric_get_device_index} for details.

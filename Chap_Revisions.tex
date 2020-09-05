@@ -363,8 +363,9 @@ The above changes included introduction of the following \acp{API} and data type
         \item \refapi{PMIx_Fabric_register}, \refapi{PMIx_Fabric_register_nb}
         \item \refapi{PMIx_Fabric_update}, \refapi{PMIx_Fabric_update_nb}
         \item \refapi{PMIx_Fabric_deregister}, \refapi{PMIx_Fabric_deregister_nb}
-        \item \refapi{PMIx_Fabric_get_vertex_info}, \refapi{PMIx_Fabric_get_vertex_info_nb}
+        \item \refapi{PMIx_Fabric_get_device_info}, \refapi{PMIx_Fabric_get_device_info_nb}
         \item \refapi{PMIx_Fabric_get_device_index}, \refapi{PMIx_Fabric_get_device_index_nb}
+        \item \refapi{PMIx_Fabric_update_distances}, \refapi{PMIx_Fabric_update_distances_nb}
     \end{compactitemize}
 
     \item Server \acp{API}
@@ -394,8 +395,10 @@ The above changes included introduction of the following \acp{API} and data type
         \item \refstruct{pmix_group_opt_t}
         \item \refstruct{pmix_group_operation_t}
         \item \refstruct{pmix_fabric_t}
+        \item \refstruct{pmix_device_distance_t}
         \item \refstruct{pmix_coord_t}
         \item \refstruct{pmix_coord_view_t}
+        \item \refstruct{pmix_geometry_t}
         \item \refstruct{pmix_link_state_t}
         \item \refstruct{pmix_job_state_t}
     \end{compactitemize}
@@ -455,7 +458,7 @@ The above changes included introduction of the following \acp{API} and data type
 \refconst{PMIX_LINK_UP} \\
 \refconst{PMIX_FABRIC_REQUEST_INFO} \\
 \refconst{PMIX_FABRIC_UPDATE_INFO} \\
-\refconst{PMIX_FABRIC_GET_VERTEX_INFO} \\
+\refconst{PMIX_FABRIC_GET_DEVICE_INFO} \\
 \refconst{PMIX_FABRIC_GET_DEVICE_INDEX} \\
 %
 %
@@ -505,6 +508,7 @@ The above changes included introduction of the following \acp{API} and data type
 %
 \littleheader{Sync-Access attributes}
 %
+\pasteAttributeItem{PMIX_COLLECT_GENERATED_JOB_INFO}
 \pasteAttributeItem{PMIX_ALL_CLONES_PARTICIPATE}
 \pasteAttributeItem{PMIX_GET_STATIC_VALUES}
 \pasteAttributeItem{PMIX_GET_REFRESH_CACHE}
@@ -591,10 +595,11 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_FABRIC_VENDOR}
 \pasteAttributeItem{PMIX_FABRIC_IDENTIFIER}
 \pasteAttributeItem{PMIX_FABRIC_INDEX}
-\pasteAttributeItem{PMIX_FABRIC_NUM_VERTICES}
-\pasteAttributeItem{PMIX_FABRIC_COORDINATE}
+\pasteAttributeItem{PMIX_FABRIC_NUM_DEVICES}
+\pasteAttributeItem{PMIX_FABRIC_COORDINATES}
 \pasteAttributeItem{PMIX_FABRIC_DIMS}
 \pasteAttributeItem{PMIX_FABRIC_ENDPT}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_DIST}
 \pasteAttributeItem{PMIX_FABRIC_SHAPE}
 \pasteAttributeItem{PMIX_FABRIC_SHAPE_STRING}
 \pasteAttributeItem{PMIX_SWITCH_PEERS}
@@ -602,11 +607,12 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_FABRIC_SWITCH}
 \pasteAttributeItem{PMIX_FABRIC_VIEW}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_ID}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_INDEX}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_NAME}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_BUS_TYPE}
-\pasteAttributeItem{PMIX_FABRIC_DEVICE_ID}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_VENDORID}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_DRIVER}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_FIRMWARE}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_ADDRESS}
