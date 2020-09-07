@@ -56,7 +56,9 @@ The following terminology is used throughout this document:
 
 \item \declaretermAlt{fabric}{fabrics} is used in a generic sense to refer to the networks within the system regardless of speed or protocol. Any use of the term \emph{network} in the document should be considered interchangeable with \emph{fabric}.
 
-\item \declaretermAlt{fabric plane}{fabric planes} refers to a collection of devices (\acp{NIC}) and switches in a common logical or physical configuration. Fabric planes are often implemented in \ac{HPC} clusters as separate overlay or physical networks controlled by a dedicated fabric manager.
+\item \declaretermAlt{fabric device}{device} (or \declaretermAlt{fabric devices}{devices}) refers to an operating system fabric interface, which may be physical or virtual. Any use of the term \ac{NIC} in the document should be considered interchangeable with \emph{fabric device}.
+
+\item \declaretermAlt{fabric plane}{fabric planes} refers to a collection of fabric devices in a common logical or physical configuration. Fabric planes are often implemented in \ac{HPC} clusters as separate overlay or physical networks controlled by a dedicated fabric manager.
 
 \item \declareterm{attribute} refers to a key-value pair comprised of a string key (represented by a \refstruct{pmix_key_t} structure) and an associated value containing a \ac{PMIx} data type (e.g., boolean, integer, or a more complex \ac{PMIx} structure). Attributes are used both as directives when passed as qualifiers to \acp{API} (e.g., in a \refstruct{pmix_info_t} array), and to identify the contents of information (e.g., to specify that the contents of the corresponding \refstruct{pmix_value_t} in a \refstruct{pmix_info_t} represent the \refattr{PMIX_UNIV_SIZE}).
 
