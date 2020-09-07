@@ -7,10 +7,14 @@ default: pmix-standard.pdf
 CHAPTERS= \
 	TitlePage.tex \
 	Chap_Introduction.tex \
+	Chap_Revisions.tex \
 	Chap_Terms.tex \
-	Chap_API_Init.tex \
 	Chap_API_Struct.tex \
-	Chap_API_Key_Value_Mgmt.tex \
+	Chap_API_Init.tex \
+	Chap_API_Sync_Access.tex \
+	Chap_API_Reserved_Keys.tex \
+	Chap_API_NonReserved_Keys.tex \
+	Chap_API_Publish.tex \
 	Chap_API_Proc_Mgmt.tex \
 	Chap_API_Job_Mgmt.tex \
 	Chap_API_Event.tex \
@@ -62,15 +66,13 @@ pmix-standard.pdf: $(CHAPTERS) $(SOURCES) pmix.sty pmix-standard.tex figs/pmix-l
 	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex || \
 		pdflatex -interaction=errorstopmode -file-line-error pmix-standard.tex  < /dev/null
 	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex
-	@echo "====> Checking References (pmix-standard.log)"
-	@grep "Hyper reference" pmix-standard.log | grep Warning \
-	&& { echo "====> Error check references (above)" ; exit 1; } || { exit 0; }
+	@./bin/check-doc.sh
 	@echo "====> Success"
 	@cp pmix-standard.pdf pmix-standard-${version}.pdf
 
 FORCECHECK:
 
-check: check-attr-ref check-openpmix
+check: check-attr-ref check-openpmix check-decl
 
 check-attr-ref: pmix-standard.pdf FORCECHECK
 	@echo "====> Checking for Attributes Declared, but not referenced"
@@ -80,6 +82,9 @@ check-openpmix: pmix-standard.pdf FORCECHECK
 	@echo "====> Checking cross-reference with OpenPMIx"
 	@./bin/check-openpmix.py
 
+check-decl: pmix-standard.pdf FORCECHECK
+	@echo "====> Checking for Multi-declared items"
+	@./bin/check-multi-declare.py
 
 clean:
 	rm -f $(INTERMEDIATE_FILES) pmix-standard-*.pdf

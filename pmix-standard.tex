@@ -93,16 +93,17 @@
 \acrodef{MPI}[MPI]{Message Passing Interface}
 \acrodef{MPE}[MPE]{Message Passing Environment}
 
-\acrodef{RM}[RM]{resource manager}
+\acrodef{RM}[RM]{Resource Manager}
 \acrodef{RTE}[RTE]{RunTime Environment}
-\acrodef{SMS}[SMS]{system management software stack}
+\acrodef{SMS}[SMS]{System Management Software stack}
 \acrodef{ASC}[ASC]{Administrative Steering Committee}
-\acrodef{WLM}[WLM]{workload manager}
-\acrodef{GDS}[GDS]{global data storage}
-\acrodef{BCX}[BCX]{business card exchange}
+\acrodef{WLM}[WLM]{WorkLoad Manager}
+\acrodef{GDS}[GDS]{Global Data Storage}
+\acrodef{BCX}[BCX]{Business Card Exchange}
+\acrodef{DBCX}[DBCX]{Direct Business Card Exchange}
 
-\acrodef{PID}[PID]{process identifier}
-\acrodef{URI}[URI]{uniform resource identifier}
+\acrodef{PID}[PID]{Process IDentifier}
+\acrodef{URI}[URI]{Uniform Resource Identifier}
 \acrodef{CIDR}[CIDR]{Classless Inter-Domain Routing}
 \acrodef{XML}[XML]{eXtensible Markup Language}
 
@@ -124,6 +125,8 @@
 \acrodef{GID}{Group ID}
 \acrodef{IL}{Intermediate Launcher}
 \acrodef{FEA}{Fork/Exec Agent}
+\acrodef{FQDN}{Fully Qualified Domain Name}
+\acrodef{NUMA}{Non-Uniform Memory Access}
 
 %%%%%%%%%%%%%%%%%%%
 
@@ -168,16 +171,17 @@
     \input{Chap_Terms.tex}
 
     % Data Structures, Types, Constants
-    %  - Includes: Reserved attributes, Keys
     \input{Chap_API_Struct.tex}
 
-    % Initialization & Finalization
-    %  - Client, Server, Tool interfaces
+    % Client Initialization & Finalization
     \input{Chap_API_Init.tex}
 
     % Key/Value Management
     %  - put, get, commit, fence, (un)publish, lookup
-    \input{Chap_API_Key_Value_Mgmt.tex}
+    \input{Chap_API_Sync_Access.tex}
+    \input{Chap_API_Reserved_Keys.tex}
+    \input{Chap_API_NonReserved_Keys.tex}
+    \input{Chap_API_Publish.tex}
 
     % Process Management
     %  - spawn, (dis)connect, resolve_peers
@@ -223,6 +227,9 @@
     \input{App_Python}
 
 % Revisions, Acknowledgements
+    % Revisions
+    \input{Chap_Revisions.tex}
+
     \input{Acknowledgements}
 
 %
