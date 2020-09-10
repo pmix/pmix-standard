@@ -4,23 +4,30 @@
 \chapter{Storage Support Definitions}
 \label{chap:api_storage}
 
+Distributed and parallel computing systems are increasingly embracing storage hierarchies to meet the diverse data management needs of applications and other systems software in a cost-effective manner.
+These hierarchies provide access to a number of distinct storage layers, with each potentially composed of different storage hardware (e.g., HDD, SDD, tape, NVM), deployed at different locations (e.g., on-node, on-switch, on-site, WAN), and designed using different storage paradigms (e.g., file-based, object-based).
+Each of these systems offers unique performance and usage characteristics that storage system users should carefully consider to ensure the most efficient use of storage resources.
+
+PMIx enables users to better understand storage hierarchies by defining attributes that formalize storage system characteristics, state, and other parameters.
+These attributes can be queried by applications, I/O libraries and middleware, and workflow systems to discover available storage resources and to inform on which resources are most suitable for different I/O workload requirements.
 
 
 %%%%%%%%%%%
-\subsection{Storage-related attributes}
+\section{Storage-related attributes}
 \label{api:struct:attributes:pstrg}
 
 \versionMarker{4.0}
-Attributes related to storage systems
+
+The following attributes may be returned in response to queries (e.g., \refapi{PMIx_Get} or \refapi{PMIx_Query_info}) made by processes or tools.
 
 %
 \declareAttributeNEW{PMIX_STORAGE_ID}{"pmix.strg.id"}{char*}{
-Identifier of the storage system being referenced
+An identifier for the storage system (e.g., lustre-fs1, daos-oss1, home-fs)
 }
 
 %
 \declareAttributeNEW{PMIX_STORAGE_PATH}{"pmix.strg.path"}{char*}{
-Mount point corresponding to a specified storage ID
+Mount point path for the storage system (valid only for file-based storage systems)
 }
 
 %
@@ -29,48 +36,53 @@ Qualifier indicating the type of storage being referenced by a query e.g., lustr
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_BW}{"pmix.strg.bw"}{float}{
-Overall bandwidth (in Megabytes[base2]/sec) of specified storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_AVAIL_BW}{"pmix.strg.availbw"}{float}{
-Overall bandwidth (in Megabytes[base2]/sec) of specified storage system that is available for use by the calling program
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_OBJECT_LIMIT}{"pmix.strg.obj"}{uint64_t}{
-Overall limit on number of objects (e.g., inodes) of specified storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_OBJECTS_FREE}{"pmix.strg.objf"}{uint64_t}{
-Number of free objects (e.g., inodes) on specified storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_OBJECTS_AVAIL}{"pmix.strg.obja"}{uint64_t}{
-Number of objects (e.g., inodes) on specified storage system that are available for use by the calling program
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_CAPACITY_LIMIT}{"pmix.strg.cap"}{uint64_t}{
-Overall capacity (in Megabytes[base2]) of specified storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_CAPACITY_FREE}{"pmix.strg.free"}{uint64_t}{
-Free capacity (in Megabytes[base2]) of specified storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_CAPACITY_AVAIL}{"pmix.strg.avail"}{uint64_t}{
-Capacity (in Megabytes[[base2]]) of specified storage system that is available for use by the calling program
-}
-
-%
 \declareAttributeNEW{PMIX_QUERY_STORAGE_LIST}{"pmix.strg.list"}{char*}{
-Return comma-delimited list of identifiers for all available storage systems
+Comma-delimited list of storage identifiers (\refattr{PMIX_STORAGE_ID}) for available storage systems
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_CAPACITY_LIMIT}{"pmix.strg.caplim"}{uint64_t}{
+Overall limit on capacity (in Megabytes[base2]) for the storage system
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_CAPACITY_USED}{"pmix.strg.capuse"}{uint64_t}{
+Overall used capacity (in Megabytes[base2]) for the storage system
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_OBJECT_LIMIT}{"pmix.strg.objlim"}{uint64_t}{
+Overall limit on number of objects (e.g., inodes) for the storage system
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_OBJECTS_USED}{"pmix.strg.objuse"}{uint64_t}{
+Overall used number of objects (e.g., inodes) for the storage system
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_XFER_SIZE}{"pmix.strg.xfersz"}{uint64_t}{
+Optimal transfer size (in Kilobytes[base2]) for the storage system
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_BW_MAX}{"pmix.strg.bwmax"}{float}{
+Maximum bandwidth (in Megabytes[base2]/sec) for storage system - provided as the theoretical maximum or the maximum observed bandwidth value
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_BW_CUR}{"pmix.strg.bwcur"}{float}{
+Observed bandwidth (in Megabytes[base2]/sec) for storage system - provided as the most recently observed bandwidth value
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_IOPS_MAX}{"pmix.strg.iopmax"}{float}{
+Maximum IOPS (in KIOPS, or thousand operations per second) for storage system - provided as the theoretical maximum or the maximum observed IOPS value
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_IOPS_CUR}{"pmix.strg.iopcur"}{float}{
+Observed IOPS (in KIOPS, or thousand operations per second) for storage system - provided as the most recently observed IOPS value
 }
 
 
