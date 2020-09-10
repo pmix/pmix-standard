@@ -11,14 +11,36 @@ Each of these systems offers unique performance and usage characteristics that s
 PMIx enables users to better understand storage hierarchies by defining attributes that formalize storage system characteristics, state, and other parameters.
 These attributes can be queried by applications, I/O libraries and middleware, and workflow systems to discover available storage resources and to inform on which resources are most suitable for different I/O workload requirements.
 
+%%%%%%%%%%%
+\section{Storage support constants}
+
+\declarestruct{pmix_storage_access_type_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_storage_access_type_t} structure is an enumerated type for specifying storage system access types.
+All values were originally defined in version 4 of the standard unless otherwise marked.
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_STORAGE_ACCESS_RD}
+Provide information on storage system read operations.
+%
+\declareconstitemNEW{PMIX_STORAGE_ACCESS_WR}
+Provide information on storage system write operations.
+%
+\declareconstitemNEW{PMIX_STORAGE_ACCESS_RDWR}
+Provide information on storage system read and write operations.
+%
+\end{constantdesc}
 
 %%%%%%%%%%%
-\section{Storage-related attributes}
+\section{Storage support attributes}
 \label{api:struct:attributes:pstrg}
 
 \versionMarker{4.0}
 
 The following attributes may be returned in response to queries (e.g., \refapi{PMIx_Get} or \refapi{PMIx_Query_info}) made by processes or tools.
+All values were originally defined in version 4 of the standard unless otherwise marked.
 
 %
 \declareAttributeNEW{PMIX_STORAGE_ID}{"pmix.strg.id"}{char*}{
@@ -83,6 +105,11 @@ Maximum IOPS (in KIOPS, or thousand operations per second) for storage system - 
 %
 \declareAttributeNEW{PMIX_STORAGE_IOPS_CUR}{"pmix.strg.iopcur"}{float}{
 Observed IOPS (in KIOPS, or thousand operations per second) for storage system - provided as the most recently observed IOPS value
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_ACCESS_TYPE}{"pmix.strg.atype"}{pmix_storage_access_type_t}{
+Qualifier describing the type of storage access to return information for (e.g., for qualifying \refattr{PMIX_STORAGE_BW_CUR},  \refattr{PMIX_STORAGE_IOPS_CUR}, or  \refattr{PMIX_STORAGE_XFER_SIZE} attributes)
 }
 
 
