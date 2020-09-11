@@ -342,7 +342,7 @@ PMIx_server_register_nspace(const pmix_nspace_t nspace,
 \argin{nlocalprocs}{number of local processes (integer)}
 \argin{info}{Array of info structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} to be executed upon completion of the operation. A \code{NULL} function reference indicates that the function is to be executed as a blocking operation (function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
@@ -366,9 +366,9 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 
 \divider
 
-Host environments are required to provide a wide range of session-, job-, application-, node-, and process-level information, and may choose to provide a similarly wide range of optional information. The information is broadly separated into categories based on the \emph{level} definitions explained in \ref{api:struct:attributes:storage}.
+Host environments are required to provide a wide range of session-, job-, application-, node-, and process-realm information, and may choose to provide a similarly wide range of optional information. The information is broadly separated into categories based on the \emph{data realm} definitions explained in Section \ref{api:struct:attributes:retrieval}, and retrieved according to the rules detailed in Section \ref{chap:rkeys:retrules}.
 
-Session-level information may be passed as individual \refstruct{pmix_info_t} entries, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute. Session-level information is always accessed using the namespace and the \refconst{PMIX_RANK_WILDCARD} rank, accompanied by the \refattr{PMIX_SESSION_INFO} attribute where ambiguity may exist. The list of data referenced in this way shall include:
+Session-realm information may be passed as individual \refstruct{pmix_info_t} entries, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute.The list of data referenced in this way shall include:
 
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_UNIV_SIZE}
@@ -380,11 +380,12 @@ Session-level information may be passed as individual \refstruct{pmix_info_t} en
 plus the following optional information:
 
 \begin{itemize}
-    \item \pasteAttributeItem{PMIX_CLUSTER_ID}
+    \item \pasteAttributeItemBegin{PMIX_CLUSTER_ID}As this information is not related to the namespace, it is best passed using the \refapi{PMIx_server_register_resources} \ac{API}.
+    \pasteAttributeItemEnd
     \item \pasteAttributeItem{PMIX_ALLOCATED_NODELIST}
 \end{itemize}
 
-Job-level information may be passed as individual \refstruct{pmix_info_t} entries, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_JOB_INFO_ARRAY} attribute. The list of data referenced in this way shall include:
+Job-realm information may be passed as individual \refstruct{pmix_info_t} entries, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_JOB_INFO_ARRAY} attribute. The list of data referenced in this way shall include:
 
 \begin{itemize}
     \item \pasteAttributeItemBegin{PMIX_SERVER_NSPACE}Identifies the namespace of the \ac{PMIx} server itself
@@ -414,7 +415,7 @@ plus the following optional information:
     \item \pasteAttributeItem{PMIX_ANL_MAP}
 \end{itemize}
 
-Application-level information is accessed by providing the namespace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. If application-level information is requested for an application other than the one the caller belongs to, then the \refattr{PMIX_APPNUM} attribute must be provided. If more than one application is included in the namespace, then the host environment is also required to supply data consisting of the following items for each application in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_APP_INFO_ARRAY} attribute:
+If more than one application is included in the namespace, then the host environment is also required to supply data consisting of the following items for each application in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_APP_INFO_ARRAY} attribute:
 
 \begin{itemize}
     \item \pasteAttributeItemBegin{PMIX_APPNUM}This attribute must appear at the beginning of the array.
@@ -444,12 +445,14 @@ The data may also include attributes provided by the host environment that ident
 \end{itemize}
 
 
-Node-level information is accessed by providing the namespace of the job with the rank set to \refconst{PMIX_RANK_WILDCARD}. If node-level information is requested for a node other than the one the caller is executing on, then the \refattr{PMIX_NODEID} or the \refattr{PMIX_HOSTNAME} attribute of the target node must be provided. Registration shall include the following data for each node in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_NODE_INFO_ARRAY} attribute:
+Node-realm information may be passed as individual \refstruct{pmix_info_t} entries if only one node will host processes from the job being registered, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_NODE_INFO_ARRAY} attribute when multiple nodes are involved in the job. The list of data referenced in this way shall include:
 
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_NODEID}
-    \item \pasteAttributeItem{PMIX_HOSTNAME}
-    \item \pasteAttributeItem{PMIX_HOSTNAME_ALIASES}
+    \item \pasteAttributeItemBegin{PMIX_HOSTNAME}As this information is not related to the namespace, it can be passed using the \refapi{PMIx_server_register_resources} \ac{API}. However, either it or the \refattr{PMIX_NODEID} must be included in the array to properly identify the node.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItemBegin{PMIX_HOSTNAME_ALIASES}As this information is not related to the namespace, it is best passed using the \refapi{PMIx_server_register_resources} \ac{API}.
+    \pasteAttributeItemEnd
     \item \pasteAttributeItem{PMIX_LOCAL_SIZE}
     \item \pasteAttributeItem{PMIX_NODE_SIZE}
     \item \pasteAttributeItem{PMIX_LOCALLDR}
@@ -468,17 +471,18 @@ The data may also include the following optional information for the server's ow
 
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_LOCAL_CPUSETS}
-    \item \pasteAttributeItem{PMIX_AVAIL_PHYS_MEMORY}
+    \item \pasteAttributeItemBegin{PMIX_AVAIL_PHYS_MEMORY}As this information is not related to the namespace, it can be passed using the \refapi{PMIx_server_register_resources} \ac{API}.
+    \pasteAttributeItemEnd
 \end{itemize}
 
-and the following optional information for arbitrary nodes:
+and the following optional information for other nodes:
 
 \begin{itemize}
     \item \pasteAttributeItemBegin{PMIX_MAX_PROCS}Requires use of the \refattr{PMIX_NODE_INFO} attribute to avoid ambiguity when retrieving it.
     \pasteAttributeItemEnd
 \end{itemize}
 
-Process-level information is accessed by providing the namespace of the job and the rank of the target process. Registration shall include the following data for each process in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_PROC_INFO_ARRAY} attribute:
+Process-realm information shall include the following data for each process in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_PROC_INFO_ARRAY} attribute:
 
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_RANK}
@@ -527,6 +531,8 @@ This is necessary so that the collective operation can identify the participants
 
 The caller must also provide the number of local processes that will be launched within this namespace.
 This is required for the \ac{PMIx} server library to correctly handle collectives as a collective operation call can occur before all the local processes have been started.
+
+A \code{NULL} \refarg{cbfunc} reference indicates that the function is to be executed as a blocking operation.
 \advicermend
 
 \adviceuserstart
@@ -535,30 +541,37 @@ The number of local processes for any given namespace is generally fixed at the 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Information storage attributes}
+\subsubsection{Namespace registration attributes}
 \label{api:struct:attributes:storage}
 
-The following attributes are used to assemble information by its level (e.g., \refterm{session}, \refterm{job}, or \refterm{application}) for storage where ambiguity may exist - see \ref{chap:api_server:assemble} for examples of their use.
+The following attributes are defined specifically for use with the \refapi{PMIx_server_register_nspace} \ac{API}:
+%
+\declareAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
+Registration is for this namespace only, do not copy job data.
+}
+
+\vspace{\baselineskip}
+The following attributes are used to assemble information according to its data realm (\refterm{session}, \refterm{job}, \refterm{application}, \refterm{node}, or \refterm{process} as defined in Section \ref{api:struct:attributes:retrieval}) for registration where ambiguity may exist - see \ref{chap:api_server:assemble} for examples of their use.
 
 %
 \declareAttribute{PMIX_SESSION_INFO_ARRAY}{"pmix.ssn.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing session-level information. The \refattr{PMIX_SESSION_ID} attribute is required to be included in the array.
+Provide an array of \refstruct{pmix_info_t} containing session-realm  information. The \refattr{PMIX_SESSION_ID} attribute is required to be included in the array.
 }
 %
 \declareAttributeNEW{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing job-level information. The \refattr{PMIX_SESSION_ID} attribute of the \refterm{session} containing the \refterm{job} is required to be included in the array whenever the \ac{PMIx} server library may host multiple sessions (e.g., when executing with a host \ac{RM} daemon). As information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes when used in that context (though either or both of them may be included). At least one of the job identifiers must be provided in all other contexts where the job being referenced is ambiguous.
+Provide an array of \refstruct{pmix_info_t} containing job-realm information. The \refattr{PMIX_SESSION_ID} attribute of the \refterm{session} containing the \refterm{job} is required to be included in the array whenever the \ac{PMIx} server library may host multiple sessions (e.g., when executing with a host \ac{RM} daemon). As information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes when used in that context (though either or both of them may be included). At least one of the job identifiers must be provided in all other contexts where the job being referenced is ambiguous.
 }
 %
 \declareAttributeNEW{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing app-level information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, must to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
+Provide an array of \refstruct{pmix_info_t} containing application-realm information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, must to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
 }
 %
 \declareAttributeNEW{PMIX_PROC_INFO_ARRAY}{"pmix.pdata"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing process-level information. The \refattr{PMIX_RANK} and \refattr{PMIX_NSPACE} attributes, or the \refattr{PMIX_PROCID} attribute, are required to be included in the array when the array is not included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the process is ambiguous. All three may be included if desired. When the array is included in some broader structure that identifies the job, then only the \refattr{PMIX_RANK} or the \refattr{PMIX_PROCID} attribute must be included (the others are optional).
+Provide an array of \refstruct{pmix_info_t} containing process-realm information. The \refattr{PMIX_RANK} and \refattr{PMIX_NSPACE} attributes, or the \refattr{PMIX_PROCID} attribute, are required to be included in the array when the array is not included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the process is ambiguous. All three may be included if desired. When the array is included in some broader structure that identifies the job, then only the \refattr{PMIX_RANK} or the \refattr{PMIX_PROCID} attribute must be included (the others are optional).
 }
 %
 \declareAttributeNEW{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
-Provide an array of \refstruct{pmix_info_t} containing node-level information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is required to be included in the array, though both may be included.
+Provide an array of \refstruct{pmix_info_t} containing node-realm information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is required to be included in the array, though both may be included.
 }
 
 Note that these assemblages can be used hierarchically:
@@ -572,31 +585,6 @@ Note that these assemblages can be used hierarchically:
 \adviceimplstart
 \ac{PMIx} implementations must be capable of properly parsing and storing any hierarchical depth of information arrays. The resulting stored values are must to be accessible via both \refapi{PMIx_Get} and \refapi{PMIx_Query_info_nb} \acp{API}, assuming appropriate directives are provided by the caller.
 \adviceimplend
-
-%
-\declareAttribute{PMIX_REGISTER_NODATA}{"pmix.reg.nodata"}{bool}{
-Registration is for this namespace only, do not copy job data.
-}
-%
-\declareAttribute{PMIX_NODE_MAP}{"pmix.nmap"}{char*}{
-Regular expression of nodes - see \ref{cptr:api_server:noderegex} for an explanation of its generation.
-}
-%
-\declareAttribute{PMIX_PROC_MAP}{"pmix.pmap"}{char*}{
-Regular expression describing processes on each node  - see \ref{cptr:api_server:ppnregex} for an explanation of its generation.
-}
-%
-\declareAttribute{PMIX_ANL_MAP}{"pmix.anlmap"}{char*}{
-Process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation.
-}
-%
-\declareAttribute{PMIX_APP_MAP_TYPE}{"pmix.apmap.type"}{char*}{
-Type of mapping used to layout the application (e.g., \code{cyclic}).
-}
-%
-\declareAttribute{PMIX_APP_MAP_REGEX}{"pmix.apmap.regex"}{char*}{
-Regular expression describing the result of the process mapping.
-}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Assembling the registration information}
@@ -869,7 +857,7 @@ void PMIx_server_deregister_nspace(const pmix_nspace_t nspace,
 
 \begin{arglist}
 \argin{nspace}{Namespace (string)}
-\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t}. A \code{NULL} function reference indicates that the function is to be executed as a blocking operation. (function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
@@ -877,7 +865,89 @@ void PMIx_server_deregister_nspace(const pmix_nspace_t nspace,
 \descr
 
 Deregister the specified \refarg{nspace} and purge all objects relating to it, including any client information from that namespace.
-This is intended to support persistent \ac{PMIx} servers by providing an opportunity for the host \ac{RM} to tell the \ac{PMIx} server library to release all memory for a completed job. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+This is intended to support persistent \ac{PMIx} servers by providing an opportunity for the host \ac{RM} to tell the \ac{PMIx} server library to release all memory for a completed job. Note that the library must not invoke the callback function prior to returning from the \ac{API}, and that a \code{NULL} \refarg{cbfunc} reference indicates that the function is to be executed as a blocking operation.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_server_register_resources}}
+\declareapi{PMIx_server_register_resources}
+
+%%%%
+\summary
+
+Register non-namespace related information with the local \ac{PMIx} server library.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_register_resources(pmix_info_t info[], size_t ninfo,
+                               pmix_op_cbfunc_t cbfunc,
+                               void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t}. A \code{NULL} function reference indicates that the function is to be executed as a blocking operation (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Pass information about resources not associated with a given namespace to the \ac{PMIx} server library for distribution to local client processes. This includes information on fabric devices, \acp{GPU}, and other resources. All information provided through this \ac{API} shall be made available to each job as part of its job-level information. Duplicate information provided with the \refapi{PMIx_server_register_nspace} \ac{API} shall override any information provided by this function for that namespace, but only for that specific namespace.
+
+\advicermstart
+Note that information passed in this manner could also have been included in a call to \refapi{PMIx_server_register_nspace} - e.g., as part of a \refattr{PMIX_NODE_INFO_ARRAY} array. This \ac{API} is provided as a logical alternative for code clarity, especially where multiple jobs may be supported by a single \ac{PMIx} server library instance, to avoid multiple registration of static resource information.
+
+A \code{NULL} \refarg{cbfunc} reference indicates that the function is to be executed as a blocking operation.
+\advicermend
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_server_deregister_resources}}
+\declareapi{PMIx_server_deregister_resources}
+
+%%%%
+\summary
+
+Remove specified non-namespace related information from the local \ac{PMIx} server library.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_server_deregister_resources(pmix_info_t info[], size_t ninfo,
+                                 pmix_op_cbfunc_t cbfunc,
+                                 void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t}. A \code{NULL} function reference indicates that the function is to be executed as a blocking operation (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+Remove information about resources not associated with a given namespace from the \ac{PMIx} server library. Only the \refarg{key} fields of the provided \refarg{info} array shall be used for the operation - the associated values shall be ignored except where they serve as qualifiers to the request. For example, to remove a specific fabric device from a given node, the \refarg{info} array might include a \refattr{PMIX_NODE_INFO_ARRAY} containing the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} identifying the node hosting the device, and the \refattr{PMIX_FABRIC_DEVICE_NAME} specifying the device to be removed. Alternatively, the device could be removed using only the \refattr{PMIX_FABRIC_DEVICE_ID} as this is unique across the overall system.
+
+\advicermstart
+As information not related to namespaces is considered \emph{static}, there is no requirement that the host environment deregister resources prior to finalizing the \ac{PMIx} server library. The server library shall properly cleanup as part of its normal finalize operations. Deregistration of resources is only required, therefore, when the host environment determines that client processes should no longer have access to that information.
+
+A \code{NULL} \refarg{cbfunc} reference indicates that the function is to be executed as a blocking operation.
+\advicermend
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1770,6 +1840,25 @@ PMIX_CPUSET_CONSTRUCT(m)
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_cpuset_t})}
+\end{arglist}
+
+
+
+\littleheader{Create a cpuset array}
+\declaremacro{PMIX_CPUSET_CREATE}
+
+Allocate and initialize a \refstruct{pmix_cpuset_t} array.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_CPUSET_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_cpuset_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (size_t)}
 \end{arglist}
 
 

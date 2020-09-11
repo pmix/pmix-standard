@@ -128,6 +128,7 @@
 \acrodef{FQDN}{Fully Qualified Domain Name}
 \acrodef{NUMA}{Non-Uniform Memory Access}
 \acrodef{UUID}{Universally Unique IDentifier}
+\acrodef{GPU}{Graphics Processing Unit}
 
 %%%%%%%%%%%%%%%%%%%
 
@@ -184,14 +185,6 @@
     \input{Chap_API_NonReserved_Keys.tex}
     \input{Chap_API_Publish.tex}
 
-    % Process Management
-    %  - spawn, (dis)connect, resolve_peers
-    \input{Chap_API_Proc_Mgmt.tex}
-
-    % Job Allocation Management
-    %  - Allocation request, process monitoring
-    \input{Chap_API_Job_Mgmt.tex}
-
     % Event Handling
     %  - (de)register_event, notify_event
     \input{Chap_API_Event.tex}
@@ -200,19 +193,27 @@
     %  - (un)pack, copy
     \input{Chap_API_Data_Mgmt.tex}
 
+    % Process Management
+    %  - spawn, (dis)connect, resolve_peers
+    \input{Chap_API_Proc_Mgmt.tex}
+
+    % Job Allocation Management
+    %  - Allocation request, process monitoring
+    \input{Chap_API_Job_Mgmt.tex}
+
+    % PMIx Process Sets and Groups
+    \input{Chap_API_Sets_Groups.tex}
+
+    % PMIx fabric support interfaces
+    %  - register/deregister fabric, get vertex/index
+    \input{Chap_API_Fabric.tex}
+
     % Security credentials
     \input{Chap_API_Security.tex}
 
     % PMIx Server Specific Interfaces
     %  - setup_fork, (de)register_nspace, pmix_server_module_t
     \input{Chap_API_Server.tex}
-
-    % PMIx fabric support interfaces
-    %  - register/deregister fabric, get vertex/index
-    \input{Chap_API_Fabric.tex}
-
-    % PMIx Process Sets and Groups
-    \input{Chap_API_Sets_Groups.tex}
 
     % PMIx Tools and Debugger Support
     \input{Chap_API_Tools.tex}

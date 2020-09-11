@@ -572,7 +572,7 @@ Query information about the system in general.
 This can include a list of active namespaces, fabric topology, etc.
 Also can be used to query node-specific info such as the list of peers executing on a given node. The host environment is responsible for exercising appropriate access control on the information.
 
-The returned \refarg{status} indicates if requested data was found or not. The returned \refarg{info} array will contain an element for each key in each element of the \refarg{queries} array for which a value was found, in the order of the queries and the keys within each query. The element shall be referenced by the query \emph{key} and contain a \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t} responses. If qualifiers were included in the query, then the first element of the array shall contain the \refattr{PMIX_QUERY_QUALIFIERS} key with a \refstruct{pmix_data_array_t} containing the qualifiers. The remaining \refstruct{pmix_info_t} shall contain the results of the query. Note that duplicate keys in the \refarg{queries} array shall result in duplicate responses within the constraints of the accompanying qualifiers. The caller is responsible for releasing the returned array.
+The returned \refarg{status} indicates if requested data was found or not. The returned \refarg{info} array will contain a \refattr{PMIX_QUERY_RESULTS} element for each query of the \refarg{queries} array. If qualifiers were included in the query, then the first element of each results array shall contain the \refattr{PMIX_QUERY_QUALIFIERS} key with a \refstruct{pmix_data_array_t} containing the qualifiers. The remaining \refstruct{pmix_info_t} shall contain the results of the query, one entry for each key that was found. Note that duplicate keys in the \refarg{queries} array shall result in duplicate responses within the constraints of the accompanying qualifiers. The caller is responsible for releasing the returned array.
 
 \adviceimplstart
 Information returned from \refapi{PMIx_Query_info} shall be locally cached so that retrieval by subsequent calls to \refapi{PMIx_Get}, \refapi{PMIx_Query_info}, or \refapi{PMIx_Query_info_nb} can succeed with minimal overhead. The local cache shall be checked prior to querying the \ac{PMIx} server and/or the host environment. Queries that include the \refattr{PMIX_QUERY_REFRESH_CACHE} attribute shall bypass the local cache and retrieve a new value for the query, refreshing the values in the cache upon return.
@@ -704,8 +704,12 @@ Some, but not all, of the requested information was returned.
 Attributes used to direct behavior of the \refapi{PMIx_Query_info} \acp{API}.
 
 %
+\declareAttributeNEW{PMIX_QUERY_RESULTS}{"pmix.qry.res"}{pmix_data_array_t}{
+Contains an array of query results for a given \refstruct{pmix_query_t} passed to the \refapi{PMIx_Query_info} \acp{API}. If qualifiers were included in the query, then the first element of the array shall be the \refattr{PMIX_QUERY_QUALIFIERS} attribute containing those qualifiers. Each of the remaining elements of the array is a \refstruct{pmix_info_t} containing the query key and the corresponding value returned by the query. This attribute is solely for reporting purposes and cannot be used in \refapi{PMIx_Get} or other query operations.
+}
+%
 \declareAttributeNEW{PMIX_QUERY_QUALIFIERS}{"pmix.qry.quals"}{pmix_data_array_t}{
-Contains an array of qualifiers that were included in the query that produced the provided results. NO QUALIFIERS.
+Contains an array of qualifiers that were included in the query that produced the provided results. This attribute is solely for reporting purposes and cannot be used in \refapi{PMIx_Get} or other query operations.
 }
 %
 \declareAttributeNEW{PMIX_QUERY_SUPPORTED_KEYS}{"pmix.qry.keys"}{char*}{
@@ -801,9 +805,8 @@ Array of \refstruct{pmix_info_t} about a given server, starting with its \refatt
 These attributes are used to query memory available and used in the system.
 
 %
-\declareAttribute{PMIX_AVAIL_PHYS_MEMORY}{"pmix.pmem"}{uint64_t}{
-Total available physical memory on a node. OPTIONAL QUALIFERS: \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} (defaults to caller's node).
-}
+\pasteAttributeItemBegin{PMIX_AVAIL_PHYS_MEMORY}OPTIONAL QUALIFERS: \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} (defaults to caller's node).
+\pasteAttributeItemEnd
 %
 \declareAttribute{PMIX_DAEMON_MEMORY}{"pmix.dmn.mem"}{float}{
 Megabytes of memory currently used by the \ac{RM} daemon on the node. OPTIONAL QUALIFERS: \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} (defaults to caller's node).

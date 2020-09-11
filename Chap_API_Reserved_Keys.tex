@@ -166,6 +166,18 @@ it is included in the \ac{PMIx} Standard for historical reasons.
 Number of nodes currently hosting processes in the specified realm.
 }
 
+%
+\declareAttribute{PMIX_NODE_MAP}{"pmix.nmap"}{char*}{
+Regular expression of nodes currently hosting processes in the specified realm - see \ref{cptr:api_server:noderegex} for an explanation of its generation.
+}
+%
+\declareAttribute{PMIX_PROC_MAP}{"pmix.pmap"}{char*}{
+Regular expression describing processes on each node in the specified realm - see \ref{cptr:api_server:ppnregex} for an explanation of its generation.
+}
+%
+\declareAttribute{PMIX_ANL_MAP}{"pmix.anlmap"}{char*}{
+Process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation.
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Job realm attributes}
@@ -215,7 +227,17 @@ i.e., not all nodes may have executing processes from this job at a given
 point in time.
 \pasteAttributeItemEnd{}
 %
+\pasteAttributeItemBegin{PMIX_NODE_MAP}In this context, this is the regular expression of nodes currently hosting processes in the specified job.
+\pasteAttributeItemEnd{}
+%
 \pasteAttributeItemBegin{PMIX_NODE_LIST}In this context, this is the comma-delimited list of nodes currently hosting processes in the specified job.
+\pasteAttributeItemEnd{}
+%
+\pasteAttributeItemBegin{PMIX_PROC_MAP}In this context, this is the regular expression describing processes on each node in the specified job.
+\pasteAttributeItemEnd{}
+%
+\pasteAttributeItemBegin{PMIX_ANL_MAP}In this context, this is the
+process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation of the processes in the specified job.
 \pasteAttributeItemEnd{}
 %
 \declareAttributeNEW{PMIX_CMD_LINE}{"pmix.cmd.line"}{char*}{
@@ -275,6 +297,32 @@ Number of processes in the specified application, regardless of their execution 
 %
 \declareAttributeNEW{PMIX_APP_ARGV}{"pmix.app.argv"}{char*}{
 Consolidated argv passed to the spawn command for the given application (e.g., "./myapp arg1 arg2 arg3").
+}
+%
+\pasteAttributeItemBegin{PMIX_MAX_PROCS}In this context, this is the maximum number of processes that can be executed in the specified application, which may be a subset of the number allocated to the overall session and job.
+\pasteAttributeItemEnd{}
+%
+\pasteAttributeItemBegin{PMIX_NUM_SLOTS}In this context, this is the number of
+slots assigned to the specified application, which may be a subset of the slots
+allocated to the overall session and job.
+\pasteAttributeItemEnd{}
+%
+%
+\pasteAttributeItemBegin{PMIX_NODE_MAP}In this context, this is the regular expression of nodes currently hosting processes in the specified application.
+\pasteAttributeItemEnd{}
+%
+\pasteAttributeItemBegin{PMIX_NODE_LIST}In this context, this is the comma-delimited list of nodes currently hosting processes in the specified application.
+\pasteAttributeItemEnd{}
+%
+\pasteAttributeItemBegin{PMIX_PROC_MAP}In this context, this is the regular expression describing processes on each node in the specified application.
+\pasteAttributeItemEnd{}
+%
+\declareAttribute{PMIX_APP_MAP_TYPE}{"pmix.apmap.type"}{char*}{
+Type of mapping used to layout the application (e.g., \code{cyclic}).
+}
+%
+\declareAttribute{PMIX_APP_MAP_REGEX}{"pmix.apmap.regex"}{char*}{
+Regular expression describing the result of the process mapping.
 }
 
 
@@ -366,6 +414,9 @@ Security credential assigned to the process.
 Number of times this process has been re-instantiated - i.e, a value of zero indicates that the process has never been restarted.
 }
 
+\vspace{\baselineskip}
+
+In addition, process-level information includes functional attributes directly associated with a process - for example, the process-related fabric attributes included in Section \ref{api:fabric:attrs}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -399,6 +450,10 @@ Node identifier expressed as the node's index (beginning at zero) in an array of
 \declareAttribute{PMIX_NODE_SIZE}{"pmix.node.size"}{uint32_t}{
 Number of processes across all jobs that are executing upon the node.
 }
+%
+\declareAttribute{PMIX_AVAIL_PHYS_MEMORY}{"pmix.pmem"}{uint64_t}{
+Total available physical memory on a node.
+}
 
 \vspace{\baselineskip}
 
@@ -421,6 +476,9 @@ A \refstruct{pmix_data_array_t} array of string representations of the \ac{PU} b
 Number of processes in the specified job or application realm on the caller's node. Defaults to job realm unless the \refattr{PMIX_APP_INFO} and the \refattr{PMIX_APPNUM} qualifiers are given.
 }
 
+\vspace{\baselineskip}
+
+In addition, node-level information includes functional attributes directly associated with a node - for example, the node-related fabric attributes included in Section \ref{api:fabric:attrs}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

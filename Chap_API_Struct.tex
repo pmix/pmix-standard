@@ -2092,6 +2092,18 @@ Job state (\refstruct{pmix_job_state_t}).
 \declareconstitemNEW{PMIX_LINK_STATE}
 Link state (\refstruct{pmix_link_state_t}).
 %
+\declareconstitemNEW{PMIX_PROC_CPUSET}
+Structure containing the binding bitmap of a process (\refstruct{pmix_cpuset_t}).
+%
+\declareconstitemNEW{PMIX_GEOMETRY}
+Geometry structure containing the fabric coordinates of a specified device.(\refstruct{pmix_geometry_t}).
+%
+\declareconstitemNEW{PMIX_DEVICE_DIST}
+Structure containing the minimum and maximum relative distance from the caller to a given fabric device. (\refstruct{pmix_device_distance_t}).
+%
+\declareconstitemNEW{PMIX_ENDPOINT}
+Structure containing an assigned endpoint for a given fabric device. (\refstruct{pmix_endpoint_t}).
+%
 \declareconstitemNEW{PMIX_DATA_TYPE_MAX}
 A starting point for implementer-specific data types.
 Values above this are guaranteed not to conflict with \ac{PMIx} values.
