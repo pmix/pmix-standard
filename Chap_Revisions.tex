@@ -363,8 +363,6 @@ The above changes included introduction of the following \acp{API} and data type
         \item \refapi{PMIx_Fabric_register}, \refapi{PMIx_Fabric_register_nb}
         \item \refapi{PMIx_Fabric_update}, \refapi{PMIx_Fabric_update_nb}
         \item \refapi{PMIx_Fabric_deregister}, \refapi{PMIx_Fabric_deregister_nb}
-        \item \refapi{PMIx_Fabric_get_device_info}, \refapi{PMIx_Fabric_get_device_info_nb}
-        \item \refapi{PMIx_Fabric_get_device_index}, \refapi{PMIx_Fabric_get_device_index_nb}
         \item \refapi{PMIx_Fabric_update_distances}, \refapi{PMIx_Fabric_update_distances_nb}
     \end{compactitemize}
 
@@ -376,6 +374,7 @@ The above changes included introduction of the following \acp{API} and data type
     \item \refapi{pmix_server_grp_fn_t}, \refapi{pmix_server_fabric_fn_t}
     \item \refapi{pmix_server_client_connected2_fn_t}
     \item \refapi{PMIx_server_generate_cpuset_string}
+    \item \refapi{PMIx_server_register_resources}, \refapi{PMIx_server_deregister_resources}
     \end{compactitemize}
 
     \item Tool \acp{API}
@@ -405,6 +404,18 @@ The above changes included introduction of the following \acp{API} and data type
 \end{itemize}
 
 \subsection{Added Constants}
+
+\littleheader{Data type constants}
+\refconst{PMIX_COORD}
+\refconst{PMIX_REGATTR}
+\refconst{PMIX_REGEX}
+\refconst{PMIX_JOB_STATE}
+\refconst{PMIX_LINK_STATE}
+\refconst{PMIX_PROC_CPUSET}
+\refconst{PMIX_GEOMETRY}
+\refconst{PMIX_DEVICE_DIST}
+\refconst{PMIX_ENDPOINT}
+\refconst{PMIX_DATA_TYPE_MAX}
 
 \littleheader{Query constants}
 \refconst{PMIX_ERR_GET_MALLOC_REQD}
@@ -458,8 +469,6 @@ The above changes included introduction of the following \acp{API} and data type
 \refconst{PMIX_LINK_UP} \\
 \refconst{PMIX_FABRIC_REQUEST_INFO} \\
 \refconst{PMIX_FABRIC_UPDATE_INFO} \\
-\refconst{PMIX_FABRIC_GET_DEVICE_INFO} \\
-\refconst{PMIX_FABRIC_GET_DEVICE_INDEX} \\
 %
 %
 \littleheader{Sets-Groups constants}
@@ -512,6 +521,7 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_ALL_CLONES_PARTICIPATE}
 \pasteAttributeItem{PMIX_GET_STATIC_VALUES}
 \pasteAttributeItem{PMIX_GET_REFRESH_CACHE}
+\pasteAttributeItem{PMIX_QUERY_RESULTS}
 \pasteAttributeItem{PMIX_QUERY_QUALIFIERS}
 \pasteAttributeItem{PMIX_QUERY_SUPPORTED_KEYS}
 \pasteAttributeItem{PMIX_QUERY_SUPPORTED_QUALIFIERS}
@@ -605,7 +615,6 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_SWITCH_PEERS}
 \pasteAttributeItem{PMIX_FABRIC_PLANE}
 \pasteAttributeItem{PMIX_FABRIC_SWITCH}
-\pasteAttributeItem{PMIX_FABRIC_VIEW}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_ID}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_INDEX}
@@ -616,6 +625,7 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_DRIVER}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_FIRMWARE}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_ADDRESS}
+\pasteAttributeItem{PMIX_FABRIC_DEVICE_COORDINATES}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_MTU}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_SPEED}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_STATE}

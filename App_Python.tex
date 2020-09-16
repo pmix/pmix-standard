@@ -40,9 +40,9 @@ With only a few exceptions, the C-based \ac{PMIx} datatypes defined in \chapterr
     \item provided values fall outside the range of the C-equivalent definition - e.g., if a value identified as \refconst{PMIX_UINT8} lies outside the \code{uint8_t}range
 \end{itemize}
 
-Note that explicit labeling of \ac{PMIx} datatype, even when Python itself doesn’t care, is often required for the Python bindings to know how to properly interpret and label the provided value when passing it to the \ac{PMIx} library.
+Note that explicit labeling of \ac{PMIx} data type, even when Python itself doesn’t care, is often required for the Python bindings to know how to properly interpret and label the provided value when passing it to the \ac{PMIx} library.
 
-Table~\ref{app:python:ctopy} lists the correspondence between datatypes in the two languages.
+Table~\ref{app:python:ctopy} lists the correspondence between data types in the two languages.
 
 \begin{landscape}
 \begin{small}
@@ -84,12 +84,16 @@ Table~\ref{app:python:ctopy} lists the correspondence between datatypes in the t
         \refstruct{pmix_app_t} & PMIX_APP & \pylabel{app}\{'cmd': cmd, 'argv': [argv], 'env': [env], 'maxprocs': maxprocs, 'info': [info]\} & \refarg{cmd} is a Python string; \refarg{argv} and \refarg{env} are Python \emph{lists} containing Python strings; \refarg{maxprocs} is an integer; and \refarg{info} is a Python \emph{list} of \refpy{info} values   \\ \hline
         \refstruct{pmix_query_t} & PMIX_QUERY & \pylabel{query}\{'keys': [keys], 'qualifiers': [info]\} & \refarg{keys} is a Python \emph{list} of Python strings, and \refarg{qualifiers} is a Python \emph{list} of \refpy{info} values \\ \hline
         \refstruct{pmix_regattr_t} & PMIX_REGATTR & \pylabel{regattr}\{'name': name, 'key': key, 'type': type, 'info': [info], 'description': [desc]\} & \refarg{name} and \refarg{string} are Python strings; \refarg{type} is the \ac{PMIx} datatype for the attribute's value; \refarg{info} is a Python \emph{list} of \refpy{info} values; and \refarg{description} is a list of Python strings describing the attribute  \\ \hline
-        \refstruct{pmix_coord_t} & PMIX_COORD & \pylabel{coord}\{'fabric': fabric, 'plane': plane, 'view': view, 'coord': [coords]\} & \refarg{fabric} and \refarg{plane} are Python strings; \refarg{view} is the \refstruct{pmix_coord_view_t} of the coordinate; and \refarg{coord} is a list of integer coordinates, one for each dimension of the fabric \\ \hline
         \refstruct{pmix_job_state_t} & PMIX_JOB_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
         \refstruct{pmix_link_state_t} & PMIX_LINK_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
         \refstruct{pmix_cpuset_t} & N/A & \pylabel{cpuset}\{'source': source, 'cpus': bitmap\} & \refarg{source} is a string name of the library that created the cpuset; and \refarg{cpus} is a bitarray containing the cpuset \\ \hline
         \refstruct{pmix_locality_t} & N/A & \pylabel{locality}bitarray & 16-bit array containing the relative locality of the specified local process \\ \hline
         \refstruct{pmix_fabric_t} & N/A & \pylabel{fabric}\{'name': name, 'index': idx, 'info': [info]\} & \refarg{name} is the string name assigned to the fabric; \refarg{index} is the integer ID assigned to the fabric; \refarg{info} is a list of \refpy{info} describing the fabric \\ \hline
+        \refstruct{pmix_endpoint_t} & N/A & \pylabel{endpoint}\{'uuid': uuid, 'endpt': endpt\} & \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{endpt} is a \refpy{byteobject} containing the endpoint information \\ \hline
+        \refstruct{pmix_device_distance_t} & PMIX_DEVICE_DIST & \pylabel{devdist}\{'uuid': uuid, 'mindist': mindist, 'maxdist': maxdist\} & \refarg{uuid} is the string system-unique identifier assigned to the device; and \refarg{mindist} and \refarg{maxdist} are Python integers \\ \hline
+        \refstruct{pmix_topology_t} & N/A & \pylabel{topology}\{'name': name, 'index': idx, 'info': [info]\} & \refarg{name} is the string name assigned to the fabric; \refarg{index} is the integer ID assigned to the fabric; \refarg{info} is a list of \refpy{info} describing the fabric \\ \hline
+        \refstruct{pmix_coord_t} & PMIX_COORD & \pylabel{coord}\{'view': view, 'coord': [coords]\} & \refarg{view} is the \refstruct{pmix_coord_view_t} of the coordinate; and \refarg{coord} is a list of integer coordinates, one for each dimension of the fabric \\ \hline
+        \refstruct{pmix_geometry_t} & PMIX_GEOMETRY & \pylabel{geometry}\{'fabric': idx, 'uuid': uuid, 'coordinates': [coords]\} & \refarg{fabric} is the Python integer index of the fabric; \refarg{uuid} is the string system-unique identifier assigned to the device; and \refarg{coordinates} is a list of \refpy{coord} containing the coordinates for the device across all views \\ \hline
     \end{longtable}
 \end{small}
 \end{landscape}
@@ -2309,70 +2313,6 @@ See \refapi{PMIx_Fabric_deregister} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Client.fabric_get_device_info}
-\declareapibinding{PMIxClient.fabric_get_device_info}{PMIx_Fabric_get_device_info}{Python}
-
-\summary
-Given a communication cost matrix index for a specified fabric, return an array of information describing the corresponding \ac{NIC}.
-
-\format
-
-\versionMarker{4.0}
-\pyspecificstart
-\begin{codepar}
-rc,nicinfo = myclient.fabric_get_device_info(fabric:integer,
-                        device:integer)
-\end{codepar}
-\pyspecificend
-
-
-\begin{arglist}
-\argin{fabric}{Index of the registered fabric (list)}
-\argin{fabric}{Index of the device within the communication cost matrix for the fabric (list)}
-\end{arglist}
-
-Returns:
-
-\begin{itemize}
-    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{nicinfo} - List of Python \refpy{info} describing the referenced \ac{NIC} (list)
-\end{itemize}
-
-See \refapi{PMIx_Fabric_get_device_info} for details.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Client.fabric_get_device_index}
-\declareapibinding{PMIxClient.fabric_get_device_index}{PMIx_Fabric_get_device_index}{Python}
-
-\summary
-Given info describing a given device, return the corresponding communication cost matrix index.
-
-\format
-
-\versionMarker{4.0}
-\pyspecificstart
-\begin{codepar}
-rc,index = myclient.fabric_get_device_index(fabric:integer, info:list)
-\end{codepar}
-\pyspecificend
-
-\begin{arglist}
-\argin{fabric}{Index of the registered fabric (list)}
-\argin{info}{List of Python \refpy{info} containing device description (list)}
-\end{arglist}
-
-Returns:
-
-\begin{itemize}
-    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{index} - Index of corresponding device within the communication cost matrix of the fabric (integer)
-\end{itemize}
-
-See \refapi{PMIx_Fabric_get_device_index} for details.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.load_topology}
 \declareapibinding{PMIxClient.load_topology}{PMIx_Load_topology}{Python}
 
@@ -3015,6 +2955,60 @@ myserver.deregister_nspace(nspace:str)
 Returns: None
 
 See \refapi{PMIx_server_deregister_nspace} for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Server.register_resources}
+\declareapibinding{PMIxServer.register_resources}{PMIx_server_register_resources}{Python}
+
+\summary
+
+Register non-namespace related information with the local \ac{PMIx} library
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+myserver.register_resources(directives:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns: None
+
+See \refapi{PMIx_server_register_resources} for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Server.deregister_resources}
+\declareapibinding{PMIxServer.deregister_resources}{PMIx_server_deregister_resources}{Python}
+
+\summary
+
+Remove non-namespace related information from the local \ac{PMIx} library
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+myserver.deregister_resources(directives:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{directives}{List of Python \refpy{info} dictionaries (list)}
+\end{arglist}
+
+Returns: None
+
+See \refapi{PMIx_server_deregister_resources} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
