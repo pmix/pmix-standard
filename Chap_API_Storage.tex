@@ -5,7 +5,7 @@
 \label{chap:api_storage}
 
 Distributed and parallel computing systems are increasingly embracing storage hierarchies to meet the diverse data management needs of applications and other systems software in a cost-effective manner.
-These hierarchies provide access to a number of distinct storage layers, with each potentially composed of different storage hardware (e.g., HDD, SDD, tape, NVM), deployed at different locations (e.g., on-node, on-switch, on-site, WAN), and designed using different storage paradigms (e.g., file-based, object-based).
+These hierarchies provide access to a number of distinct storage layers, with each potentially composed of different storage hardware (e.g., HDD, SSD, tape, PMEM), deployed at different locations (e.g., on-node, on-switch, on-site, WAN), and designed using different storage paradigms (e.g., file-based, object-based).
 Each of these systems offers unique performance and usage characteristics that storage system users should carefully consider to ensure the most efficient use of storage resources.
 
 PMIx enables users to better understand storage hierarchies by defining attributes that formalize storage system characteristics, state, and other parameters.
@@ -69,7 +69,7 @@ The \refstruct{pmix_storage_medium_t} structure is a \code{uint16_t} type that d
 \begin{constantdesc}
 %
 \declareconstitemNEW{PMIX_STORAGE_MEDIUM_UNKNOWN}
-All bits are set to zero, indicating the storage medium type is unknown.
+The storage medium type is unknown.
 %
 \declareconstitemNEW{PMIX_STORAGE_MEDIUM_TAPE}
 The storage system uses tape media.
@@ -214,36 +214,6 @@ Maximum IOPS (in KIOPS, or thousand operations per second) for storage system - 
 %
 \declareAttributeNEW{PMIX_STORAGE_IOPS_CUR}{"pmix.strg.iopcur"}{float}{
 Observed IOPS (in KIOPS, or thousand operations per second) for storage system - provided as a recently observed IOPS value, with the exact measurement interval depending on the storage system and/or PMIx library implementation
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_NUM_HOSTS}{"pmix.strg.numhost"}{uint64_t}{
-Number of storage hosts (i.e., server nodes) that constitute a storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_NUM_TARGETS}{"pmix.strg.numtarg"}{uint64_t}{
-Number of storage targets (i.e., logical storage devices) that constitute a storage system
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_STORAGE_HOST_LIST}{"pmix.strg.hostlist"}{char*}{
-Comma-delimited list of storage hosts (i.e., \refattr{PMIX_STORAGE_HOST} types) for a storage system
-}
-
-%
-\declareAttributeNEW{PMIX_QUERY_STORAGE_TARGET_LIST}{"pmix.strg.targlist"}{char*}{
-Comma-delimited list of storage targets (i.e., \refattr{PMIX_STORAGE_TARGET} types) for a storage system
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_HOST}{"pmix.strg.host"}{char*}{
-Qualifier identifying a particular storage system host (e.g., for qualifying \refattr{PMIX_STORAGE_BW_CUR} or \refattr{PMIX_STORAGE_IOPS_CUR} attributes)
-}
-
-%
-\declareAttributeNEW{PMIX_STORAGE_TARGET}{"pmix.strg.targ"}{char*}{
-Qualifier identifying a particular storage system target (e.g., for qualifying \refattr{PMIX_STORAGE_BW_CUR} or \refattr{PMIX_STORAGE_IOPS_CUR} attributes)
 }
 
 %
