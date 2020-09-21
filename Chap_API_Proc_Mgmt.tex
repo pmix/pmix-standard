@@ -1148,7 +1148,11 @@ typedef struct pmix_topology \{
 \cspecificend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Initialize the topology description structure}
+\subsubsection{Topology support macros}
+
+The following macros support the \refstruct{pmix_topology_t} structure.
+
+\littleheader{Initialize the topology structure}
 \declaremacro{PMIX_TOPOLOGY_CONSTRUCT}
 
 Initialize the \refstruct{pmix_topology_t} fields to \code{NULL}
@@ -1162,6 +1166,24 @@ PMIX_TOPOLOGY_CONSTRUCT(m)
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_topology_t})}
+\end{arglist}
+
+
+\littleheader{Create a topology array}
+\declaremacro{PMIX_TOPOLOGY_CREATE}
+
+Allocate and initialize a \refstruct{pmix_topology_t} array.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_TOPOLOGY_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_topology_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (size_t)}
 \end{arglist}
 
 
