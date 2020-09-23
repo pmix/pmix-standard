@@ -8,4 +8,79 @@ The \ac{PMIx} standard provides many generic interfaces that can be composed int
 
 Each use case is structured to provide background information about the high-level use case as well as specific details about how the PMIx interfaces are used within the use case.  Some use cases even provide code snippets.  These code snippets are apart of larger code examples located within the standard's source code repository, and each complete code example is fully compilable and runnable. The related interfaces and attributes collected at the bottom of each use case are mainly for conveinence and link to the full standardized definitions.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section {Business Card Exchange for Process-to-Process Wire-up}
+\label{app:uc-business-card-exchange}
+
+\subsection{Use Case Summary}
+
+Multi-process communication libraries, such as MPI, need to establish communication channels between a set of those processes. Each process needs to share connectivity information (a.k.a. Business Cards) with all other processes before communication channels can be established. This connectivity information may take the form of one or more unique strings that allow a different process to establish a communication channel with the originator. The runtime environment must provide a mechanism for the efficient exchange of this connectivity information. Additional information about the current state of the job (e.g., number of processes globally and locally) and of how the process was started (e.g., process binding) are also helpful.
+Use Case Details
+
+Note: The Instant-On wire-up mechanism is a separate, related use case.
+
+\subsection{Use Case Details}
+
+Each process provides their business card to PMIx via one or more \refapi{PMIx_Put} operations to store the tuple of \code{\{UID, key, value\}}. The \code{UID} is the unique name for this process in the \ac{PMIx} universe (i.e., \code{namespace} and \code{rank}). The \code{key} is a unique key that other processes can reference generically (note that since the \code{UID} is also associated with the \code{key} there is no need to make the \code{key} uniquely named per process). The \code{value} is the string representation of the connectivity information.
+
+Some business card information is meant for remote processes (e.g., TCP or InfiniBand addresses) while others are meant only for local processes (e.g., shared memory information). As such a \code{scope} should be associated with the \refapi{PMIx_Put} operation to differentiate this intention.
+
+The \refapi{PMIx_Put} operations may be cached local to the process. Once all \refapi{PMIx_Put} operations have been called each process should call \refapi{PMIx_Commit} to push those values to the local PMIx server. Note that in a multi-library configuration each library may \refapi{PMIx_Put} then \refapi{PMIx_Commit} values - so there may be multiple \refapi{PMIx_Commit} calls before a Business Card Exchange is activated.
+
+After calling \refapi{PMIx_Commit} a process can activate the Business Card Exchange collective operation by calling \refapi{PMIx_Fence}. The \refapi{PMIx_Fence} operation is collective over the set of processes specified in the argument set. That allows for the collective to span a subset of a namespace or multiple namespaces. After the completion of the \refapi{PMIx_Fence} operation, the data \refapi{PMIx_Put} by other processes is available to the local process through a call to \refapi{PMIx_Get} which returns the key/value pairs necessary to establish the connection(s) with the other processes.
+
+The \refapi{PMIx_Fence} operation must have a "Synchronize Only" mode that works as a barrier operation. This is helpful if the communication library requires a synchronization before leaving initialization or starting finalization, for example.
+
+The \refapi{PMIx_Fence} operation should have a "Sparse" mode in addition to a "Full" mode for the data exchange. The "Full" mode will fully exchange all Business Card information to all other processes. This is helpful for tightly communicating applications. The "Sparse" mode will dynamically pull the connectivity information on-demand from inside of \refapi{PMIx_Get} (if it is not already available locally). This is helpful for sparsely communicating applications. Since which mode is best for an application cannot be inferred by the PMIx library the caller must specify which mode works best for their application.
+
+The \refapi{PMIx_Fence} operation should have an option for the end user to specify which mode they desire for this operation.
+
+Additional information about the current state of the job (e.g., number of processes globally and locally) and of how the process was started (e.g., process binding) are also helpful. This "job level" information must be available immediately after PMIx_Init without the need for any explicit synchronization.
+
+The number of processes globally in the namespace and this process's rank within that namespace is important to know before establishing the Business Card information to best allocate resources.
+
+The number of processes local to the node and this process's local rank is important to know before establishing the Business Card information to help the caller determine the scope of the put operation. For example, to designate a leader to set up a shared memory segment of the proper size before putting that information into the locally scoped Business Card information.
+
+The number of processes local to a remote node is also helpful to know before establishing the Business Card information. This information is useful to pre-establish local resources before that remote node starts to initiate a connection or to determine the number of connections that need to be advertised in the Business Card when it is sent out.
+
+Note that some of the job level information may change over the course of the job in a dynamic application.
+
+\littleheader{Related Interfaces}
+
+{\large \refapi{PMIx_Put}}
+\pasteSignature{PMIx_Put}
+
+{\large \refapi{PMIx_Get}}
+\pasteSignature{PMIx_Get}
+
+{\large \refapi{PMIx_Commit}}
+\pasteSignature{PMIx_Commit}
+
+{\large \refapi{PMIx_Fence}}
+\pasteSignature{PMIx_Fence}
+
+{\large \refapi{PMIx_Init}}
+\pasteSignature{PMIx_Init}
+
+\littleheader{Related Keys}
+
+The following job level information is useful to have before establishing Business Card information:
+
+\pasteAttributeItem{PMIX_NODE_LIST}
+\pasteAttributeItem{PMIX_NUM_NODES}
+\pasteAttributeItem{PMIX_NODEID}
+\pasteAttributeItem{PMIX_JOB_SIZE}
+\pasteAttributeItem{PMIX_PROC_MAP}
+\pasteAttributeItem{PMIX_LOCAL_PEERS}
+\pasteAttributeItem{PMIX_LOCAL_SIZE}
+
+For each process this information is also useful (note that any one process may want to access this list of information about any other process in the system):
+
+\pasteAttributeItem{PMIX_RANK}
+\pasteAttributeItem{PMIX_LOCAL_RANK}
+\pasteAttributeItem{PMIX_GLOBAL_RANK}
+\pasteAttributeItem{PMIX_LOCALITY_STRING}
+\pasteAttributeItem{PMIX_HOSTNAME}
+
+There are other keys that are helpful to have before a synchronization point. This is not meant to be a comprehensive list.
