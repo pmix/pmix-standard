@@ -354,12 +354,14 @@ The above changes included introduction of the following \acp{API} and data type
         \item \refapi{PMIx_Group_join}, \refapi{PMIx_Group_join_nb}
         \item \refapi{PMIx_Group_leave}, \refapi{PMIx_Group_leave_nb}
         \item \refapi{PMIx_Get_relative_locality}, \refapi{PMIx_Load_topology}
-        \item \refapi{PMIx_Get_cpuset}
+        \item \refapi{PMIx_Parse_cpuset_string}, \refapi{PMIx_Get_cpuset}
         \item \refapi{PMIx_Link_state_string}, \refapi{PMIx_Job_state_string}
+        \item \refapi{PMIx_Device_type_string}
         \item \refapi{PMIx_Fabric_register}, \refapi{PMIx_Fabric_register_nb}
         \item \refapi{PMIx_Fabric_update}, \refapi{PMIx_Fabric_update_nb}
         \item \refapi{PMIx_Fabric_deregister}, \refapi{PMIx_Fabric_deregister_nb}
-        \item \refapi{PMIx_Fabric_update_distances}, \refapi{PMIx_Fabric_update_distances_nb}
+        \item \refapi{PMIx_Compute_distances}, \refapi{PMIx_Compute_distances_nb}
+        \item \refapi{PMIx_Get_attribute_string}, \refapi{PMIx_Get_attribute_name}
     \end{compactitemize}
 
     \item Server \acp{API}
@@ -387,6 +389,7 @@ The above changes included introduction of the following \acp{API} and data type
         \item \refstruct{pmix_cpuset_t}
         \item \refstruct{pmix_topology_t}
         \item \refstruct{pmix_locality_t}
+        \item \refstruct{pmix_bind_envelope_t}
         \item \refstruct{pmix_group_opt_t}
         \item \refstruct{pmix_group_operation_t}
         \item \refstruct{pmix_fabric_t}
@@ -396,7 +399,14 @@ The above changes included introduction of the following \acp{API} and data type
         \item \refstruct{pmix_geometry_t}
         \item \refstruct{pmix_link_state_t}
         \item \refstruct{pmix_job_state_t}
+        \item \refstruct{pmix_device_type_t}
     \end{compactitemize}
+
+    \item Callback functions
+    \begin{compactitemize}
+        \item \refapi{pmix_device_dist_cbfunc_t}
+    \end{compactitemize}
+
 \end{itemize}
 
 \subsection{Added Constants}
@@ -411,6 +421,9 @@ The above changes included introduction of the following \acp{API} and data type
 \refconst{PMIX_GEOMETRY}
 \refconst{PMIX_DEVICE_DIST}
 \refconst{PMIX_ENDPOINT}
+\refconst{PMIX_TOPO}
+\refconst{PMIX_DEVTYPE}
+\refconst{PMIX_LOCTYPE}
 \refconst{PMIX_DATA_TYPE_MAX}
 
 \littleheader{Query constants}
@@ -574,6 +587,7 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_REINCARNATION}
 \pasteAttributeItem{PMIX_HOSTNAME_ALIASES}
 \pasteAttributeItem{PMIX_HOSTNAME_KEEP_FQDN}
+\pasteAttributeItem{PMIX_CPUSET_BITMAP}
 %
 %
 \littleheader{Tool attributes}
@@ -605,14 +619,12 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_FABRIC_COORDINATES}
 \pasteAttributeItem{PMIX_FABRIC_DIMS}
 \pasteAttributeItem{PMIX_FABRIC_ENDPT}
-\pasteAttributeItem{PMIX_FABRIC_DEVICE_DIST}
 \pasteAttributeItem{PMIX_FABRIC_SHAPE}
 \pasteAttributeItem{PMIX_FABRIC_SHAPE_STRING}
 \pasteAttributeItem{PMIX_SWITCH_PEERS}
 \pasteAttributeItem{PMIX_FABRIC_PLANE}
 \pasteAttributeItem{PMIX_FABRIC_SWITCH}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE}
-\pasteAttributeItem{PMIX_FABRIC_DEVICE_ID}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_INDEX}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_NAME}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
@@ -627,6 +639,12 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_STATE}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_TYPE}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_PCI_DEVID}
+%
+%
+\littleheader{Device attributes}
+\pasteAttributeItem{PMIX_DEVICE_DISTANCES}
+\pasteAttributeItem{PMIX_DEVICE_TYPE}
+\pasteAttributeItem{PMIX_DEVICE_ID}
 %
 %
 \littleheader{Sets-Groups attributes}

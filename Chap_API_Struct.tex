@@ -2107,6 +2107,12 @@ Structure containing an assigned endpoint for a given fabric device. (\refstruct
 \declareconstitemNEW{PMIX_TOPO}
 Structure containing the topology for a given node. (\refstruct{pmix_topology_t}).
 %
+\declareconstitemNEW{PMIX_DEVTYPE}
+Bitmask containing the types of devices being referenced. (\refstruct{pmix_device_type_t}).
+%
+\declareconstitemNEW{PMIX_LOCTYPE}
+Bitmask describing the relative location of another process. (\refstruct{pmix_locality_t}).
+%
 \declareconstitemNEW{PMIX_DATA_TYPE_MAX}
 A starting point for implementer-specific data types.
 Values above this are guaranteed not to conflict with \ac{PMIx} values.
@@ -2473,6 +2479,20 @@ String representation of a \refstruct{pmix_link_state_t}.
 \begin{codepar}
 const char*
 PMIx_Link_state_string(pmix_link_state_t state);
+\end{codepar}
+\cspecificend
+
+%%%%
+\summary
+\declareapi{PMIx_Device_type_string}
+
+String representation of a \refstruct{pmix_device_type_t}.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+const char*
+PMIx_Device_type_string(pmix_device_type_t type);
 \end{codepar}
 \cspecificend
 

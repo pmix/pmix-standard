@@ -37,7 +37,7 @@ Information on fabric coordinates, endpoints, and device distances are provided 
 \begin{itemize}
     \item An array of information on fabric devices for a node by passing \refattr{PMIX_FABRIC_DEVICES} as the key to \refapi{PMIx_Get} along with the \refattr{PMIX_HOSTNAME} of the node as a directive
 
-    \item An array of information on a specific fabric device by passing \refattr{PMIX_FABRIC_DEVICE} as the key to \refapi{PMIx_Get} along with the \refattr{PMIX_FABRIC_DEVICE_ID} of the device as a directive
+    \item An array of information on a specific fabric device by passing \refattr{PMIX_FABRIC_DEVICE} as the key to \refapi{PMIx_Get} along with the \refattr{PMIX_DEVICE_ID} of the device as a directive
 
     \item An array of information on a specific fabric device by passing \refattr{PMIX_FABRIC_DEVICE} as the key to \refapi{PMIx_Get} along with both \refattr{PMIX_FABRIC_DEVICE_NAME} of the device and the \refattr{PMIX_HOSTNAME} of the node as directives
 \end{itemize}
@@ -47,7 +47,7 @@ When requesting data on a device, returned data must include at least the follow
 \begin{itemize}
     \item \pasteAttributeItemBegin{PMIX_HOSTNAME} The \refattr{PMIX_NODEID} may be returned in its place, or in addition to the hostname.
     \pasteAttributeItemEnd
-    \item \pasteAttributeItem{PMIX_FABRIC_DEVICE_ID}
+    \item \pasteAttributeItem{PMIX_DEVICE_ID}
     \item \pasteAttributeItem{PMIX_FABRIC_DEVICE_NAME}
     \item \pasteAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
     \item \pasteAttributeItem{PMIX_FABRIC_DEVICE_BUS_TYPE}
@@ -111,12 +111,13 @@ The \refstruct{pmix_endpoint_t} structure contains an assigned endpoint for a gi
 \begin{codepar}
 typedef struct pmix_endpoint \{
     char *uuid;
+    char *osname;
     pmix_byte_object_t endpt;
 \} pmix_endpoint_t;
 \end{codepar}
 \cspecificend
 
-The \refarg{uuid} field contains the \ac{UUID} of the fabric device and the \refarg{endpt} field contains a fabric vendor-specific object identifying the communication endpoint assigned to the process.
+The \refarg{uuid} field contains the \ac{UUID} of the fabric device, the \refarg{osname} is the local operating system's name for the device, and the \refarg{endpt} field contains a fabric vendor-specific object identifying the communication endpoint assigned to the process.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,107 +193,6 @@ PMIX_ENDPOINT_FREE(m, n)
 
 \begin{arglist}
 \argin{m}{Pointer to the array of \refstruct{pmix_endpoint_t} structures (handle)}
-\argin{n}{Number of structures in the array (\code{size_t})}
-\end{arglist}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Fabric Device Distance Structure}
-\declarestruct{pmix_device_distance_t}
-
-The \refstruct{pmix_device_distance_t} structure contains the minimum and maximum relative distance from the caller to a given fabric device.
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_device_distance \{
-    char *uuid;
-    uint16_t mindist;
-    uint16_t maxdist;
-\} pmix_device_distance_t;
-\end{codepar}
-\cspecificend
-
-The two distance fields provide the minimum and maximum relative distance to the device from the binding location (as sampled at the time of the request) of the process, expressed as a 16-bit integer value where a smaller number indicates that this device is closer to the process than a device with a larger distance value.
-
-Relative distances only apply to similar devices (i.e., devices from the same fabric) and cannot be used to compare devices from different fabrics. Both minimum and maximum distances are provided to support cases where the process may be bound to more than one location, and the locations are at different distances from the device.
-
-A relative distance value of \code{UINT16_MAX} indicates that the distance from the process to the device could not be provided. This may be due to lack of available information (e.g., the \ac{PMIx} library not having access to device locations) or other factors.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Fabric device distance support macros}
-\label{api:netenddist:macros}
-
-The following macros are provided to support the \refstruct{pmix_device_distance_t} structure.
-
-%%%%
-\littleheader{Initialize the device distance structure}
-\declaremacro{PMIX_DEVICE_DIST_CONSTRUCT}
-
-Initialize the \refstruct{pmix_device_distance_t} fields.
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DEVICE_DIST_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_device_distance_t})}
-\end{arglist}
-
-%%%%
-\littleheader{Destruct the device distance structure}
-\declaremacro{PMIX_DEVICE_DIST_DESTRUCT}
-
-Destruct the \refstruct{pmix_device_distance_t} fields.
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DEVICE_DIST_DESTRUCT(m)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_device_distance_t})}
-\end{arglist}
-
-%%%%
-\littleheader{Create an device distance array}
-\declaremacro{PMIX_DEVICE_DIST_CREATE}
-
-Allocate and initialize a \refstruct{pmix_device_distance_t} array.
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DEVICE_DIST_CREATE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_device_distance_t} structures shall be stored (handle)}
-\argin{n}{Number of structures to be allocated (\code{size_t})}
-\end{arglist}
-
-%%%%
-\littleheader{Release an device distance array}
-\declaremacro{PMIX_DEVICE_DIST_FREE}
-
-Release an array of \refstruct{pmix_device_distance_t} structures.
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_DEVICE_DIST_FREE(m, n)
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_device_distance_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
@@ -410,6 +310,7 @@ The \refstruct{pmix_geometry_t} structure describes the fabric coordinates of a 
 typedef struct pmix_geometry \{
     size_t fabric;
     char *uuid;
+    char *osname;
     pmix_coord_t *coordinates;
     size_t ncoords;
 \} pmix_geometry_t;
@@ -631,7 +532,7 @@ While unusual due to scaling issues, implementations may include an array of \re
 
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_NAME}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_VENDOR}
-\pasteAttributeItem{PMIX_FABRIC_DEVICE_ID}
+\pasteAttributeItem{PMIX_DEVICE_ID}
 \pasteAttributeItem{PMIX_HOSTNAME}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_DRIVER}
 \pasteAttributeItem{PMIX_FABRIC_DEVICE_FIRMWARE}
@@ -743,11 +644,7 @@ Array of \refstruct{pmix_geometry_t} fabric coordinates for devices on the speci
 }
 %
 \declareAttributeNEW{PMIX_FABRIC_DEVICE}{"pmix.fabdev"}{\refstruct{pmix_data_array_t}}{
-An array of \refstruct{pmix_info_t} describing a particular fabric device using one or more of the attributes defined below. The first element in the array shall be the \refattr{PMIX_FABRIC_DEVICE_ID} of the device.
-}
-%
-\declareAttributeNEW{PMIX_FABRIC_DEVICE_ID}{"pmix.fabdev.id"}{string}{
-System-wide \ac{UUID} of a particular fabric device.
+An array of \refstruct{pmix_info_t} describing a particular fabric device using one or more of the attributes defined below. The first element in the array shall be the \refattr{PMIX_DEVICE_ID} of the device.
 }
 %
 \declareAttributeNEW{PMIX_FABRIC_DEVICE_INDEX}{"pmix.fabdev.idx"}{uint32_t}{
@@ -814,17 +711,13 @@ The following attributes are related to the \emph{process realm} (as described i
 Fabric endpoints for a specified process. As multiple endpoints may be assigned to a given process (e.g., in the case where multiple devices are associated with a package to which the process is bound), the returned values will be provided in a \refstruct{pmix_data_array_t} of \refstruct{pmix_endpoint_t} elements.
 }
 %
-\declareAttributeNEW{PMIX_FABRIC_DEVICE_DIST}{"pmix.fab.endptdist"}{pmix_data_array_t}{
-Relative distance from the location of the calling process (either as sampled at the time of a \refapi{PMIx_Fabric_update_distances} request, or based on the initial binding location set at time of start of execution) to each local fabric device, returned as an array of \refstruct{pmix_device_distance_t} elements in no particular order.
-}
-%
 \vspace{\baselineskip}
-The following attributes are related to the \emph{job realm} (as described in Section \ref{chap:res:jrealm}) and are retrieved according to those rules.
+The following attributes are related to the \emph{job realm} (as described in Section \ref{chap:res:jrealm}) and are retrieved according to those rules. Note that distances to fabric devices are retrieved using the \refattr{PMIX_DEVICE_DISTANCES} key with the appropriate \refstruct{pmix_device_type_t} qualifier.
 
 %
 \declareAttributeNEW{PMIX_SWITCH_PEERS}{"pmix.speers"}{pmix_data_array_t}{
 Peer ranks that share the same switch as the process specified in the call to \refapi{PMIx_Get}. Returns a \refstruct{pmix_data_array_t} array of \refstruct{pmix_info_t} results, each element containing the \refattr{PMIX_SWITCH_PEERS} key with a three-element \refstruct{pmix_data_array_t} array of
-\refstruct{pmix_info_t} containing the \refattr{PMIX_FABRIC_DEVICE_ID} of the local fabric device, the \refattr{PMIX_FABRIC_SWITCH} identifying the switch to which it is connected, and a comma-delimited string of peer ranks sharing the switch to which that device is connected.
+\refstruct{pmix_info_t} containing the \refattr{PMIX_DEVICE_ID} of the local fabric device, the \refattr{PMIX_FABRIC_SWITCH} identifying the switch to which it is connected, and a comma-delimited string of peer ranks sharing the switch to which that device is connected.
 }
 %
 
@@ -1081,85 +974,6 @@ Returns one of the following:
 
 Non-blocking form of \refapi{PMIx_Fabric_deregister}. Provided \refarg{fabric} must not be accessed until after callback function has been executed.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{\code{PMIx_Fabric_update_distances}}
-\declareapi{PMIx_Fabric_update_distances}
-
-%%%%
-\summary
-
-Update distances from current process location to local fabric devices.
-
-%%%%
-\format
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Fabric_update_distances(pmix_device_distance_t *distances[],
-                             size_t *ndist);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\arginout{distances}{Pointer to an address where the array of \refstruct{pmix_device_distance_t} structures containing the distances from the caller to local fabric devices is to be returned (handle)}
-\arginout{ndist}{Pointer to an address where the number of elements in the \refarg{distances} array is to be returned (handle)}
-\end{arglist}
-
-Returns one of the following:
-
-\begin{itemize}
-\item \refconst{PMIX_SUCCESS} indicating that the distances were returned.
-\item a non-zero \ac{PMIx} error constant indicating the reason the request failed.
-\end{itemize}
-
-
-%%%%
-\descr
-
-Both the minimum and maximum distance fields in the elements of the array shall be filled with the respective distances between the current process location and the respective fabric device. Any distance information stored in the local \ac{PMIx} server's cache should also be updated so that subsequent queries return the updated values.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{\code{PMIx_Fabric_update_distances_nb}}
-\declareapi{PMIx_Fabric_update_distances_nb}
-
-%%%%
-\summary
-
-Update distances from current process location to local fabric devices.
-
-%%%%
-\format
-
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Fabric_update_distances_nb(pmix_info_cbfunc_t cbfunc,
-                                void *cbdata);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
-\argin{cbdata}{Data to be passed to the callback function (memory reference)}
-\end{arglist}
-
-Returns one of the following:
-
-\begin{itemize}
-\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
-\end{itemize}
-
-
-%%%%
-\descr
-
-Non-blocking form of the \refapi{PMIx_Fabric_update_distances} \ac{API}. If successful, the requested data will be returned under the \refattr{PMIX_FABRIC_DEVICE_DIST} attribute in the \refarg{info} array of the callback function.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
