@@ -53,7 +53,7 @@
 \usepackage[us,24hr]{datetime}
 \usepackage{ifthen}
 \newboolean{is_unofficial_draft}
-\setboolean{is_unofficial_draft}{true}
+\setboolean{is_unofficial_draft}{false}
 
 % Text to appear in the footer on even-numbered pages:
 \ifthenelse{\boolean{is_unofficial_draft}}
@@ -61,7 +61,7 @@
    \newcommand{\VERDATE}{\emph{Created on \today}}
   }
   {\newcommand{\VER}{4.0}
-   \newcommand{\VERDATE}{Month Year}
+   \newcommand{\VERDATE}{October 2020}
   }
 \newcommand{\footerText}{PMIx Standard -- Version \VER{} -- \VERDATE}
 
