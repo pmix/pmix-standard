@@ -1403,7 +1403,7 @@ PMIx_Compute_distances(pmix_topology_t *topo,
 \argin{cpuset}{Pointer to the location of the process (\refstruct{pmix_cpuset_t})}
 \argin{info}{Array of \refstruct{pmix_info_t} describing the devices whose distance is to be computed (handle)}
 \argin{ninfo}{Number of elements in \refarg{info} (integer)}
-\arginout{distances}{Pointer to an address where the array of \refstruct{pmix_device_distance_t} structures containing the distances from the caller to local fabric devices is to be returned (handle)}
+\arginout{distances}{Pointer to an address where the array of \refstruct{pmix_device_distance_t} structures containing the distances from the caller to the specified devices is to be returned (handle)}
 \arginout{ndist}{Pointer to an address where the number of elements in the \refarg{distances} array is to be returned (handle)}
 \end{arglist}
 
