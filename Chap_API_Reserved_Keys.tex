@@ -402,6 +402,10 @@ Full path to the subdirectory under \refattr{PMIX_NSDIR} assigned to the specifi
 A string representation of the \ac{PU} binding bitmap applied to the process upon launch. The string shall begin with the name of the library that generated it (e.g., "hwloc") followed by a colon and the bitmap string itself.
 }
 %
+\declareAttributeNEW{PMIX_CPUSET_BITMAP}{"pmix.bitmap"}{pmix_cpuset_t*}{
+Bitmap applied to the process upon launch.
+}
+%
 \declareAttribute{PMIX_CREDENTIAL}{"pmix.cred"}{char*}{
 Security credential assigned to the process.
 }
@@ -412,11 +416,11 @@ Security credential assigned to the process.
 %
 \declareAttributeNEW{PMIX_REINCARNATION}{"pmix.reinc"}{uint32_t}{
 Number of times this process has been re-instantiated - i.e, a value of zero indicates that the process has never been restarted.
-}
+5}
 
 \vspace{\baselineskip}
 
-In addition, process-level information includes functional attributes directly associated with a process - for example, the process-related fabric attributes included in Section \ref{api:fabric:attrs}.
+In addition, process-level information includes functional attributes directly associated with a process - for example, the process-related fabric attributes included in Section \ref{api:fabric:attrs} or the distance attributes of Section \ref{api:netenddist:attrs}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

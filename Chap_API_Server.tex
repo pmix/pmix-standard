@@ -368,7 +368,7 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 
 Host environments are required to provide a wide range of session-, job-, application-, node-, and process-realm information, and may choose to provide a similarly wide range of optional information. The information is broadly separated into categories based on the \emph{data realm} definitions explained in Section \ref{api:struct:attributes:retrieval}, and retrieved according to the rules detailed in Section \ref{chap:rkeys:retrules}.
 
-Session-realm information may be passed as individual \refstruct{pmix_info_t} entries, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute.The list of data referenced in this way shall include:
+Session-realm information may be passed as individual \refstruct{pmix_info_t} entries, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_SESSION_INFO_ARRAY} attribute. The list of data referenced in this way shall include:
 
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_UNIV_SIZE}
@@ -503,12 +503,16 @@ plus the following information for processes that are local to the server:
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_LOCALITY_STRING}
     \item \pasteAttributeItem{PMIX_PROCDIR}
+    \item \pasteAttributeItem{PMIX_PACKAGE_RANK}
 \end{itemize}
 
-and the following optional information - note that this information can be derived from information already provided by other attributes, but it may be included here for ease of retrieval by users:
+and the following optional information - note that some of this information can be derived from information already provided by other attributes, but it may be included here for ease of retrieval by users:
 
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_HOSTNAME}
+    \item \pasteAttributeItem{PMIX_CPUSET}
+    \item \pasteAttributeItem{PMIX_CPUSET_BITMAP}
+    \item \pasteAttributeItem{PMIX_DEVICE_DISTANCES}
 \end{itemize}
 
 \divider
@@ -941,7 +945,7 @@ PMIx_server_deregister_resources(pmix_info_t info[], size_t ninfo,
 %%%%
 \descr
 
-Remove information about resources not associated with a given namespace from the \ac{PMIx} server library. Only the \refarg{key} fields of the provided \refarg{info} array shall be used for the operation - the associated values shall be ignored except where they serve as qualifiers to the request. For example, to remove a specific fabric device from a given node, the \refarg{info} array might include a \refattr{PMIX_NODE_INFO_ARRAY} containing the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} identifying the node hosting the device, and the \refattr{PMIX_FABRIC_DEVICE_NAME} specifying the device to be removed. Alternatively, the device could be removed using only the \refattr{PMIX_FABRIC_DEVICE_ID} as this is unique across the overall system.
+Remove information about resources not associated with a given namespace from the \ac{PMIx} server library. Only the \refarg{key} fields of the provided \refarg{info} array shall be used for the operation - the associated values shall be ignored except where they serve as qualifiers to the request. For example, to remove a specific fabric device from a given node, the \refarg{info} array might include a \refattr{PMIX_NODE_INFO_ARRAY} containing the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} identifying the node hosting the device, and the \refattr{PMIX_FABRIC_DEVICE_NAME} specifying the device to be removed. Alternatively, the device could be removed using only the \refattr{PMIX_DEVICE_ID} as this is unique across the overall system.
 
 \advicermstart
 As information not related to namespaces is considered \emph{static}, there is no requirement that the host environment deregister resources prior to finalizing the \ac{PMIx} server library. The server library shall properly cleanup as part of its normal finalize operations. Deregistration of resources is only required, therefore, when the host environment determines that client processes should no longer have access to that information.
@@ -1802,7 +1806,7 @@ Returns either \refconst{PMIX_SUCCESS} indicating that the returned string conta
 %%%%
 \descr
 
-Provide a function by which the host environment can generate a string representation of the cpuset bitmap for inclusion in the call to \refapi{PMIx_server_register_nspace}. This function shall only be called for local client processes, with the returned string included in the job-level information (via the \refattr{PMIX_CPUSET} attribute) provided to local clients. Local clients can use these strings as input to obtain their \ac{PU} bindings via the \refapi{PMIx_Get_cpuset} \ac{API}.
+Provide a function by which the host environment can generate a string representation of the cpuset bitmap for inclusion in the call to \refapi{PMIx_server_register_nspace}. This function shall only be called for local client processes, with the returned string included in the job-level information (via the \refattr{PMIX_CPUSET} attribute) provided to local clients. Local clients can use these strings as input to obtain their \ac{PU} bindings via the \refapi{PMIx_Parse_cpuset_string} \ac{API}.
 
 The function is required to return a string prefixed by the \refarg{source} field of the provided \refarg{cpuset} followed by a colon. The remainder of the string shall represent the \acp{PU} to which the process is bound as expressed by the underlying implementation.
 
@@ -1842,6 +1846,22 @@ PMIX_CPUSET_CONSTRUCT(m)
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_cpuset_t})}
 \end{arglist}
 
+\littleheader{Destruct the cpuset structure}
+\declaremacro{PMIX_CPUSET_DESTRUCT}
+
+Destruct the \refstruct{pmix_cpuset_t} fields.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_CPUSET_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_cpuset_t})}
+\end{arglist}
+
 
 
 \littleheader{Create a cpuset array}
@@ -1860,6 +1880,24 @@ PMIX_CPUSET_CREATE(m, n)
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_cpuset_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (size_t)}
 \end{arglist}
+
+\littleheader{Release a cpuset array}
+\declaremacro{PMIX_CPUSET_FREE}
+
+Deconstruct and free a \refstruct{pmix_cpuset_t} array.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_CPUSET_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address the array of \refstruct{pmix_cpuset_t} structures to be released (handle)}
+\argin{n}{Number of structures in the array (size_t)}
+\end{arglist}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

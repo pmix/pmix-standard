@@ -1169,6 +1169,23 @@ PMIX_TOPOLOGY_CONSTRUCT(m)
 \end{arglist}
 
 
+\littleheader{Destruct the topology structure}
+\declaremacro{PMIX_TOPOLOGY_DESTRUCT}
+
+Destruct the \refstruct{pmix_topology_t} fields
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_TOPOLOGY_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_topology_t})}
+\end{arglist}
+
+
 \littleheader{Create a topology array}
 \declaremacro{PMIX_TOPOLOGY_CREATE}
 
@@ -1184,6 +1201,24 @@ PMIX_TOPOLOGY_CREATE(m, n)
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_topology_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (size_t)}
+\end{arglist}
+
+
+\littleheader{Release a topology array}
+\declaremacro{PMIX_TOPOLOGY_FREE}
+
+Release a \refstruct{pmix_topology_t} array.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_TOPOLOGY_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address of the array of \refstruct{pmix_topology_t} structures to be released (handle)}
+\argin{n}{Number of structures in the array (size_t)}
 \end{arglist}
 
 
@@ -1239,6 +1274,10 @@ Implementers and vendors may choose to extend these definitions as needed to des
 \subsubsection{Locality keys}
 
 %
+\declareAttributeNEW{PMIX_LOCALITY}{"pmix.loc"}{pmix_locality_t}{
+Bitmask describing the location of the referenced process.
+}
+%
 \declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
 String describing a process's bound location - referenced using the process's
 rank. The string is prefixed by the implementation that created it (e.g.,
@@ -1252,13 +1291,13 @@ the process is not executing on the same node.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{\code{PMIx_Get_cpuset}}
-\declareapi{PMIx_Get_cpuset}
+\subsection{\code{PMIx_Parse_cpuset_string}}
+\declareapi{PMIx_Parse_cpuset_string}
 
 %%%%
 \summary
 
-Get the \ac{PU} binding bitmap from its string representation.
+Parse the \ac{PU} binding bitmap from its string representation.
 
 %%%%
 \format
@@ -1267,8 +1306,8 @@ Get the \ac{PU} binding bitmap from its string representation.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_Get_cpuset(const char *cpuset_string,
-                pmix_cpuset_t *cpuset);
+PMIx_Parse_cpuset_string(const char *cpuset_string,
+                         pmix_cpuset_t *cpuset);
 \end{codepar}
 \cspecificend
 
@@ -1284,4 +1323,352 @@ Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{cpuset} was success
 
 Parse the string representation of the binding bitmap (as returned by \refapi{PMIx_Get} using the \refattr{PMIX_CPUSET} key) and set the appropriate \ac{PU} binding location information in the provided memory location.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_Get_cpuset}}
+\declareapi{PMIx_Get_cpuset}
+
+%%%%
+\summary
+
+Get the \ac{PU} binding bitmap of the current process.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Get_cpuset(pmix_cpuset_t *cpuset, pmix_bind_envelope_t ref);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{cpuset}{Address of an object where the bitmap is to be stored (memory reference)}
+\argin{ref}{The binding envelope to be considered when formulating the bitmap (\refstruct{pmix_bind_envelope_t})}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{cpuset} was successfully loaded, or an appropriate \ac{PMIx} error constant.
+
+%%%%
+\descr
+
+Obtain and set the appropriate \ac{PU} binding location information in the provided memory location based on the specified binding envelope.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Binding envelope}
+\declarestruct{pmix_bind_envelope_t}
+
+\versionMarker{4.0}
+The \refstruct{pmix_bind_envelope_t} data type
+defines the envelope of threads within a possibly multi-threaded process that are to be considered when getting the cpuset associated with the process. Valid values include:
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_CPUBIND_PROCESS}
+Use the location of all threads in the possibly multi-threaded process.
+%
+\declareconstitemNEW{PMIX_CPUBIND_THREAD}
+Use only the location of the thread calling the \ac{API}.
+%
+\end{constantdesc}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_Compute_distances}}
+\declareapi{PMIx_Compute_distances}
+
+%%%%
+\summary
+
+Compute distances from specified process location to local devices.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Compute_distances(pmix_topology_t *topo,
+                       pmix_cpuset_t *cpuset,
+                       pmix_info_t info[], size_t ninfo[],
+                       pmix_device_distance_t *distances[],
+                       size_t *ndist);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{topo}{Pointer to the topology description of the node where the process is located (\code{NULL} indicates the local node) (\refstruct{pmix_topology_t})}
+\argin{cpuset}{Pointer to the location of the process (\refstruct{pmix_cpuset_t})}
+\argin{info}{Array of \refstruct{pmix_info_t} describing the devices whose distance is to be computed (handle)}
+\argin{ninfo}{Number of elements in \refarg{info} (integer)}
+\arginout{distances}{Pointer to an address where the array of \refstruct{pmix_device_distance_t} structures containing the distances from the caller to local fabric devices is to be returned (handle)}
+\arginout{ndist}{Pointer to an address where the number of elements in the \refarg{distances} array is to be returned (handle)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the distances were returned.
+\item a non-zero \ac{PMIx} error constant indicating the reason the request failed.
+\end{itemize}
+
+
+%%%%
+\descr
+
+Both the minimum and maximum distance fields in the elements of the array shall be filled with the respective distances between the current process location and the types of devices or specific device identified in the \refarg{info} directives. In the absence of directives, distances to all supported device types shall be returned.
+
+\adviceuserstart
+A process whose threads are not all bound to the same location may return inconsistent results from calls to this \ac{API} by different threads if the \refconst{PMIX_CPUBIND_THREAD} binding envelope was used when generating the \refarg{cpuset}.
+\adviceuserend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_Compute_distances_nb}}
+\declareapi{PMIx_Compute_distances_nb}
+
+%%%%
+\summary
+
+Compute distances from specified process location to local devices.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Compute_distances_nb(pmix_topology_t *topo,
+                          pmix_cpuset_t *cpuset,
+                          pmix_info_t info[], size_t ninfo[],
+                          pmix_device_dist_cbfunc_t cbfunc,
+                          void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{topo}{Pointer to the topology description of the node where the process is located (\code{NULL} indicates the local node) (\refstruct{pmix_topology_t})}
+\argin{cpuset}{Pointer to the location of the process (\refstruct{pmix_cpuset_t})}
+\argin{info}{Array of \refstruct{pmix_info_t} describing the devices whose distance is to be computed (handle)}
+\argin{ninfo}{Number of elements in \refarg{info} (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+\end{itemize}
+
+
+%%%%
+\descr
+
+Non-blocking form of the \refapi{PMIx_Compute_distances} \ac{API}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Device Distance Callback Function}
+\declareapi{pmix_device_dist_cbfunc_t}
+
+%%%%
+\summary
+
+The \refapi{pmix_device_dist_cbfunc_t} is used to return an array of device distances.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef void (*pmix_device_dist_cbfunc_t)
+    (pmix_status_t status,
+     pmix_device_distance_t *dist,
+     size_t ndist,
+     void *cbdata,
+     pmix_release_cbfunc_t release_fn,
+     void *release_cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{status}{Status associated with the operation (\refstruct{pmix_status_t})}
+\argin{dist}{Array of \refstruct{pmix_device_distance_t} returned by the operation (pointer)}
+\argin{ndist}{Number of elements in the \argref{dist} array (\code{size_t})}
+\argin{cbdata}{Callback data passed to original \ac{API} call (memory reference)}
+\argin{release_fn}{Function to be called when done with the \argref{dist} data (function pointer)}
+\argin{release_cbdata}{Callback data to be passed to \argref{release_fn} (memory reference)}
+\end{arglist}
+
+
+%%%%
+\descr
+
+The \refarg{status} indicates if requested data was found or not.
+The array of \refstruct{pmix_device_distance_t} will contain the distance information.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Device type}
+\declarestruct{pmix_device_type_t}
+
+The \refstruct{pmix_device_type_t} is a \code{uint64_t} bitmask for identifying the type(s) whose distances are being requested, or the type of a specific device being referenced (e.g., in a \refstruct{pmix_device_distance_t} object).
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+typedef uint16_t pmix_device_type_t;
+\end{codepar}
+\cspecificend
+
+The following constants can be used to set a variable of the type \refstruct{pmix_device_type_t}.
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_DEVTYPE_UNKNOWN}
+The device is of an unknown type - will not be included in returned device distances.
+%
+\declareconstitemNEW{PMIX_DEVTYPE_BLOCK}
+Operating system block device, or non-volatile memory device (e.g., "sda" or "dax2.0" on Linux).
+%
+\declareconstitemNEW{PMIX_DEVTYPE_GPU}
+Operating system \ac{GPU} device (e.g., "card0" for a Linux \ac{DRM} device).
+%
+\declareconstitemNEW{PMIX_DEVTYPE_NETWORK}
+Operating system network device (e.g., the "eth0" interface on Linux).
+%
+\declareconstitemNEW{PMIX_DEVTYPE_OPENFABRICS}
+Operating system OpenFabrics device (e.g., an "mlx4_0" InfiniBand \ac{HCA}, or "hfi1_0" Omni-Path interface on Linux).
+%
+\declareconstitemNEW{PMIX_DEVTYPE_DMA}
+Operating system \ac{DMA} engine device (e.g., the "dma0chan0" \ac{DMA} channel on Linux).
+%
+\declareconstitemNEW{PMIX_DEVTYPE_COPROC}
+Operating system co-processor device (e.g., "mic0" for a Xeon Phi on Linux, "opencl0d0" for a OpenCL device, or "cuda0" for a \ac{CUDA} device).
+%
+\end{constantdesc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Device Distance Structure}
+\declarestruct{pmix_device_distance_t}
+
+The \refstruct{pmix_device_distance_t} structure contains the minimum and maximum relative distance from the caller to a given device.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_device_distance \{
+    char *uuid;
+    char *osname;
+    pmix_device_type_t type;
+    uint16_t mindist;
+    uint16_t maxdist;
+\} pmix_device_distance_t;
+\end{codepar}
+\cspecificend
+
+The \refarg{uuid} is a string identifier guaranteed to be unique within the cluster and is typically assembled from discovered device attributes (e.g., the \ac{IP} address of the device). The \refarg{osname} is the local operating system name of the device and is only unique to that node.
+
+The two distance fields provide the minimum and maximum relative distance to the device from the specified location of the process, expressed as a 16-bit integer value where a smaller number indicates that this device is closer to the process than a device with a larger distance value. Note that relative distance values are not necessarily correlated to a physical property - e.g., a device at twice the distance from another device does not necessarily have twice the latency for communication with it.
+
+Relative distances only apply to similar devices and cannot be used to compare devices of different types. Both minimum and maximum distances are provided to support cases where the process may be bound to more than one location, and the locations are at different distances from the device.
+
+A relative distance value of \code{UINT16_MAX} indicates that the distance from the process to the device could not be provided. This may be due to lack of available information (e.g., the \ac{PMIx} library not having access to device locations) or other factors.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Device distance support macros}
+\label{api:netenddist:macros}
+
+The following macros are provided to support the \refstruct{pmix_device_distance_t} structure.
+
+%%%%
+\littleheader{Initialize the device distance structure}
+\declaremacro{PMIX_DEVICE_DIST_CONSTRUCT}
+
+Initialize the \refstruct{pmix_device_distance_t} fields.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_DEVICE_DIST_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_device_distance_t})}
+\end{arglist}
+
+%%%%
+\littleheader{Destruct the device distance structure}
+\declaremacro{PMIX_DEVICE_DIST_DESTRUCT}
+
+Destruct the \refstruct{pmix_device_distance_t} fields.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_DEVICE_DIST_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_device_distance_t})}
+\end{arglist}
+
+%%%%
+\littleheader{Create an device distance array}
+\declaremacro{PMIX_DEVICE_DIST_CREATE}
+
+Allocate and initialize a \refstruct{pmix_device_distance_t} array.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_DEVICE_DIST_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_device_distance_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+%%%%
+\littleheader{Release an device distance array}
+\declaremacro{PMIX_DEVICE_DIST_FREE}
+
+Release an array of \refstruct{pmix_device_distance_t} structures.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_DEVICE_DIST_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_device_distance_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Device distance attributes}
+\label{api:netenddist:attrs}
+
+The following attributes can be used to retrieve device distances from the \ac{PMIx} data store. Note that distances stored by the host environment are based on the process location at the time of start of execution and may not reflect changes to location imposed by the process itself.
+%
+\declareAttributeNEW{PMIX_DEVICE_DISTANCES}{"pmix.dev.dist"}{pmix_data_array_t}{
+Return an array of \refstruct{pmix_device_distance_t} containing the minimum and maximum distances of the given process location to all devices of the specified type on the local node.
+}
+%
+\declareAttributeNEW{PMIX_DEVICE_TYPE}{"pmix.dev.type"}{pmix_device_type_t}{
+Bitmask specifying the type(s) of device(s) whose information is being requested. Only used as a directive/qualifier.
+}
+%
+\declareAttributeNEW{PMIX_DEVICE_ID}{"pmix.dev.id"}{string}{
+System-wide \ac{UUID} or node-local \ac{OS} name of a particular device.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
