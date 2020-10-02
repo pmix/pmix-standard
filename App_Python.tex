@@ -86,14 +86,15 @@ Table~\ref{app:python:ctopy} lists the correspondence between data types in the 
         \refstruct{pmix_regattr_t} & PMIX_REGATTR & \pylabel{regattr}\{'name': name, 'key': key, 'type': type, 'info': [info], 'description': [desc]\} & \refarg{name} and \refarg{string} are Python strings; \refarg{type} is the \ac{PMIx} datatype for the attribute's value; \refarg{info} is a Python \emph{list} of \refpy{info} values; and \refarg{description} is a list of Python strings describing the attribute  \\ \hline
         \refstruct{pmix_job_state_t} & PMIX_JOB_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
         \refstruct{pmix_link_state_t} & PMIX_LINK_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
-        \refstruct{pmix_cpuset_t} & N/A & \pylabel{cpuset}\{'source': source, 'cpus': bitmap\} & \refarg{source} is a string name of the library that created the cpuset; and \refarg{cpus} is a bitarray containing the cpuset \\ \hline
-        \refstruct{pmix_locality_t} & N/A & \pylabel{locality}bitarray & 16-bit array containing the relative locality of the specified local process \\ \hline
+        \refstruct{pmix_cpuset_t} & PMIX_PROC_CPUSET & \pylabel{cpuset}\{'source': source, 'cpus': bitmap\} & \refarg{source} is a string name of the library that created the cpuset; and \refarg{cpus} is a bitarray containing the cpuset \\ \hline
+        \refstruct{pmix_locality_t} & PMIX_LOCTYPE & \pylabel{locality}bitarray & 16-bit array containing the relative locality of the specified local process \\ \hline
         \refstruct{pmix_fabric_t} & N/A & \pylabel{fabric}\{'name': name, 'index': idx, 'info': [info]\} & \refarg{name} is the string name assigned to the fabric; \refarg{index} is the integer ID assigned to the fabric; \refarg{info} is a list of \refpy{info} describing the fabric \\ \hline
-        \refstruct{pmix_endpoint_t} & N/A & \pylabel{endpoint}\{'uuid': uuid, 'endpt': endpt\} & \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{endpt} is a \refpy{byteobject} containing the endpoint information \\ \hline
-        \refstruct{pmix_device_distance_t} & PMIX_DEVICE_DIST & \pylabel{devdist}\{'uuid': uuid, 'mindist': mindist, 'maxdist': maxdist\} & \refarg{uuid} is the string system-unique identifier assigned to the device; and \refarg{mindist} and \refarg{maxdist} are Python integers \\ \hline
-        \refstruct{pmix_topology_t} & N/A & \pylabel{topology}\{'name': name, 'index': idx, 'info': [info]\} & \refarg{name} is the string name assigned to the fabric; \refarg{index} is the integer ID assigned to the fabric; \refarg{info} is a list of \refpy{info} describing the fabric \\ \hline
+        \refstruct{pmix_endpoint_t} & PMIX_ENDPOINT & \pylabel{endpoint}\{'uuid': uuid, 'osname': osname, endpt': endpt\} & \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{osname} is the operating system name assigned to the device; \refarg{endpt} is a \refpy{byteobject} containing the endpoint information \\ \hline
+        \refstruct{pmix_device_distance_t} & PMIX_DEVICE_DIST & \pylabel{devdist}\{'uuid': uuid, 'osname': osname, mindist': mindist, 'maxdist': maxdist\} & \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{osname} is the operating system name assigned to the device; and \refarg{mindist} and \refarg{maxdist} are Python integers \\ \hline
         \refstruct{pmix_coord_t} & PMIX_COORD & \pylabel{coord}\{'view': view, 'coord': [coords]\} & \refarg{view} is the \refstruct{pmix_coord_view_t} of the coordinate; and \refarg{coord} is a list of integer coordinates, one for each dimension of the fabric \\ \hline
-        \refstruct{pmix_geometry_t} & PMIX_GEOMETRY & \pylabel{geometry}\{'fabric': idx, 'uuid': uuid, 'coordinates': [coords]\} & \refarg{fabric} is the Python integer index of the fabric; \refarg{uuid} is the string system-unique identifier assigned to the device; and \refarg{coordinates} is a list of \refpy{coord} containing the coordinates for the device across all views \\ \hline
+        \refstruct{pmix_geometry_t} & PMIX_GEOMETRY & \pylabel{geometry}\{'fabric': idx, 'uuid': uuid, 'osname': osname, coordinates': [coords]\} & \refarg{fabric} is the Python integer index of the fabric; \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{osname} is the operating system name assigned to the device; and \refarg{coordinates} is a list of \refpy{coord} containing the coordinates for the device across all views \\ \hline
+        \refstruct{pmix_device_type_t} & PMIX_DEVTYPE & \pylabel{devtype}bitarray & 16-bit array \\ \hline
+        \refstruct{pmix_bind_envelope_t} & N/A & \pylabel{bindenv}integer & \\ \hline
     \end{longtable}
 \end{small}
 \end{landscape}
@@ -2370,6 +2371,101 @@ See \refapi{PMIx_Get_relative_locality} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Client.parse_cpuset_string}
+\declareapibinding{PMIxClient.parse_cpuset_string}{PMIx_Parse_cpuset_string}{Python}
+
+\summary
+Parse the \ac{PU} binding bitmap from its string representation.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,cpuset = myclient.parse_cpuset_string(cpusetstr:str)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{cpusetstr}{String of a cpuset (str)}
+\end{arglist}
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{cpuset} - \refpy{cpuset} containing the source and bitmap of the cpuset (dict)
+\end{itemize}
+
+See \refapi{PMIx_Parse_cpuset_string} for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Client.get_cpuset}
+\declareapibinding{PMIxClient.get_cpuset}{PMIx_Get_cpuset}{Python}
+
+\summary
+Get the \ac{PU} binding bitmap of the current process.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,cpuset = myclient.get_cpuset(ref:integer)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{ref}{\refpy{bindenv} binding envelope to be used (integer)}
+\end{arglist}
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{cpuset} - \refpy{cpuset} containing the source and bitmap of the cpuset (dict)
+\end{itemize}
+
+See \refapi{PMIx_Get_cpuset} for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Client.compute_distances}
+\declareapibinding{PMIxClient.compute_distances}{PMIx_Compute_distances}{Python}
+
+\summary
+Compute distances from specified process location to local devices.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,distances = myclient.compute_distances(cpuset:dict, info:list)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{cpuset}{\refpy{cpuset} describing the location of the process (dict)}
+\argin{info}{List of \refpy{info} dictionaries describing the devices whose distance is to be computed (str)}
+\end{arglist}
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{distances} - List of \refpy{devdist} structures containing the distances from the caller to the specified devices (list)
+\end{itemize}
+
+See \refapi{PMIx_Compute_distances} for details.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.error_string}
 \declareapibinding{PMIxClient.error_string}{PMIx_Error_string}{Python}
 
@@ -2770,6 +2866,38 @@ Returns:
 \end{itemize}
 
 See \refapi{PMIx_Link_state_string} for further details.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Client.device_type_string}
+\declareapibinding{PMIxClient.device_type_string}{PMIx_Device_type_string}{Python}
+
+%%%%
+\summary
+
+Pretty-print string representation of \refstruct{pmix_device_type_t}.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rep = myclient.device_type_string(type:bitarray)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{type}{\ac{PMIx} device type value (bitarray)}
+\end{arglist}
+
+Returns:
+\begin{itemize}
+    \item \refarg{rep} - String representation of the provided device type (str)
+\end{itemize}
+
+See \refapi{PMIx_Device_type_string} for further details.
 
 
 
@@ -3417,6 +3545,128 @@ See \refapi{PMIx_server_delete_process_set} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Server.generate_locality_string}
+\declareapibinding{PMIxServer.generate_locality_string}{PMIx_server_generate_locality_string}{Python}
+
+\summary
+Generate a \ac{PMIx} locality string from a given cpuset.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,locality = myserver.generate_locality_string(cpuset:dict)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{cpuset} - Python \refpy{cpuset} dictionary containing the bitmap of assigned \acp{PU} (dict)
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{locality} - String representation of the \ac{PMIx} locality corresponding to the input bitmap (str)
+\end{itemize}
+
+See \refapi{PMIx_server_generate_locality_string} for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Server.generate_cpuset_string}
+\declareapibinding{PMIxServer.generate_cpuset_string}{PMIx_server_generate_cpuset_string}{Python}
+
+\summary
+Generate a \ac{PMIx} string representation of the provided cpuset.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,cpusetstr = myserver.generate_cpuset_string(cpuset:dict)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{cpuset} - Python \refpy{cpuset} dictionary containing the bitmap of assigned \acp{PU} (dict)
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{cpusetstr} - String representation of the \ac{PMIx} input bitmap (str)
+\end{itemize}
+
+See \refapi{PMIx_server_generate_cpuset_string} for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Server.register_resources}
+\declareapibinding{PMIxServer.register_resources}{PMIx_server_register_resources}{Python}
+
+\summary
+Register non-namespace related information with the local \ac{PMIx} server library.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.register_resources(info:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{info} - List of Python \refpy{info} dictionaries list)
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+See \refapi{PMIx_server_register_resources} for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Server.deregister_resources}
+\declareapibinding{PMIxServer.deregister_resources}{PMIx_server_deregister_resources}{Python}
+
+\summary
+Deregister non-namespace related information with the local \ac{PMIx} server library.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = myserver.deregister_resources(info:list)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{info} - List of Python \refpy{info} dictionaries list)
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+See \refapi{PMIx_server_deregister_resources} for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{PMIxTool}
 \label{app:python:tool}
@@ -3572,6 +3822,36 @@ Returns:
 \end{itemize}
 
 See \refapi{PMIx_tool_get_servers} for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Tool.set_server}
+\declareapibinding{PMIxTool.set_server}{PMIx_tool_set_server}{Python}
+
+\summary
+Designate a server as the tool's \emph{primary} server.
+
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc = mytool.set_server(proc:dict)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{proc}{Python \refpy{proc} containing the identifier of the servers\ to which the tool is to attach  (list)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+\end{itemize}
+
+See \refapi{PMIx_tool_set_server} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
