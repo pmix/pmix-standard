@@ -384,6 +384,12 @@ plus the following optional information:
     \item \pasteAttributeItemBegin{PMIX_CLUSTER_ID}As this information is not related to the namespace, it is best passed using the \refapi{PMIx_server_register_resources} \ac{API}.
     \pasteAttributeItemEnd
     \item \pasteAttributeItem{PMIX_ALLOCATED_NODELIST}
+    \item \pasteAttributeItemBegin{PMIX_RM_NAME}As this information is not related to the namespace, it is best passed using the \refapi{PMIx_server_register_resources} \ac{API}.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItemBegin{PMIX_RM_VERSION}As this information is not related to the namespace, it is best passed using the \refapi{PMIx_server_register_resources} \ac{API}.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItemBegin{PMIX_SERVER_HOSTNAME}As this information is not related to the namespace, it is best passed using the \refapi{PMIx_server_register_resources} \ac{API}.
+    \pasteAttributeItemEnd
 \end{itemize}
 
 Job-realm information may be passed as individual \refstruct{pmix_info_t} entries, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_JOB_INFO_ARRAY} attribute. The list of data referenced in this way shall include:
@@ -414,6 +420,8 @@ plus the following optional information:
     \item \pasteAttributeItem{PMIX_BINDTO}
     \item \pasteAttributeItem{PMIX_HOSTNAME_KEEP_FQDN}
     \item \pasteAttributeItem{PMIX_ANL_MAP}
+    \item \pasteAttributeItem{PMIX_TDIR_RMCLEAN}
+    \item \pasteAttributeItem{PMIX_CRYPTO_KEY}
 \end{itemize}
 
 If more than one application is included in the namespace, then the host environment is also required to supply data consisting of the following items for each application in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_APP_INFO_ARRAY} attribute:
@@ -435,6 +443,10 @@ plus the following optional information:
 
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_PSET_NAMES}
+    \item \pasteAttributeItemBegin{PMIX_APP_MAP_TYPE}This attribute may be provided as an individual \refstruct{pmix_info_t} entry if only one application is included in the namespace.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItemBegin{PMIX_APP_MAP_REGEX}This attribute may be provided as an individual \refstruct{pmix_info_t} entry if only one application is included in the namespace.
+    \pasteAttributeItemEnd
 \end{itemize}
 
 The data may also include attributes provided by the host environment that identify the programming model (as specified by the user) being executed within the application. The \ac{PMIx} server library may utilize this information to customize the environment to fit that model (e.g., adding environmental variables specified by the corresponding standard for that model):
@@ -2471,6 +2483,11 @@ Returns one of the following:
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
+
+All host environments are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_REQUIRED_KEY}
+
 \reqattrend
 
 \optattrstart

@@ -614,10 +614,6 @@ The index of the fabric as returned in \refstruct{pmix_fabric_t}.
 Total number of fabric devices in the overall system - corresponds to the number of rows or columns in the cost matrix.
 }
 %
-\declareAttributeNEW{PMIX_FABRIC_VIEW}{"pmix.fab.view"}{pmix_coord_view_t}{
-Used purely as a qualifier to requests, specifies the view type (e.g., local vs. physical) for the requested information.
-}
-%
 \declareAttributeNEW{PMIX_FABRIC_DIMS}{"pmix.fab.dims"}{uint32_t}{
 Number of dimensions in the specified fabric plane/view. If no plane is specified in a request, then the dimensions of all planes in the overall system will be returned as a \refstruct{pmix_data_array_t} containing an array of \code{uint32_t} values. Default is to provide dimensions in \emph{logical} view.
 }
