@@ -125,7 +125,7 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemEnd{}
 \pasteAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
 \pasteAttributeItemEnd{}
-\pasteAttributeItem{PMIX_EVENT_BASE}
+\pasteAttributeItem{PMIX_EXTERNAL_PROGRESS}
 \optattrend
 
 %%%%
@@ -315,5 +315,32 @@ Execute a blocking fence operation before executing the specified operation.
 This attribute directs \refapi{PMIx_Finalize} to execute a barrier as part of the finalize operation.
 }
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Progress}}
+\declareapi{PMIx_Progress}
+
+%%%%
+\summary
+
+Progress the \ac{PMIx} library.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+void
+PMIx_Progress(void)
+\end{codepar}
+\cspecificend
+
+
+%%%%
+\descr
+
+Progress the \ac{PMIx} library. Note that special care must be taken to avoid deadlocking in \ac{PMIx} callback functions and acp{API}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
