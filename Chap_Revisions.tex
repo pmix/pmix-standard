@@ -992,5 +992,9 @@ Spawned processes will not call \refapi{PMIx_Init}.
 \declareAttributeDEP{PMIX_ARCH}{"pmix.arch"}{uint32_t}{
 Architecture flag.
 }
+%
+\declareAttributeDEP{PMIX_EVENT_BASE}{"pmix.evbase"}{struct event_base *}{
+Pointer to libevent\footnote{\url{http://libevent.org/}} \code{event_base} to use in place of the internal progress thread.
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
