@@ -93,7 +93,7 @@ if __name__ == "__main__":
         if p.returncode != 0:
             print("Error: Failed to verify declared attribute \""+attr+"\". grep error code "+str(p.returncode)+")");
             sys.exit(2)
-                
+
         # List of Definition is larger than attribute list
         for line in p.stdout:
             line = line.rstrip()
@@ -181,10 +181,10 @@ if __name__ == "__main__":
     #
     for attr in sorted(attr_declared):
         if attr_declared[attr] <= 0:
-            if attr not in deprecated_attr:
+            if attr not in deprecated_attr and attr != "PMIX_ATTR_UNDEF":
                 print("Attribute Missing Reference: "+attr)
                 count_not_used += 1
-            elif args.verbose is True:
+            elif args.verbose is True and attr != "PMIX_ATTR_UNDEF":
                 print("=====> Deprecated Attribute Missing Reference: "+attr)
 
 

@@ -523,6 +523,7 @@ The \refarg{info} array shall contain an element for each query key that returne
 \pasteAttributeItem{PMIX_JOB_INFO}
 \pasteAttributeItem{PMIX_APP_INFO}
 \pasteAttributeItem{PMIX_NODE_INFO}
+\pasteAttributeItem{PMIX_PROC_INFO}
 \pasteAttributeItemBegin{PMIX_PROCID}In this context, specifies the process ID whose information is being requested - e.g., a query asking for the \refstruct{pmix_proc_info_t} of a specified process. Only required when the request is for information on a specific process.
 \pasteAttributeItemEnd
 \pasteAttributeItemBegin{PMIX_NSPACE}Specifies the namespace of the process whose information is being requested. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
@@ -562,6 +563,11 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItemEnd
 \pasteAttributeItemBegin{PMIX_PROC_URI} Requests the URI of the specified \ac{PMIx} server's out-of-band connection. Defaults to requesting the information for the local \ac{PMIx} server.
 \pasteAttributeItemEnd
+\pasteAttributeItem{PMIX_CLIENT_AVG_MEMORY}
+\pasteAttributeItem{PMIX_DAEMON_MEMORY}
+\pasteAttributeItem{PMIX_QUERY_AUTHORIZATIONS}
+\pasteAttributeItem{PMIX_PROC_PID}
+\pasteAttributeItem{PMIX_PROC_STATE_STATUS}
 
 \optattrend
 
@@ -638,6 +644,7 @@ The \refarg{info} array shall contain an element for each query key that returne
 \pasteAttributeItem{PMIX_JOB_INFO}
 \pasteAttributeItem{PMIX_APP_INFO}
 \pasteAttributeItem{PMIX_NODE_INFO}
+\pasteAttributeItem{PMIX_PROC_INFO}
 \pasteAttributeItemBegin{PMIX_PROCID}In this context, specifies the process ID whose information is being requested - e.g., a query asking for the \refstruct{pmix_proc_info_t} of a specified process. Only required when the request is for information on a specific process.
 \pasteAttributeItemEnd
 \pasteAttributeItemBegin{PMIX_NSPACE}Specifies the namespace of the process whose information is being requested. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
@@ -676,6 +683,11 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItemEnd
 \pasteAttributeItemBegin{PMIX_PROC_URI} Requests the URI of the specified \ac{PMIx} server's out-of-band connection. Defaults to requesting the information for the local \ac{PMIx} server.
 \pasteAttributeItemEnd
+\pasteAttributeItem{PMIX_CLIENT_AVG_MEMORY}
+\pasteAttributeItem{PMIX_DAEMON_MEMORY}
+\pasteAttributeItem{PMIX_QUERY_AUTHORIZATIONS}
+\pasteAttributeItem{PMIX_PROC_PID}
+\pasteAttributeItem{PMIX_PROC_STATE_STATUS}
 
 \optattrend
 

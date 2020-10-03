@@ -126,6 +126,19 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
 \pasteAttributeItemEnd{}
 \pasteAttributeItem{PMIX_EXTERNAL_PROGRESS}
+
+\vspace{\baselineskip}
+If provided, the following attributes are used by the event notification system for inter-library coordination:
+
+\pasteAttributeItem{PMIX_PROGRAMMING_MODEL}
+\pasteAttributeItem{PMIX_MODEL_LIBRARY_NAME}
+\pasteAttributeItem{PMIX_MODEL_LIBRARY_VERSION}
+\pasteAttributeItem{PMIX_THREADING_MODEL}
+\pasteAttributeItem{PMIX_MODEL_NUM_THREADS}
+\pasteAttributeItem{PMIX_MODEL_NUM_CPUS}
+\pasteAttributeItem{PMIX_MODEL_CPU_TYPE}
+\pasteAttributeItem{PMIX_MODEL_AFFINITY_POLICY}
+
 \optattrend
 
 %%%%
