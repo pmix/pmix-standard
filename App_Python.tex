@@ -2869,6 +2869,28 @@ Returns:
 See \refapi{PMIx_Device_type_string} for further details.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Client.progress}
+\declareapibinding{PMIxClient.progress}{PMIx_Progress}{Python}
+
+%%%%
+\summary
+
+Progress the \ac{PMIx} library.
+
+%%%%
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+myclient.progress()
+\end{codepar}
+\pyspecificend
+
+
+See \refapi{PMIx_Progress} for further details.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3421,37 +3443,6 @@ See \refapi{PMIx_server_deliver_inventory} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Server.generate_locality_string}
-\declareapibinding{PMIxServer.generate_locality_string}{PMIx_server_generate_locality_string}{Python}
-
-\summary
-Generate a \ac{PMIx} locality string from a given cpuset.
-
-\format
-
-\versionMarker{4.0}
-\pyspecificstart
-\begin{codepar}
-rc,locality = myserver.generate_locality_string(cpuset:\refpy{cpuset})
-\end{codepar}
-\pyspecificend
-
-
-\begin{arglist}
-\argin{cpuset} - Python \refpy{cpuset} identifying the \acp{PU} (\refpy{cpuset})
-\end{arglist}
-
-Returns:
-
-\begin{itemize}
-    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{locality} - string representation of the locality corresponding to the provided \refarg{cpuset} (str)
-\end{itemize}
-
-See \refapi{PMIx_server_generate_locality_string} for details.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Server.define_process_set}
 \declareapibinding{PMIxServer.define_process_set}{PMIx_server_define_process_set}{Python}
 
@@ -3487,20 +3478,19 @@ See \refapi{PMIx_server_define_process_set} for details.
 \declareapibinding{PMIxServer.delete_process_set}{PMIx_server_delete_process_set}{Python}
 
 \summary
-Delete members from a \ac{PMIx} process set.
+Delete a \ac{PMIx} process set.
 
 \format
 
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc = myserver.delete_process_set(members:list, name:str)
+rc = myserver.delete_process_set(name:str)
 \end{codepar}
 \pyspecificend
 
 
 \begin{arglist}
-\argin{members} - List of Python \refpy{proc} dictionaries identifying the processes to be removed from the process set (list)
 \argin{name} - Name of the process set (str)
 \end{arglist}
 
@@ -3511,68 +3501,6 @@ Returns:
 \end{itemize}
 
 See \refapi{PMIx_server_delete_process_set} for details.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Server.generate_locality_string}
-\declareapibinding{PMIxServer.generate_locality_string}{PMIx_server_generate_locality_string}{Python}
-
-\summary
-Generate a \ac{PMIx} locality string from a given cpuset.
-
-\format
-
-\versionMarker{4.0}
-\pyspecificstart
-\begin{codepar}
-rc,locality = myserver.generate_locality_string(cpuset:dict)
-\end{codepar}
-\pyspecificend
-
-
-\begin{arglist}
-\argin{cpuset} - Python \refpy{cpuset} dictionary containing the bitmap of assigned \acp{PU} (dict)
-\end{arglist}
-
-Returns:
-
-\begin{itemize}
-    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{locality} - String representation of the \ac{PMIx} locality corresponding to the input bitmap (str)
-\end{itemize}
-
-See \refapi{PMIx_server_generate_locality_string} for details.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Server.generate_cpuset_string}
-\declareapibinding{PMIxServer.generate_cpuset_string}{PMIx_server_generate_cpuset_string}{Python}
-
-\summary
-Generate a \ac{PMIx} string representation of the provided cpuset.
-
-\format
-
-\versionMarker{4.0}
-\pyspecificstart
-\begin{codepar}
-rc,cpusetstr = myserver.generate_cpuset_string(cpuset:dict)
-\end{codepar}
-\pyspecificend
-
-
-\begin{arglist}
-\argin{cpuset} - Python \refpy{cpuset} dictionary containing the bitmap of assigned \acp{PU} (dict)
-\end{arglist}
-
-Returns:
-
-\begin{itemize}
-    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
-    \item \refarg{cpusetstr} - String representation of the \ac{PMIx} input bitmap (str)
-\end{itemize}
-
-See \refapi{PMIx_server_generate_cpuset_string} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3738,8 +3666,7 @@ See \refapi{PMIx_tool_disconnect} for details.
 \declareapibinding{PMIxTool.attach_to_server}{PMIx_tool_attach_to_server}{Python}
 
 \summary
-Switch connection from the current \ac{PMIx} server to another one, or initialize a connection to a specified server.
-
+Establish a connection to a PMIx server.
 
 \format
 
