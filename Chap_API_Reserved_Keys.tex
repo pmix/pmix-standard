@@ -107,10 +107,10 @@ A string name for the cluster this allocation is on.
 }
 %
 \declareAttribute{PMIX_UNIV_SIZE}{"pmix.univ.size"}{uint32_t}{
-Number of allocated slots in a session - each slot may or may not be occupied
-by an executing process. Note that this attribute is equivalent to
-the \refattr{PMIX_MAX_PROCS} attributed combined with \refattr{PMIX_SESSION_INFO}
-array - it is included in the \ac{PMIx} Standard for historical reasons.
+Maximum number of process that can be simultaneously executing in 
+a session. Note that this attribute is equivalent to
+the \refattr{PMIX_MAX_PROCS} attribute for the \refterm{session} realm - it 
+is included in the \ac{PMIx} Standard for historical reasons.
 }
 %
 \declareAttribute{PMIX_TMPDIR}{"pmix.tmpdir"}{char*}{
@@ -119,6 +119,10 @@ Full path to the top-level temporary directory assigned to the session.
 %
 \declareAttribute{PMIX_TDIR_RMCLEAN}{"pmix.tdir.rmclean"}{bool}{
 Resource Manager will cleanup assigned temporary directory trees.
+}
+%
+\declareAttributeNEW{PMIX_HOSTNAME_KEEP_FQDN}{"pmix.fqdn"}{bool}{
+\acp{FQDN} are being retained by the \ac{PMIx} library.
 }
 
 \vspace{\baselineskip}
@@ -139,44 +143,44 @@ String name of the \ac{RM}.
 The remaining session-related information can only be retrieved by including the \refattr{PMIX_SESSION_INFO} attribute in the \refarg{info} array passed to \refapi{PMIx_Get}:
 
 \declareAttribute{PMIX_ALLOCATED_NODELIST}{"pmix.alist"}{char*}{
-Comma-delimited list or regular expression of all nodes in the specified realm regardless of whether or not they currently host processes.
+Comma-delimited list or regular expression of all nodes in the specified realm regardless of whether or not they currently host processes. Defaults to the \refterm{job} realm.
 }
 %
 \declareAttributeNEW{PMIX_NUM_ALLOCATED_NODES}{"pmix.num.anodes"}{uint32_t}{
-Number of nodes in the specified realm regardless of whether or not they currently host processes.
+Number of nodes in the specified realm regardless of whether or not they currently host processes. Defaults to the \refterm{job} realm.
 }
 %
 \declareAttribute{PMIX_MAX_PROCS}{"pmix.max.size"}{uint32_t}{
 Maximum number of processes that can be executed in the specified realm.
 Typically, this is a constraint imposed by a scheduler or by user settings in a
-hostfile or other resource description.
+hostfile or other resource description. Defaults to the \refterm{job} realm.
 }
 %
 \declareAttribute{PMIX_NODE_LIST}{"pmix.nlist"}{char*}{
-Comma-delimited list of nodes currently hosting processes in the specified realm.
+Comma-delimited list of nodes currently hosting processes in the specified realm. Defaults to the \refterm{job} realm.
 }
 %
 \declareAttribute{PMIX_NUM_SLOTS}{"pmix.num.slots"}{uint32_t}{
-Number of slots allocated in the specified realm. Note that this attribute is
+Maximum number of processes that can simultaneously be executing in the specified realm. Note that this attribute is
 the equivalent to \refattr{PMIX_MAX_PROCS} -
-it is included in the \ac{PMIx} Standard for historical reasons.
+it is included in the \ac{PMIx} Standard for historical reasons. Defaults to the \refterm{job} realm.
 }
 %
 \declareAttributeNEW{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
-Number of nodes currently hosting processes in the specified realm.
+Number of nodes currently hosting processes in the specified realm. Defaults to the \refterm{job} realm.
 }
 
 %
 \declareAttribute{PMIX_NODE_MAP}{"pmix.nmap"}{char*}{
-Regular expression of nodes currently hosting processes in the specified realm - see \ref{cptr:api_server:noderegex} for an explanation of its generation.
+Regular expression of nodes currently hosting processes in the specified realm - see \ref{cptr:api_server:noderegex} for an explanation of its generation. Defaults to the \refterm{job} realm.
 }
 %
 \declareAttribute{PMIX_PROC_MAP}{"pmix.pmap"}{char*}{
-Regular expression describing processes on each node in the specified realm - see \ref{cptr:api_server:ppnregex} for an explanation of its generation.
+Regular expression describing processes on each node in the specified realm - see \ref{cptr:api_server:ppnregex} for an explanation of its generation. Defaults to the \refterm{job} realm.
 }
 %
 \declareAttribute{PMIX_ANL_MAP}{"pmix.anlmap"}{char*}{
-Process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation.
+Process map equivalent to \refattr{PMIX_PROC_MAP} expressed in Argonne National Laboratory's PMI-1/PMI-2 notation. Defaults to the \refterm{job} realm.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -198,7 +202,7 @@ Job-level information includes the following attributes:
 
 %
 \declareAttribute{PMIX_NSPACE}{"pmix.nspace"}{char*}{
-Namespace of the job - may be a numerical value expressed as a string, but is often an alphanumeric string carrying information solely of use to the system.
+Namespace of the job - may be a numerical value expressed as a string, but is often an alphanumeric string carrying information solely of use to the system. Required to be unique within the scope of the host environment.
 }
 %
 \declareAttribute{PMIX_JOBID}{"pmix.jobid"}{char*}{
@@ -209,14 +213,13 @@ Job identifier assigned by the scheduler to the specified job - may be identical
 Starting global rank of the specified job.
 }
 %
-\pasteAttributeItemBegin{PMIX_MAX_PROCS}In this context, this is the maximum number of processes that can be executed in the specified job, which may be a subset of the number allocated to the overall session.
+\pasteAttributeItemBegin{PMIX_MAX_PROCS}In this context, this is the maximum number of processes that can be simultaneously executed in the specified job, which may be a subset of the number allocated to the overall session.
 \pasteAttributeItemEnd{}
 %
-\pasteAttributeItemBegin{PMIX_NUM_SLOTS}In this context, this is the number of
-slots assigned to the specified job, which may be a subset of the slots
+\pasteAttributeItemBegin{PMIX_NUM_SLOTS}In this context, this is the maximum number of
+process that can be simultaneously executing within the specified job, which may be a subset of the number
 allocated to the overall session. Jobs may reserve a subset of their assigned
-slots for dynamic operations such as \refapi{PMIx_Spawn} - i.e., not all slots
-may be occupied by executing processes from this job at a given point in time.
+maximum processes for dynamic operations such as \refapi{PMIx_Spawn}.
 \pasteAttributeItemEnd{}
 %
 \pasteAttributeItemBegin{PMIX_NUM_NODES}In this context, this is the number of
@@ -246,10 +249,6 @@ Command line used to execute the specified job (e.g., "mpirun -n 2 --map-by foo 
 %
 \declareAttribute{PMIX_NSDIR}{"pmix.nsdir"}{char*}{
 Full path to the temporary directory assigned to the specified job, under \refattr{PMIX_TMPDIR}.
-}
-%
-\declareAttribute{PMIX_LOCALLDR}{"pmix.lldr"}{pmix_rank_t}{
-Lowest rank within the specified job on the node (defaults to current node in absence of \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} qualifier).
 }
 %
 \declareAttribute{PMIX_JOB_SIZE}{"pmix.job.size"}{uint32_t}{
@@ -324,7 +323,6 @@ Type of mapping used to layout the application (e.g., \code{cyclic}).
 \declareAttribute{PMIX_APP_MAP_REGEX}{"pmix.apmap.regex"}{char*}{
 Regular expression describing the result of the process mapping.
 }
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Process realm attributes}
@@ -443,10 +441,6 @@ Name of the host, as returned by the \code{gethostname} utility or its equivalen
 Comma-delimited list of names by which the target node is known.
 }
 %
-\declareAttributeNEW{PMIX_HOSTNAME_KEEP_FQDN}{"pmix.fqdn"}{bool}{
-\acp{FQDN} are being retained by the \ac{PMIx} library.
-}
-%
 \declareAttribute{PMIX_NODEID}{"pmix.nodeid"}{uint32_t}{
 Node identifier expressed as the node's index (beginning at zero) in an array of nodes within the active session. The value must be unique and directly correlate to the \refattr{PMIX_HOSTNAME} of the node - i.e., users can interchangeably reference the same location using either the \refattr{PMIX_HOSTNAME} or corresponding \refattr{PMIX_NODEID}.
 }
@@ -470,6 +464,10 @@ Comma-delimited list of ranks that are executing on the local node within the sp
 %
 \declareAttribute{PMIX_LOCAL_PROCS}{"pmix.lprocs"}{pmix_proc_t array}{
 Array of \refstruct{pmix_proc_t} of all processes executing on the local node -- shortcut for \refapi{PMIx_Resolve_peers} for the local node and a \code{NULL} namespace argument. The process identifier is ignored for this attribute.
+}
+%
+\declareAttribute{PMIX_LOCALLDR}{"pmix.lldr"}{pmix_rank_t}{
+Lowest rank within the specified job on the node (defaults to current node in absence of \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} qualifier).
 }
 %
 \declareAttribute{PMIX_LOCAL_CPUSETS}{"pmix.lcpus"}{pmix_data_array_t}{

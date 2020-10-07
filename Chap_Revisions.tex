@@ -338,10 +338,11 @@ In addition to the reorganization, the following changes were introduced in v4.0
     \item Update description to provide an option for blocking behavior of the \refapi{PMIx_Register_event_handler}, \refapi{PMIx_Deregister_event_handler}, \refapi{PMIx_Notify_event}, \refapi{PMIx_IOF_pull}, \refapi{PMIx_IOF_deregister}, and \refapi{PMIx_IOF_push} APIs. The need for blocking forms of these functions was not initially anticipated but has emerged over time. For these functions, the return value is sufficient to provide the caller with information otherwise returned via callback. Thus, use of a \code{NULL} value as the callback function parameter was deemed a minimal disruption method for providing the desired capability
     \item Added a chapter on fabric support that includes new \acp{API}, datatypes, and attributes
     \item Added a chapter on process sets and groups that includes new \acp{API} and attributes
-    \item Added \acp{API} and a new datatype to support generation and parsing of \ac{PMIx} locality strings
+    \item Added \acp{API} and a new datatypes to support generation and parsing of \ac{PMIx} locality and cpuset strings
     \item Added a new chapter on tools that provides deeper explanation on their operation and collecting all tool-relevant definitions into one location. Also introduced two new \acp{API} and removed restriction that limited tools to being connected to only one server at a time.
     \item Extended behavior of \refapi{PMIx_server_init} to scalably expose the topology description to the local clients. This includes creating any required shared memory backing stores and/or \ac{XML} representations, plus ensuring that all necessary key-value pairs for clients to access the description are included in the job-level information provided to each client.
-\end{compactitemize}
+    \item Added a new \ac{API} by which the host can manually progress the \ac{PMIx} library in lieu of the library's own progress thread.
+s\end{compactitemize}
 
 The above changes included introduction of the following \acp{API} and data types:
 
@@ -362,6 +363,7 @@ The above changes included introduction of the following \acp{API} and data type
         \item \refapi{PMIx_Fabric_deregister}, \refapi{PMIx_Fabric_deregister_nb}
         \item \refapi{PMIx_Compute_distances}, \refapi{PMIx_Compute_distances_nb}
         \item \refapi{PMIx_Get_attribute_string}, \refapi{PMIx_Get_attribute_name}
+        \item \refapi{PMIx_Progress}
     \end{compactitemize}
 
     \item Server \acp{API}
@@ -588,6 +590,7 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_HOSTNAME_ALIASES}
 \pasteAttributeItem{PMIX_HOSTNAME_KEEP_FQDN}
 \pasteAttributeItem{PMIX_CPUSET_BITMAP}
+\pasteAttributeItem{PMIX_EXTERNAL_PROGRESS}
 %
 %
 \littleheader{Tool attributes}
@@ -991,6 +994,10 @@ Spawned processes will not call \refapi{PMIx_Init}.
 %
 \declareAttributeDEP{PMIX_ARCH}{"pmix.arch"}{uint32_t}{
 Architecture flag.
+}
+%
+\declareAttributeDEP{PMIX_EVENT_BASE}{"pmix.evbase"}{struct event_base *}{
+Pointer to libevent\footnote{\url{http://libevent.org/}} \code{event_base} to use in place of the internal progress thread.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

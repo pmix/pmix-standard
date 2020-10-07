@@ -311,6 +311,15 @@ The time in seconds before the \ac{RM} will execute the indicated operation.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Hybrid programming event attributes}
+\label{api:struct:attributes:hybrid}
+
+The following attributes may be used by programming models to coordinate their use of common resources within a process in conjunction with the \refconst{PMIX_OPENMP_PARALLEL_ENTERED} event:
+%
+\pasteAttributeItem{PMIX_MODEL_PHASE_NAME}
+\pasteAttributeItem{PMIX_MODEL_PHASE_TYPE}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Notification Function}
 \declareapi{pmix_notification_fn_t}
 
