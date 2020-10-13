@@ -34,8 +34,6 @@ The following terminology is used throughout this document:
 
 \item \declaretermAlt{clone}{clones} refers to a process that was directly started by a \ac{PMIx} client (e.g., using \emph{fork/exec}) and calls \refapi{PMIx_Init}, thus connecting to its local \ac{PMIx} server using the same namespace and rank as its parent process.
 
-\item \declaretermAlt{slot}{slots} refers to an allocated entry for a process. \acp{WLM} frequently allocate entire nodes to a \emph{session}, but can also be configured to define the maximum number of processes that can simultaneously be executed on each node. This often corresponds to the number of hardware \acp{PU} (typically cores, but can also be defined as hardware threads) on the node. However, the correlation between hardware \acp{PU} and slot allocations strictly depends upon system configuration.
-
 \item \declareterm{rank} refers to the numerical location (starting from zero) of a process within the defined scope. Thus, \emph{job rank} is the rank of a process within its \emph{job} and is synonymous with its unqualified \emph{rank}, while \emph{application rank} is the rank of that process within its \emph{application}.
 
 \item \declaretermAlt{peer}{peers} refers to another process within the same \refterm{job}.
