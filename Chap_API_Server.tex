@@ -106,6 +106,7 @@ server library is responsible for cleaning up any artifacts (e.g., shared
 memory backing files or cached key-value pairs) at library finalize.
 \pasteAttributeItemEnd{}
 \pasteAttributeItem{PMIX_SERVER_ENABLE_MONITORING}
+\pasteAttributeItem{PMIX_HOMOGENEOUS_SYSTEM}
 
 \optattrend
 
@@ -227,6 +228,10 @@ Server is supporting system scheduler and desires access to appropriate services
 %
 \declareAttributeNEW{PMIX_EXTERNAL_PROGRESS}{"pmix.evext"}{bool}{
 The host shall progress the \ac{PMIx} library via calls to \refapi{PMIx_Progress}
+}
+%
+\declareAttributeNEW{PMIX_HOMOGENEOUS_SYSTEM}{"pmix.homo"}{bool}{
+The nodes comprising the session are homogeneous - i.e., they each contain the same number of identical packages, fabric interfaces, \acp{GPU}, and other devices.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
