@@ -208,11 +208,9 @@ PMIx_Get(const pmix_proc_t *proc, const pmix_key_t key,
 Returns one of the following:
 
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} The requested data has been returned.
+\item \refconst{PMIX_SUCCESS} The requested data has been returned in the manner requested (i.e., in a provided static memory location )
+\item \refconst{PMIX_ERR_BAD_PARAM} A bad parameter was passed to the function call - e.g., the request included the \refattr{PMIX_GET_STATIC_VALUES} directive, but the provided storage location was \code{NULL}
 \item \refconst{PMIX_ERR_NOT_FOUND} The requested data was not available.
-\item \refconst{PMIX_ERR_GET_MALLOC_REQD} Indicating that the returned value
-involves dynamically allocated memory instead of pointing to a static location
-as requested (only applies if \refattr{PMIX_GET_STATIC_VALUES} was included in the request).
 \item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure.
 \end{itemize}
 
@@ -227,6 +225,7 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \pasteAttributeItem{PMIX_APP_INFO}
 \pasteAttributeItem{PMIX_NODE_INFO}
 \pasteAttributeItem{PMIX_GET_STATIC_VALUES}
+\pasteAttributeItem{PMIX_GET_POINTER_VALUES}
 
 \reqattrend
 
@@ -240,7 +239,13 @@ The following attributes are optional for host environments:
 %%%%
 \descr
 
-Retrieve information for the specified \refarg{key} associated with the process identified in the given \refstruct{pmix_proc_t}, returning a pointer to the \refstruct{pmix_value_t} containing the result in the given address. See Chapters \ref{chap:api_rsvd_keys} and \ref{chap:nrkeys} for details on rules governing retrieval of information.
+Retrieve information for the specified \refarg{key} associated with the process identified in the given \refstruct{pmix_proc_t}. See Chapters \ref{chap:api_rsvd_keys} and \ref{chap:nrkeys} for details on rules governing retrieval of information. Information will be returned according to provided directives:
+
+\begin{itemize}
+    \item In the absence of any directive, the returned \refstruct{pmix_value_t} shall be an allocated memory object. The caller is responsible for releasing the object when done.
+    \item If \refattr{PMIX_GET_POINTER_VALUES} is given, then the function shall return a pointer to a \refstruct{pmix_value_t} in the \ac{PMIx} library's memory that contains the requested information.
+    \item If \refattr{PMIX_GET_STATIC_VALUES} is given, then the function shall return the information in the provided \refstruct{pmix_value_t} pointer. In this case, the caller must provide storage for the structure and pass the pointer to that storage in the \refarg{val} parameter.
+\end{itemize}
 
 This is a blocking operation - the caller will block until the retrieval rules of Chapters \ref{chap:api_rsvd_keys} or \ref{chap:nrkeys} are met.
 
@@ -290,9 +295,6 @@ If executed, the status returned in the provided callback function will be one o
 \begin{itemize}
 \item \refconst{PMIX_SUCCESS} The requested data has been returned.
 \item \refconst{PMIX_ERR_NOT_FOUND} The requested data was not available.
-\item \refconst{PMIX_ERR_GET_MALLOC_REQD} Indicating that the returned value
-involves dynamically allocated memory instead of pointing to a static location
-as requested  (only applies if \refattr{PMIX_GET_STATIC_VALUES} was included in the request).
 \item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure.
 \end{itemize}
 
@@ -306,7 +308,7 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \pasteAttributeItem{PMIX_JOB_INFO}
 \pasteAttributeItem{PMIX_APP_INFO}
 \pasteAttributeItem{PMIX_NODE_INFO}
-\pasteAttributeItem{PMIX_GET_STATIC_VALUES}
+\pasteAttributeItem{PMIX_GET_POINTER_VALUES}
 \pasteAttributeItem{PMIX_GET_REFRESH_CACHE}
 
 \divider
@@ -328,20 +330,7 @@ The following attributes are optional for host environments that support this op
 \descr
 
 The callback function will be executed once the retrieval rules of Chapters \ref{chap:api_rsvd_keys} or \ref{chap:nrkeys} are met.
-See \refapi{PMIx_Get} for a full description.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Retrieval-specific constants}
-
-The following constants are defined for use by retrieval \acp{API}:
-
-\begin{constantdesc}
-%
-\declareconstitemNEW{PMIX_ERR_GET_MALLOC_REQD}
-The data returned by \refapi{PMIx_Get} contains values that include dynamic memory allocations (i.e., "malloc"), despite a request for static pointers to the values in the key-value store. User is responsible for releasing the memory when done with the information.
-%
-\end{constantdesc}
+See \refapi{PMIx_Get} for a full description. Note that the non-blocking form of this function cannot support the \refattr{PMIX_GET_STATIC_VALUES} attribute as the user cannot pass in the required pointer to storage for the result.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -359,8 +348,12 @@ Look only in the client's local data store for the requested value - do not requ
 Specified operation should immediately return an error from the \ac{PMIx} server if the requested data cannot be found - do not request it from the host \ac{RM}.
 }
 %
+\declareAttributeNEW{PMIX_GET_POINTER_VALUES}{"pmix.get.pntrs"}{bool}{
+Request that any pointers in the returned value point directly to values in the key-value store. The user \emph{must not} release any returned data pointers.
+}
+%
 \declareAttributeNEW{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
-Request that any pointers in the returned value point directly to values in the key-value store. The user \emph{must not} release any returned data pointers. Note that a return status of \refconst{PMIX_ERR_GET_MALLOC_REQD} indicates that direct pointers could not be supported - in which case, the returned data contains allocated memory that the user must release.
+Request that the data be returned in the provided storage location. The caller is responsible for destructing the \refstruct{pmix_value_t} using the \refmacro{PMIX_VALUE_DESTRUCT} macro when done.
 }
 %
 \declareAttributeNEW{PMIX_GET_REFRESH_CACHE}{"pmix.get.refresh"}{bool}{
@@ -523,6 +516,7 @@ The \refarg{info} array shall contain an element for each query key that returne
 \pasteAttributeItem{PMIX_JOB_INFO}
 \pasteAttributeItem{PMIX_APP_INFO}
 \pasteAttributeItem{PMIX_NODE_INFO}
+\pasteAttributeItem{PMIX_PROC_INFO}
 \pasteAttributeItemBegin{PMIX_PROCID}In this context, specifies the process ID whose information is being requested - e.g., a query asking for the \refstruct{pmix_proc_info_t} of a specified process. Only required when the request is for information on a specific process.
 \pasteAttributeItemEnd
 \pasteAttributeItemBegin{PMIX_NSPACE}Specifies the namespace of the process whose information is being requested. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
@@ -562,6 +556,11 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItemEnd
 \pasteAttributeItemBegin{PMIX_PROC_URI} Requests the URI of the specified \ac{PMIx} server's out-of-band connection. Defaults to requesting the information for the local \ac{PMIx} server.
 \pasteAttributeItemEnd
+\pasteAttributeItem{PMIX_CLIENT_AVG_MEMORY}
+\pasteAttributeItem{PMIX_DAEMON_MEMORY}
+\pasteAttributeItem{PMIX_QUERY_AUTHORIZATIONS}
+\pasteAttributeItem{PMIX_PROC_PID}
+\pasteAttributeItem{PMIX_PROC_STATE_STATUS}
 
 \optattrend
 
@@ -638,6 +637,7 @@ The \refarg{info} array shall contain an element for each query key that returne
 \pasteAttributeItem{PMIX_JOB_INFO}
 \pasteAttributeItem{PMIX_APP_INFO}
 \pasteAttributeItem{PMIX_NODE_INFO}
+\pasteAttributeItem{PMIX_PROC_INFO}
 \pasteAttributeItemBegin{PMIX_PROCID}In this context, specifies the process ID whose information is being requested - e.g., a query asking for the \refstruct{pmix_proc_info_t} of a specified process. Only required when the request is for information on a specific process.
 \pasteAttributeItemEnd
 \pasteAttributeItemBegin{PMIX_NSPACE}Specifies the namespace of the process whose information is being requested. Must be accompanied by the \refattr{PMIX_RANK} attribute. Only required when the request is for information on a specific process.
@@ -676,6 +676,11 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItemEnd
 \pasteAttributeItemBegin{PMIX_PROC_URI} Requests the URI of the specified \ac{PMIx} server's out-of-band connection. Defaults to requesting the information for the local \ac{PMIx} server.
 \pasteAttributeItemEnd
+\pasteAttributeItem{PMIX_CLIENT_AVG_MEMORY}
+\pasteAttributeItem{PMIX_DAEMON_MEMORY}
+\pasteAttributeItem{PMIX_QUERY_AUTHORIZATIONS}
+\pasteAttributeItem{PMIX_PROC_PID}
+\pasteAttributeItem{PMIX_PROC_STATE_STATUS}
 
 \optattrend
 

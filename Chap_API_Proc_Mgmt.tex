@@ -160,6 +160,9 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_ALLOC_FABRIC_PLANE}
 \pasteAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS}
 \pasteAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
+\pasteAttributeItem{PMIX_COSPAWN_APP}
+\pasteAttributeItem{PMIX_SPAWN_TOOL}
+\pasteAttributeItem{PMIX_EVENT_SILENT_TERMINATION}
 
 \optattrend
 
@@ -282,6 +285,9 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_ALLOC_FABRIC_PLANE}
 \pasteAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS}
 \pasteAttributeItem{PMIX_ALLOC_FABRIC_ENDPTS_NODE}
+\pasteAttributeItem{PMIX_COSPAWN_APP}
+\pasteAttributeItem{PMIX_SPAWN_TOOL}
+\pasteAttributeItem{PMIX_EVENT_SILENT_TERMINATION}
 
 \optattrend
 
@@ -1225,6 +1231,7 @@ PMIX_TOPOLOGY_FREE(m, n)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Relative locality of two processes}
 \declarestruct{pmix_locality_t}
+\label{api:proc:locality}
 
 \versionMarker{4.0}
 The \refstruct{pmix_locality_t} datatype is a \code{uint16_t} bitmask that
@@ -1358,6 +1365,7 @@ Obtain and set the appropriate \ac{PU} binding location information in the provi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Binding envelope}
 \declarestruct{pmix_bind_envelope_t}
+\label{api:proc:bindenv}
 
 \versionMarker{4.0}
 The \refstruct{pmix_bind_envelope_t} data type
@@ -1511,6 +1519,7 @@ The array of \refstruct{pmix_device_distance_t} will contain the distance inform
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Device type}
 \declarestruct{pmix_device_type_t}
+\label{api:proc:devtype}
 
 The \refstruct{pmix_device_type_t} is a \code{uint64_t} bitmask for identifying the type(s) whose distances are being requested, or the type of a specific device being referenced (e.g., in a \refstruct{pmix_device_distance_t} object).
 

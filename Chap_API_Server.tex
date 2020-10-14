@@ -93,7 +93,7 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemEnd{}
 \pasteAttributeItemBegin{PMIX_SERVER_REMOTE_CONNECTIONS} If the library supports connections from remote tools, this attribute may be supported for enabling or disabling it.
 \pasteAttributeItemEnd{}
-\pasteAttributeItem{PMIX_EVENT_BASE}
+\pasteAttributeItem{PMIX_EXTERNAL_PROGRESS}
 \pasteAttributeItem{PMIX_TOPOLOGY2}
 \pasteAttributeItemBegin{PMIX_SERVER_SHARE_TOPOLOGY}The \ac{PMIx} server will
 perform the necessary actions to scalably expose the description to the local
@@ -106,6 +106,7 @@ server library is responsible for cleaning up any artifacts (e.g., shared
 memory backing files or cached key-value pairs) at library finalize.
 \pasteAttributeItemEnd{}
 \pasteAttributeItem{PMIX_SERVER_ENABLE_MONITORING}
+\pasteAttributeItem{PMIX_HOMOGENEOUS_SYSTEM}
 
 \optattrend
 
@@ -224,8 +225,13 @@ Server is acting as a gateway for PMIx requests that cannot be serviced on backe
 Server is supporting system scheduler and desires access to appropriate services.
 }
 %
-\declareAttribute{PMIX_EVENT_BASE}{"pmix.evbase"}{struct event_base *}{
-Pointer to libevent\footnote{\url{http://libevent.org/}} \code{event_base} to use in place of the internal progress thread.
+%
+\declareAttributeNEW{PMIX_EXTERNAL_PROGRESS}{"pmix.evext"}{bool}{
+The host shall progress the \ac{PMIx} library via calls to \refapi{PMIx_Progress}
+}
+%
+\declareAttributeNEW{PMIX_HOMOGENEOUS_SYSTEM}{"pmix.homo"}{bool}{
+The nodes comprising the session are homogeneous - i.e., they each contain the same number of identical packages, fabric interfaces, \acp{GPU}, and other devices.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -383,6 +389,12 @@ plus the following optional information:
     \item \pasteAttributeItemBegin{PMIX_CLUSTER_ID}As this information is not related to the namespace, it is best passed using the \refapi{PMIx_server_register_resources} \ac{API}.
     \pasteAttributeItemEnd
     \item \pasteAttributeItem{PMIX_ALLOCATED_NODELIST}
+    \item \pasteAttributeItemBegin{PMIX_RM_NAME}As this information is not related to the namespace, it is best passed using the \refapi{PMIx_server_register_resources} \ac{API}.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItemBegin{PMIX_RM_VERSION}As this information is not related to the namespace, it is best passed using the \refapi{PMIx_server_register_resources} \ac{API}.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItemBegin{PMIX_SERVER_HOSTNAME}As this information is not related to the namespace, it is best passed using the \refapi{PMIx_server_register_resources} \ac{API}.
+    \pasteAttributeItemEnd
 \end{itemize}
 
 Job-realm information may be passed as individual \refstruct{pmix_info_t} entries, or as part of a \refstruct{pmix_data_array_t} using the \refattr{PMIX_JOB_INFO_ARRAY} attribute. The list of data referenced in this way shall include:
@@ -413,6 +425,8 @@ plus the following optional information:
     \item \pasteAttributeItem{PMIX_BINDTO}
     \item \pasteAttributeItem{PMIX_HOSTNAME_KEEP_FQDN}
     \item \pasteAttributeItem{PMIX_ANL_MAP}
+    \item \pasteAttributeItem{PMIX_TDIR_RMCLEAN}
+    \item \pasteAttributeItem{PMIX_CRYPTO_KEY}
 \end{itemize}
 
 If more than one application is included in the namespace, then the host environment is also required to supply data consisting of the following items for each application in the job, passed as a \refstruct{pmix_data_array_t} using the \refattr{PMIX_APP_INFO_ARRAY} attribute:
@@ -434,6 +448,10 @@ plus the following optional information:
 
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_PSET_NAMES}
+    \item \pasteAttributeItemBegin{PMIX_APP_MAP_TYPE}This attribute may be provided as an individual \refstruct{pmix_info_t} entry if only one application is included in the namespace.
+    \pasteAttributeItemEnd
+    \item \pasteAttributeItemBegin{PMIX_APP_MAP_REGEX}This attribute may be provided as an individual \refstruct{pmix_info_t} entry if only one application is included in the namespace.
+    \pasteAttributeItemEnd
 \end{itemize}
 
 The data may also include attributes provided by the host environment that identify the programming model (as specified by the user) being executed within the application. The \ac{PMIx} server library may utilize this information to customize the environment to fit that model (e.g., adding environmental variables specified by the corresponding standard for that model):
@@ -2470,6 +2488,11 @@ Returns one of the following:
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass any provided attributes to the host environment for processing.
+
+All host environments are required to support the following attributes:
+
+\pasteAttributeItem{PMIX_REQUIRED_KEY}
+
 \reqattrend
 
 \optattrstart

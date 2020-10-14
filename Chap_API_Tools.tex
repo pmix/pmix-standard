@@ -564,6 +564,7 @@ Scalable forwarding of \code{stdin} represents a significant challenge. Most env
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{IO Forwarding Channels}
 \declarestruct{pmix_iof_channel_t}
+\label{api:tool:iofchannels}
 
 \versionMarker{3.0}
 The \refstruct{pmix_iof_channel_t} structure is a \code{uint16_t} type that defines a set of bit-mask flags for specifying IO forwarding channels. These can be bitwise OR'd together to reference multiple channels.
@@ -1116,7 +1117,7 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemEnd{}
 \pasteAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
 \pasteAttributeItemEnd{}
-\pasteAttributeItem{PMIX_EVENT_BASE}
+\pasteAttributeItem{PMIX_EXTERNAL_PROGRESS}
 
 \optattrend
 
