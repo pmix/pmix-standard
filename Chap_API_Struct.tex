@@ -280,6 +280,24 @@ PMIX_CHECK_KEY(a, b)
 
 Returns \code{true} if the key matches the given value
 
+\littleheader{Check reserved key macro}
+\declaremacro{PMIX_CHECK_RESERVED_KEY}
+
+Check if the given key is a \ac{PMIx} \emph{reserved} key as described in Chapter \ref{chap:api_rsvd_keys}.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_CHECK_RESERVED_KEY(a)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{a}{String value to be checked (\code{char*})}
+\end{arglist}
+
+Returns \code{true} if the key is reserved by the Standard.
+
 \littleheader{Load key macro}
 \declaremacro{PMIX_LOAD_KEY}
 
