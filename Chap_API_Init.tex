@@ -126,6 +126,10 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
 \pasteAttributeItemEnd{}
 \pasteAttributeItem{PMIX_EXTERNAL_PROGRESS}
+%
+\declareAttribute{PMIX_EVENT_BASE}{"pmix.evbase"}{void*}{
+Pointer to an \code{event_base} to use in place of the internal progress thread. All \ac{PMIx} library events are to be assigned to the provided event base. The event base \emph{must} be compatible with the event library used by the \ac{PMIx} implementation - e.g., either both the host and \ac{PMIx} library must use libevent, or both must use libev. Cross-matches are unlikely to work and should be avoided - it is the responsibility of the host to ensure that the \ac{PMIx} implementation supports (and was built with) the appropriate event library.
+}
 
 \vspace{\baselineskip}
 If provided, the following attributes are used by the event notification system for inter-library coordination:
