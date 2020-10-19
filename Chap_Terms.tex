@@ -30,12 +30,12 @@ Historically, \ac{HPC} sessions have consisted of a static allocation of resourc
 
 \item \declareterm{job} refers to a set of one or more \emph{applications} executed as a single invocation by the user within a session with a unique identifier, the \emph{job ID}, assigned by the \ac{RM} or launcher. For example, the command line ``\textit{mpiexec -n 1 app1 : -n 2 app2}'' generates a single \ac{MPMD} job containing two applications. A user may execute multiple \emph{jobs} within a given session, either sequentially or concurrently.
 
-\item \declareterm{namespace} refers to a character string value assigned by the \ac{RM} to a \textit{job}.  The requester of the \textit{job} (e.g., \code{mpiexec} or a \ac{PMIx} client) may request a specific \emph{namespace} value.  All \textit{applications} executed as part of that \textit{job} share the same \emph{namespace}. The \emph{namespace} assigned to each \emph{job} must be unique within the scope of the governing \ac{RM} and often is implemented as a string representation of the numerical emph{Job ID}. The \emph{namespace} and \emph{job} terms will be used interchangeably throughout the document.
+\item \declareterm{namespace} refers to a character string value assigned by the \ac{RM} to a \textit{job}.  All \textit{applications} executed as part of that \textit{job} share the same \emph{namespace}. The \emph{namespace} assigned to each \emph{job} must be unique within the scope of the governing \ac{RM} and often is implemented as a string representation of the numerical emph{Job ID}. The \emph{namespace} and \emph{job} terms will be used interchangeably throughout the document.
 
 \item \declareterm{application} represents a set of identical, but not necessarily unique,
 execution contexts within a \emph{job}.
 
-\item \declareterm{process} refers to an operating system process, also commonly referred to as a \emph{heavyweight} process. A process is often comprised of multiple \emph{lightweight threads}, commonly known as simply \declaretermAlt{threads}{thread}.
+\item \declareterm{process} is assumed for ease of presentation to be an operating system process, also commonly referred to as a \emph{heavyweight} process. A process is often comprised of multiple \emph{lightweight threads}, commonly known as simply \declaretermAlt{threads}{thread}.  However, it is not the intent of the \ac{PMIx} Standard to restrict the term process to a particular concept or implementation.
 
 \item \declaretermAlt{client}{clients} refers to a process that was registered with the \ac{PMIx} server prior to being started, and connects to that \ac{PMIx} server via \refapi{PMIx_Init} using its assigned namespace and rank with the information required to connect to that server being provided to the process at time of start of execution.
 
@@ -134,8 +134,9 @@ The following terms will be taken to mean:
 The \ac{PMIx} standard has adopted the following conventions:
 
 \begin{itemize}
-\item \ac{PMIx} constants and attributes are prefixed with \textbf{\code{PMIX_}}.
-\item Structures and type definitions are prefixed with \code{pmix_}.
+\item \ac{PMIx} constants and attributes are prefixed with \textbf{\code{"PMIX_"}}.
+\item Structures and type definitions are prefixed with \code{"pmix_"}.
+\item The string representation of attributes are prefixed with \code{"pmix"}.
 \item Underscores are used to separate words in a function or variable name.
 \item Lowercase letters are used in \ac{PMIx} client \acp{API} except for the \ac{PMIx} prefix (noted below) and the first letter of the word following it.
 For example, \refapi{PMIx_Get_version}.
