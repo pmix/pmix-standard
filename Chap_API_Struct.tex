@@ -124,6 +124,9 @@ General Error.
 Requested operation would overwrite an existing value - typically returned
 when an operation would overwrite an existing file or directory.
 %
+\declareconstitemNEW{PMIX_ERR_EXISTS_OUTSIDE_SCOPE}
+The requested key exists, but was posted in a \emph{scope} (see Section \ref{api:nres:scope}) that does not include the requester
+%
 \declareconstitem{PMIX_ERR_INVALID_CRED}
 Invalid security credentials.
 %
