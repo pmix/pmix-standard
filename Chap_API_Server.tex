@@ -652,13 +652,21 @@ rc = PMIx_generate_regex(nodelist, &regex);
 free(nodelist);
 
 /* pass the regex as the value to the PMIX_NODE_MAP key */
-PMIX_INFO_LOAD(&info, PMIX_NODE_MAP, regex, PMIX_STRING);
+PMIX_INFO_LOAD(&info, PMIX_NODE_MAP, regex, PMIX_REGEX);
 /* release the regex */
 free(regex);
 \end{codepar}
 \cspecificend
 
-Changing the filter criteria allows the construction of node maps for any level of information.
+Changing the filter criteria allows the construction of node maps for any level of information. The returned regular expression shall start with a string identifier of the method used to generate the expression. This is followed by a colon (':') delimiter and then the regular expression itself. The following identifiers are reserved by the Standard:
+
+\begin{itemize}
+    \item \emph{raw} - indicates that the expression is simply the comma-delimited input string (no processing was performed)
+    \item \emph{native} - a \ac{PMIx}-unique regular expression generator and parser
+    \item \emph{compress} - a compressed format based on the zlib compression package
+\end{itemize}
+
+Note that the regular expression itself is not required to be a printable string nor to obey typical string constraints (e.g., include a \code{NULL} terminator byte).
 
 \label{cptr:api_server:ppnregex}A similar method is used to construct the map of processes on each node from the namespace being registered. This may be done for each information level of interest (e.g., to identify the process map for the entire \refterm{job} or for each \refterm{application} in the job) by changing the search criteria. An example is shown below for the case of creating the process map for a \refterm{job}:
 
@@ -709,7 +717,7 @@ rc = PMIx_generate_ppn(ppn, &regex);
 free(ppn);
 
 /* pass the regex as the value to the PMIX_PROC_MAP key */
-PMIX_INFO_LOAD(&info, PMIX_PROC_MAP, regex, PMIX_STRING);
+PMIX_INFO_LOAD(&info, PMIX_PROC_MAP, regex, PMIX_REGEX);
 /* release the regex */
 free(regex);
 \end{codepar}
@@ -1252,6 +1260,8 @@ Returns one of the following:
 
 \pasteAttributeItem{PMIX_ALLOC_BANDWIDTH}
 \pasteAttributeItem{PMIX_ALLOC_FABRIC_QOS}
+\pasteAttributeItemBegin{PMIX_SESSION_INFO}In this context, indicates that the information provided in the \refattr{PMIX_NODE_MAP} is for the entire session and not just the indicated namespace. Thus, subsequent calls to this \ac{API} may omit node-level information - e.g., the library may not need to include information on the devices on each node in a subsequent call.
+\pasteAttributeItemEnd
 
 The following optional attributes may be provided by the host environment to identify the programming model (as specified by the user) being executed within the application. The \ac{PMIx} server library may utilize this information to harvest/forward model-specific environmental variables, record the programming model associated with the application, etc.
 
@@ -1619,6 +1629,8 @@ Provide a function by which the local \ac{PMIx} server can perform any applicati
 
 \advicermstart
 Host environments are required to execute this operation prior to starting any local application processes from the specified namespace if information was obtained from a call to \refapi{PMIx_server_setup_application}.
+
+Host environments must register the \refarg{nspace} using \refapi{PMIx_server_register_nspace} prior to calling this \ac{API} to ensure that all namespace-related information required to support this function is available to the library. This eliminates the need to include any of the registration information in the \refarg{info} array passed to this \ac{API}.
 \advicermend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2515,8 +2527,8 @@ The directives are optional unless the \emph{mandatory} flag has been set - in s
 \subsubsection{Dmodex attributes}
 
 %
-\declareAttribute{PMIX_REQUIRED_KEY}{"pmix.req.key"}{char*}{
-Key the user needs prior to responding from a dmodex request.
+\declareAttributeNEW{PMIX_REQUIRED_KEY}{"pmix.req.key"}{char*}{
+Identifies a key that must be included in the requested information. If the specified key is not already available, then the \ac{PMIx} servers are required to delay response to the dmodex request until either the key becomes available or the request times out.
 }
 
 
