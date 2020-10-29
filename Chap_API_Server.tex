@@ -278,7 +278,7 @@ Given a comma-separated list of \refarg{input} values, generate a reduced size r
 \begin{itemize}
     \item \code{"raw:\textbackslash0"} - indicates that the expression following the identifier is simply the comma-delimited input string (no processing was performed).
     \item \code{"pmix:\textbackslash0"} - a \ac{PMIx}-unique regular expression represented as a \code{NULL}-terminated string following the identifier.
-    \item \code{"blob:\textbackslash0"} - a compressed binary array format based on the \emph{zlib} compression package, with the size encoded in the space immediately following the identifier.
+    \item \code{"blob:\textbackslash0"} - a \ac{PMIx}-unique regular expression that is not represented as a \code{NULL}-terminated string following the identifier. Additional implementation-specific metadata may follow the identifier along with the data itself. For example, a compressed binary array format based on the \emph{zlib} compression package, with the size encoded in the space immediately following the identifier.
 \end{itemize}
 
 Communicating the resulting output should be done by first packing the returned expression using the \refapi{PMIx_Data_pack}, declaring the input to be of type \refconst{PMIX_REGEX}, and then obtaining the resulting blob to be communicated using the \refmacro{PMIX_DATA_BUFFER_UNLOAD} macro. The reciprocal method can be used on the remote end prior to passing the regex into \refapi{PMIx_server_register_nspace}. The pack/unpack routines will ensure proper handling of the data based on the regex prefix.
