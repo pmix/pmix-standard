@@ -273,13 +273,15 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 
 Given a comma-separated list of \refarg{input} values, generate a reduced size representation of the input that can be passed down to the \ac{PMIx} server library's \refapi{PMIx_server_register_nspace} \ac{API} for parsing. The order of the individual values in the \refarg{input} string is preserved across the operation. The caller is responsible for releasing the returned data.
 
-The precise compressed representations will be implementation specific. However, all \ac{PMIx} implementations are required to include a \code{NULL}-terminated string in the output representation that can be printed for diagnostic purposes.
+\label{regex:fmt}The precise compressed representations will be implementation specific. The regular expression itself is not required to be a printable string nor to obey typical string constraints (e.g., include a \code{NULL} terminator byte). However, all \ac{PMIx} implementations are required to include a colon-delimited \code{NULL}-terminated string at the beginning of the output representation that can be printed for diagnostic purposes and identifies the method used to generate the representation. The following identifiers are reserved by the Standard:
 
-\advicermstart
-The returned representation may be an arbitrary array of bytes as opposed to a valid \code{NULL}-terminated string. However, the method used to generate the representation shall be identified with a colon-delimited string at the beginning of the output. For example, an output starting with \code{"pmix:\textbackslash0"} might indicate that the representation is a \ac{PMIx}-defined regular expression represented as a \code{NULL}-terminated string following the \code{"pmix:\textbackslash0"} prefix. In contrast, an output starting with \code{"blob:\textbackslash0"} might indicate a compressed binary array follows the prefix.
+\begin{itemize}
+    \item \code{"raw:\textbackslash0"} - indicates that the expression following the identifier is simply the comma-delimited input string (no processing was performed).
+    \item \code{"pmix:\textbackslash0"} - a \ac{PMIx}-unique regular expression represented as a \code{NULL}-terminated string following the identifier.
+    \item \code{"blob:\textbackslash0"} - a compressed binary array format based on the \emph{zlib} compression package, with the size encoded in the space immediately following the identifier.
+\end{itemize}
 
 Communicating the resulting output should be done by first packing the returned expression using the \refapi{PMIx_Data_pack}, declaring the input to be of type \refconst{PMIX_REGEX}, and then obtaining the resulting blob to be communicated using the \refmacro{PMIX_DATA_BUFFER_UNLOAD} macro. The reciprocal method can be used on the remote end prior to passing the regex into \refapi{PMIx_server_register_nspace}. The pack/unpack routines will ensure proper handling of the data based on the regex prefix.
-\advicermend
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -314,11 +316,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 
 The input shall consist of a semicolon-separated list of ranges representing the ranks of processes on each node of the job - e.g., \code{"1-4;2-5;8,10,11,12;6,7,9"}. Each field of the input must correspond to the node name provided at that position in the input to \refapi{PMIx_generate_regex}. Thus, in the example, ranks 1-4 would be located on the first node of the comma-separated list of names provided to \refapi{PMIx_generate_regex}, and ranks 2-5 would be on the second name in the list.
 
-\advicermstart
-The returned representation may be an arbitrary array of bytes as opposed to a valid \code{NULL}-terminated string. However, the method used to generate the representation shall be identified with a colon-delimited string at the beginning of the output. For example, an output starting with \code{"pmix:"} indicates that the representation is a \ac{PMIx}-defined regular expression represented as a \code{NULL}-terminated string. In contrast, an output starting with \code{"blob:\textbackslash0size=1234:"} is a compressed binary array.
-
-Communicating the resulting output should be done by first packing the returned expression using the \refapi{PMIx_Data_pack}, declaring the input to be of type \refconst{PMIX_REGEX}, and then obtaining the blob to be communicated using the \refmacro{PMIX_DATA_BUFFER_UNLOAD} macro. The pack/unpack routines will ensure proper handling of the data based on the regex prefix.
-\advicermend
+Rules governing the format of the returned regular expression are the same as those specified for \refapi{PMIx_generate_regex}, as detailed \hyperref[regex:fmt]{here}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_register_nspace}}
@@ -658,15 +656,7 @@ free(regex);
 \end{codepar}
 \cspecificend
 
-Changing the filter criteria allows the construction of node maps for any level of information. The returned regular expression shall start with a string identifier of the method used to generate the expression. This is followed by a colon (':') delimiter and then the regular expression itself. The following identifiers are reserved by the Standard:
-
-\begin{itemize}
-    \item \emph{raw} - indicates that the expression is simply the comma-delimited input string (no processing was performed)
-    \item \emph{native} - a \ac{PMIx}-unique regular expression generator and parser
-    \item \emph{compress} - a compressed format based on the zlib compression package
-\end{itemize}
-
-Note that the regular expression itself is not required to be a printable string nor to obey typical string constraints (e.g., include a \code{NULL} terminator byte).
+Changing the filter criteria allows the construction of node maps for any level of information. A description of the returned regular expression is provided \hyperref[regex:fmt]{here}.
 
 \label{cptr:api_server:ppnregex}A similar method is used to construct the map of processes on each node from the namespace being registered. This may be done for each information level of interest (e.g., to identify the process map for the entire \refterm{job} or for each \refterm{application} in the job) by changing the search criteria. An example is shown below for the case of creating the process map for a \refterm{job}:
 
