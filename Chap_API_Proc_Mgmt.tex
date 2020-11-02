@@ -1281,10 +1281,6 @@ Implementers and vendors may choose to extend these definitions as needed to des
 \subsubsection{Locality keys}
 
 %
-\declareAttributeNEW{PMIX_LOCALITY}{"pmix.loc"}{pmix_locality_t}{
-Bitmask describing the location of the referenced process.
-}
-%
 \declareAttribute{PMIX_LOCALITY_STRING}{"pmix.locstr"}{char*}{
 String describing a process's bound location - referenced using the process's
 rank. The string is prefixed by the implementation that created it (e.g.,
