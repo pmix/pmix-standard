@@ -16,6 +16,8 @@ if __name__ == "__main__":
     std_structs = {}
     std_apis = {}
     std_all_refs = {}
+    std_deprecated = {}
+    std_removed = {}
 
     #
     # Command line parsing
@@ -55,6 +57,21 @@ if __name__ == "__main__":
 
             # Count will return to 0 when verified
             value = m.group(1)
+
+            # Check for deprecated and removed identifiers
+            m = re.search(r"Deprecated", line)
+            if m is not None:
+                if value in std_deprecated:
+                    std_deprecated[value] = std_deprecated[value] + 1
+                else:
+                    std_deprecated[value] = 1
+            m = re.search(r"Removed", line)
+            if m is not None:
+                if value in std_removed:
+                    std_removed[value] = std_removed[value] + 1
+                else:
+                    std_removed[value] = 1
+                
             #print("Found \""+ref_str+"\" : "+value+" on line " + line)
             std_all_refs[value] = -1
             if ref_str == "attr":
@@ -89,7 +106,15 @@ if __name__ == "__main__":
     return_count = 0
     for val in std_attributes:
         if std_attributes[val] > 1:
-            print("Error: " + val + " declared " + str(std_attributes[val]) + " times")
+            # Look for deprecation and removal (2 references)
+            if std_attributes[val] == 2:
+                if val in std_deprecated and val in std_removed:
+                    # Skip this since it was marked as deprecated and removed
+                    continue
+            if val in std_deprecated:
+                print("Deprecated: " + val + " declared " + str(std_attributes[val]) + " times (Deprecated in " + str(std_deprecated[val]) + " of those declarations)")
+            else:
+                print("Error: " + val + " declared " + str(std_attributes[val]) + " times")
             return_count += 1
     for val in std_consts:
         if std_consts[val] > 1:
