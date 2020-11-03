@@ -41,12 +41,12 @@ if __name__ == "__main__":
         # subsection.A is Appendix A: Python Bindings
         p = subprocess.Popen("grep \"newlabel{"+ref_str+"\" pmix-standard.aux | grep -v subsection.A",
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
-        p.wait()
+        sout = p.communicate()[0].decode("utf-8").splitlines()
         if p.returncode != 0:
             print("Error: Failed to extract declared \""+ref_str+"\". grep error code "+str(p.returncode)+")");
             sys.exit(2)
 
-        for line in p.stdout:
+        for line in sout:
             line = line.rstrip()
             m = re.match(r"\s*\\newlabel{"+ re.escape(ref_str) + r":(\w+)", line)
             if m is None:
@@ -102,6 +102,7 @@ if __name__ == "__main__":
             else:
                 print("Error: Failed to classify the attribute: "+value)
                 sys.exit(1)
+        p.wait()
 
     return_count = 0
     for val in std_attributes:
