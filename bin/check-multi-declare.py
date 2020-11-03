@@ -34,9 +34,9 @@ if __name__ == "__main__":
     all_ref_strs = ["attr", "const", "struct", "macro", "apifn"]
     for ref_str in all_ref_strs:
         if args.verbose is True:
-            print "-"*50
-            print "Extracting Standard: \""+ref_str+"\""
-            print "-"*50
+            print("-"*50)
+            print("Extracting Standard: \""+ref_str+"\"")
+            print("-"*50)
 
         # subsection.A is Appendix A: Python Bindings
         p = subprocess.Popen("grep \"newlabel{"+ref_str+"\" pmix-standard.aux | grep -v subsection.A",
@@ -133,8 +133,8 @@ if __name__ == "__main__":
             print("Error: " + val + " declared " + str(std_apis[val]) + " times")
             return_count += 1
 
-    print("-"*50)
     if return_count > 0:
+        print("-"*50)
         print("Found %d number of multiple declares" % (return_count))
     else:
         print("Success. No multiple declares detected!")
