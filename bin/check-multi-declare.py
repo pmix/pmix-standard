@@ -16,6 +16,8 @@ if __name__ == "__main__":
     std_structs = {}
     std_apis = {}
     std_all_refs = {}
+    std_deprecated = {}
+    std_removed = {}
 
     #
     # Command line parsing
@@ -32,19 +34,19 @@ if __name__ == "__main__":
     all_ref_strs = ["attr", "const", "struct", "macro", "apifn"]
     for ref_str in all_ref_strs:
         if args.verbose is True:
-            print "-"*50
-            print "Extracting Standard: \""+ref_str+"\""
-            print "-"*50
+            print("-"*50)
+            print("Extracting Standard: \""+ref_str+"\"")
+            print("-"*50)
 
         # subsection.A is Appendix A: Python Bindings
         p = subprocess.Popen("grep \"newlabel{"+ref_str+"\" pmix-standard.aux | grep -v subsection.A",
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
-        p.wait()
+        sout = p.communicate()[0].decode("utf-8").splitlines()
         if p.returncode != 0:
             print("Error: Failed to extract declared \""+ref_str+"\". grep error code "+str(p.returncode)+")");
             sys.exit(2)
 
-        for line in p.stdout:
+        for line in sout:
             line = line.rstrip()
             m = re.match(r"\s*\\newlabel{"+ re.escape(ref_str) + r":(\w+)", line)
             if m is None:
@@ -55,6 +57,21 @@ if __name__ == "__main__":
 
             # Count will return to 0 when verified
             value = m.group(1)
+
+            # Check for deprecated and removed identifiers
+            m = re.search(r"Deprecated", line)
+            if m is not None:
+                if value in std_deprecated:
+                    std_deprecated[value] = std_deprecated[value] + 1
+                else:
+                    std_deprecated[value] = 1
+            m = re.search(r"Removed", line)
+            if m is not None:
+                if value in std_removed:
+                    std_removed[value] = std_removed[value] + 1
+                else:
+                    std_removed[value] = 1
+                
             #print("Found \""+ref_str+"\" : "+value+" on line " + line)
             std_all_refs[value] = -1
             if ref_str == "attr":
@@ -85,11 +102,20 @@ if __name__ == "__main__":
             else:
                 print("Error: Failed to classify the attribute: "+value)
                 sys.exit(1)
+        p.wait()
 
     return_count = 0
     for val in std_attributes:
         if std_attributes[val] > 1:
-            print("Error: " + val + " declared " + str(std_attributes[val]) + " times")
+            # Look for deprecation and removal (2 references)
+            if std_attributes[val] == 2:
+                if val in std_deprecated and val in std_removed:
+                    # Skip this since it was marked as deprecated and removed
+                    continue
+            if val in std_deprecated:
+                print("Deprecated: " + val + " declared " + str(std_attributes[val]) + " times (Deprecated in " + str(std_deprecated[val]) + " of those declarations)")
+            else:
+                print("Error: " + val + " declared " + str(std_attributes[val]) + " times")
             return_count += 1
     for val in std_consts:
         if std_consts[val] > 1:
@@ -108,8 +134,8 @@ if __name__ == "__main__":
             print("Error: " + val + " declared " + str(std_apis[val]) + " times")
             return_count += 1
 
-    print("-"*50)
     if return_count > 0:
+        print("-"*50)
         print("Found %d number of multiple declares" % (return_count))
     else:
         print("Success. No multiple declares detected!")

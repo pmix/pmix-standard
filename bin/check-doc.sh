@@ -18,7 +18,7 @@ else
 fi
 
 #
-# Check for Acronym used but not defined
+# Check for missing cross references
 #
 echo "====> Checking Cross References"
 grep "Warning: Reference" pmix-standard.log | grep "undefined"
@@ -41,6 +41,31 @@ else
     echo "====> Passed"
 fi
 
+#
+# Check for multiple declarations
+#
+echo "====> Checking Multiple Declarations"
+./bin/check-multi-declare.py 2>/dev/null 1>/dev/null
+if [ $? == 0 ] ; then
+    echo "====> Passed"
+else
+    ./bin/check-multi-declare.py
+    echo "====> Error check references (above)"
+    FINAL_STATUS=$((FINAL_STATUS+1))
+fi
+
+#
+# Check for attribute references
+#
+echo "====> Checking Attributes are both declared and referenced"
+./bin/check-attr-refs.py 2>/dev/null 1>/dev/null
+if [ $? == 0 ] ; then
+    echo "====> Passed"
+else
+    ./bin/check-attr-refs.py
+    echo "====> Error check references (above)"
+    FINAL_STATUS=$((FINAL_STATUS+1))
+fi
 
 #
 # All done

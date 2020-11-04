@@ -223,9 +223,8 @@ Server is acting as a gateway for PMIx requests that cannot be serviced on backe
 }
 %
 \declareAttributeNEW{PMIX_SERVER_SCHEDULER}{"pmix.srv.sched"}{bool}{
-Server is supporting system scheduler and desires access to appropriate services.
+Server is supporting system scheduler and desires access to appropriate \ac{WLM}-supporting features. Indicates that the library is to be initialized for scheduler support.
 }
-%
 %
 \declareAttributeNEW{PMIX_EXTERNAL_PROGRESS}{"pmix.evext"}{bool}{
 The host shall progress the \ac{PMIx} library via calls to \refapi{PMIx_Progress}
