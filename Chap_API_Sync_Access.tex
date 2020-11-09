@@ -175,6 +175,62 @@ All \refterm{clones} of the calling process must participate in the collective o
 %%%%
 \summary
 
+
+In \ac{PMIx} key-value pairs are the primary way that information is shared between processes in the \ac{PMIx} universe.
+For example, \ac{PMIx} clients often access job-level key-value pairs created by the \ac{PMIx} server, and exchange
+process-level information between \ac{PMIx} clients using the APIs presented in this chapter.
+Additionally, \ac{PMIx} tools access information about \ac{PMIx} client jobs from the \ac{PMIx} server using the
+same set of interfaces.
+
+This chapter describes two mechanisms for exchanging key-value pairs between processes in the \ac{PMIx} universe.
+Namely, process related and non-process related exchanges.
+\emph{Process related key-value exchanges} are described in detail in Section \ref{chap:api_kv_mgmt:putget-overview}.
+Generally, these operations are useful for advertising information specific about one process to other processes in the \ac{PMIx} universe.
+The process accessing this information must know the identity of the process providing the data.
+\emph{Non-process related key-value exchanges} are described in detail in Section \ref{chap:api_kv_mgmt:publish-overview}.
+Generally, these operations are useful for advertising information that is not necessarily specific to one process to other processes in the \ac{PMIx} universe.
+The process accessing this information does \emph{not} need to know the identity of the process that provided the data.
+
+\ac{PMIx} does not provide a mechanism to asynchronously notify a process about the availability of key-value information once it is made available by another process.
+However, the nonblocking accessor interfaces (e.g., \refapi{PMIx_Get_nb}, \refapi{PMIx_Lookup_nb}) can provide a sufficient degree of asynchronous notification on information availability, if desired.
+
+Process related key-value exchanges allow a \ac{PMIx} process to share information specific to itself, and access information specific to one or more processes in the \ac{PMIx} universe.
+The 'put/commit/get' exchange pattern is often used to exchange process related information.
+Optionally, a 'put/commit/fence/get' exchange pattern adds the 'fence' synchronization (and possible collective exchange) for applications that desire it.
+Commonly, these exchange patterns are used in a \declareterm{business card exchange}\emph{business card exchange} (a.k.a. \declareterm{modex exchange}\emph{modex exchange}) where one \ac{PMIx} client shares its connectivity information, then other \ac{PMIx} clients access that information to establish a connection with that client.
+In some environments that support ``instant-on'' all connectivity information for \ac{PMIx} clients is stored in the job-level information at process creation time and is accessible to the clients without the need to perform any additional key-value exchange.
+
+\ac{PMIx} clients can access available information associated with a namespace and/or a specific process in various data realms.
+For example, a client can access the number of nodes (\refattr{PMIX_NUM_NODES}) used by a session, job, or application.
+Rather than having three different attributes, a single attribute is used but with the data realm context of the query specified as additional attributes.
+Examples of these access patterns are presented in Section \ref{chap:api_kv:getex} and Table~\ref{tab:key-value-realms} summarizes how to access such data.
+
+The key-value pairs at the session, job, application, node, and namespace levels can only be established by the \ac{PMIx} server.
+The key-value pairs at the process-level can be established by the \ac{PMIx} server or by the \ac{PMIx} client.
+Keys prefixed with ``\code{pmix}'' are reserved by \ac{PMIx} and may only be set by the \ac{PMIx} server when setting up the namespace.
+See Chapter~\ref{chap:api_server} for more details about the \ac{PMIx} server.
+
+\ac{PMIx} clients can share key-value pairs associated with themselves by using the \refapi{PMIx_Put} function.
+The \refapi{PMIx_Put} function automatically associates the key-value pair with the calling process, thus making it specific to that process.
+A client may call \refapi{PMIx_Put} as many times as necessary and the data is not available to other processes until explicitly committed.
+A client must call \refapi{PMIx_Commit} to make accessible all key-value pairs previously put by this process to all other processes in the \ac{PMIx} universe.
+This put and commit pattern provides implementors the opportunity to make individual \refapi{PMIx_Put} calls efficient local operations, and then make the whole set of key-value pairs accessible in a single step.
+
+\ac{PMIx} clients can access the key-value pairs associated with any process in the \ac{PMIx} universe (including the calling process) by passing the specific process name of the target process to the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions.
+The \ac{PMIx} server local to the calling process will retrieve that key-value pair from the \ac{PMIx} server associated with the target process.
+Clients can also access session, job, application, node, and namespace level information by using the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions as shown in Section \ref{chap:api_kv:getex} and summarized in Table~\ref{tab:key-value-realms}.
+If the key-value pair is not available, the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions will not complete, by default, until that key-value pair becomes available.
+Additional attributes can be passed to control this behavior.
+
+Optionally, \ac{PMIx} clients can use the \refapi{PMIx_Fence} and \refapi{PMIx_Fence_nb} functions to synchronize a set of processes.
+In its default form, the fence operation acts as a barrier between the processes and does not exchange data.
+The fence operation can be useful between the commit and get phases to let all or a subset of processes know that the put data is ready to be accessed.
+Additionally, the clients can pass the \refattr{PMIX_COLLECT_DATA} attribute to request that the \refapi{PMIx_Fence} and \refapi{PMIx_Fence_nb} functions exchange all committed data between all involved servers during the synchronization operation.
+This will make local to each remote process the data put by other processes resulting in faster resolution of \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} function calls at the cost of a synchronous data exchange and associated memory footprint expansion.
+For applications were most or all processes access most or all other key-value pairs this attribute may be beneficial.
+For applications were a small subset access another small subset's key-value pairs this attribute may not be beneficial.
+As such, \ac{PMIx} does not require the use of \refapi{PMIx_Fence} or \refapi{PMIx_Fence_nb} functions nor the associated data collection attribute to provide applications with the necessary flexibility to meet their performance requirements.
+
 Retrieve a key/value pair from the client's namespace.
 
 %%%%
