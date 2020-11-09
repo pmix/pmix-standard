@@ -239,6 +239,11 @@ Retrieve information for the specified \refarg{key} associated with the process 
     \item If \refattr{PMIX_GET_STATIC_VALUES} is given, then the function shall return the information in the provided \refstruct{pmix_value_t} pointer. In this case, the caller must provide storage for the structure and pass the pointer to that storage in the \refarg{val} parameter. If the implementation cannot return a static value, then the call to \refapi{PMIx_Get} must return the \refconst{PMIX_ERR_NOT_SUPPORTED} status.
 \end{itemize}
 
+A successful call will result in the memory pointed to by \refarg{val} pointing to the location information of type \refstruct{pmix_value_t}, which can be used to access the value of the key.  
+can be used to dereference memory of type \refstruct{pmix_value_t} to retreive the value of the key. 
+Unless the call specifies \refAttributeItem{PMIX_GET_STATIC_VALUES} and the return value is not \refconst{PMIX_ERR_GET_MALLOC_REQD}, the caller is responsible for releasing the memory by passing \refarg{val} to the macro  
+\refmacro{PMIX_VALUE_RELEASE}.  
+
 This is a blocking operation - the caller will block until the retrieval rules of Chapters \ref{chap:api_rsvd_keys} or \ref{chap:nrkeys} are met.
 
 The \refarg{info} array is used to pass user directives regarding the get operation.
@@ -314,7 +319,21 @@ The following attributes are optional for host environments that support this op
 \descr
 
 The callback function will be executed once the retrieval rules of Chapters \ref{chap:api_rsvd_keys} or \ref{chap:nrkeys} are met.
+
 See \refapi{PMIx_Get} for a full description. Note that the non-blocking form of this function cannot support the \refattr{PMIX_GET_STATIC_VALUES} attribute as the user cannot pass in the required pointer to storage for the result.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Retrieval-specific constants}
+
+The following constants are defined for use by retrieval \acp{API}:
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_ERR_GET_MALLOC_REQD}
+The data returned by \refapi{PMIx_Get} contains values that include dynamic memory allocations (i.e., "malloc"), despite a request for static pointers to the values in the key-value store via \refAttributeItem{PMIX_GET_STATIC_VALUES}.  When returned, the caller is responsible for releasing the memory when done with the information as would be done when \refAttributeItem{PMIX_GET_STATIC_VALUES} was not requested.
+%
+\end{constantdesc}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -934,6 +953,83 @@ PMIX_QUERY_QUALIFIERS_CREATE(m, n)
 \argin{m}{Pointer to the \refstruct{pmix_query_t} structure (handle)}
 \argin{n}{Number of qualifiers to be allocated (\code{size_t})}
 \end{arglist}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_Resolve_peers}}
+\declareapi{PMIx_Resolve_peers}
+
+%%%%
+\summary
+
+Obtain the array of processes within the specified namespace that are executing on a given node.
+
+%%%%
+\format
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Resolve_peers(const char *nodename,
+                   const pmix_nspace_t nspace,
+                   pmix_proc_t **procs, size_t *nprocs);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{nodename}{Name of the node to query - \code{NULL} can be used to denote the current local node (string)}
+\argin{nspace}{namespace (string)}
+\argout{procs}{Array of process structures (array of handles)}
+\argout{nprocs}{Number of elements in the \refarg{procs} array (integer)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Given a \refarg{nodename}, return the array of processes within the specified \refarg{nspace}
+that are executing on that node.
+If the \refarg{nspace} is \code{NULL}, then all processes on the node will be returned.
+If the specified node does not currently host any processes, then the returned array will be \code{NULL}, and \refarg{nprocs} will be zero.
+The caller is responsible for releasing the \refarg{procs} array when done with it.
+The \refmacro{PMIX_PROC_FREE} macro is provided for this purpose.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_Resolve_nodes}}
+\declareapi{PMIx_Resolve_nodes}
+
+%%%%
+\summary
+
+Return a list of nodes hosting processes within the given namespace.
+
+%%%%
+\format
+
+\versionMarker{1.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Resolve_nodes(const char *nspace, char **nodelist);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{nspace}{Namespace (string)}
+\argout{nodelist}{Comma-delimited list of nodenames (string)}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Given a \refarg{nspace}, return the list of nodes hosting processes within that namespace.
+The returned string will contain a comma-delimited list of nodenames.
+The caller is responsible for releasing the string when done with it.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
