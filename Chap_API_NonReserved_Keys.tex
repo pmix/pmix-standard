@@ -9,8 +9,8 @@ prefix other than \code{"pmix"}. Such keys are typically defined by an
 application when information needs to be exchanged between processes (e.g.,
 where connection information is required and the host environment does not
 support the \refterm{instant on} option) or where the host environment does not
-provide a required piece of data. Other than the prefix, there are no
-restrictions on the use or content of non-reserved keys.
+provide a required piece of data. Beyond the restriction on name prefix,
+non-reserved keys are required to be unique across conflicting \emph{scopes} as defined in Section \ref{api:nres:scope} - e,g., a non-reserved key cannot be posted by the same process in both the \refconst{PMIX_LOCAL} and \refconst{PMIX_REMOTE} scopes (note that posting the key in the \refconst{PMIX_GLOBAL} scope would have met the desired objective).
 
 \ac{PMIx} provides support for two methods of exchanging non-reserved keys:
 
@@ -93,6 +93,7 @@ Note that keys starting with a string of ``\code{pmix}'' must not be used in cal
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Scope of Put Data}
 \declarestruct{pmix_scope_t}
+\label{api:nres:scope}
 
 \versionMarker{1.0}
 The \refstruct{pmix_scope_t} structure is a \code{uint8_t} type that defines the availability of data passed to \refapi{PMIx_Put}.
@@ -212,9 +213,15 @@ following precedence search:
     \item Check the local \ac{PMIx} client cache for the requested key - if not found and either the \refattr{PMIX_OPTIONAL} or \refattr{PMIX_GET_REFRESH_CACHE} attribute was given, the search will stop at this point and return the \refconst{PMIX_ERR_NOT_FOUND} status.
 
     \item Request the information from the local \ac{PMIx} server. The server
-    will check its cache for the specified key. If the
-    value still isn't found and the \refattr{PMIX_IMMEDIATE} attribute was
-    given, then the library shall return the \refconst{PMIX_ERR_NOT_FOUND}
+    will check its cache for the specified key within the appropriate scope as
+    defined by the process that originally posted the key. If the value exists
+    in a scope that contains the requesting process, then the value shall be
+    returned. If the value exists, but in a scope that excludes the requesting
+    process, then the server shall immediately return the
+    \refconst{PMIX_ERR_EXISTS_OUTSIDE_SCOPE}.
+
+    If the value still isn't found and the \refattr{PMIX_IMMEDIATE} attribute
+    was given, then the library shall return the \refconst{PMIX_ERR_NOT_FOUND}
     error constant to the requester. Otherwise, the \ac{PMIx} server library
     will take one of the following actions:
     \begin{compactitemize}

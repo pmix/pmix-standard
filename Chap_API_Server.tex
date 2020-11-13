@@ -94,6 +94,7 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemBegin{PMIX_SERVER_REMOTE_CONNECTIONS} If the library supports connections from remote tools, this attribute may be supported for enabling or disabling it.
 \pasteAttributeItemEnd{}
 \pasteAttributeItem{PMIX_EXTERNAL_PROGRESS}
+\pasteAttributeItem{PMIX_EVENT_BASE}
 \pasteAttributeItem{PMIX_TOPOLOGY2}
 \pasteAttributeItemBegin{PMIX_SERVER_SHARE_TOPOLOGY}The \ac{PMIx} server will
 perform the necessary actions to scalably expose the description to the local
@@ -222,9 +223,8 @@ Server is acting as a gateway for PMIx requests that cannot be serviced on backe
 }
 %
 \declareAttributeNEW{PMIX_SERVER_SCHEDULER}{"pmix.srv.sched"}{bool}{
-Server is supporting system scheduler and desires access to appropriate services.
+Server is supporting system scheduler and desires access to appropriate \ac{WLM}-supporting features. Indicates that the library is to be initialized for scheduler support.
 }
-%
 %
 \declareAttributeNEW{PMIX_EXTERNAL_PROGRESS}{"pmix.evext"}{bool}{
 The host shall progress the \ac{PMIx} library via calls to \refapi{PMIx_Progress}
@@ -272,13 +272,15 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 
 Given a comma-separated list of \refarg{input} values, generate a reduced size representation of the input that can be passed down to the \ac{PMIx} server library's \refapi{PMIx_server_register_nspace} \ac{API} for parsing. The order of the individual values in the \refarg{input} string is preserved across the operation. The caller is responsible for releasing the returned data.
 
-The precise compressed representations will be implementation specific. However, all \ac{PMIx} implementations are required to include a \code{NULL}-terminated string in the output representation that can be printed for diagnostic purposes.
+\label{regex:fmt}The precise compressed representations will be implementation specific. The regular expression itself is not required to be a printable string nor to obey typical string constraints (e.g., include a \code{NULL} terminator byte). However, all \ac{PMIx} implementations are required to include a colon-delimited \code{NULL}-terminated string at the beginning of the output representation that can be printed for diagnostic purposes and identifies the method used to generate the representation. The following identifiers are reserved by the \ac{PMIx} Standard:
 
-\advicermstart
-The returned representation may be an arbitrary array of bytes as opposed to a valid \code{NULL}-terminated string. However, the method used to generate the representation shall be identified with a colon-delimited string at the beginning of the output. For example, an output starting with \code{"pmix:\textbackslash0"} might indicate that the representation is a \ac{PMIx}-defined regular expression represented as a \code{NULL}-terminated string following the \code{"pmix:\textbackslash0"} prefix. In contrast, an output starting with \code{"blob:\textbackslash0"} might indicate a compressed binary array follows the prefix.
+\begin{itemize}
+    \item \code{"raw:\textbackslash0"} - indicates that the expression following the identifier is simply the comma-delimited input string (no processing was performed).
+    \item \code{"pmix:\textbackslash0"} - a \ac{PMIx}-unique regular expression represented as a \code{NULL}-terminated string following the identifier.
+    \item \code{"blob:\textbackslash0"} - a \ac{PMIx}-unique regular expression that is not represented as a \code{NULL}-terminated string following the identifier. Additional implementation-specific metadata may follow the identifier along with the data itself. For example, a compressed binary array format based on the \emph{zlib} compression package, with the size encoded in the space immediately following the identifier.
+\end{itemize}
 
 Communicating the resulting output should be done by first packing the returned expression using the \refapi{PMIx_Data_pack}, declaring the input to be of type \refconst{PMIX_REGEX}, and then obtaining the resulting blob to be communicated using the \refmacro{PMIX_DATA_BUFFER_UNLOAD} macro. The reciprocal method can be used on the remote end prior to passing the regex into \refapi{PMIx_server_register_nspace}. The pack/unpack routines will ensure proper handling of the data based on the regex prefix.
-\advicermend
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -313,11 +315,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 
 The input shall consist of a semicolon-separated list of ranges representing the ranks of processes on each node of the job - e.g., \code{"1-4;2-5;8,10,11,12;6,7,9"}. Each field of the input must correspond to the node name provided at that position in the input to \refapi{PMIx_generate_regex}. Thus, in the example, ranks 1-4 would be located on the first node of the comma-separated list of names provided to \refapi{PMIx_generate_regex}, and ranks 2-5 would be on the second name in the list.
 
-\advicermstart
-The returned representation may be an arbitrary array of bytes as opposed to a valid \code{NULL}-terminated string. However, the method used to generate the representation shall be identified with a colon-delimited string at the beginning of the output. For example, an output starting with \code{"pmix:"} indicates that the representation is a \ac{PMIx}-defined regular expression represented as a \code{NULL}-terminated string. In contrast, an output starting with \code{"blob:\textbackslash0size=1234:"} is a compressed binary array.
-
-Communicating the resulting output should be done by first packing the returned expression using the \refapi{PMIx_Data_pack}, declaring the input to be of type \refconst{PMIX_REGEX}, and then obtaining the blob to be communicated using the \refmacro{PMIX_DATA_BUFFER_UNLOAD} macro. The pack/unpack routines will ensure proper handling of the data based on the regex prefix.
-\advicermend
+Rules governing the format of the returned regular expression are the same as those specified for \refapi{PMIx_generate_regex}, as detailed \hyperref[regex:fmt]{here}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_server_register_nspace}}
@@ -651,13 +649,13 @@ rc = PMIx_generate_regex(nodelist, &regex);
 free(nodelist);
 
 /* pass the regex as the value to the PMIX_NODE_MAP key */
-PMIX_INFO_LOAD(&info, PMIX_NODE_MAP, regex, PMIX_STRING);
+PMIX_INFO_LOAD(&info, PMIX_NODE_MAP, regex, PMIX_REGEX);
 /* release the regex */
 free(regex);
 \end{codepar}
 \cspecificend
 
-Changing the filter criteria allows the construction of node maps for any level of information.
+Changing the filter criteria allows the construction of node maps for any level of information. A description of the returned regular expression is provided \hyperref[regex:fmt]{here}.
 
 \label{cptr:api_server:ppnregex}A similar method is used to construct the map of processes on each node from the namespace being registered. This may be done for each information level of interest (e.g., to identify the process map for the entire \refterm{job} or for each \refterm{application} in the job) by changing the search criteria. An example is shown below for the case of creating the process map for a \refterm{job}:
 
@@ -708,7 +706,7 @@ rc = PMIx_generate_ppn(ppn, &regex);
 free(ppn);
 
 /* pass the regex as the value to the PMIX_PROC_MAP key */
-PMIX_INFO_LOAD(&info, PMIX_PROC_MAP, regex, PMIX_STRING);
+PMIX_INFO_LOAD(&info, PMIX_PROC_MAP, regex, PMIX_REGEX);
 /* release the regex */
 free(regex);
 \end{codepar}
@@ -1251,6 +1249,8 @@ Returns one of the following:
 
 \pasteAttributeItem{PMIX_ALLOC_BANDWIDTH}
 \pasteAttributeItem{PMIX_ALLOC_FABRIC_QOS}
+\pasteAttributeItemBegin{PMIX_SESSION_INFO}In this context, indicates that the information provided in the \refattr{PMIX_NODE_MAP} is for the entire session and not just the indicated namespace. Thus, subsequent calls to this \ac{API} may omit node-level information - e.g., the library may not need to include information on the devices on each node in a subsequent call.
+\pasteAttributeItemEnd
 
 The following optional attributes may be provided by the host environment to identify the programming model (as specified by the user) being executed within the application. The \ac{PMIx} server library may utilize this information to harvest/forward model-specific environmental variables, record the programming model associated with the application, etc.
 
@@ -1618,6 +1618,8 @@ Provide a function by which the local \ac{PMIx} server can perform any applicati
 
 \advicermstart
 Host environments are required to execute this operation prior to starting any local application processes from the specified namespace if information was obtained from a call to \refapi{PMIx_server_setup_application}.
+
+Host environments must register the \refarg{nspace} using \refapi{PMIx_server_register_nspace} prior to calling this \ac{API} to ensure that all namespace-related information required to support this function is available to the library. This eliminates the need to include any of the registration information in the \refarg{info} array passed to this \ac{API}.
 \advicermend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2346,7 +2348,6 @@ Returns one of the following:
 
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
     \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
@@ -2515,8 +2516,8 @@ The directives are optional unless the \emph{mandatory} flag has been set - in s
 \subsubsection{Dmodex attributes}
 
 %
-\declareAttribute{PMIX_REQUIRED_KEY}{"pmix.req.key"}{char*}{
-Key the user needs prior to responding from a dmodex request.
+\declareAttributeNEW{PMIX_REQUIRED_KEY}{"pmix.req.key"}{char*}{
+Identifies a key that must be included in the requested information. If the specified key is not already available, then the \ac{PMIx} servers are required to delay response to the dmodex request until either the key becomes available or the request times out.
 }
 
 

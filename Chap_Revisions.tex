@@ -291,7 +291,7 @@ The v3.1 update includes clarifications and corrections from the v3.0 document:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% History: Version 3.2
-\section{Version 3.2: Sept. 2020}
+\section{Version 3.2: Oct. 2020}
 
 The v3.2 update includes clarifications and corrections from the v3.1 document:
 
@@ -305,7 +305,7 @@ The v3.2 update includes clarifications and corrections from the v3.1 document:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% History: Version 4.0
-\section{Version 4.0: Sept 2020}
+\section{Version 4.0: Nov. 2020}
 
 NOTE: The PMIx Standard document has undergone significant reorganization in an
 effort to become more user-friendly. Highlights include:
@@ -413,32 +413,38 @@ The above changes included introduction of the following \acp{API} and data type
 
 \subsection{Added Constants}
 
+%
+\littleheader{General error constants}
+\refconst{PMIX_ERR_EXISTS_OUTSIDE_SCOPE} \\
+
+%
 \littleheader{Data type constants}
-\refconst{PMIX_COORD}
-\refconst{PMIX_REGATTR}
-\refconst{PMIX_REGEX}
-\refconst{PMIX_JOB_STATE}
-\refconst{PMIX_LINK_STATE}
-\refconst{PMIX_PROC_CPUSET}
-\refconst{PMIX_GEOMETRY}
-\refconst{PMIX_DEVICE_DIST}
-\refconst{PMIX_ENDPOINT}
-\refconst{PMIX_TOPO}
-\refconst{PMIX_DEVTYPE}
-\refconst{PMIX_LOCTYPE}
-\refconst{PMIX_DATA_TYPE_MAX}
+\refconst{PMIX_COORD} \\
+\refconst{PMIX_REGATTR} \\
+\refconst{PMIX_REGEX} \\
+\refconst{PMIX_JOB_STATE} \\
+\refconst{PMIX_LINK_STATE} \\
+\refconst{PMIX_PROC_CPUSET} \\
+\refconst{PMIX_GEOMETRY} \\
+\refconst{PMIX_DEVICE_DIST} \\
+\refconst{PMIX_ENDPOINT} \\
+\refconst{PMIX_TOPO} \\
+\refconst{PMIX_DEVTYPE} \\
+\refconst{PMIX_LOCTYPE} \\
+\refconst{PMIX_DATA_TYPE_MAX} \\
+\refconst{PMIX_COMPRESSED_BYTE_OBJECT} \\
 
 %
 \littleheader{Server constants}
-\refconst{PMIX_ERR_REPEAT_ATTR_REGISTRATION}
+\refconst{PMIX_ERR_REPEAT_ATTR_REGISTRATION} \\
 %
 %
 \littleheader{Job-Mgmt constants}
-\refconst{PMIX_ERR_CONFLICTING_CLEANUP_DIRECTIVES}
+\refconst{PMIX_ERR_CONFLICTING_CLEANUP_DIRECTIVES} \\
 %
 %
 \littleheader{Publish constants}
-\refconst{PMIX_ERR_DUPLICATE_KEY}
+\refconst{PMIX_ERR_DUPLICATE_KEY} \\
 %
 %
 \littleheader{Tool constants}
@@ -563,6 +569,7 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_MIN_VALUE}
 \pasteAttributeItem{PMIX_ENUM_VALUE}
 \pasteAttributeItem{PMIX_HOMOGENEOUS_SYSTEM}
+\pasteAttributeItem{PMIX_REQUIRED_KEY}
 %
 %
 \littleheader{Job-Mgmt attributes}
@@ -608,6 +615,7 @@ The above changes included introduction of the following \acp{API} and data type
 \pasteAttributeItem{PMIX_DEBUG_TARGET}
 \pasteAttributeItem{PMIX_DEBUG_DAEMONS_PER_PROC}
 \pasteAttributeItem{PMIX_DEBUG_DAEMONS_PER_NODE}
+\pasteAttributeItem{PMIX_WAIT_FOR_CONNECTION}
 %
 %
 \littleheader{Fabric attributes}
@@ -692,8 +700,13 @@ The above changes included introduction of the following \acp{API} and data type
 \subsection{Added Environmental Variables}
 %
 \littleheader{Tool environmental variables}
-\refenvar{PMIX_LAUNCHER_PAUSE_FOR_TOOL} \\
-\refenvar{PMIX_LAUNCHER_RENDEZVOUS_FILE} \\
+\refenvar{PMIX_LAUNCHER_RNDZ_URI} \\
+\refenvar{PMIX_LAUNCHER_RNDZ_FILE} \\
+%
+%
+\subsection{Added Macros}
+%
+\refmacro{PMIX_CHECK_RESERVED_KEY}
 %
 %
 \subsection{Deprecated \acp{API}}
@@ -993,10 +1006,6 @@ Spawned processes will not call \refapi{PMIx_Init}.
 %
 \declareAttributeDEP{PMIX_ARCH}{"pmix.arch"}{uint32_t}{
 Architecture flag.
-}
-%
-\declareAttributeDEP{PMIX_EVENT_BASE}{"pmix.evbase"}{struct event_base *}{
-Pointer to libevent\footnote{\url{http://libevent.org/}} \code{event_base} to use in place of the internal progress thread.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

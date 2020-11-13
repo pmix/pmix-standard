@@ -210,6 +210,7 @@ Returns one of the following:
 \begin{itemize}
 \item \refconst{PMIX_SUCCESS} The requested data has been returned in the manner requested (i.e., in a provided static memory location )
 \item \refconst{PMIX_ERR_BAD_PARAM} A bad parameter was passed to the function call - e.g., the request included the \refattr{PMIX_GET_STATIC_VALUES} directive, but the provided storage location was \code{NULL}
+\item \refconst{PMIX_ERR_EXISTS_OUTSIDE_SCOPE} The requested key exists, but was posted in a \emph{scope} (see Section \ref{api:nres:scope}) that does not include the requester.
 \item \refconst{PMIX_ERR_NOT_FOUND} The requested data was not available.
 \item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure.
 \end{itemize}
@@ -226,6 +227,7 @@ The following attributes are required to be supported by all \ac{PMIx} libraries
 \pasteAttributeItem{PMIX_NODE_INFO}
 \pasteAttributeItem{PMIX_GET_STATIC_VALUES}
 \pasteAttributeItem{PMIX_GET_POINTER_VALUES}
+\pasteAttributeItem{PMIX_GET_REFRESH_CACHE}
 
 \reqattrend
 
@@ -286,7 +288,6 @@ Returns one of the following:
 
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
     \item a \ac{PMIx} error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
 
@@ -294,6 +295,7 @@ If executed, the status returned in the provided callback function will be one o
 
 \begin{itemize}
 \item \refconst{PMIX_SUCCESS} The requested data has been returned.
+\item \refconst{PMIX_ERR_EXISTS_OUTSIDE_SCOPE} The requested key exists, but was posted in a \emph{scope} (see Section \ref{api:nres:scope}) that does not include the requester.
 \item \refconst{PMIX_ERR_NOT_FOUND} The requested data was not available.
 \item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure.
 \end{itemize}
@@ -357,7 +359,7 @@ Request that the data be returned in the provided storage location. The caller i
 }
 %
 \declareAttributeNEW{PMIX_GET_REFRESH_CACHE}{"pmix.get.refresh"}{bool}{
-When retrieving data for a remote process, refresh the existing local data cache for the process in case new values have been put and committed by the process since the last refresh.
+When retrieving data for a remote process, refresh the existing local data cache for the process in case new values have been put and committed by the process since the last refresh. Local process information is assumed to be automatically updated upon posting by the process. A \code{NULL} key will cause all values associated with the process to be refreshed - otherwise, only the indicated key will be updated. A process rank of \refconst{PMIX_RANK_WILDCARD} can be used to update job-related information in dynamic environments. The user is responsible for subsequently updating refreshed values they may have cached in their own local memory.
 }
 %
 \declareAttribute{PMIX_DATA_SCOPE}{"pmix.scope"}{pmix_scope_t}{

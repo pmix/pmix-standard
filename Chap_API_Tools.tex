@@ -91,21 +91,23 @@ The rendezvous methods are automatically employed for the initial tool connectio
 
 Connection to a local \ac{PMIx} server is pursued according to the following precedence chain based on attributes contained in the call to the \refapi{PMIx_tool_init} or \refapi{PMIx_tool_connect_to_server} \acp{API}. Servers to which the tool already holds a connection will be ignored. Except where noted, the \ac{PMIx} library will return an error if the specified file cannot be found, the caller lacks permissions to read it, or the server specified within the file does not respond to or accept the connection — the library will not proceed to check for other connection options as the user specified a particular one to use.
 
+Note that the \ac{PMIx} implementation may choose to introduce a "delayed connection" protocol between steps in the precedence chain - i.e., the library may cycle several times, checking for creation of the rendezvous file each time after a delay of some period of time, thereby allowing the tool to wait for the server to create the rendezvous file before either returning an error or continuing to the next step in the chain.
+
 \begin{itemize}
 %
-\item If \refattr{PMIX_TOOL_ATTACHMENT_FILE} is given, then the tool will attempt to read the specified file and connect to the server based on the information contained within it. The format of the attachment file is identical to the rendezvous files described in earlier in this section.
+\item If \refattr{PMIX_TOOL_ATTACHMENT_FILE} is given, then the tool will attempt to read the specified file and connect to the server based on the information contained within it. The format of the attachment file is identical to the rendezvous files described in earlier in this section. An error will be returned if the specified file cannot be found.
 %
 \item If \refattr{PMIX_SERVER_URI} or \refattr{PMIX_TCP_URI} is given, then connection will be attempted to the server at the specified \ac{URI}. Note that it is an error for both of these attributes to be specified. \refattr{PMIX_SERVER_URI} is the preferred method as it is more generalized — \refattr{PMIX_TCP_URI} is provided for those cases where the user specifically wants to use a \ac{TCP} transport for the connection and wants to error out if one isn’t available or cannot be used.
 %
-\item If \refattr{PMIX_SERVER_PIDINFO} was provided, then the tool will search for a rendezvous file created by a \ac{PMIx} server of the given \ac{PID} in the \code{PMIX_SERVER_TMPDIR} directory.
+\item If \refattr{PMIX_SERVER_PIDINFO} was provided, then the tool will search for a rendezvous file created by a \ac{PMIx} server of the given \ac{PID} in the \code{PMIX_SERVER_TMPDIR} directory. An error will be returned if a matching rendezvous file cannot be found.
 %
-\item If \refattr{PMIX_SERVER_NSPACE} is given, then the tool will search for a rendezvous file created by a \ac{PMIx} server of the given namespace in the \code{PMIX_SERVER_TMPDIR} directory.
+\item If \refattr{PMIX_SERVER_NSPACE} is given, then the tool will search for a rendezvous file created by a \ac{PMIx} server of the given namespace in the \code{PMIX_SERVER_TMPDIR} directory. An error will be returned if a matching rendezvous file cannot be found.
 %
-\item If \refattr{PMIX_CONNECT_TO_SYSTEM} is given, then the tool will search for a system-level rendezvous file created by a \ac{PMIx} server in the \code{PMIX_SYSTEM_TMPDIR} directory.
+\item If \refattr{PMIX_CONNECT_TO_SYSTEM} is given, then the tool will search for a system-level rendezvous file created by a \ac{PMIx} server in the \code{PMIX_SYSTEM_TMPDIR} directory. An error will be returned if a matching rendezvous file cannot be found.
 %
 \item If \refattr{PMIX_CONNECT_SYSTEM_FIRST} is given, then the tool will look for a system-level rendezvous file created by a \ac{PMIx} server in the \code{PMIX_SYSTEM_TMPDIR} directory. If found, then the tool will attempt to connect to it. In this case, no error will be returned if the rendezvous file is not found or connection is refused — the \ac{PMIx} library will silently continue to the next option.
 %
-\item By default, the tool will search the directory tree under the \code{PMIX_SERVER_TMPDIR} directory for rendezvous files of \ac{PMIx} servers, attempting to connect to each it finds until one accepts the connection. If no rendezvous files are found, or all contacted servers refuse connection, then the \ac{PMIx} library will return an error.
+\item By default, the tool will search the directory tree under the \code{PMIX_SERVER_TMPDIR} directory for rendezvous files of \ac{PMIx} servers, attempting to connect to each it finds until one accepts the connection. If no rendezvous files are found, or all contacted servers refuse connection, then the \ac{PMIx} library will return an error. No "delayed connection" protocols may be utilized at this point.
 %
 \end{itemize}
 
@@ -169,14 +171,14 @@ Tool is a launcher and needs to create rendezvous files.
 \subsection{Tool initialization environmental variables}
 \label{api:tools:envars:tool}
 
-The following environmental variables are used during \refapi{PMIx_tool_init} to control various rendezvous-related operations when the tool is started manually (e.g., on a command line) or by a fork/exec-like operation.
+The following environmental variables are used during \refapi{PMIx_tool_init} and \refapi{PMIx_server_init} to control various rendezvous-related operations when the process is started manually (e.g., on a command line) or by a fork/exec-like operation.
 
 %
-\declareEnvarNEW{PMIX_LAUNCHER_PAUSE_FOR_TOOL}{
-Upon completing \refapi{PMIx_server_init}, the spawned launcher is to generate the \refconst{PMIX_LAUNCHER_READY} event and then pause until the spawning tool can connect to it and provide directives.
+\declareEnvarNEW{PMIX_LAUNCHER_RNDZ_URI}{
+Upon completing \refapi{PMIx_server_init} or \refapi{PMIx_tool_init}, the spawned launcher is to connect back to the spawning tool using the given \ac{URI} so that the tool can provide directives (e.g., a \refapi{PMIx_Spawn} command) to it.
 }
 %
-\declareEnvarNEW{PMIX_LAUNCHER_RENDEZVOUS_FILE}{
+\declareEnvarNEW{PMIX_LAUNCHER_RNDZ_FILE}{
 Absolute path of file where the launcher is to store its connection information so that the spawning tool can connect to it.
 }
 
@@ -233,6 +235,10 @@ Pathname of file where the launcher is to store its connection information so th
 %
 \declareAttributeNEW{PMIX_PRIMARY_SERVER}{"pmix.pri.srvr"}{bool}{
 The server to which the tool is connecting shall be designated the \emph{primary} server once connection has been accomplished.
+}
+%
+\declareAttributeNEW{PMIX_WAIT_FOR_CONNECTION}{"pmix.wait.conn"}{bool}{
+Wait until the specified process has connected to the requesting tool or server, or the operation times out (if the \refattr{PMIX_TIMEOUT} directive is included in the request).
 }
 
 
@@ -329,7 +335,7 @@ In the indirect launch use-case, the application processes are started via an in
 
 A key aspect of this operational mode is the avoidance of any requirement that the tool parse and/or understand the command line of the \ac{IL}. Instead, the indirect launch support relies on \refapi{PMIx_Spawn} \ac{API} to abstract the tool-launcher interaction required to start the \ac{IL} and connect to it, and then uses a second call to \refapi{PMIx_Spawn} to request that the \ac{IL} spawn the actual job.
 
-The tool spawns the \ac{IL} using the same procedure for launching an application - it assembles the description of the \ac{IL} (e.g., by parsing its command line) into a spawn request containing an array of \refstruct{pmix_app_t} and \refstruct{pmix_info_t} job-level information. An allocation of resources for the \ac{IL} itself may or may not be required – if it is, then the allocation must be made in advance or the spawn request must include allocation request information.
+The tool spawns the \ac{IL} using the same procedure for launching an application - it assembles the description of the \ac{IL} (e.g., by parsing its command line) into a spawn request containing an array of \refstruct{pmix_app_t} and \refstruct{pmix_info_t} job-level information. In addition, the tool must include the \refattr{PMIX_SPAWN_TOOL} attribute indicating that the application being spawned is a \ac{PMIx} tool. An allocation of resources for the \ac{IL} itself may or may not be required – if it is, then the allocation must be made in advance or the spawn request must include allocation request information.
 
 \begin{figure*}[ht!]
 \centering
@@ -370,7 +376,7 @@ The tool may optionally wish to include the following tool-specific attributes i
     \item \pasteAttributeItem{PMIX_EXEC_AGENT}
 \end{itemize}
 
-The tool then calls the \refapi{PMIx_Spawn} \ac{API} so that the \ac{PMIx} library can either communicate the spawn request to the server (if connected to one), or locally spawn the \ac{IL} itself if not connected to a server and the \ac{PMIx} implementation includes self-spawn support. \refapi{PMIx_Spawn} shall return an error if neither of these conditions is met, or if the tool fails to successfully connect to the \ac{IL} after spawning it.
+The tool then calls the \refapi{PMIx_Spawn} \ac{API} so that the \ac{PMIx} library can either communicate the spawn request to the server (if connected to one), or locally spawn the \ac{IL} itself if not connected to a server and the \ac{PMIx} implementation includes self-spawn support. \refapi{PMIx_Spawn} shall return an error if neither of these conditions is met.
 
 Upon successful return from \refapi{PMIx_Spawn}:
 
@@ -995,12 +1001,12 @@ Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t}
 }
 %
 \declareAttribute{PMIX_DEBUG_STOP_IN_INIT}{"pmix.dbg.init"}{bool}{
-Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The \ac{PMIx} client library in each resulting application process shall notify its \ac{PMIx} server that it is pausing and then pause during \refapi{PMIx_Init} of the spawned processes until receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event when all processes have reached the pause point.
+Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The \ac{PMIx} client library in each resulting application process shall notify its \ac{PMIx} server that it is pausing and then pause during \refapi{PMIx_Init} of the spawned processes until either released by debugger modification of an appropriate variable or receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event when all processes have reached the pause point.
 }
 %
 \declareAttribute{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
 Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The resulting application processes are to notify their server (by generating
-the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event) when they reach some application-determined location and pause at that point until receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event when all processes have indicated they are at the pause point.
+the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event) when they reach some application-determined location and pause at that point until either released by debugger modification of an appropriate variable or receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event when all processes have indicated they are at the pause point.
 }
 %
 \declareAttributeNEW{PMIX_DEBUG_TARGET}{"pmix.dbg.tgt"}{pmix_proc_t*}{
@@ -1118,6 +1124,7 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemBegin{PMIX_TCP_DISABLE_IPV6} If the library supports IPV6 connections, this attribute may be supported for disabling it.
 \pasteAttributeItemEnd{}
 \pasteAttributeItem{PMIX_EXTERNAL_PROGRESS}
+\pasteAttributeItem{PMIX_EVENT_BASE}
 
 \optattrend
 
@@ -1182,7 +1189,7 @@ Disconnect the \ac{PMIx} tool from the specified server connection while leaving
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_tool_disconnect(pmix_proc_t *server);
+PMIx_tool_disconnect(const pmix_proc_t *server);
 \end{codepar}
 \cspecificend
 
@@ -1321,15 +1328,26 @@ Designate a server as the tool's \emph{primary} server.
 \cspecificstart
 \begin{codepar}
 pmix_status_t
-PMIx_tool_set_server(pmix_proc_t *server);
+PMIx_tool_set_server(const pmix_proc_t *server,
+                     pmix_info_t info[], size_t ninfo);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{server}{\refstruct{pmix_proc_t} structure (handle)}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+\reqattrstart
+The following attributes are required to be supported by all \ac{PMIx} libraries:
+
+\pasteAttributeItem{PMIX_WAIT_FOR_CONNECTION}
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\reqattrend
 
 %%%%
 \descr

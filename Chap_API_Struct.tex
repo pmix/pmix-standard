@@ -124,6 +124,9 @@ General Error.
 Requested operation would overwrite an existing value - typically returned
 when an operation would overwrite an existing file or directory.
 %
+\declareconstitemNEW{PMIX_ERR_EXISTS_OUTSIDE_SCOPE}
+The requested key exists, but was posted in a \emph{scope} (see Section \ref{api:nres:scope}) that does not include the requester
+%
 \declareconstitem{PMIX_ERR_INVALID_CRED}
 Invalid security credentials.
 %
@@ -279,6 +282,24 @@ PMIX_CHECK_KEY(a, b)
 \end{arglist}
 
 Returns \code{true} if the key matches the given value
+
+\littleheader{Check reserved key macro}
+\declaremacro{PMIX_CHECK_RESERVED_KEY}
+
+Check if the given key is a \ac{PMIx} \emph{reserved} key as described in Chapter \ref{chap:api_rsvd_keys}.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_CHECK_RESERVED_KEY(a)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{a}{String value to be checked (\code{char*})}
+\end{arglist}
+
+Returns \code{true} if the key is reserved by the Standard.
 
 \littleheader{Load key macro}
 \declaremacro{PMIX_LOAD_KEY}
@@ -2068,6 +2089,9 @@ Query structure (\refstruct{pmix_query_t}).
 %
 \declareconstitem{PMIX_COMPRESSED_STRING}
 String compressed with zlib (\code{char*}).
+%
+\declareconstitemNEW{PMIX_COMPRESSED_BYTE_OBJECT}
+Byte object whose bytes have been compressed with zlib (\code{pmix_byte_object_t}).
 %
 \declareconstitem{PMIX_ALLOC_DIRECTIVE}
 Allocation directive (\refstruct{pmix_alloc_directive_t}).
