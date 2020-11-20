@@ -2294,6 +2294,7 @@ Returns one of the following:
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the host must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_BAD_PARAM} indicating that the host environment supports this \ac{API}, but the request includes processes that the host environment cannot abort - e.g., if the request is to abort subsets of processes from a namespace, or processes outside of the caller's own namespace, and the host environment does not permit such operations. In this case, none of the specified processes will be terminated - the \refarg{cbfunc} will not be called
     \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
     \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
 \end{itemize}
@@ -2304,8 +2305,7 @@ Returns one of the following:
 A local client called \refapi{PMIx_Abort}.
 Note that the client will be in a blocked state until the host server executes the callback function, thus allowing the \ac{PMIx} server library to release the client.
 The array of \refarg{procs} indicates which processes are to be terminated.
-A \code{NULL} indicates that all processes in the client's namespace are to be terminated.
-
+A \code{NULL} for the \refarg{procs} array indicates that all processes in the caller's namespace are to be aborted, including itself - this is the equivalent of passing a \refstruct{pmix_proc_t} array element containing the caller's namespace and a rank value of \refconst{PMIX_RANK_WILDCARD}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_fencenb_fn_t}}
