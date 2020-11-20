@@ -1,6 +1,8 @@
 # Makefile for the PMIx Standard document in LaTex format.
 # For more information, see the master document, pmix-standard.tex.
 
+LATEX_C=pdflatex -shell-escape -file-line-error
+
 version=4.0
 default: pmix-standard.pdf
 
@@ -27,11 +29,8 @@ CHAPTERS= \
 	App_Python.tex \
 	Acknowledgements.tex
 
-SOURCES=
-# SOURCES=sources/*.c \
-# 	sources/*.cpp \
-# 	sources/*.f90 \
-# 	sources/*.f
+SOURCES=sources/*.c \
+	sources/*.py \
 
 INTERMEDIATE_FILES=pmix-standard.pdf \
 		pmix-standard.toc \
@@ -45,27 +44,34 @@ INTERMEDIATE_FILES=pmix-standard.pdf \
 		pmix-standard.blg \
 		pmix-standard.synctex.gz \
 		pmix-standard.xwm \
-		*.idx *.ilg *.ind
+		pmix-standard.mw \
+		pmix-standard.loc \
+		pmix-standard.soc \
+		*.idx *.ilg *.ind \
+		_minted-* \
+		sources/_autogen_
 
 all: pmix-standard.pdf
 
 pmix-standard.pdf: $(CHAPTERS) $(SOURCES) pmix.sty pmix-standard.tex figs/pmix-logo.png
-	rm -f $(INTERMEDIATE_FILES)
+	rm -rf $(INTERMEDIATE_FILES)
 	@echo "-------------------------------------------------------------"
 	@echo "If error occurs check pmix-standard.log and pmix-standard.ind"
 	@echo "-------------------------------------------------------------"
+	@echo "====> Preprocess Examples"
+	@./bin/process-example.py $(SOURCES)
 	@echo "====> Building 1/4"
-	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex || \
-		pdflatex -interaction=errorstopmode -file-line-error pmix-standard.tex < /dev/null
+	$(LATEX_C) -interaction=batchmode pmix-standard.tex || \
+		$(LATEX_C) -interaction=errorstopmode pmix-standard.tex < /dev/null
 	@echo "====> Building 2/4 (bibtex)"
 	bibtex pmix-standard < /dev/null
 	@echo "====> Building 3/4"
-	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex || \
-		pdflatex -interaction=errorstopmode -file-line-error pmix-standard.tex  < /dev/null
+	$(LATEX_C) -interaction=batchmode pmix-standard.tex || \
+		$(LATEX_C) -interaction=errorstopmode pmix-standard.tex  < /dev/null
 	@echo "====> Building 4/4"
-	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex || \
-		pdflatex -interaction=errorstopmode -file-line-error pmix-standard.tex  < /dev/null
-	pdflatex -interaction=batchmode -file-line-error pmix-standard.tex
+	$(LATEX_C) -interaction=batchmode pmix-standard.tex || \
+		$(LATEX_C) -interaction=errorstopmode pmix-standard.tex  < /dev/null
+	$(LATEX_C) -interaction=batchmode pmix-standard.tex
 	@./bin/check-doc.sh
 	@echo "====> Success"
 	@cp pmix-standard.pdf pmix-standard-${version}.pdf
@@ -93,4 +99,4 @@ check-openpmix: pmix-standard.pdf FORCECHECK
 	@./bin/check-openpmix.py
 
 clean:
-	rm -f $(INTERMEDIATE_FILES) pmix-standard-*.pdf
+	rm -rf $(INTERMEDIATE_FILES) pmix-standard-*.pdf
