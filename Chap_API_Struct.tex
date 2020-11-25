@@ -192,6 +192,9 @@ The requested information was not found.
 The requested operation is not supported by either the \ac{PMIx} implementation
 or the host environment.
 %
+\declareconstitemNEW{PMIX_ERR_PARAM_VALUE_NOT_SUPPORTED}
+The requested operation is supported by the \ac{PMIx} implementation and (if applicable) the host environment. However, at least one supplied parameter was given an unsupported value, and the operation cannot therefore be executed as requested.
+%
 \declareconstitem{PMIX_ERR_COMM_FAILURE}
 Communication failure - a message failed to be sent or received, but the
 connection remains intact.
