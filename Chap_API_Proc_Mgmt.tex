@@ -45,7 +45,7 @@ Returns one of the following:
 
 \begin{itemize}
     \item \refconst{PMIX_SUCCESS} if the operation was successfully completed. Note that the function shall not return in this situation if the caller's own process was included in the request.
-    \item \refconst{PMIX_ERR_BAD_PARAM} if the \ac{PMIx} implementation and host environment support this \ac{API}, but the request includes processes that the host environment cannot abort - e.g., if the request is to abort subsets of processes from a namespace, or processes outside of the caller's own namespace, and the host environment does not permit such operations. In this case, none of the specified processes will be terminated.
+    \item \refconst{PMIX_ERR_PARAM_VALUE_NOT_SUPPORTED} if the \ac{PMIx} implementation and host environment support this \ac{API}, but the request includes processes that the host environment cannot abort - e.g., if the request is to abort subsets of processes from a namespace, or processes outside of the caller's own namespace, and the host environment does not permit such operations. In this case, none of the specified processes will be terminated.
     \item a PMIx error constant indicating an error in the request.
 \end{itemize}
 
@@ -60,7 +60,7 @@ Passing a \code{NULL} \refarg{msg} parameter is allowed.
 The function shall not return until the host environment has carried out the operation on the specified processes. If the caller is included in the array of targets, then the function will not return unless the host is unable to execute the operation.
 
 \adviceuserstart
-The response to this request is somewhat dependent on the specific \acl{RM} and its configuration (e.g., some resource managers will not abort the application if the provided status is zero unless specifically configured to do so, some cannot abort subsets of processes in an application, and some may not permit termination of processes outside of the caller's own namespace), and thus lies outside the control of PMIx itself.
+The response to this request is somewhat dependent on the specific \ac{RM} and its configuration (e.g., some resource managers will not abort the application if the provided status is zero unless specifically configured to do so, some cannot abort subsets of processes in an application, and some may not permit termination of processes outside of the caller's own namespace), and thus lies outside the control of PMIx itself.
 However, the PMIx client library shall inform the \ac{RM} of the request that the specified \refarg{procs} be aborted, regardless of the value of the provided status.
 
 Note that race conditions caused by multiple processes calling \refapi{PMIx_Abort} are left to the server implementation to resolve with regard to which status is returned and what messages (if any) are printed.
