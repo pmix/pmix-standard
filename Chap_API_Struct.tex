@@ -169,7 +169,7 @@ The specified target server or client process is not reachable - i.e., a
 suitable connection either has not been or can not be made.
 %
 \declareconstitem{PMIX_ERR_BAD_PARAM}
-An incorrect or unsupported parameter was passed to a \ac{PMIx} \ac{API}.
+One or more incorrect parameters (e.g., passing an attribute with a value of the wrong type), or multiple parameters containing conflicting directives (e.g., multiple instances of the same attribute with different values, or different attributes specifying conflicting behaviors), were passed to a \ac{PMIx} \ac{API}.
 %
 \declareconstitem{PMIX_ERR_RESOURCE_BUSY}
 Resource busy - typically seen when an attempt to establish a connection
