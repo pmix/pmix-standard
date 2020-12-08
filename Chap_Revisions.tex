@@ -303,6 +303,90 @@ The v3.2 update includes clarifications and corrections from the v3.1 document:
     \item Add a new \refconst{PMIX_REGEX} constant that represents a regular expression data type.
 \end{compactitemize}
 
+
+\subsection{Deprecated attributes}
+
+The following attributes were deprecated in v3.2:
+
+\declareAttributeDEP{PMIX_ARCH}{"pmix.arch"}{uint32_t}{
+Architecture flag.
+}
+%
+\declareAttributeDEP{PMIX_COLLECTIVE_ALGO}{"pmix.calgo"}{char*}{
+Comma-delimited list of algorithms to use for the collective operation. \ac{PMIx} does not impose any requirements on a host environment's collective algorithms. Thus, the acceptable values for this attribute will be environment-dependent - users are encouraged to check their host environment for supported values.
+}
+%
+\declareAttributeDEP{PMIX_DSTPATH}{"pmix.dstpath"}{char*}{
+Path to shared memory data storage (dstore) files. Deprecated from Standard as being implementation specific.
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_HOLE_KIND}{"pmix.hwlocholek"}{char*}{
+Kind of VM ``hole'' HWLOC should use for shared memory
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_SHARE_TOPO}{"pmix.hwlocsh"}{bool}{
+Share the HWLOC topology via shared memory
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_SHMEM_ADDR}{"pmix.hwlocaddr"}{size_t}{
+Address of the HWLOC shared memory segment.
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_SHMEM_FILE}{"pmix.hwlocfile"}{char*}{
+Path to the HWLOC shared memory file.
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_SHMEM_SIZE}{"pmix.hwlocsize"}{size_t}{
+Size of the HWLOC shared memory segment.
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_XML_V1}{"pmix.hwlocxml1"}{char*}{
+\ac{XML} representation of local topology using HWLOC's v1.x format.
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_XML_V2}{"pmix.hwlocxml2"}{char*}{
+\ac{XML} representation of local topology using HWLOC's v2.x format.
+}
+%
+\declareAttributeDEP{PMIX_LOCAL_TOPO}{"pmix.ltopo"}{char*}{
+\ac{XML} representation of local node topology.
+}
+%
+\declareAttributeDEP{PMIX_MAPPER}{"pmix.mapper"}{char*}{
+Mapping mechanism to use for placing spawned processes - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the mapping mechanism used for the provided namespace.
+}
+%
+\declareAttributeDEP{PMIX_MAP_BLOB}{"pmix.mblob"}{pmix_byte_object_t}{
+Packed blob of process location.
+}
+%
+\declareAttributeDEP{PMIX_NON_PMI}{"pmix.nonpmi"}{bool}{
+Spawned processes will not call \refapi{PMIx_Init}.
+}
+%
+\declareAttributeDEP{PMIX_PROC_BLOB}{"pmix.pblob"}{pmix_byte_object_t}{
+Packed blob of process data.
+}
+%
+\declareAttributeDEP{PMIX_PROC_URI}{"pmix.puri"}{char*}{
+\ac{URI} containing contact information for the specified process.
+}
+%
+\declareAttributeDEP{PMIX_TOPOLOGY_FILE}{"pmix.topo.file"}{char*}{
+Full path to file containing \ac{XML} topology description
+}
+%
+\declareAttributeDEP{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
+Topology signature string.
+}
+%
+\declareAttributeDEP{PMIX_TOPOLOGY_XML}{"pmix.topo.xml"}{char*}{
+\ac{XML}-based description of topology
+}
+%
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% History: Version 4.0
 \section{Version 4.0: Nov. 2020}
