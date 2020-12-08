@@ -22,7 +22,6 @@ if __name__ == "__main__":
     #
     parser = argparse.ArgumentParser(description="PMIx Standard Attribute Reference Check")
     parser.add_argument("-v", "--verbose", help="Verbose output", action="store_true")
-    parser.add_argument("-f", "--fyi", help="FYI References (not errors)", action="store_true")
 
     parser.parse_args()
     args = parser.parse_args()
@@ -235,13 +234,13 @@ if __name__ == "__main__":
                     count_rm_refs += 1
 
     #
-    # Additional analysis for optional, non-error reporting
+    # Additional analysis for removed, but not deprecated items
     #
-    if args.fyi is True:
-        for attr in sorted(removed_attr):
-            if attr not in deprecated_attr:
-                print("Removed attribute that was not deprecated: "+attr);
-        
+    for attr in sorted(removed_attr):
+        if attr not in deprecated_attr:
+            print("Removed attribute that was not deprecated: "+attr);
+            count_rm_refs += 1
+
     #
     # Final summary
     #
