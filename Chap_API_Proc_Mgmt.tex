@@ -335,7 +335,7 @@ One or more processes in the job request failed to launch
 \subsection{Spawn attributes}
 \label{api:struct:attributes:spawn}
 
-Attributes used to describe \refapi{PMIx_Spawn} behavior - they are values passed to the \refapi{PMIx_Spawn} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \acp{API} when used in that context. However, some of the attributes defined in this section can be provided by the host environment for other purposes - e.g., the host might provide the \refattr{PMIX_MAPPER} attribute in the job-related information so that an application can use \refapi{PMIx_Get} to discover the layout algorithm used for determining process locations. Multi-use attributes and their respective access reference rank are denoted below.
+Attributes used to describe \refapi{PMIx_Spawn} behavior - they are values passed to the \refapi{PMIx_Spawn} \ac{API} and therefore are not accessed using the \refapi{PMIx_Get} \acp{API} when used in that context. However, some of the attributes defined in this section can be provided by the host environment for other purposes - e.g., the host might provide the \refattr{PMIX_MAPBY} attribute in the job-related information so that an application can use \refapi{PMIx_Get} to discover the mapping used for determining process locations. Multi-use attributes and their respective access reference rank are denoted below.
 
 %
 \declareAttribute{PMIX_PERSONALITY}{"pmix.pers"}{char*}{
