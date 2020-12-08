@@ -10,8 +10,11 @@ import shutil
 
 if __name__ == "__main__":
     count_not_used = 0
+    count_dep_refs = 0
+    count_rm_refs = 0
     attr_declared = {}
     deprecated_attr = []
+    removed_attr = []
     index_files = ["pmix-standard.idx", "index_attribute.idx"]
 
     #
@@ -19,6 +22,7 @@ if __name__ == "__main__":
     #
     parser = argparse.ArgumentParser(description="PMIx Standard Attribute Reference Check")
     parser.add_argument("-v", "--verbose", help="Verbose output", action="store_true")
+    parser.add_argument("-f", "--fyi", help="FYI References (not errors)", action="store_true")
 
     parser.parse_args()
     args = parser.parse_args()
@@ -27,7 +31,7 @@ if __name__ == "__main__":
     #
     # Verify that we have the necessary files in the current working directory
     # * pmix-standard.aux
-    # * pmix-standard.idx
+    # * index_files - see above
     #
     missing_index = False
     for fname in index_files:
@@ -89,7 +93,7 @@ if __name__ == "__main__":
         if args.verbose is True:
             print("Processing Index File: "+fname)
 
-        p = subprocess.Popen("grep \"\\|hyperindexformat\" "+fname,
+        p = subprocess.Popen("grep \"hyperindexformat{\" "+fname+" | sort",
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
         sout = p.communicate()[0].decode("utf-8").splitlines()
 
@@ -99,6 +103,7 @@ if __name__ == "__main__":
 
         for line in sout:
             line = line.rstrip()
+
             m = re.match(r'\s*\\indexentry{(\w+)', line)
             if m is None:
                 print("Error: Failed to extract an attribute on the following line")
@@ -107,11 +112,24 @@ if __name__ == "__main__":
             else:
                 attr_to_find = m.group(1)
 
+                # Some index entries have a prefix on them for sorting order, so
+                # access the actual printed string not the sorting version of
+                # the string.
+                m2 = re.match(r'\s*\\indexentry{(\w+)@(\w+)', line)
+                if m2 is not None:
+                    attr_to_find = m2.group(2)
+
                 # Check to see if this is deprecated
-                if re.search("indexdepfmt", line) is not None:
+                if re.search("(Deprecated)", line) is not None:
                     if args.verbose is True:
                         print("Found a Deprecated Attribute: "+attr_to_find)
                     deprecated_attr.insert(0, attr_to_find)
+
+                # Check to see if this is removed
+                if re.search("(Removed)", line) is not None:
+                    if args.verbose is True:
+                        print("Found a Removed Attribute: "+attr_to_find)
+                    removed_attr.insert(0, attr_to_find)
 
                 if attr_to_find in attr_declared:
                     attr_declared[attr_to_find] = attr_declared[attr_to_find] + 1
@@ -128,6 +146,7 @@ if __name__ == "__main__":
     if err_out is True:
         print("-"*50)
         print("Number of deprecated attributes: " + str(len(deprecated_attr)))
+        print("Number of removed attributes   : " + str(len(removed_attr)))
         print("Number of declared attributes  : " + str(len(attr_declared)))
         print("Number of missing attributes   : " + str(num_missing))
         sys.exit(1)
@@ -183,12 +202,51 @@ if __name__ == "__main__":
     #
     for attr in sorted(attr_declared):
         if attr_declared[attr] <= 0:
-            if attr not in deprecated_attr and attr != "PMIX_ATTR_UNDEF":
+            if attr not in deprecated_attr and attr not in removed_attr and attr != "PMIX_ATTR_UNDEF":
                 print("Attribute Missing Reference: "+attr)
                 count_not_used += 1
-            elif args.verbose is True and attr != "PMIX_ATTR_UNDEF":
-                print("=====> Deprecated Attribute Missing Reference: "+attr)
+        elif attr in deprecated_attr and attr in removed_attr and attr_declared[attr] == 1:
+            # There is an entry for the deprecation and the removal. This is fine
+            continue
+        elif attr in deprecated_attr or attr in removed_attr:
+            # Allow references within the Chap_Revisions.tex - count them
+            num_in_chap_revisions = 0
+            p = subprocess.Popen("grep \"refattr{"+attr+"}\" Chap_Revisions.tex | wc -l",
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
+            sout = p.communicate()[0].decode("utf-8").splitlines()
+            if p.returncode != 0:
+                print("Error: Failed to verify declared attribute \""+attr+"\". grep error code "+str(p.returncode)+"");
+                sys.exit(2)
+            for line in sout:
+                line = line.rstrip()
+                num_in_chap_revisions = int(line)
 
+            # Extra increment for deprecated and removed items
+            if attr in deprecated_attr and attr in removed_attr:
+                num_in_chap_revisions += 1
 
+            # If there are other references outside of the Revisions chapter then error out
+            if attr_declared[attr] - num_in_chap_revisions > 0:
+                if attr in deprecated_attr:
+                    print("Deprecated Attribute: "+attr+" (Referenced "+str(attr_declared[attr]-num_in_chap_revisions)+" times)")
+                    count_dep_refs += 1
+                elif attr in removed_attr:
+                    print("Removed    Attribute: "+attr+" (Referenced "+str(attr_declared[attr]-num_in_chap_revisions)+" times)")
+                    count_rm_refs += 1
+
+    #
+    # Additional analysis for optional, non-error reporting
+    #
+    if args.fyi is True:
+        for attr in sorted(removed_attr):
+            if attr not in deprecated_attr:
+                print("Removed attribute that was not deprecated: "+attr);
+        
+    #
+    # Final summary
+    #
     print("%3d of %3d Attributes are missing reference" % (count_not_used, len(attr_declared)))
-    sys.exit(count_not_used)
+    print("%3d of %3d Deprecated Attributes with references remaining" % (count_dep_refs, len(deprecated_attr)))
+    print("%3d of %3d Removed Attributes with references remaining" % (count_rm_refs, len(removed_attr)))
+
+    sys.exit(count_not_used + count_dep_refs + count_rm_refs)
