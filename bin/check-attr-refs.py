@@ -117,15 +117,19 @@ if __name__ == "__main__":
                 m2 = re.match(r'\s*\\indexentry{(\w+)@(\w+)', line)
                 if m2 is not None:
                     attr_to_find = m2.group(2)
+                else:
+                    m2 = re.match(r'\s*\\indexentry{(\w+)@\\emph\s*{(\w+)', line)
+                    if m2 is not None:
+                        attr_to_find = m2.group(2)
 
                 # Check to see if this is deprecated
-                if re.search("(Deprecated)", line) is not None:
+                if re.search("Deprecated", line) is not None:
                     if args.verbose is True:
                         print("Found a Deprecated Attribute: "+attr_to_find)
                     deprecated_attr.insert(0, attr_to_find)
 
                 # Check to see if this is removed
-                if re.search("(Removed)", line) is not None:
+                if re.search("Removed", line) is not None:
                     if args.verbose is True:
                         print("Found a Removed Attribute: "+attr_to_find)
                     removed_attr.insert(0, attr_to_find)

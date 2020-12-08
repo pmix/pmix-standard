@@ -252,9 +252,9 @@
 % New in this version
 \newcommand{\declareconstitemNEW}[1]{\item[\color{magenta}\code{#1}] \index[index_const]{#1|indexfmt} \label{const:#1} \hspace{1em}}
 % Deprecated
-\newcommand{\declareconstitemDEP}[1]{\item[\color{green!80!black}\code{#1}] \index[index_const]{Y_#1@\emph{#1} (Deprecated)|indexdepfmt} \label{const:#1} \hspace{1em}}
+\newcommand{\declareconstitemDEP}[1]{\item[\color{green!80!black}\code{#1}] \index[index_const]{Z_#1@\emph{#1}!\textbf{Deprecated}|indexdepfmt} \label{const:#1} \hspace{1em}}
 % Removed
-\newcommand{\declareconstitemRM}[1]{\item[\color{red!80!black}\code{#1}] \index[index_const]{Z_#1@\emph{#1} (Removed)|indexrmfmt} \label{const:#1} \hspace{1em}}
+\newcommand{\declareconstitemRM}[1]{\item[\color{red!80!black}\code{#1}] \index[index_const]{Z_#1@\emph{#1}!\textbf{Removed}|indexrmfmt} \label{const:#1} \hspace{1em}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -391,7 +391,17 @@
 
 \newcommand{\declareEnvarDEP}[2]{%
    {\color{green!80!black}\code{#1}}%
-    \index[index_envars]{#1@#1 \textbf{(Deprecated)}|indexdepfmt} \label{envar:#1}%
+    \index[index_envars]{#1@\emph{#1}!\textbf{Deprecated}|indexdepfmt} \label{envar:#1}%
+    \vspace{-1.3ex}%
+      \expandafter\begin{adjustwidth}{.95cm}{}%
+      \StdCopyEcho{#1}{#2}%
+    \end{adjustwidth}%
+  \vspace{-1.3ex}%
+}
+
+\newcommand{\declareEnvarRM}[2]{%
+   {\color{green!80!black}\code{#1}}%
+    \index[index_envars]{#1@\emph{#1}!\textbf{Removed}|indexrmfmt} \label{envar:#1}%
     \vspace{-1.3ex}%
       \expandafter\begin{adjustwidth}{.95cm}{}%
       \StdCopyEcho{#1}{#2}%
@@ -434,7 +444,7 @@
 
 \newcommand{\declareAttributeDEP}[4]{%
    {\color{green!80!black}\code{#1}} ~~\code{#2}~~(\code{#3})%
-    \index[index_attribute]{Y_#1@#1 \textbf{(Deprecated)}|indexdepfmt} \label{attr:#1}%
+    \index[index_attribute]{Z_#1@\emph{#1}!\textbf{Deprecated}|indexdepfmt} \label{attr:#1}%
     \StdCopy{str:#1}{\code{#2}}%
     \StdCopy{attr:#1}{\code{#3}}%
     \vspace{-1.3ex}%
@@ -446,7 +456,7 @@
 
 \newcommand{\declareAttributeRM}[4]{%
    {\color{red!80!black}\code{#1}} ~~\code{#2}~~(\code{#3})%
-    \index[index_attribute]{Z_#1@#1 \textbf{(Removed)}|indexdepfmt} \label{attr:#1}%
+    \index[index_attribute]{Z_#1@\emph{#1}!\textbf{Removed}|indexrmfmt} \label{attr:#1}%
     \StdCopy{str:#1}{\code{#2}}%
     \StdCopy{attr:#1}{\code{#3}}%
     \vspace{-1.3ex}%
