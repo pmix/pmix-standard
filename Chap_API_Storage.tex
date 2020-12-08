@@ -14,9 +14,7 @@ These attributes can be queried by applications, I/O libraries and middleware, a
 %%%%%%%%%%%
 \section{Storage support constants}
 
-\declarestruct{pmix_storage_type_t}
-
-The \refstruct{pmix_storage_type_t} structure is an enumerated type for specifying the type of storage system being used.
+The following constants are defined to specify common storage system types (for use with the \refattr{PMIX_STORAGE_TYPE} attribute).
 
 \begin{constantdesc}
 %
@@ -44,9 +42,6 @@ XFS storage system.
 \declareconstitemNEW{PMIX_STORAGE_TYPE_TMPFS}
 tmpfs storage system.
 %
-\declareconstitemNEW{PMIX_STORAGE_TYPE_UNKNOWN_FS}
-Unknown file-based storage system.
-%
 \declareconstitemNEW{PMIX_STORAGE_TYPE_DAOS}
 DAOS storage system.
 %
@@ -54,17 +49,14 @@ DAOS storage system.
 S3 storage system.
 %
 \declareconstitemNEW{PMIX_STORAGE_TYPE_GCP}
-GCP storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_UNKNOWN_OS}
-Unknown object-based storage system.
+GCP (Google Cloud Platform) storage system.
 %
 \end{constantdesc}
 
 
 \declarestruct{pmix_storage_medium_t}
 
-The \refstruct{pmix_storage_medium_t} structure is a \code{uint16_t} type that defines a set of bit-mask flags for specifying different types of storage mediums. These can be bitwise OR'd together to accommodate storage systems that mix storage medium types.
+The \refstruct{pmix_storage_medium_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different types of storage mediums. These can be bitwise OR'd together to accommodate storage systems that mix storage medium types.
 
 \begin{constantdesc}
 %
@@ -93,7 +85,7 @@ The storage system is volatile (e.g., tmpfs).
 
 \declarestruct{pmix_storage_locality_t}
 
-The \refstruct{pmix_storage_locality_t} structure is an enumerated type for specifying the locality of storage system resources. The locality is expressed relative to the process querying the attribute.
+The \refstruct{pmix_storage_locality_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different storage localities. These can be bitwise OR'd together to accommodate storage systems that combine storage localities.
 
 \begin{constantdesc}
 %
@@ -111,10 +103,9 @@ The storage system resources are on the WAN (i.e., not site-local).
 %
 \end{constantdesc}
 
-
 \declarestruct{pmix_storage_access_type_t}
 
-The \refstruct{pmix_storage_access_type_t} structure is an enumerated type for specifying storage system access types.
+The \refstruct{pmix_storage_access_type_t} type specifies different storage system access types.
 
 \begin{constantdesc}
 %
@@ -147,8 +138,13 @@ Mount point path for the storage system (valid only for file-based storage syste
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_TYPE}{"pmix.strg.type"}{pmix_storage_type_t}{
-Type of storage system (i.e., Lustre, GPFS, DAOS, ext4, tmpfs)
+\declareAttributeNEW{PMIX_STORAGE_TYPE}{"pmix.strg.type"}{char*}{
+Type of storage system (i.e., "lustre", "gpfs", "daos", "ext4")
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_VERSION}{"pmix.strg.ver"}{char*}{
+Version string for the storage system
 }
 
 %
@@ -167,13 +163,13 @@ Comma-delimited list of storage identifiers (i.e., \refattr{PMIX_STORAGE_ID} typ
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_CAPACITY_LIMIT}{"pmix.strg.caplim"}{uint64_t}{
-Overall limit on capacity (in Megabytes[base2]) for the storage system
+\declareAttributeNEW{PMIX_STORAGE_CAPACITY_LIMIT}{"pmix.strg.caplim"}{double}{
+Overall limit on capacity (in bytes) for the storage system
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_CAPACITY_USED}{"pmix.strg.capuse"}{uint64_t}{
-Overall used capacity (in Megabytes[base2]) for the storage system
+\declareAttributeNEW{PMIX_STORAGE_CAPACITY_USED}{"pmix.strg.capuse"}{double}{
+Overall used capacity (in bytes) for the storage system
 }
 
 %
@@ -187,38 +183,38 @@ Overall used number of objects (e.g., inodes) for the storage system
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_MINIMAL_XFER_SIZE}{"pmix.strg.minxfer"}{uint64_t}{
+\declareAttributeNEW{PMIX_STORAGE_MINIMAL_XFER_SIZE}{"pmix.strg.mxfer"}{double}{
 Minimal transfer size (in bytes) for the storage system - this is the storage system's atomic unit of transfer (e.g., block size)
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_OPTIMAL_XFER_SIZE}{"pmix.strg.optxfer"}{uint64_t}{
-Optimal transfer size (in bytes) for the storage system
+\declareAttributeNEW{PMIX_STORAGE_SUGGESTED_XFER_SIZE}{"pmix.strg.sxfer"}{double}{
+Suggested transfer size (in bytes) for the storage system
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_BW_MAX}{"pmix.strg.bwmax"}{float}{
-Maximum bandwidth (in Megabytes[base2]/sec) for storage system - provided as the theoretical maximum or the maximum observed bandwidth value
+\declareAttributeNEW{PMIX_STORAGE_BW_MAX}{"pmix.strg.bwmax"}{double}{
+Maximum bandwidth (in bytes/sec) for storage system - provided as the theoretical maximum or the maximum observed bandwidth value
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_BW_CUR}{"pmix.strg.bwcur"}{float}{
-Observed bandwidth (in Megabytes[base2]/sec) for storage system - provided as a recently observed bandwidth value, with the exact measurement interval depending on the storage system and/or PMIx library implementation
+\declareAttributeNEW{PMIX_STORAGE_BW_CUR}{"pmix.strg.bwcur"}{double}{
+Observed bandwidth (in bytes/sec) for storage system - provided as a recently observed bandwidth value, with the exact measurement interval depending on the storage system and/or PMIx library implementation
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_IOPS_MAX}{"pmix.strg.iopmax"}{float}{
-Maximum IOPS (in KIOPS, or thousand operations per second) for storage system - provided as the theoretical maximum or the maximum observed IOPS value
+\declareAttributeNEW{PMIX_STORAGE_IOPS_MAX}{"pmix.strg.iopmax"}{double}{
+Maximum IOPS (in I/O operations per second) for storage system - provided as the theoretical maximum or the maximum observed IOPS value
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_IOPS_CUR}{"pmix.strg.iopcur"}{float}{
-Observed IOPS (in KIOPS, or thousand operations per second) for storage system - provided as a recently observed IOPS value, with the exact measurement interval depending on the storage system and/or PMIx library implementation
+\declareAttributeNEW{PMIX_STORAGE_IOPS_CUR}{"pmix.strg.iopcur"}{double}{
+Observed IOPS (in I/O operations per second) for storage system - provided as a recently observed IOPS value, with the exact measurement interval depending on the storage system and/or PMIx library implementation
 }
 
 %
 \declareAttributeNEW{PMIX_STORAGE_ACCESS_TYPE}{"pmix.strg.atype"}{pmix_storage_access_type_t}{
-Qualifier describing the type of storage access to return information for (e.g., for qualifying \refattr{PMIX_STORAGE_BW_CUR},  \refattr{PMIX_STORAGE_IOPS_CUR}, or \refattr{PMIX_STORAGE_OPTIMAL_XFER_SIZE} attributes)
+Qualifier describing the type of storage access to return information for (e.g., for qualifying \refattr{PMIX_STORAGE_BW_CUR},  \refattr{PMIX_STORAGE_IOPS_CUR}, or \refattr{PMIX_STORAGE_SUGGESTED_XFER_SIZE} attributes)
 }
 
 
