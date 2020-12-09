@@ -183,7 +183,7 @@ Overall used number of objects (e.g., inodes) for the storage system
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_MINIMAL_XFER_SIZE}{"pmix.strg.mxfer"}{double}{
+\declareAttributeNEW{PMIX_STORAGE_MINIMAL_XFER_SIZE}{"pmix.strg.minxfer"}{double}{
 Minimal transfer size (in bytes) for the storage system - this is the storage system's atomic unit of transfer (e.g., block size)
 }
 
@@ -203,12 +203,12 @@ Observed bandwidth (in bytes/sec) for storage system - provided as a recently ob
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_IOPS_MAX}{"pmix.strg.iopmax"}{double}{
+\declareAttributeNEW{PMIX_STORAGE_IOPS_MAX}{"pmix.strg.iopsmax"}{double}{
 Maximum IOPS (in I/O operations per second) for storage system - provided as the theoretical maximum or the maximum observed IOPS value
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_IOPS_CUR}{"pmix.strg.iopcur"}{double}{
+\declareAttributeNEW{PMIX_STORAGE_IOPS_CUR}{"pmix.strg.iopscur"}{double}{
 Observed IOPS (in I/O operations per second) for storage system - provided as a recently observed IOPS value, with the exact measurement interval depending on the storage system and/or PMIx library implementation
 }
 
