@@ -304,6 +304,91 @@ The v3.2 update includes clarifications and corrections from the v3.1 document:
 \end{compactitemize}
 
 
+\subsection{Deprecated constants}
+
+The following constants were deprecated in v3.2:
+
+\begin{constantdesc}
+%
+\declareconstitemDEP{PMIX_ERR_DATA_VALUE_NOT_FOUND}
+Data value not found
+%
+\declareconstitemDEP{PMIX_ERR_HANDSHAKE_FAILED}
+Connection handshake failed
+%
+\declareconstitemDEP{PMIX_ERR_IN_ERRNO}
+Error defined in \code{errno}
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_ARG}
+Invalid argument
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_ARGS}
+Invalid arguments
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_KEY}
+Invalid key
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_KEY_LENGTH}
+Invalid key length
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_KEYVALP}
+Invalid key/value pair
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_LENGTH}
+Invalid argument length
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_NAMESPACE}
+Invalid namespace
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_NUM_ARGS}
+Invalid number of arguments
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_NUM_PARSED}
+Invalid number parsed
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_SIZE}
+Invalid size
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_VAL}
+Invalid value
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_VAL_LENGTH}
+Invalid value length
+%
+\declareconstitemDEP{PMIX_ERR_NOT_IMPLEMENTED}
+Not implemented
+%
+\declareconstitemDEP{PMIX_ERR_PACK_MISMATCH}
+Pack mismatch
+%
+\declareconstitemDEP{PMIX_ERR_PROC_ENTRY_NOT_FOUND}
+Process not found
+%
+\declareconstitemDEP{PMIX_ERR_PROC_REQUESTED_ABORT}
+Process is already requested to abort
+%
+\declareconstitemDEP{PMIX_ERR_READY_FOR_HANDSHAKE}
+Ready for handshake
+%
+\declareconstitemDEP{PMIX_ERR_SERVER_FAILED_REQUEST}
+Failed to connect to the server
+%
+\declareconstitemDEP{PMIX_ERR_SERVER_NOT_AVAIL}
+Server is not available
+%
+\declareconstitemDEP{PMIX_ERR_SILENT}
+Silent error
+%
+\declareconstitemDEP{PMIX_GDS_ACTION_COMPLETE}
+The \ac{GDS} action has completed
+%
+\declareconstitemDEP{PMIX_NOTIFY_ALLOC_COMPLETE}
+Notify that a requested allocation operation is complete - the result of
+the request will be included in the \refarg{info} array
+%
+\end{constantdesc}
+
+
 \subsection{Deprecated attributes}
 
 The following attributes were deprecated in v3.2:
@@ -867,7 +952,7 @@ The following constants were removed from the \ac{PMIx} Standard in v4.0
 as they are internal to a particular \ac{PMIx} implementation.
 
 \begin{constantdesc}
-%
+%!TEX encoding = UTF-8 Unicode
 \declareconstitemRM{PMIX_ERR_HANDSHAKE_FAILED}
 Connection handshake failed
 %
