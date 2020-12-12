@@ -391,7 +391,7 @@
 
 \newcommand{\declareEnvarDEP}[2]{%
    {\color{green!80!black}\code{#1}}%
-    \index[index_envars]{#1@\emph{#1}!\textbf{Deprecated}|indexdepfmt} \label{envar:#1}%
+    \index[index_envars]{Z_#1@\emph{#1}!\textbf{Deprecated}|indexdepfmt} \label{envar:#1}%
     \vspace{-1.3ex}%
       \expandafter\begin{adjustwidth}{.95cm}{}%
       \StdCopyEcho{#1}{#2}%
@@ -401,7 +401,7 @@
 
 \newcommand{\declareEnvarRM}[2]{%
    {\color{green!80!black}\code{#1}}%
-    \index[index_envars]{#1@\emph{#1}!\textbf{Removed}|indexrmfmt} \label{envar:#1}%
+    \index[index_envars]{Z_#1@\emph{#1}!\textbf{Removed}|indexrmfmt} \label{envar:#1}%
     \vspace{-1.3ex}%
       \expandafter\begin{adjustwidth}{.95cm}{}%
       \StdCopyEcho{#1}{#2}%
@@ -735,14 +735,16 @@
 \newcommand{\refapi}[1]{\index[index_api]{#1}\hyperref[apifn:#1]{\code{#1}}}
 \newcommand{\argapi}[1] {\refapi{#1}}
 
+
 \newcommand{\declareapiDEP}[1]{%
    {\color{green!80!black}\code{#1}}%
-    \index[index_api]{#1@#1 \textbf{(Deprecated)}|indexdepfmt} \label{apifn:#1}%
+    \index[index_api]{Z_#1@#1!\textbf{(Deprecated)}|indexdepfmt} \label{apifn:#1}%
 }
 
 \newcommand{\declareapiDEPNODISP}[1]{%
-  \index[index_api]{#1@#1|indexdepfmt} \label{apifn:#1}%
+  \index[index_api]{Z_#1@#1!\textbf{(Deprecated)}|indexdepfmt} \label{apifn:#1}%
 }
+\newcommand{\refapiDEP}[1]{\index[index_api]{Z_#1@#1!\textbf{(Deprecated)}}\hyperref[apifn:#1]{\code{#1}}}
 
 % API references for language bindings (e.g., Python)
 % {Language specific function}{Primary C PMIx function}{Language Classification}
