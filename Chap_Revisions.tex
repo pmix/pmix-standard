@@ -78,7 +78,7 @@ The following \acp{API} were introduced in v2.0 of the PMIx Standard:
 \subsection{Removed/Modified \acp{API}}
 
 The \refapi{PMIx_Init} \ac{API} was modified in v2.0 of the standard from its \textit{ad hoc} v1.0 signature to include passing of a \refstruct{pmix_info_t} array for flexibility and ``future-proofing'' of the \ac{API}.
-In addition, the PMIx_Notify_error, PMIx_Register_errhandler, and PMIx_Deregister_errhandler \acp{API} were replaced. This pre-dated official adoption of \ac{PMIx} as a Standard.
+In addition, the \code{PMIx_Notify_error}, \code{PMIx_Register_errhandler}, and \code{PMIx_Deregister_errhandler} \acp{API} were replaced. This pre-dated official adoption of \ac{PMIx} as a Standard.
 
 \subsection{Deprecated constants}
 
@@ -210,7 +210,7 @@ The document added a chapter on security credentials, a new section for \ac{IO} 
 
 The following constants were removed in v3.0:
 
-\refconst{PMIX_MODEX}
+\refconst{PMIX_MODEX}\\
 \refconst{PMIX_INFO_ARRAY}
 
 \subsection{Deprecated attributes}
@@ -226,43 +226,43 @@ If \code{true}, indicates that the requested choice of algorithm is mandatory.
 The following attributes were removed in v3.0:
 
 %
-\declareAttributeDEP{PMIX_ERROR_NAME}{"pmix.errname"}{pmix_status_t}{
+\declareAttributeRM{PMIX_ERROR_NAME}{"pmix.errname"}{pmix_status_t}{
 Specific error to be notified
 }
 %
-\declareAttributeDEP{PMIX_ERROR_GROUP_COMM}{"pmix.errgroup.comm"}{bool}{
+\declareAttributeRM{PMIX_ERROR_GROUP_COMM}{"pmix.errgroup.comm"}{bool}{
 Set true to get comm errors notification
 }
 %
-\declareAttributeDEP{PMIX_ERROR_GROUP_ABORT}{"pmix.errgroup.abort"}{bool}{
+\declareAttributeRM{PMIX_ERROR_GROUP_ABORT}{"pmix.errgroup.abort"}{bool}{
 Set true to get abort errors notification
 }
 %
-\declareAttributeDEP{PMIX_ERROR_GROUP_MIGRATE}{"pmix.errgroup.migrate"}{bool}{
+\declareAttributeRM{PMIX_ERROR_GROUP_MIGRATE}{"pmix.errgroup.migrate"}{bool}{
 Set true to get migrate errors notification
 }
 %
-\declareAttributeDEP{PMIX_ERROR_GROUP_RESOURCE}{"pmix.errgroup.resource"}{bool}{
+\declareAttributeRM{PMIX_ERROR_GROUP_RESOURCE}{"pmix.errgroup.resource"}{bool}{
 Set true to get resource errors notification
 }
 %
-\declareAttributeDEP{PMIX_ERROR_GROUP_SPAWN}{"pmix.errgroup.spawn"}{bool}{
+\declareAttributeRM{PMIX_ERROR_GROUP_SPAWN}{"pmix.errgroup.spawn"}{bool}{
 Set true to get spawn errors notification
 }
 %
-\declareAttributeDEP{PMIX_ERROR_GROUP_NODE}{"pmix.errgroup.node"}{bool}{
+\declareAttributeRM{PMIX_ERROR_GROUP_NODE}{"pmix.errgroup.node"}{bool}{
 Set true to get node status notification
 }
 %
-\declareAttributeDEP{PMIX_ERROR_GROUP_LOCAL}{"pmix.errgroup.local"}{bool}{
+\declareAttributeRM{PMIX_ERROR_GROUP_LOCAL}{"pmix.errgroup.local"}{bool}{
 Set true to get local errors notification
 }
 %
-\declareAttributeDEP{PMIX_ERROR_GROUP_GENERAL}{"pmix.errgroup.gen"}{bool}{
+\declareAttributeRM{PMIX_ERROR_GROUP_GENERAL}{"pmix.errgroup.gen"}{bool}{
 Set true to get notified of generic errors
 }
 %
-\declareAttributeDEP{PMIX_ERROR_HANDLER_ID}{"pmix.errhandler.id"}{int}{
+\declareAttributeRM{PMIX_ERROR_HANDLER_ID}{"pmix.errhandler.id"}{int}{
 Errhandler reference id of notification being reported
 }
 
@@ -302,6 +302,175 @@ The v3.2 update includes clarifications and corrections from the v3.1 document:
     \item Update the \refapi{PMIx_generate_regex} and \refapi{PMIx_generate_ppn} descriptions to clarify that the output from these generator functions may not be a NULL-terminated string, but instead could be a byte array of arbitrary binary content.
     \item Add a new \refconst{PMIX_REGEX} constant that represents a regular expression data type.
 \end{compactitemize}
+
+
+\subsection{Deprecated constants}
+
+The following constants were deprecated in v3.2:
+
+\begin{constantdesc}
+%
+\declareconstitemDEP{PMIX_ERR_DATA_VALUE_NOT_FOUND}
+Data value not found
+%
+\declareconstitemDEP{PMIX_ERR_HANDSHAKE_FAILED}
+Connection handshake failed
+%
+\declareconstitemDEP{PMIX_ERR_IN_ERRNO}
+Error defined in \code{errno}
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_ARG}
+Invalid argument
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_ARGS}
+Invalid arguments
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_KEY}
+Invalid key
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_KEY_LENGTH}
+Invalid key length
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_KEYVALP}
+Invalid key/value pair
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_LENGTH}
+Invalid argument length
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_NAMESPACE}
+Invalid namespace
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_NUM_ARGS}
+Invalid number of arguments
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_NUM_PARSED}
+Invalid number parsed
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_SIZE}
+Invalid size
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_VAL}
+Invalid value
+%
+\declareconstitemDEP{PMIX_ERR_INVALID_VAL_LENGTH}
+Invalid value length
+%
+\declareconstitemDEP{PMIX_ERR_NOT_IMPLEMENTED}
+Not implemented
+%
+\declareconstitemDEP{PMIX_ERR_PACK_MISMATCH}
+Pack mismatch
+%
+\declareconstitemDEP{PMIX_ERR_PROC_ENTRY_NOT_FOUND}
+Process not found
+%
+\declareconstitemDEP{PMIX_ERR_PROC_REQUESTED_ABORT}
+Process is already requested to abort
+%
+\declareconstitemDEP{PMIX_ERR_READY_FOR_HANDSHAKE}
+Ready for handshake
+%
+\declareconstitemDEP{PMIX_ERR_SERVER_FAILED_REQUEST}
+Failed to connect to the server
+%
+\declareconstitemDEP{PMIX_ERR_SERVER_NOT_AVAIL}
+Server is not available
+%
+\declareconstitemDEP{PMIX_ERR_SILENT}
+Silent error
+%
+\declareconstitemDEP{PMIX_GDS_ACTION_COMPLETE}
+The \ac{GDS} action has completed
+%
+\declareconstitemDEP{PMIX_NOTIFY_ALLOC_COMPLETE}
+Notify that a requested allocation operation is complete - the result of
+the request will be included in the \refarg{info} array
+%
+\end{constantdesc}
+
+
+\subsection{Deprecated attributes}
+
+The following attributes were deprecated in v3.2:
+
+\declareAttributeDEP{PMIX_ARCH}{"pmix.arch"}{uint32_t}{
+Architecture flag.
+}
+%
+\declareAttributeDEP{PMIX_COLLECTIVE_ALGO}{"pmix.calgo"}{char*}{
+Comma-delimited list of algorithms to use for the collective operation. \ac{PMIx} does not impose any requirements on a host environment's collective algorithms. Thus, the acceptable values for this attribute will be environment-dependent - users are encouraged to check their host environment for supported values.
+}
+%
+\declareAttributeDEP{PMIX_DSTPATH}{"pmix.dstpath"}{char*}{
+Path to shared memory data storage (dstore) files. Deprecated from Standard as being implementation specific.
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_HOLE_KIND}{"pmix.hwlocholek"}{char*}{
+Kind of VM ``hole'' HWLOC should use for shared memory
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_SHARE_TOPO}{"pmix.hwlocsh"}{bool}{
+Share the HWLOC topology via shared memory
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_SHMEM_ADDR}{"pmix.hwlocaddr"}{size_t}{
+Address of the HWLOC shared memory segment.
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_SHMEM_FILE}{"pmix.hwlocfile"}{char*}{
+Path to the HWLOC shared memory file.
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_SHMEM_SIZE}{"pmix.hwlocsize"}{size_t}{
+Size of the HWLOC shared memory segment.
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_XML_V1}{"pmix.hwlocxml1"}{char*}{
+\ac{XML} representation of local topology using HWLOC's v1.x format.
+}
+%
+\declareAttributeDEP{PMIX_HWLOC_XML_V2}{"pmix.hwlocxml2"}{char*}{
+\ac{XML} representation of local topology using HWLOC's v2.x format.
+}
+%
+\declareAttributeDEP{PMIX_LOCAL_TOPO}{"pmix.ltopo"}{char*}{
+\ac{XML} representation of local node topology.
+}
+%
+\declareAttributeDEP{PMIX_MAPPER}{"pmix.mapper"}{char*}{
+Mapping mechanism to use for placing spawned processes - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the mapping mechanism used for the provided namespace.
+}
+%
+\declareAttributeDEP{PMIX_MAP_BLOB}{"pmix.mblob"}{pmix_byte_object_t}{
+Packed blob of process location.
+}
+%
+\declareAttributeDEP{PMIX_NON_PMI}{"pmix.nonpmi"}{bool}{
+Spawned processes will not call \refapi{PMIx_Init}.
+}
+%
+\declareAttributeDEP{PMIX_PROC_BLOB}{"pmix.pblob"}{pmix_byte_object_t}{
+Packed blob of process data.
+}
+%
+\declareAttributeDEP{PMIX_PROC_URI}{"pmix.puri"}{char*}{
+\ac{URI} containing contact information for the specified process.
+}
+%
+\declareAttributeDEP{PMIX_TOPOLOGY_FILE}{"pmix.topo.file"}{char*}{
+Full path to file containing \ac{XML} topology description
+}
+%
+\declareAttributeDEP{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
+Topology signature string.
+}
+%
+\declareAttributeDEP{PMIX_TOPOLOGY_XML}{"pmix.topo.xml"}{char*}{
+\ac{XML}-based description of topology
+}
+%
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% History: Version 4.0
@@ -714,7 +883,7 @@ The above changes included introduction of the following \acp{API} and data type
 \declareapiDEP{pmix_evhdlr_reg_cbfunc_t}
 Renamed to \refapi{pmix_hdlr_reg_cbfunc_t}
 
-The \refapi{pmix_server_client_connected_fn_t} server module entry point has
+The \refapiDEP{pmix_server_client_connected_fn_t} server module entry point has
 been \emph{deprecated} in favor of
 \refapi{pmix_server_client_connected2_fn_t}
 
@@ -783,80 +952,80 @@ The following constants were removed from the \ac{PMIx} Standard in v4.0
 as they are internal to a particular \ac{PMIx} implementation.
 
 \begin{constantdesc}
-%
-\declareconstitemDEP{PMIX_ERR_HANDSHAKE_FAILED}
+%!TEX encoding = UTF-8 Unicode
+\declareconstitemRM{PMIX_ERR_HANDSHAKE_FAILED}
 Connection handshake failed
 %
-\declareconstitemDEP{PMIX_ERR_READY_FOR_HANDSHAKE}
+\declareconstitemRM{PMIX_ERR_READY_FOR_HANDSHAKE}
 Ready for handshake
 %
-\declareconstitemDEP{PMIX_ERR_IN_ERRNO}
+\declareconstitemRM{PMIX_ERR_IN_ERRNO}
 Error defined in \code{errno}
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_VAL_LENGTH}
+\declareconstitemRM{PMIX_ERR_INVALID_VAL_LENGTH}
 Invalid value length
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_LENGTH}
+\declareconstitemRM{PMIX_ERR_INVALID_LENGTH}
 Invalid argument length
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_NUM_ARGS}
+\declareconstitemRM{PMIX_ERR_INVALID_NUM_ARGS}
 Invalid number of arguments
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_ARGS}
+\declareconstitemRM{PMIX_ERR_INVALID_ARGS}
 Invalid arguments
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_NUM_PARSED}
+\declareconstitemRM{PMIX_ERR_INVALID_NUM_PARSED}
 Invalid number parsed
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_KEYVALP}
+\declareconstitemRM{PMIX_ERR_INVALID_KEYVALP}
 Invalid key/value pair
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_SIZE}
+\declareconstitemRM{PMIX_ERR_INVALID_SIZE}
 Invalid size
 %
-\declareconstitemDEP{PMIX_ERR_PROC_REQUESTED_ABORT}
+\declareconstitemRM{PMIX_ERR_PROC_REQUESTED_ABORT}
 Process is already requested to abort
 %
-\declareconstitemDEP{PMIX_ERR_SERVER_FAILED_REQUEST}
+\declareconstitemRM{PMIX_ERR_SERVER_FAILED_REQUEST}
 Failed to connect to the server
 %
-\declareconstitemDEP{PMIX_ERR_PROC_ENTRY_NOT_FOUND}
+\declareconstitemRM{PMIX_ERR_PROC_ENTRY_NOT_FOUND}
 Process not found
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_ARG}
+\declareconstitemRM{PMIX_ERR_INVALID_ARG}
 Invalid argument
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_KEY}
+\declareconstitemRM{PMIX_ERR_INVALID_KEY}
 Invalid key
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_KEY_LENGTH}
+\declareconstitemRM{PMIX_ERR_INVALID_KEY_LENGTH}
 Invalid key length
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_VAL}
+\declareconstitemRM{PMIX_ERR_INVALID_VAL}
 Invalid value
 %
-\declareconstitemDEP{PMIX_ERR_INVALID_NAMESPACE}
+\declareconstitemRM{PMIX_ERR_INVALID_NAMESPACE}
 Invalid namespace
 %
-\declareconstitemDEP{PMIX_ERR_SERVER_NOT_AVAIL}
+\declareconstitemRM{PMIX_ERR_SERVER_NOT_AVAIL}
 Server is not available
 %
-\declareconstitemDEP{PMIX_ERR_SILENT}
+\declareconstitemRM{PMIX_ERR_SILENT}
 Silent error
 %
-\declareconstitemDEP{PMIX_ERR_PACK_MISMATCH}
+\declareconstitemRM{PMIX_ERR_PACK_MISMATCH}
 Pack mismatch
 %
-\declareconstitemDEP{PMIX_ERR_DATA_VALUE_NOT_FOUND}
+\declareconstitemRM{PMIX_ERR_DATA_VALUE_NOT_FOUND}
 Data value not found
 %
-\declareconstitemDEP{PMIX_ERR_NOT_IMPLEMENTED}
+\declareconstitemRM{PMIX_ERR_NOT_IMPLEMENTED}
 Not implemented
 %
-\declareconstitemDEP{PMIX_GDS_ACTION_COMPLETE}
+\declareconstitemRM{PMIX_GDS_ACTION_COMPLETE}
 The \ac{GDS} action has completed
 %
-\declareconstitemDEP{PMIX_NOTIFY_ALLOC_COMPLETE}
+\declareconstitemRM{PMIX_NOTIFY_ALLOC_COMPLETE}
 Notify that a requested allocation operation is complete - the result of
 the request will be included in the \refarg{info} array
 %
@@ -928,83 +1097,83 @@ are internal to a particular \ac{PMIx} implementation. Users are referred to the
 description.
 
 %
-\declareAttributeDEP{PMIX_LOCAL_TOPO}{"pmix.ltopo"}{char*}{
+\declareAttributeRM{PMIX_LOCAL_TOPO}{"pmix.ltopo"}{char*}{
 \ac{XML} representation of local node topology.
 }
 %
-\declareAttributeDEP{PMIX_TOPOLOGY_XML}{"pmix.topo.xml"}{char*}{
+\declareAttributeRM{PMIX_TOPOLOGY_XML}{"pmix.topo.xml"}{char*}{
 \ac{XML}-based description of topology
 }
 %
-\declareAttributeDEP{PMIX_TOPOLOGY_FILE}{"pmix.topo.file"}{char*}{
+\declareAttributeRM{PMIX_TOPOLOGY_FILE}{"pmix.topo.file"}{char*}{
 Full path to file containing \ac{XML} topology description
 }
 %
-\declareAttributeDEP{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
+\declareAttributeRM{PMIX_TOPOLOGY_SIGNATURE}{"pmix.toposig"}{char*}{
 Topology signature string.
 }
 %
-\declareAttributeDEP{PMIX_HWLOC_SHMEM_ADDR}{"pmix.hwlocaddr"}{size_t}{
+\declareAttributeRM{PMIX_HWLOC_SHMEM_ADDR}{"pmix.hwlocaddr"}{size_t}{
 Address of the HWLOC shared memory segment.
 }
 %
-\declareAttributeDEP{PMIX_HWLOC_SHMEM_SIZE}{"pmix.hwlocsize"}{size_t}{
+\declareAttributeRM{PMIX_HWLOC_SHMEM_SIZE}{"pmix.hwlocsize"}{size_t}{
 Size of the HWLOC shared memory segment.
 }
 %
-\declareAttributeDEP{PMIX_HWLOC_SHMEM_FILE}{"pmix.hwlocfile"}{char*}{
+\declareAttributeRM{PMIX_HWLOC_SHMEM_FILE}{"pmix.hwlocfile"}{char*}{
 Path to the HWLOC shared memory file.
 }
 %
-\declareAttributeDEP{PMIX_HWLOC_XML_V1}{"pmix.hwlocxml1"}{char*}{
+\declareAttributeRM{PMIX_HWLOC_XML_V1}{"pmix.hwlocxml1"}{char*}{
 \ac{XML} representation of local topology using HWLOC's v1.x format.
 }
 %
-\declareAttributeDEP{PMIX_HWLOC_XML_V2}{"pmix.hwlocxml2"}{char*}{
+\declareAttributeRM{PMIX_HWLOC_XML_V2}{"pmix.hwlocxml2"}{char*}{
 \ac{XML} representation of local topology using HWLOC's v2.x format.
 }
 %
-\declareAttributeDEP{PMIX_HWLOC_SHARE_TOPO}{"pmix.hwlocsh"}{bool}{
+\declareAttributeRM{PMIX_HWLOC_SHARE_TOPO}{"pmix.hwlocsh"}{bool}{
 Share the HWLOC topology via shared memory
 }
 %
-\declareAttributeDEP{PMIX_HWLOC_HOLE_KIND}{"pmix.hwlocholek"}{char*}{
+\declareAttributeRM{PMIX_HWLOC_HOLE_KIND}{"pmix.hwlocholek"}{char*}{
 Kind of VM ``hole'' HWLOC should use for shared memory
 }
 %
-\declareAttributeDEP{PMIX_DSTPATH}{"pmix.dstpath"}{char*}{
+\declareAttributeRM{PMIX_DSTPATH}{"pmix.dstpath"}{char*}{
 Path to shared memory data storage (dstore) files. Deprecated from Standard as being implementation specific.
 }
 %
-\declareAttributeDEP{PMIX_COLLECTIVE_ALGO}{"pmix.calgo"}{char*}{
+\declareAttributeRM{PMIX_COLLECTIVE_ALGO}{"pmix.calgo"}{char*}{
 Comma-delimited list of algorithms to use for the collective operation. \ac{PMIx} does not impose any requirements on a host environment's collective algorithms. Thus, the acceptable values for this attribute will be environment-dependent - users are encouraged to check their host environment for supported values.
 }
 %
-\pasteAttributeItemBegin{PMIX_COLLECTIVE_ALGO_REQD}This attribute was deprecated in v3.0
-\pasteAttributeItemEnd{}
+\declareAttributeRM{PMIX_COLLECTIVE_ALGO_REQD}{"pmix.calreqd"}{bool}{
+If \code{true}, indicates that the requested choice of algorithm is mandatory.
+}
 %
-\declareAttributeDEP{PMIX_PROC_BLOB}{"pmix.pblob"}{pmix_byte_object_t}{
+\declareAttributeRM{PMIX_PROC_BLOB}{"pmix.pblob"}{pmix_byte_object_t}{
 Packed blob of process data.
 }
 %
-\declareAttributeDEP{PMIX_MAP_BLOB}{"pmix.mblob"}{pmix_byte_object_t}{
+\declareAttributeRM{PMIX_MAP_BLOB}{"pmix.mblob"}{pmix_byte_object_t}{
 Packed blob of process location.
 }
 %
-\declareAttributeDEP{PMIX_MAPPER}{"pmix.mapper"}{char*}{
+\declareAttributeRM{PMIX_MAPPER}{"pmix.mapper"}{char*}{
 Mapping mechanism to use for placing spawned processes - when accessed using \refapi{PMIx_Get}, use the \refconst{PMIX_RANK_WILDCARD} value for the rank to discover the mapping mechanism used for the provided namespace.
 }
 %
-\declareAttributeDEP{PMIX_NON_PMI}{"pmix.nonpmi"}{bool}{
+\declareAttributeRM{PMIX_NON_PMI}{"pmix.nonpmi"}{bool}{
 Spawned processes will not call \refapi{PMIx_Init}.
 }
 %
-\declareAttributeDEP{PMIX_PROC_URI}{"pmix.puri"}{char*}{
+\declareAttributeRM{PMIX_PROC_URI}{"pmix.puri"}{char*}{
 \ac{URI} containing contact information for the specified process.
 }
-
 %
-\declareAttributeDEP{PMIX_ARCH}{"pmix.arch"}{uint32_t}{
+\declareAttributeRM{PMIX_ARCH}{"pmix.arch"}{uint32_t}{
 Architecture flag.
 }
 
