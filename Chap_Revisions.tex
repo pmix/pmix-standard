@@ -474,7 +474,7 @@ Topology signature string.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% History: Version 4.0
-\section{Version 4.0: Nov. 2020}
+\section{Version 4.0: Dec. 2020}
 
 NOTE: The PMIx Standard document has undergone significant reorganization in an
 effort to become more user-friendly. Highlights include:
@@ -537,21 +537,21 @@ The above changes included introduction of the following \acp{API} and data type
 
     \item Server \acp{API}
     \begin{compactitemize}
-    \item \refapi{PMIx_server_generate_locality_string}
-    \item \refapi{PMIx_Register_attributes}
-    \item \refapi{PMIx_server_define_process_set}, \refapi{PMIx_server_delete_process_set}
-    \item \refapi{pmix_server_grp_fn_t}, \refapi{pmix_server_fabric_fn_t}
-    \item \refapi{pmix_server_client_connected2_fn_t}
-    \item \refapi{PMIx_server_generate_cpuset_string}
-    \item \refapi{PMIx_server_register_resources}, \refapi{PMIx_server_deregister_resources}
+        \item \refapi{PMIx_server_generate_locality_string}
+        \item \refapi{PMIx_Register_attributes}
+        \item \refapi{PMIx_server_define_process_set}, \refapi{PMIx_server_delete_process_set}
+        \item \refapi{pmix_server_grp_fn_t}, \refapi{pmix_server_fabric_fn_t}
+        \item \refapi{pmix_server_client_connected2_fn_t}
+        \item \refapi{PMIx_server_generate_cpuset_string}
+        \item \refapi{PMIx_server_register_resources}, \refapi{PMIx_server_deregister_resources}
     \end{compactitemize}
 
     \item Tool \acp{API}
     \begin{compactitemize}
-    \item \refapi{PMIx_tool_disconnect}
-    \item \refapi{PMIx_tool_set_server}
-    \item \refapi{PMIx_tool_attach_to_server}
-    \item \refapi{PMIx_tool_get_servers}
+        \item \refapi{PMIx_tool_disconnect}
+        \item \refapi{PMIx_tool_set_server}
+        \item \refapi{PMIx_tool_attach_to_server}
+        \item \refapi{PMIx_tool_get_servers}
     \end{compactitemize}
 
     \item Data types
@@ -876,6 +876,11 @@ The above changes included introduction of the following \acp{API} and data type
 \subsection{Added Macros}
 %
 \refmacro{PMIX_CHECK_RESERVED_KEY}
+\refmacro{PMIX_INFO_LIST_START}
+\refmacro{PMIX_INFO_LIST_ADD}
+\refmacro{PMIX_INFO_LIST_XFER}
+\refmacro{PMIX_INFO_LIST_CONVERT}
+\refmacro{PMIX_INFO_LIST_RELEASE}
 %
 %
 \subsection{Deprecated \acp{API}}
