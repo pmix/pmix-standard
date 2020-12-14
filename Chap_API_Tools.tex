@@ -72,7 +72,7 @@ Tool process identifiers are assigned by one of the following methods:
         \item If \refattr{PMIX_TOOL_RANK} is also given, then the rank of the tool will be assigned that value.
         \item If \refattr{PMIX_TOOL_RANK} is not given, then the rank will be set to a default value of zero.
     \end{itemize}
-    \item If a process ID has not been provided and the tool connects to a server, then one will be assigned by the host environment upon connection to that server.
+    \item If a process ID is not provided and the tool connects to a server, then one will be assigned by the host environment upon connection to that server.
     \item If a process ID is not provided and the tool does not connect to a server (e.g., if \refattr{PMIX_TOOL_DO_NOT_CONNECT} is given), then the tool shall self-assign a unique identifier. This is often done using some combination involving hostname and \ac{PID}.
 \end{itemize}
 
