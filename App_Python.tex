@@ -51,49 +51,49 @@ Table~\ref{app:python:ctopy} lists the correspondence between data types in the 
         \hline
         C-Definition & PMIx Name & Python Definition & Notes \\ \hline
         \endhead
-        \code{bool} & PMIX_BOOL & boolean & \\ \hline
-        \code{byte} & PMIX_BYTE & A single element byte array (i.e., a byte array of length one) & \\ \hline
-        \code{char*} & PMIX_STRING & string & \\ \hline
-        \code{size_t} & PMIX_SIZE & integer & \\ \hline
-        \code{pid_t} & PMIX_PID & integer & value shall be limited to the \code{uint32_t} range \\ \hline
-        \code{int, int8_t, int16_t, int32_t, int64_t} & PMIX_INT, PMIX_INT8, PMIX_INT16, PMIX_INT32, PMIX_INT64 & integer & value shall be limited to its corresponding range \\ \hline
-        \code{uint, uint8_t, uint16_t, uint32_t, uint64_t} & PMIX_UINT, PMIX_UINT8, PMIX_UINT16, PMIX_UINT32, PMIX_UINT64 & integer & value shall be limited to its corresponding range \\ \hline
-        \code{float, double} & PMIX_FLOAT, PMIX_DOUBLE & float & value shall be limited to its corresponding range \\ \hline
-        \code{struct timeval} & PMIX_TIMEVAL & \{'sec': sec, 'usec': microsec\} & each field is an integer value \\ \hline
-        \code{time_t} & PMIX_TIME & integer & limited to positive values \\ \hline
-        \refstruct{pmix_data_type_t} & PMIX_DATA_TYPE & integer & value shall be limited to the \code{uint16_t} range \\ \hline
-        \refstruct{pmix_status_t} & PMIX_STATUS & integer & \\ \hline
+        \code{bool} & \refconst{PMIX_BOOL} & boolean & \\ \hline
+        \code{byte} & \refconst{PMIX_BYTE} & A single element byte array (i.e., a byte array of length one) & \\ \hline
+        \code{char*} & \refconst{PMIX_STRING} & string & \\ \hline
+        \code{size_t} & \refconst{PMIX_SIZE} & integer & \\ \hline
+        \code{pid_t} & \refconst{PMIX_PID} & integer & value shall be limited to the \code{uint32_t} range \\ \hline
+        \code{int, int8_t, int16_t, int32_t, int64_t} & \refconst{PMIX_INT}, \refconst{PMIX_INT8}, \refconst{PMIX_INT16}, \refconst{PMIX_INT32}, \refconst{PMIX_INT64} & integer & value shall be limited to its corresponding range \\ \hline
+        \code{uint, uint8_t, uint16_t, uint32_t, uint64_t} & \refconst{PMIX_UINT}, \refconst{PMIX_UINT8}, \refconst{PMIX_UINT16}, \refconst{PMIX_UINT32}, \refconst{PMIX_UINT64} & integer & value shall be limited to its corresponding range \\ \hline
+        \code{float, double} & \refconst{PMIX_FLOAT}, \refconst{PMIX_DOUBLE} & float & value shall be limited to its corresponding range \\ \hline
+        \code{struct timeval} & \refconst{PMIX_TIMEVAL} & \{'sec': sec, 'usec': microsec\} & each field is an integer value \\ \hline
+        \code{time_t} & \refconst{PMIX_TIME} & integer & limited to positive values \\ \hline
+        \refstruct{pmix_data_type_t} & \refconst{PMIX_DATA_TYPE} & integer & value shall be limited to the \code{uint16_t} range \\ \hline
+        \refstruct{pmix_status_t} & \refconst{PMIX_STATUS} & integer & \\ \hline
         \refstruct{pmix_key_t} & N/A & \pylabel{key}string & The string's length shall be limited to one less than the size of the \refstruct{pmix_key_t} array (to reserve space for the terminating \code{NULL})  \\ \hline
         \refstruct{pmix_nspace_t} & N/A & \pylabel{nspace}string & The string's length shall be limited to one less than the size of the \refstruct{pmix_nspace_t} array (to reserve space for the terminating \code{NULL})  \\ \hline
-        \refstruct{pmix_rank_t} & PMIX_PROC_RANK & \pylabel{rank}integer & value shall be limited to the \code{uint32_t} range excepting the reserved values near \code{UINT32_MAX} \\ \hline
-        \refstruct{pmix_proc_t} & PMIX_PROC & \pylabel{proc}\{'nspace': nspace, 'rank': rank\} & \refarg{nspace} is a Python string and \refarg{rank} is an integer value. The \refarg{nspace} string's length shall be limited to one less than the size of the \refstruct{pmix_nspace_t} array (to reserve space for the terminating \code{NULL}), and the \refarg{rank} value shall conform to the constraints associated with \refstruct{pmix_rank_t} \\ \hline
-        \refstruct{pmix_byte_object_t} & PMIX_BYTE_OBJECT & \pylabel{byteobject}\{'bytes': bytes, 'size': size\} & \refarg{bytes} is a Python byte array and \refarg{size} is the integer number of bytes in that array. \\ \hline
-        \refstruct{pmix_persistence_t} & PMIX_PERSISTENCE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
-        \refstruct{pmix_scope_t} & PMIX_SCOPE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
-        \refstruct{pmix_data_range_t} & PMIX_RANGE & \pylabel{range}integer & value shall be limited to the \code{uint8_t} range \\ \hline
-        \refstruct{pmix_proc_state_t} & PMIX_PROC_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
-        \refstruct{pmix_proc_info_t} & PMIX_PROC_INFO & \{'proc': \{'nspace': nspace, 'rank': rank\}, 'hostname': hostname, 'executable': executable, 'pid': pid, 'exitcode': exitcode, 'state': state\} & \refarg{proc} is a Python \refpy{proc} dictionary; \refarg{hostname} and \refarg{executable} are Python strings; and \refarg{pid}, \refarg{exitcode}, and \refarg{state} are Python integers \\ \hline
-        \refstruct{pmix_data_array_t} & PMIX_DATA_ARRAY & \pylabel{array}\{'type': type, 'array': array\} & \refarg{type} is the \ac{PMIx} type of object in the array and \refarg{array} is a Python \emph{list} containing the individual array elements. Note that \refarg{array} can consist of \emph{any} \ac{PMIx} types, including (for example) a Python \refpy{info} object that itself contains an \refpy{array} value \\ \hline
-        \refstruct{pmix_info_directives_t}  & PMIX_INFO_DIRECTIVES & \pylabel{info directives}list & list of integer values (defined in Section \ref{api:struct:infodirs}) \\ \hline
-        \refstruct{pmix_alloc_directive_t} & PMIX_ALLOC_DIRECTIVE & \pylabel{allocdir}integer & value shall be limited to the \code{uint8_t} range \\ \hline
-        \refstruct{pmix_iof_channel_t} & PMIX_IOF_CHANNEL & \pylabel{channel}list & list of integer values (defined in Section \ref{api:tool:iofchannels}) \\ \hline
-        \refstruct{pmix_envar_t} & PMIX_ENVAR & \{'envar': envar, 'value': value, 'separator': separator\} & \refarg{envar} and \refarg{value} are Python strings, and \refarg{separator} a single-character Python string \\ \hline
-        \refstruct{pmix_value_t} & PMIX_VALUE & \pylabel{value}\{'value': value, 'val_type': type\} & \refarg{type} is the \ac{PMIx} datatype of \refarg{value}, and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype  \\ \hline
-        \refstruct{pmix_info_t} & PMIX_INFO & \pylabel{info}\{'key': key, 'flags': flags, value': value, 'val_type': type\} & \refarg{key} is a Python string \refpy{key}, \refarg{flags} is an \refpy{info directives} value, \refarg{type} is the \ac{PMIx} datatype of \refarg{value}, and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype \\ \hline
-        \refstruct{pmix_pdata_t} & PMIX_PDATA & \pylabel{pdata}\{'proc': \{'nspace': nspace, 'rank': rank\}, 'key': key, 'value': value, 'val_type': type\} & \refarg{proc} is a Python \refpy{proc} dictionary; \refarg{key} is a Python string \refpy{key}; \refarg{type} is the \ac{PMIx} datatype of \refarg{value}; and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype  \\ \hline
-        \refstruct{pmix_app_t} & PMIX_APP & \pylabel{app}\{'cmd': cmd, 'argv': [argv], 'env': [env], 'maxprocs': maxprocs, 'info': [info]\} & \refarg{cmd} is a Python string; \refarg{argv} and \refarg{env} are Python \emph{lists} containing Python strings; \refarg{maxprocs} is an integer; and \refarg{info} is a Python \emph{list} of \refpy{info} values   \\ \hline
-        \refstruct{pmix_query_t} & PMIX_QUERY & \pylabel{query}\{'keys': [keys], 'qualifiers': [info]\} & \refarg{keys} is a Python \emph{list} of Python strings, and \refarg{qualifiers} is a Python \emph{list} of \refpy{info} values \\ \hline
-        \refstruct{pmix_regattr_t} & PMIX_REGATTR & \pylabel{regattr}\{'name': name, 'key': key, 'type': type, 'info': [info], 'description': [desc]\} & \refarg{name} and \refarg{string} are Python strings; \refarg{type} is the \ac{PMIx} datatype for the attribute's value; \refarg{info} is a Python \emph{list} of \refpy{info} values; and \refarg{description} is a list of Python strings describing the attribute  \\ \hline
-        \refstruct{pmix_job_state_t} & PMIX_JOB_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
-        \refstruct{pmix_link_state_t} & PMIX_LINK_STATE & integer & value shall be limited to the \code{uint8_t} range \\ \hline
-        \refstruct{pmix_cpuset_t} & PMIX_PROC_CPUSET & \pylabel{cpuset}\{'source': source, 'cpus': bitmap\} & \refarg{source} is a string name of the library that created the cpuset; and \refarg{cpus} is a list of string ranges identifying the \acp{PU} to which the process is bound (e.g., [1, 3-5, 7]) \\ \hline
-        \refstruct{pmix_locality_t} & PMIX_LOCTYPE & \pylabel{locality}list & list of integer values (defined in Section \ref{api:proc:locality}) describing the relative locality of the specified local process \\ \hline
+        \refstruct{pmix_rank_t} & \refconst{PMIX_PROC_RANK} & \pylabel{rank}integer & value shall be limited to the \code{uint32_t} range excepting the reserved values near \code{UINT32_MAX} \\ \hline
+        \refstruct{pmix_proc_t} & \refconst{PMIX_PROC} & \pylabel{proc}\{'nspace': nspace, 'rank': rank\} & \refarg{nspace} is a Python string and \refarg{rank} is an integer value. The \refarg{nspace} string's length shall be limited to one less than the size of the \refstruct{pmix_nspace_t} array (to reserve space for the terminating \code{NULL}), and the \refarg{rank} value shall conform to the constraints associated with \refstruct{pmix_rank_t} \\ \hline
+        \refstruct{pmix_byte_object_t} & \refconst{PMIX_BYTE_OBJECT} & \pylabel{byteobject}\{'bytes': bytes, 'size': size\} & \refarg{bytes} is a Python byte array and \refarg{size} is the integer number of bytes in that array. \\ \hline
+        \refstruct{pmix_persistence_t} & \refattr{PMIX_PERSISTENCE} & integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_scope_t} & \refconst{PMIX_SCOPE} & integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_data_range_t} & \refattr{PMIX_RANGE} & \pylabel{range}integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_proc_state_t} & \refconst{PMIX_PROC_STATE} & integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_proc_info_t} & \refconst{PMIX_PROC_INFO} & \{'proc': \{'nspace': nspace, 'rank': rank\}, 'hostname': hostname, 'executable': executable, 'pid': pid, 'exitcode': exitcode, 'state': state\} & \refarg{proc} is a Python \refpy{proc} dictionary; \refarg{hostname} and \refarg{executable} are Python strings; and \refarg{pid}, \refarg{exitcode}, and \refarg{state} are Python integers \\ \hline
+        \refstruct{pmix_data_array_t} & \refconst{PMIX_DATA_ARRAY} & \pylabel{array}\{'type': type, 'array': array\} & \refarg{type} is the \ac{PMIx} type of object in the array and \refarg{array} is a Python \emph{list} containing the individual array elements. Note that \refarg{array} can consist of \emph{any} \ac{PMIx} types, including (for example) a Python \refpy{info} object that itself contains an \refpy{array} value \\ \hline
+        \refstruct{pmix_info_directives_t}  & \refconst{PMIX_INFO_DIRECTIVES} & \pylabel{info directives}list & list of integer values (defined in Section \ref{api:struct:infodirs}) \\ \hline
+        \refstruct{pmix_alloc_directive_t} & \refconst{PMIX_ALLOC_DIRECTIVE} & \pylabel{allocdir}integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_iof_channel_t} & \refconst{PMIX_IOF_CHANNEL} & \pylabel{channel}list & list of integer values (defined in Section \ref{api:tool:iofchannels}) \\ \hline
+        \refstruct{pmix_envar_t} & \refconst{PMIX_ENVAR} & \{'envar': envar, 'value': value, 'separator': separator\} & \refarg{envar} and \refarg{value} are Python strings, and \refarg{separator} a single-character Python string \\ \hline
+        \refstruct{pmix_value_t} & \refconst{PMIX_VALUE} & \pylabel{value}\{'value': value, 'val_type': type\} & \refarg{type} is the \ac{PMIx} datatype of \refarg{value}, and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype  \\ \hline
+        \refstruct{pmix_info_t} & \refconst{PMIX_INFO} & \pylabel{info}\{'key': key, 'flags': flags, value': value, 'val_type': type\} & \refarg{key} is a Python string \refpy{key}, \refarg{flags} is an \refpy{info directives} value, \refarg{type} is the \ac{PMIx} datatype of \refarg{value}, and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype \\ \hline
+        \refstruct{pmix_pdata_t} & \refconst{PMIX_PDATA} & \pylabel{pdata}\{'proc': \{'nspace': nspace, 'rank': rank\}, 'key': key, 'value': value, 'val_type': type\} & \refarg{proc} is a Python \refpy{proc} dictionary; \refarg{key} is a Python string \refpy{key}; \refarg{type} is the \ac{PMIx} datatype of \refarg{value}; and \refarg{value} is the associated value expressed in the appropriate Python form for the specified datatype  \\ \hline
+        \refstruct{pmix_app_t} & \refconst{PMIX_APP} & \pylabel{app}\{'cmd': cmd, 'argv': [argv], 'env': [env], 'maxprocs': maxprocs, 'info': [info]\} & \refarg{cmd} is a Python string; \refarg{argv} and \refarg{env} are Python \emph{lists} containing Python strings; \refarg{maxprocs} is an integer; and \refarg{info} is a Python \emph{list} of \refpy{info} values   \\ \hline
+        \refstruct{pmix_query_t} & \refconst{PMIX_QUERY} & \pylabel{query}\{'keys': [keys], 'qualifiers': [info]\} & \refarg{keys} is a Python \emph{list} of Python strings, and \refarg{qualifiers} is a Python \emph{list} of \refpy{info} values \\ \hline
+        \refstruct{pmix_regattr_t} & \refconst{PMIX_REGATTR} & \pylabel{regattr}\{'name': name, 'key': key, 'type': type, 'info': [info], 'description': [desc]\} & \refarg{name} and \refarg{string} are Python strings; \refarg{type} is the \ac{PMIx} datatype for the attribute's value; \refarg{info} is a Python \emph{list} of \refpy{info} values; and \refarg{description} is a list of Python strings describing the attribute  \\ \hline
+        \refstruct{pmix_job_state_t} & \refconst{PMIX_JOB_STATE} & integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_link_state_t} & \refconst{PMIX_LINK_STATE} & integer & value shall be limited to the \code{uint8_t} range \\ \hline
+        \refstruct{pmix_cpuset_t} & \refconst{PMIX_PROC_CPUSET} & \pylabel{cpuset}\{'source': source, 'cpus': bitmap\} & \refarg{source} is a string name of the library that created the cpuset; and \refarg{cpus} is a list of string ranges identifying the \acp{PU} to which the process is bound (e.g., [1, 3-5, 7]) \\ \hline
+        \refstruct{pmix_locality_t} & \refconst{PMIX_LOCTYPE} & \pylabel{locality}list & list of integer values (defined in Section \ref{api:proc:locality}) describing the relative locality of the specified local process \\ \hline
         \refstruct{pmix_fabric_t} & N/A & \pylabel{fabric}\{'name': name, 'index': idx, 'info': [info]\} & \refarg{name} is the string name assigned to the fabric; \refarg{index} is the integer ID assigned to the fabric; \refarg{info} is a list of \refpy{info} describing the fabric \\ \hline
-        \refstruct{pmix_endpoint_t} & PMIX_ENDPOINT & \pylabel{endpoint}\{'uuid': uuid, 'osname': osname, endpt': endpt\} & \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{osname} is the operating system name assigned to the device; \refarg{endpt} is a \refpy{byteobject} containing the endpoint information \\ \hline
-        \refstruct{pmix_device_distance_t} & PMIX_DEVICE_DIST & \pylabel{devdist}\{'uuid': uuid, 'osname': osname, mindist': mindist, 'maxdist': maxdist\} & \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{osname} is the operating system name assigned to the device; and \refarg{mindist} and \refarg{maxdist} are Python integers \\ \hline
-        \refstruct{pmix_coord_t} & PMIX_COORD & \pylabel{coord}\{'view': view, 'coord': [coords]\} & \refarg{view} is the \refstruct{pmix_coord_view_t} of the coordinate; and \refarg{coord} is a list of integer coordinates, one for each dimension of the fabric \\ \hline
-        \refstruct{pmix_geometry_t} & PMIX_GEOMETRY & \pylabel{geometry}\{'fabric': idx, 'uuid': uuid, 'osname': osname, coordinates': [coords]\} & \refarg{fabric} is the Python integer index of the fabric; \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{osname} is the operating system name assigned to the device; and \refarg{coordinates} is a list of \refpy{coord} containing the coordinates for the device across all views \\ \hline
-        \refstruct{pmix_device_type_t} & PMIX_DEVTYPE & \pylabel{devtype}list & list of integer values (defined in Section \ref{api:proc:devtype}) \\ \hline
+        \refstruct{pmix_endpoint_t} & \refconst{PMIX_ENDPOINT} & \pylabel{endpoint}\{'uuid': uuid, 'osname': osname, endpt': endpt\} & \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{osname} is the operating system name assigned to the device; \refarg{endpt} is a \refpy{byteobject} containing the endpoint information \\ \hline
+        \refstruct{pmix_device_distance_t} & \refconst{PMIX_DEVICE_DIST} & \pylabel{devdist}\{'uuid': uuid, 'osname': osname, mindist': mindist, 'maxdist': maxdist\} & \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{osname} is the operating system name assigned to the device; and \refarg{mindist} and \refarg{maxdist} are Python integers \\ \hline
+        \refstruct{pmix_coord_t} & \refconst{PMIX_COORD} & \pylabel{coord}\{'view': view, 'coord': [coords]\} & \refarg{view} is the \refstruct{pmix_coord_view_t} of the coordinate; and \refarg{coord} is a list of integer coordinates, one for each dimension of the fabric \\ \hline
+        \refstruct{pmix_geometry_t} & \refconst{PMIX_GEOMETRY} & \pylabel{geometry}\{'fabric': idx, 'uuid': uuid, 'osname': osname, coordinates': [coords]\} & \refarg{fabric} is the Python integer index of the fabric; \refarg{uuid} is the string system-unique identifier assigned to the device; \refarg{osname} is the operating system name assigned to the device; and \refarg{coordinates} is a list of \refpy{coord} containing the coordinates for the device across all views \\ \hline
+        \refstruct{pmix_device_type_t} & \refconst{PMIX_DEVTYPE} & \pylabel{devtype}list & list of integer values (defined in Section \ref{api:proc:devtype}) \\ \hline
         \refstruct{pmix_bind_envelope_t} & N/A & \pylabel{bindenv}integer & one of the values defined in Section \ref{api:proc:bindenv} \\ \hline
     \end{longtable}
 \end{small}
@@ -148,6 +148,7 @@ Note the use of the \refconst{PMIX_STRING} identifier to ensure the Python bindi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{IOF Delivery Function}
 \pylabel{iofcbfunc}
+\declareapibinding{iofcbfunc}{pmix_iof_cbfunc_t}{Python}
 
 %%%%
 \summary
@@ -181,6 +182,7 @@ See \refapi{pmix_iof_cbfunc_t} for details
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Event Handler}
 \pylabel{evhandler}
+\declareapibinding{evhandler}{pmix_notification_fn_t}{Python}
 
 %%%%
 \summary
@@ -224,6 +226,7 @@ The following definitions represent functions that may be provided to the \ac{PM
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Client Connected}
+\declareapibinding{clientconnected2}{pmix_server_client_connected2_fn_t}{Python}
 
 %%%%
 \summary
@@ -255,6 +258,7 @@ See \refapi{pmix_server_client_connected2_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Client Finalized}
+\declareapibinding{clientfinalized}{pmix_server_client_finalized_fn_t}{Python}
 
 %%%%
 \summary
@@ -282,6 +286,7 @@ See \refapi{pmix_server_client_finalized_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Client Aborted}
+\declareapibinding{clientaborted}{pmix_server_abort_fn_t}{Python}
 
 %%%%
 \summary
@@ -318,6 +323,7 @@ See \refapi{pmix_server_abort_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Fence}
+\declareapibinding{fence}{pmix_server_fencenb_fn_t}{Python}
 
 %%%%
 \summary
@@ -354,6 +360,7 @@ See \refapi{pmix_server_fencenb_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Direct Modex}
+\declareapibinding{dmodex}{pmix_server_dmodex_req_fn_t}{Python}
 
 %%%%
 \summary
@@ -389,6 +396,7 @@ See \refapi{pmix_server_dmodex_req_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Publish}
+\declareapibinding{publish}{pmix_server_publish_fn_t}{Python}
 
 %%%%
 \summary
@@ -423,6 +431,7 @@ See \refapi{pmix_server_publish_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Lookup}
+\declareapibinding{lookup}{pmix_server_lookup_fn_t}{Python}
 
 %%%%
 \summary
@@ -459,6 +468,7 @@ See \refapi{pmix_server_lookup_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Unpublish}
+\declareapibinding{unpublish}{pmix_server_unpublish_fn_t}{Python}
 
 %%%%
 \summary
@@ -494,6 +504,7 @@ See \refapi{pmix_server_unpublish_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Spawn}
+\declareapibinding{spawn}{pmix_server_spawn_fn_t}{Python}
 
 %%%%
 \summary
@@ -530,6 +541,7 @@ See \refapi{pmix_server_spawn_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Connect}
+\declareapibinding{connect}{pmix_server_connect_fn_t}{Python}
 
 %%%%
 \summary
@@ -564,6 +576,7 @@ See \refapi{pmix_server_connect_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Disconnect}
+\declareapibinding{disconnect}{pmix_server_disconnect_fn_t}{Python}
 
 %%%%
 \summary
@@ -598,6 +611,7 @@ See \refapi{pmix_server_disconnect_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Register Events}
+\declareapibinding{register_events}{pmix_server_register_events_fn_t}{Python}
 
 %%%%
 \summary
@@ -632,6 +646,7 @@ See \refapi{pmix_server_register_events_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Deregister Events}
+\declareapibinding{deregister_events}{pmix_server_deregister_events_fn_t}{Python}
 
 %%%%
 \summary
@@ -665,6 +680,7 @@ See \refapi{pmix_server_deregister_events_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Notify Event}
+\declareapibinding{notify_event}{pmix_server_notify_event_fn_t}{Python}
 
 %%%%
 \summary
@@ -701,6 +717,7 @@ See \refapi{pmix_server_notify_event_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Query}
+\declareapibinding{query}{pmix_server_query_fn_t}{Python}
 
 %%%%
 \summary
@@ -736,6 +753,7 @@ See \refapi{pmix_server_query_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Tool Connected}
+\declareapibinding{tool_connected}{pmix_server_tool_connection_fn_t}{Python}
 
 %%%%
 \summary
@@ -770,6 +788,7 @@ See \refapi{pmix_server_tool_connection_fn_t} for details
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Log}
+\declareapibinding{log}{pmix_server_log_fn_t}{Python}
 
 %%%%
 \summary
@@ -805,6 +824,7 @@ See \refapi{pmix_server_log_fn_t} for details.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Allocate Resources}
+\declareapibinding{allocate}{pmix_server_alloc_fn_t}{Python}
 
 %%%%
 \summary
@@ -841,6 +861,7 @@ See \refapi{pmix_server_alloc_fn_t} for details.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Job Control}
+\declareapibinding{job_control}{pmix_server_job_control_fn_t}{Python}
 
 %%%%
 \summary
@@ -876,6 +897,7 @@ See \refapi{pmix_server_job_control_fn_t} for details.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Monitor}
+\declareapibinding{monitor}{pmix_server_monitor_fn_t}{Python}
 
 %%%%
 \summary
@@ -912,6 +934,7 @@ See \refapi{pmix_server_monitor_fn_t} for details.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Get Credential}
+\declareapibinding{get_credential}{pmix_server_get_cred_fn_t}{Python}
 
 %%%%
 \summary
@@ -948,6 +971,7 @@ See \refapi{pmix_server_get_cred_fn_t} for details.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Validate Credential}
+\declareapibinding{validate_credential}{pmix_server_validate_cred_fn_t}{Python}
 
 %%%%
 \summary
@@ -984,6 +1008,7 @@ See \refapi{pmix_server_validate_cred_fn_t} for details.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{IO Forward}
+\declareapibinding{iof_pull}{pmix_server_iof_fn_t}{Python}
 
 %%%%
 \summary
@@ -1019,6 +1044,7 @@ See \refapi{pmix_server_iof_fn_t} for details.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{IO Push}
+\declareapibinding{iof_push}{pmix_server_stdin_fn_t}{Python}
 
 %%%%
 \summary
@@ -1055,6 +1081,7 @@ See \refapi{pmix_server_stdin_fn_t} for details.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Group Operations}
+\declareapibinding{group}{pmix_server_grp_fn_t}{Python}
 
 %%%%
 \summary
@@ -1092,6 +1119,7 @@ See \refapi{pmix_server_grp_fn_t} for details.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Fabric Operations}
+\declareapibinding{fabric}{pmix_server_fabric_fn_t}{Python}
 
 %%%%
 \summary
@@ -1710,7 +1738,7 @@ See \refapi{PMIx_Resolve_nodes} for description of all relevant attributes and b
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.query}
-\declareapibinding{PMIxClient.query}{PMIx_Query_info_nb}{Python}
+\declareapibinding{PMIxClient.query}{PMIx_Query_info}{Python}
 
 %%%%
 \summary
@@ -1738,7 +1766,7 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the query (list)
 \end{itemize}
 
-See \refapi{PMIx_Query_info_nb} for description of all relevant attributes and behaviors.
+See \refapi{PMIx_Query_info} for description of all relevant attributes and behaviors.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1775,8 +1803,8 @@ See \refapi{PMIx_Log} for description of all relevant attributes and behaviors.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Client.allocate}
-\declareapibinding{PMIxClient.allocate}{PMIx_Allocation_request_nb}{Python}
+\subsection{Client.allocation_request}
+\declareapibinding{PMIxClient.allocation_request}{PMIx_Allocation_request}{Python}
 
 %%%%
 \summary
@@ -1789,7 +1817,7 @@ Request an allocation operation from the host resource manager.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc,info = myclient.allocate(request:integer, directives:list)
+rc,info = myclient.allocation_request(request:integer, directives:list)
 \end{codepar}
 \pyspecificend
 
@@ -1805,12 +1833,12 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
 \end{itemize}
 
-See \refapi{PMIx_Allocation_request_nb} for description of all relevant attributes and behaviors.
+See \refapi{PMIx_Allocation_request} for description of all relevant attributes and behaviors.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.job_ctrl}
-\declareapibinding{PMIxClient.job_ctrl}{PMIx_Job_control_nb}{Python}
+\declareapibinding{PMIxClient.job_ctrl}{PMIx_Job_control}{Python}
 
 %%%%
 \summary
@@ -1839,12 +1867,12 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
 \end{itemize}
 
-See \refapi{PMIx_Job_control_nb} for description of all relevant attributes and behaviors.
+See \refapi{PMIx_Job_control} for description of all relevant attributes and behaviors.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.monitor}
-\declareapibinding{PMIxClient.monitor}{PMIx_Process_monitor_nb}{Python}
+\declareapibinding{PMIxClient.monitor}{PMIx_Process_monitor}{Python}
 
 %%%%
 \summary
@@ -1874,7 +1902,7 @@ Returns:
     \item \refarg{info} - List of Python \refpy{info} containing results of the request (list)
 \end{itemize}
 
-See \refapi{PMIx_Process_monitor_nb} for description of all relevant attributes and behaviors.
+See \refapi{PMIx_Process_monitor} for description of all relevant attributes and behaviors.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2400,6 +2428,36 @@ Returns:
 
 See \refapi{PMIx_Get_cpuset} for details.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Client.parse_cpuset_string}
+\declareapibinding{PMIxClient.parse_cpuset_string}{PMIx_Parse_cpuset_string}{Python}
+
+\summary
+Parse the \ac{PU} binding bitmap from its string representation.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,cpuset = myclient.parse_cpuset_string(cpuset:string)
+\end{codepar}
+\pyspecificend
+
+\begin{arglist}
+\argin{cpuset}{String returned by \refapibinding{PMIxServer.generate_cpuset_string} (string)}
+\end{arglist}
+
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{cpuset} - \refpy{cpuset} containing the source and bitmap of the cpuset (dict)
+\end{itemize}
+
+See \refapi{PMIx_Parse_cpuset_string} for details.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Client.compute_distances}
@@ -2917,7 +2975,7 @@ rc = myserver.init(directives:list, map:dict)
 
 \begin{arglist}
 \argin{directives}{List of Python \refpy{info} dictionaries (list)}
-\argin{map}{Python dictionary key-function pairs that map \refpy{server module} callback functions to provided implementations (dict)}
+\argin{map}{Python dictionary key-function pairs that map \refpy{server module} callback functions to provided implementations (see \refapi{pmix_server_module_t}) (dict)}
 \end{arglist}
 
 Returns:
@@ -3014,6 +3072,67 @@ Returns:
 \end{itemize}
 
 See \refapi{PMIx_generate_ppn} for details.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Server.generate_locality_string}
+\declareapibinding{PMIxServer.generate_locality_string}{PMIx_server_generate_locality_string}{Python}
+
+\summary
+Generate a PMIx locality string from a given cpuset.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,locality = myserver.generate_locality_string(cpuset:dict)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{cset}{\refpy{cpuset} containing the bitmap of assigned PUs (dict)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{locality} - String representation of the PMIx locality corresponding to the input bitmap (string)
+\end{itemize}
+
+See \refapi{PMIx_server_generate_locality_string} for details.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Server.generate_cpuset_string}
+\declareapibinding{PMIxServer.generate_cpuset_string}{PMIx_server_generate_cpuset_string}{Python}
+
+\summary
+Generate a PMIx string representation of the provided cpuset.
+
+\format
+
+\versionMarker{4.0}
+\pyspecificstart
+\begin{codepar}
+rc,cpustr = myserver.generate_cpuset_string(cpuset:dict)
+\end{codepar}
+\pyspecificend
+
+
+\begin{arglist}
+\argin{cset}{\refpy{cpuset} containing the bitmap of assigned PUs (dict)}
+\end{arglist}
+
+Returns:
+
+\begin{itemize}
+    \item \refarg{rc} - \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant (integer)
+    \item \refarg{cpustr} - String representation of the input bitmap (string)
+\end{itemize}
+
+See \refapi{PMIx_server_generate_cpuset_string} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3733,12 +3852,13 @@ Designate a server as the tool's \emph{primary} server.
 \versionMarker{4.0}
 \pyspecificstart
 \begin{codepar}
-rc = mytool.set_server(proc:dict)
+rc = mytool.set_server(proc:dict, info:list)
 \end{codepar}
 \pyspecificend
 
 \begin{arglist}
-\argin{proc}{Python \refpy{proc} containing the identifier of the servers\ to which the tool is to attach  (list)}
+\argin{proc}{Python \refpy{proc} containing the identifier of the servers to which the tool is to attach  (list)}
+\argin{info}{List of Python \refpy{info} dictionaries (list)}
 \end{arglist}
 
 Returns:

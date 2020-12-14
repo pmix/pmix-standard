@@ -1017,11 +1017,11 @@ Register a client process with the PMIx server library.
 
 The host server can also, if it desires, provide an object it wishes to be returned when a server function is called that relates to a specific process.
 For example, the host server may have an object that tracks the specific client.
-Passing the object to the library allows the library to provide that object to the host server during subsequent calls related to that client, such as a \refapi{pmix_server_client_connected_fn_t} function.  This allows the host server to access the object without performing a lookup based on the client's namespace and rank.
+Passing the object to the library allows the library to provide that object to the host server during subsequent calls related to that client, such as a \refapi{pmix_server_client_connected2_fn_t} function.  This allows the host server to access the object without performing a lookup based on the client's namespace and rank.
 
 \advicermstart
 Host environments are required to execute this operation prior to starting the client process.
-The expected user ID and group ID of the child process allows the server library to properly authenticate clients as they connect by requiring the two values to match. Accordingly, the detected user and group ID's of the connecting process are not included in the \refapi{pmix_server_client_connected_fn_t} server module function.
+The expected user ID and group ID of the child process allows the server library to properly authenticate clients as they connect by requiring the two values to match. Accordingly, the detected user and group ID's of the connecting process are not included in the \refapi{pmix_server_client_connected2_fn_t} server module function.
 \advicermend
 
 \adviceimplstart
@@ -2832,13 +2832,11 @@ The following attributes are optional for host environments that support this op
 \pasteAttributeItem{PMIX_PRELOAD_BIN}
 \pasteAttributeItem{PMIX_PRELOAD_FILES}
 \pasteAttributeItem{PMIX_PERSONALITY}
-\pasteAttributeItem{PMIX_MAPPER}
 \pasteAttributeItem{PMIX_DISPLAY_MAP}
 \pasteAttributeItem{PMIX_PPR}
 \pasteAttributeItem{PMIX_MAPBY}
 \pasteAttributeItem{PMIX_RANKBY}
 \pasteAttributeItem{PMIX_BINDTO}
-\pasteAttributeItem{PMIX_NON_PMI}
 \pasteAttributeItem{PMIX_STDIN_TGT}
 \pasteAttributeItem{PMIX_FWD_STDIN}
 \pasteAttributeItem{PMIX_FWD_STDOUT}
@@ -3694,7 +3692,7 @@ typedef pmix_status_t (*pmix_server_job_control_fn_t)(
 \argin{ntargets}{Number of elements in the \refarg{targets} array (integer)}
 \argin{directives}{Array of info structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
@@ -3785,7 +3783,7 @@ typedef pmix_status_t (*pmix_server_monitor_fn_t)(
 \argin{error}{Status code to use in generating event if alarm triggers (integer)}
 \argin{directives}{Array of info structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 

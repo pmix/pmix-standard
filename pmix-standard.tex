@@ -69,10 +69,13 @@
 \input{pmix.sty}
 
 % Watermark for the Unofficial Drafts
-% Note: "allpages","evenpages","oddpages" do not work. Likely because of the index.
 \ifthenelse{\boolean{is_unofficial_draft}}
-  {\usepackage[printwatermark]{xwatermark}
-   \newwatermark[firstpage,color=gray!30,angle=45,scale=3,xpos=-5,ypos=0]{Unofficial Draft}
+  {\usepackage{draftwatermark}
+   \SetWatermarkText{\textbf{Unofficial Draft}}
+   \SetWatermarkColor[gray]{0.85}
+   \SetWatermarkFontSize{90pt}
+   \SetWatermarkScale{1}
+   \SetWatermarkAngle{45}
   }{}
 
 %%%%%%%%%%%%%%%%%%% Indices
