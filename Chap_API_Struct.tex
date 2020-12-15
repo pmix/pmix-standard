@@ -1291,6 +1291,116 @@ A \refstruct{pmix_info_t} structure is considered to be of type \refconst{PMIX_B
     \item the structure reports a type of \refconst{PMIX_BOOL} and the data flag is \code{true}
 \end{compactitemize}
 
+%%%%%%%%%%%
+\subsubsection{Info structure list macros}
+Constructing an array of \refstruct{pmix_info_t} is a fairly common operation. The following macros are provided to simplify this construction.
+
+%%%%%%%%%%%
+\littleheader{Start a list of \refstruct{pmix_info_t} structures}
+\declaremacro{PMIX_INFO_LIST_START}
+
+Initialize a list of \refstruct{pmix_info_t} structures. The actual list is opaque to the caller and is implementation-dependent.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_LIST_START(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{A \code{void*} pointer (handle)}
+\end{arglist}
+
+Note that the pointer will be initialized to an opaque structure whose elements are implementation-dependent. The caller must not modify or dereference the object.
+
+%%%%%%%%%%%
+\littleheader{Add a \refstruct{pmix_info_t} structure to a list}
+\declaremacro{PMIX_INFO_LIST_ADD}
+
+Add a \refstruct{pmix_info_t} structure containing the specified value to the provided list.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_LIST_ADD(rc, m, k, d, t)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{rc}{Return status for the operation (\refstruct{pmix_status_t})}
+\argin{m}{A \code{void*} pointer initialized via \refmacro{PMIX_INFO_LIST_START} (handle)}
+\argin{k}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
+\argin{d}{Pointer to the data value to be loaded (handle)}
+\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+\adviceuserstart
+Both key and data will be copied into the \refstruct{pmix_info_t} on the list - thus, the key and any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\littleheader{Transfer a \refstruct{pmix_info_t} structure to a list}
+\declaremacro{PMIX_INFO_LIST_XFER}
+
+Transfer the information in a \refstruct{pmix_info_t} structure to the provided list.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_LIST_XFER(rc, m, s)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{rc}{Return status for the operation (\refstruct{pmix_status_t})}
+\argin{m}{A \code{void*} pointer initialized via \refmacro{PMIX_INFO_LIST_START} (handle)}
+\argin{s}{Pointer to the source \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+\adviceuserstart
+All data (including key, value, and directives) will be copied into the destination \refstruct{pmix_info_t} on the list - thus, the source \refstruct{pmix_info_t} may be free'd without affecting the copied data once the macro has completed.
+\adviceuserend
+
+%%%%%%%%%%%
+\littleheader{Convert a \refstruct{pmix_info_t} list to an array}
+\declaremacro{PMIX_INFO_LIST_CONVERT}
+
+Transfer the information in the provided \refstruct{pmix_info_t} list to a \refstruct{pmix_data_array_t} array
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_LIST_CONVERT(rc, m, d)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{rc}{Return status for the operation (\refstruct{pmix_status_t})}
+\argin{m}{A \code{void*} pointer initialized via \refmacro{PMIX_INFO_LIST_START} (handle)}
+\argin{d}{Pointer to an instantiated \refstruct{pmix_data_array_t} structure where the \refstruct{pmix_info_t} array is to be stored (pointer to \refstruct{pmix_data_array_t})}
+\end{arglist}
+
+%%%%%%%%%%%
+\littleheader{Release a \refstruct{pmix_info_t} list}
+\declaremacro{PMIX_INFO_LIST_RELEASE}
+
+Release the provided \refstruct{pmix_info_t} list
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_LIST_RELEASE(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{A \code{void*} pointer initialized via \refmacro{PMIX_INFO_LIST_START} (handle)}
+\end{arglist}
+
+Information contained in the \refstruct{pmix_info_t} on the list shall be released in addition to whatever backing storage the implementation may have allocated to support construction of the list.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Info Type Directives}
 \declarestruct{pmix_info_directives_t}
