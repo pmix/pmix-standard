@@ -4,19 +4,81 @@
 \chapter{Data Access and Sharing}
 \label{chap:api_sync_acc}
 
-In \ac{PMIx} key-value pairs are the primary way that information is shared between processes in the \ac{PMIx} universe.
-For example, \ac{PMIx} clients often access job-level key-value pairs created by the \ac{PMIx} server, and exchange
-process-level information between \ac{PMIx} clients using the APIs presented in this chapter.
-Additionally, \ac{PMIx} tools access information about \ac{PMIx} client jobs from the \ac{PMIx} server using the
-same set of interfaces.
+In \ac{PMIx} key-value pairs are the primary way that information is shared 
+between processes in the \ac{PMIx} universe.  
+A key-value pair consists of a string key and a value data structure
+which includes the type of the value's data.  
+Each key is unique within the context or domain in which it exists.
+The context or domain of a key in PMIx is called a data realm.  
+%% The pmix_info_t type (See [add reference to 1.3.1 Attributes in PMIx]), is also built on key-values pairs.  
+%% However, pmix_info_t is used for influencing API calls and is not used for sharing 
+%% information between processes.  
+This chapter describes how key-values pairs are made available and accessed by clients.
 
-This chapter describes two mechanisms for exchanging key-value pairs between processes in the \ac{PMIx} universe.
-Namely, process related and non-process related exchanges.
-\emph{Process related key-value exchanges} are described in detail in Section \ref{chap:api_kv_mgmt:putget-overview}.
-Generally, these operations are useful for advertising information specific about one process to other processes in the \ac{PMIx} universe.
-The process accessing this information must know the identity of the process providing the data.
-\emph{Non-process related key-value exchanges} are described in detail in Section \ref{chap:api_kv_mgmt:publish-overview}.
-Generally, these operations are useful for advertising information that is not necessarily specific to one process to other processes in the \ac{PMIx} universe.
+A key-value pair has a scope defined by its data realm.  
+PMIx defines data realms for sessions, jobs, apps, nodes, processes and a special 
+realm for publish/lookup information.   
+These are explained more fully in [Add reference to chapter 6] and [Add reference to chapter publish/lookup].
+
+The source or provider of information, i.e. key-value pairs, can be the host environment or a pmix client.  
+The host environment can provide key-values pairs in any realm.
+PMIx clients can only provide key-values pairs within their own process realm and the publish/lookup realm.
+
+Any key which begins with the prefix "pmix" is called a reserved key.
+All other keys are called non-reserved keys.
+Reserved keys can only be provided by the host environment.  
+Reserved keys are documented in chapter [Add reference to chapter 6].   
+Each reserved key has an associated macro that is documented along with its description.  
+The string representation and the macro are equivalent methods to refer to a key.
+Throughout this document, the macro is used rather than its string value to refer to reserved keys.
+Clients cannot set or modify the value of reserved keys.
+%% I think we do need to bring this text back because there are actual code difference in how 
+%% standard keys are looked up.  It really does check and if it begins with PMIx_, it actually
+%% behaves differently in how it looks things up.
+%The distinction between reserved and non-reserved keys is important for client creators to understand.
+%Clients cannot be the source of reserved keys and the way reserved keys are accessed by clients 
+%is different than for non-reserved keys.
+
+Host environments are permitted to provide non-reserved keys.  However there are important caveats to 
+doing so that are explained in Chapter [Add reference to chapter 6].
+% Would like to make this statement stronger, but there is text in chapter 6 currently that
+% says it is allowed to use "custom-prefixed keys which may adhere to either the reserved or non-reserved
+% retrieval rules.
+Host environments should avoid providing reserved keys which are not standardized.  
+If the reserved key is later standardized to behave in a way that is different from the behavior 
+provided by the host environment, the host environment will not be compliant with the PMIx standard.
+ 
+Reserved keys are used to access information about a clients environement.
+The information is made available by the host environment prior to client initialization.
+After initialization, the client can access reserved keys using the PMIx_Get API.  
+Common information that a client may access includes 
+the name of host it is executing on, 
+the number of peer processes in its namespace,
+the number of peer processes in its application,
+and its rank within its peer processes within its namespace on the host it is executing on.   
+These are simply examples to give some idea of the types of information that is accessed this way.
+Reserved keys are associated with a data realm.
+
+(Do we want to make any statements about how and when values can change during the course of execution.
+ PMIX_EXIT_CODE for example, UNIVERSE_SIZE could change if more resources are added?)
+
+Non-reserved keys are generally provided by clients.
+A call to PMIx_Put will result in a key-value being associated with the calling client within 
+its process data realm.
+There is no mechanism to retract a key-value that has been made availble by a client through PMIx_Put.
+The key can be assigned a new value, but cannot be removed entirely.
+The PMIx_Get API is used to access both reserved-keys provided by the host environment and 
+non-reserved-keys provided by a specified client within the process data realm. 
+
+The publish-lookup data realm is accessed through a separate set of API's.
+This data realm is described in detail is chapter [Reference to publish/lookup chapter].
+Although PMIx_Publish and PMIx_Lookup are analogous to PMIx_Put and PMIx_Get in that both pairs 
+of API's provide functionality for exposing and retreiving key-values, the semantics vary significantly.  
+For example, PMIx_Lookup includes the ability to wait until a key is defined before returning.
+PMIx_Publish can restrict the scope of who can access data to its own namespace, the host environment, the session it is executing in, all processes or even custom scopes. 
+PMIx_Get can restrict the scope of who can access data to the node it is executing on, remote nodes, 
+all nodes or only itself.
+The publish/lookup data realm is useful for advertising information that is not necessarily specific to one process to other processes in the \ac{PMIx} universe.
 The process accessing this information does \emph{not} need to know the identity of the process that provided the data.
 
 \ac{PMIx} does not provide a mechanism to asynchronously notify a process about the availability of key-value information once it is made available by another process.
@@ -32,11 +94,6 @@ In some environments that support ``instant-on'' all connectivity information fo
 For example, a client can access the number of nodes (\refattr{PMIX_NUM_NODES}) used by a session, job, or application.
 Rather than having three different attributes, a single attribute is used but with the data realm context of the query specified as additional attributes.
 Examples of these access patterns are presented in Section \ref{chap:api_kv:getex} and Table~\ref{tab:key-value-realms} summarizes how to access such data.
-
-The key-value pairs at the session, job, application, node, and namespace levels can only be established by the \ac{PMIx} server.
-The key-value pairs at the process-level can be established by the \ac{PMIx} server or by the \ac{PMIx} client.
-Keys prefixed with ``\code{pmix}'' are reserved by \ac{PMIx} and may only be set by the \ac{PMIx} server when setting up the namespace.
-See Chapter~\ref{chap:api_server} for more details about the \ac{PMIx} server.
 
 \ac{PMIx} clients can share key-value pairs associated with themselves by using the \refapi{PMIx_Put} function.
 The \refapi{PMIx_Put} function automatically associates the key-value pair with the calling process, thus making it specific to that process.
