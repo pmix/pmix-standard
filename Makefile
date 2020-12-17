@@ -2,6 +2,7 @@
 # For more information, see the master document, pmix-standard.tex.
 
 version=4.0
+OPENPMIX_BRANCH ?= "v4.0"
 default: pmix-standard.pdf
 
 CHAPTERS= \
@@ -88,9 +89,12 @@ check-decl: pmix-standard.pdf FORCECHECK
 	@echo "====> Checking for Multi-declared items"
 	@./bin/check-multi-declare.py
 
+# The default is defined near the top of the Makefile
+# To change the default at runtime you can manually set the envar:
+#   OPENPMIX_BRANCH=master make check-openpmix
 check-openpmix: pmix-standard.pdf FORCECHECK
 	@echo "====> Checking cross-reference with OpenPMIx"
-	@./bin/check-openpmix.py
+	@./bin/check-openpmix.py -b ${OPENPMIX_BRANCH}
 
 clean:
 	rm -f $(INTERMEDIATE_FILES) pmix-standard-*.pdf
