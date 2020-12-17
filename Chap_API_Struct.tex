@@ -432,6 +432,30 @@ Define an upper boundary for valid rank values.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Rank support macros}
+
+The following macros are provided for convenience when working with \ac{PMIx} ranks.
+
+\littleheader{Check rank macro}
+\declaremacro{PMIX_CHECK_RANK}
+
+Check two ranks for equality, taking into account wildcard values
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_CHECK_RANK(a, b)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{a}{Rank to be checked (\refstruct{pmix_rank_t})}
+\argin{b}{Rank to be checked (\refstruct{pmix_rank_t})}
+\end{arglist}
+
+Returns \code{true} if the ranks are equal, or at least one of the ranks is \refconst{PMIX_RANK_WILDCARD}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Process Structure}
 \declarestruct{pmix_proc_t}
 
