@@ -152,7 +152,7 @@ if __name__ == "__main__":
     #
     parser = argparse.ArgumentParser(description="PMIx Standard / OpenPMIx Cross Check")
     parser.add_argument("-v", "--verbose", help="Verbose output", action="store_true")
-    parser.add_argument("-b", "--branch", help="OpenPMIx branch to be checked", nargs='?')
+    parser.add_argument("-b", "--branch", help="OpenPMIx branch to be checked", nargs='?', default="master")
 
     parser.parse_args()
     args = parser.parse_args()
@@ -162,17 +162,27 @@ if __name__ == "__main__":
     # * pmix-standard.aux
     # * check-openpmix
     #
+    print "-"*50
+    print "Checking: OpenPMIx checkout (branch: "+args.branch+")"
+    print "-"*50
     if os.path.exists("check-openpmix") is False:
         print("Warning: Missing OpenPMIx checkout. Trying to clone now")
-        if args.branch:
-            cmd = "git clone --single-branch -b " + args.branch + " https://github.com/openpmix/openpmix.git check-openpmix"
-            os.system(cmd)
-        print("")
+        cmd = "git clone --single-branch -b " + args.branch + " https://github.com/openpmix/openpmix.git check-openpmix"
+        rtn = os.system(cmd)
+        if rtn != 0:
+            print("Error: Failed to checkout the requested branch.")
+            print("       Command: " + cmd)
+            sys.exit(1)
     else:
-        os.system("cd check-openpmix ; git pull")
-        if args.branch:
-            cmd = "git checkout " + args.branch
-            os.system(cmd)
+        cmd = "cd check-openpmix ; git pull ; git checkout " + args.branch
+        rtn = os.system(cmd)
+        if rtn != 0:
+            print("Error: Failed to checkout the requested branch.")
+            print("       Command: " + cmd)
+            sys.exit(1)
+
+    print "-"*50
+    print("")
 
     if os.path.exists("pmix-standard.aux") is False or os.path.exists("check-openpmix") is False:
         print("Error: Cannot find the .aux files or OpenPMIx checkout necessary for processing in the current directory.")
