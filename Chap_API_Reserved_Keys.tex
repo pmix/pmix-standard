@@ -175,8 +175,16 @@ Number of nodes currently hosting processes in the specified realm. Defaults to 
 Regular expression of nodes currently hosting processes in the specified realm - see \ref{cptr:api_server:noderegex} for an explanation of its generation. Defaults to the \refterm{job} realm.
 }
 %
+\declareAttributeNEW{PMIX_NODE_MAP_RAW}{"pmix.nmap.raw"}{char*}{
+Comma-delimited list of nodes containing procs within the specified realm. Defaults to the \refterm{job} realm.
+}
+%
 \declareAttribute{PMIX_PROC_MAP}{"pmix.pmap"}{char*}{
 Regular expression describing processes on each node in the specified realm - see \ref{cptr:api_server:ppnregex} for an explanation of its generation. Defaults to the \refterm{job} realm.
+}
+%
+\declareAttributeNEW{PMIX_PROC_MAP_RAW}{"pmix.pmap.raw"}{char*}{
+Semi-colon delimited list of strings, each string containing a comma-delimited list of ranks on the corresponding node within the specified realm. Defaults to the \refterm{job} realm.
 }
 %
 \declareAttribute{PMIX_ANL_MAP}{"pmix.anlmap"}{char*}{

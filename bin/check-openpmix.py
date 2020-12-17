@@ -135,6 +135,7 @@ if __name__ == "__main__":
     std_consts = {}
     std_structs = {}
     std_apis = {}
+    std_envars = {}
     std_all_refs = {}
     std_deprecated = []
     std_removed = []
@@ -151,10 +152,10 @@ if __name__ == "__main__":
     #
     parser = argparse.ArgumentParser(description="PMIx Standard / OpenPMIx Cross Check")
     parser.add_argument("-v", "--verbose", help="Verbose output", action="store_true")
+    parser.add_argument("-b", "--branch", help="OpenPMIx branch to be checked", nargs='?')
 
     parser.parse_args()
     args = parser.parse_args()
-
 
     #
     # Verify that we have the necessary files in the current working directory
@@ -163,10 +164,15 @@ if __name__ == "__main__":
     #
     if os.path.exists("check-openpmix") is False:
         print("Warning: Missing OpenPMIx checkout. Trying to clone now")
-        os.system("git clone https://github.com/openpmix/openpmix.git check-openpmix")
+        if args.branch:
+            cmd = "git clone --single-branch -b " + args.branch + " https://github.com/openpmix/openpmix.git check-openpmix"
+            os.system(cmd)
         print("")
     else:
         os.system("cd check-openpmix ; git pull")
+        if args.branch:
+            cmd = "git checkout " + args.branch
+            os.system(cmd)
 
     if os.path.exists("pmix-standard.aux") is False or os.path.exists("check-openpmix") is False:
         print("Error: Cannot find the .aux files or OpenPMIx checkout necessary for processing in the current directory.")
@@ -181,8 +187,9 @@ if __name__ == "__main__":
     # structs    - grep "newlabel{struct" pmix-standard.aux
     # macros     - grep "newlabel{macro" pmix-standard.aux
     # apis       - grep "newlabel{api" pmix-standard.aux
+    # envars     - grep "newlabel{envar" pmix-standard.aux
     # --------------------------------------------------
-    all_ref_strs = ["attr", "const", "struct", "macro", "apifn"]
+    all_ref_strs = ["attr", "const", "struct", "macro", "apifn", "envar"]
     for ref_str in all_ref_strs:
         if args.verbose is True:
             print "-"*50
@@ -221,6 +228,8 @@ if __name__ == "__main__":
                 std_macros[m.group(1)] = -1
             elif ref_str == "apifn":
                 std_apis[m.group(1)] = -1
+            elif ref_str == "envar":
+                std_envars[m.group(1)] = -1
             else:
                 print("Error: Failed to classify the attribute: "+m.group(1))
                 sys.exit(1)
@@ -248,12 +257,16 @@ if __name__ == "__main__":
         for val in std_removed:
             print("Std Removed      : " + val)
         print "-"*50
+        for val in std_envars:
+            print("Std Envar    : " + val)
+        print "-"*50
 
     print("Number of Standard attributes  : " + str(len(std_attributes)))
     print("Number of Standard consts      : " + str(len(std_consts)))
     print("Number of Standard structs     : " + str(len(std_structs)))
     print("Number of Standard macros      : " + str(len(std_macros)))
     print("Number of Standard apis        : " + str(len(std_apis)))
+    print("Number of Standard envars      : " + str(len(std_envars)))
     print("Total Number of Standard items : " + str(len(std_all_refs)))
     print("Number of Deprecated items     : " + str(len(std_deprecated)))
     print("Number of Removed items        : " + str(len(std_removed)))

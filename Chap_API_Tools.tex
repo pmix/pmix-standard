@@ -450,15 +450,12 @@ Path to executable that the launcher's backend daemons are to fork/exec in place
 \subsection{Tool rendezvous-related events}
 \label{api:tools:attributes:spawnconst}
 
-These constants refer to events relating to rendezvous of a tool and launcher during spawn of the \ac{IL}. The events serve as a form of event-driven "handshake" between the two processes, thereby allowing the tool to provide directives to the \ac{IL} prior to the \ac{IL} launching any processes.
+The following constants refer to events relating to rendezvous of a tool and launcher during spawn of the \ac{IL}.
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_LAUNCH_DIRECTIVE}
-When a launcher wishes to capture directives sent to it by a \ac{PMIx}-enabled tool, it shall register to receive this event. The specified callback function will be invoked when the event is received from the tool, thereby allowing the launcher to harvest the directives for its purposes.
-%
 \declareconstitemNEW{PMIX_LAUNCHER_READY}
-When an application launcher (e.g., \emph{mpiexec}) is ready to receive directives from a \ac{PMIx}-enabled tool, it shall generate this event to signal the tool to send the directives. Directives are conveyed to the launcher via the tool generating the \refconst{PMIX_LAUNCH_DIRECTIVE} event - see \refapi{PMIx_Notify_event} for details.
+An application launcher (e.g., \emph{mpiexec}) shall generate this event to signal a tool that started it that the launcher is ready to receive directives/commands (e.g., \refapi{PMIx_Spawn}). This is only used when the initiator is able to parse the command line itself, or the launcher is started as a persistent \ac{DVM}.
 %
 \end{constantdesc}
 
