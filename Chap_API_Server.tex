@@ -2019,10 +2019,12 @@ process set membership across all involved \ac{PMIx} servers.
 
 \ac{PMIx} utilizes a "function-shipping" approach to support for implementing the server-side of the protocol. This method allows \acp{RM} to implement the server without being burdened with \ac{PMIx} internal details. When a request is received from the client, the corresponding server function will be called with the information.
 
-Any functions not supported by the \ac{RM} can be indicated by a \code{NULL} for the function pointer. \ac{PMIx} implementations are required to return a \refconst{PMIX_ERR_NOT_SUPPORTED} status to all calls to functions that require host environment support and are not backed by a corresponding server module entry.
+Any functions not supported by the \ac{RM} can be indicated by a \code{NULL} for the function pointer. \ac{PMIx} implementations are required to return a \refconst{PMIX_ERR_NOT_SUPPORTED} status to all calls to functions that require host environment support and are not backed by a corresponding server module entry. Host environments may, if they choose, include a function pointer for operations they have not yet implemented and simply return \refconst{PMIX_ERR_NOT_SUPPORTED}.
+
+Functions that accept directives (i.e., arrays of \refstruct{pmix_info_t} structures) must check any provided directives for those marked as \emph{required} via the \refconst{PMIX_INFO_REQD} flag. \ac{PMIx} client and server libraries are required to mark any such directives with the \refconst{PMIX_INFO_REQD_PROCESSED} flag should they have handled the request. Any required directive that has not been marked therefore becomes the responsibility of the host environment. If a required directive that hasn't been processed by a lower level cannot be supported by the host, then the \refconst{PMIX_ERR_NOT_SUPPORTED} error constant must be returned. If the directive can be processed by the host, then the host shall do so and mark the attribute with the \refconst{PMIX_INFO_REQD_PROCESSED} flag.
 
 The host \ac{RM} will provide the function pointers in a \refapi{pmix_server_module_t} structure passed to \refapi{PMIx_server_init}.
-That module structure and associated function references are defined in this section.
+The module structure and associated function references are defined in this section.
 
 \advicermstart
 For performance purposes, the host server is required to return as quickly as possible from all functions. Execution of
