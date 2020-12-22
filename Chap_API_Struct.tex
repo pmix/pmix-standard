@@ -1455,6 +1455,9 @@ The following constants were introduced in version 2.0 (unless otherwise marked)
 \declareconstitem{PMIX_INFO_REQD}
 The behavior defined in the \refstruct{pmix_info_t} array is required, and not optional. This is a bit-mask value.
 %
+\declareconstitemNEW{PMIX_INFO_REQD_PROCESSED}
+Mark that this required attribute has been processed. A required attribute can be handled at any level - the\ac{PMIx} client library might take care of it, or it may be resolved by the \ac{PMIx} server library, or it may pass up to the host environment for handling. If a level does not recognize or support the required attribute, it is required to pass it upwards to give the next level an opportunity to process it. Thus, the host environment (or the server library if the host does not support the given operation) must know if a lower level has handled the requirement so it can return a \refconst{PMIX_ERR_NOT_SUPPORTED} error status if the host itself cannot meet the request. Upon processing the request, the level must therefore mark the attribute with this directive to alert any subsequent levels that the requirement has been met.
+%
 \declareconstitem{PMIX_INFO_ARRAY_END}
 Mark that this \refstruct{pmix_info_t} struct is at the end of an array created by the \refmacro{PMIX_INFO_CREATE} macro. This is a bit-mask value.
 %
@@ -1547,6 +1550,44 @@ PMIX_INFO_IS_OPTIONAL(info);
 \end{arglist}
 
 Test the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure, returning \code{true} if the flag is \textit{not} set.
+
+%%%%%%%%%%%
+\littleheader{Mark a required attribute as processed}
+\declaremacro{PMIX_INFO_PROCESSED}
+
+Mark that a required \refstruct{pmix_info_t} structure has been processed.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_PROCESSED(info);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+Set the \refconst{PMIX_INFO_REQD_PROCESSED} flag in a \refstruct{pmix_info_t} structure indicating that is has been processed.
+
+%%%%%%%%%%%
+\littleheader{Test if a required attribute has been processed}
+\declaremacro{PMIX_INFO_WAS_PROCESSED}
+
+Test that a required \refstruct{pmix_info_t} structure has been processed.
+
+\versionMarker{4.0}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_WAS_PROCESSED(info);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+Test the \refconst{PMIX_INFO_REQD_PROCESSED} flag in a \refstruct{pmix_info_t} structure.
 
 %%%%%%%%%%%
 \littleheader{Test an info structure for \textit{end of array} directive}
