@@ -3,8 +3,8 @@
 
 LATEX_C=pdflatex -shell-escape -file-line-error
 
-version=4.0
-OPENPMIX_BRANCH ?= "v4.0"
+version=v5.0
+OPENPMIX_BRANCH ?= "master"
 default: pmix-standard.pdf
 
 CHAPTERS= \
