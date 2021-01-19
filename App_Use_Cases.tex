@@ -84,3 +84,236 @@ For each process this information is also useful (note that any one process may 
 \pasteAttributeItem{PMIX_HOSTNAME}
 
 There are other keys that are helpful to have before a synchronization point. This is not meant to be a comprehensive list.
+
+\section{Debugging}
+\label{app:uc-debugging}
+
+This use case distills out the features/extensions requested in the RFCs that are related to debugging. We have identified parts of PR23 (Co-located process launch for debuggers), RFC0010 (MPIR-like query), RFC0002 (event pub/sub), and RFC0022 (Environmental Parameter Directives for Applications and Launchers) under this category.
+
+\subsection{Terminology}
+
+\subsubsection{Tools vs Debuggers}
+
+A \texttt{tool} is a process designed to monitor, record, analyze, or control the execution of another process.  Typically used for the purposes of profiling and debugging. A \texttt{first-party tool} runs within the address space of the application process while a \texttt{third-party tool} run within its own process.  A \texttt{debugger} is a third-party tool that inspects and controls an application process's execution using system-level debug APIs (e.g., \code{ptrace}).
+
+\subsubsection{Parallel Launching Methods}
+A \texttt{starter} program is a program responsible for launching a parallel runtime, such as \ac{MPI}.  \ac{PMIx} supports two primary methods for launching parallel applications under tools and debuggers: indirect and direct. In the indirect launching method, the tool is attached to the starter.  In the direct launching method, the tool takes the place of the starter.  
+\ac{PMIx} also supports attaching to already running programs via the \texttt{Process Acquisition} interfaces.
+
+\subsubsection{Process Synchronization}
+Process Synchronization is the technique tools use to start the processes of a parallel application such that the tools can still attach to the process early in it's lifetime.  Said another away, the tool must be able to start the application processes without them ``running away'' from the tool.  In the case of \ac{MPI}, this means stopping the applications processes before they return from \code{MPI_Init}.
+
+\subsubsection{Process Acquisition}\label{subsubsec:process-acq}
+
+Process Acquisition is technique tools use to locate all of the processes, local and remote, of a given parallel application.  This typically boils down to collecting for every process in the parallel application: the hostname or IP of the machine running the process, the executable name, and the process ID.
+
+\subsection{Use Case Details}
+\subsubsection{Direct-Launch Debugger Tool}
+
+PMIx can support the tool itself using the PMIx spawn options to control the app’s startup, including directing the RM/application as to when to block and wait for tool attachment, or stipulating that an interceptor library be preloaded. However, this means that the user is restricted to whatever command line options the tool vendor has provided for operations such as process placement and binding, which places a significant burden on the tool vendor. An example might look like the following: \code{dbgr -n 3 ./myapp}.
+
+Assuming it is supported, co-launch of debugger daemons in this use-case is supported by adding a \code{pmix_app_t} to the \refapi{PMIx_Spawn} command, indicating that the resulting processes are debugger daemons by setting the \refattr{PMIX_DEBUGGER_DAEMONS} attribute.
+
+\begingroup
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{figs/direct-launch}
+  \end{center}
+  \caption{Direct Launch}
+  \label{fig:direct_launch}
+\end{figure*}
+\endgroup
+
+
+\littleheader{Related Interfaces}
+
+{\large \refapi{PMIx_tool_init}}
+\pasteSignature{PMIx_tool_init}
+
+{\large \refapi{PMIx_Register_event_handler}}
+\pasteSignature{PMIx_Register_event_handler}
+
+{\large \refapi{PMIx_Query_info}}
+\pasteSignature{PMIx_Query_info}
+
+{\large \refapi{PMIx_Spawn}}
+\pasteSignature{PMIx_Spawn}
+
+{\large \refapi{PMIx_Get}}
+\pasteSignature{PMIx_Get}
+
+{\large \refapi{PMIx_Notify_event}}
+\pasteSignature{PMIx_Notify_event}
+
+\littleheader{Related Attributes}
+
+\pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
+\pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
+\pasteAttributeItem{PMIX_DEBUG_STOP_IN_INIT}
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_NOTIFY_COMPLETION}
+\pasteAttributeItem{PMIX_SETUP_APP_ENVARS}
+\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
+\pasteAttributeItem{PMIX_DEBUG_JOB}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
+
+\littleheader{Related Constants}
+
+\refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} \\
+\refconst{PMIX_DEBUGGER_RELEASE}
+
+\subsubsection{Indirect-Launch Debugger Tool}
+
+Executing a program under a tool using an intermediate launcher such as mpiexec can also be made possible. This requires some degree of coordination between the tool and the launcher. Ultimately, it is the launcher that is going to launch the application, and the tool must somehow inform it (and the application) that this is being done in a debug session so that the application knows to ``block'' until the tool attaches to it.
+
+In this operational mode, the user invokes a tool (typically on a non-compute, or ``head'', node) that in turn uses mpiexec to launch their application – a typical command line might look like the following: \code{dbgr -dbgoption mpiexec -n 32 ./myapp}.
+
+\begingroup
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{figs/indirect-launch}
+  \end{center}
+  \caption{Indirect Launch}
+  \label{fig:indirect_launch}
+\end{figure*}
+\endgroup
+
+
+\littleheader{Related Interfaces}
+
+{\large \refapi{PMIx_tool_init}}
+\pasteSignature{PMIx_tool_init}
+
+{\large \refapi{PMIx_Register_event_handler}}
+\pasteSignature{PMIx_Register_event_handler}
+
+{\large \refapi{PMIx_Spawn}}
+\pasteSignature{PMIx_Spawn}
+
+{\large \refapi{PMIx_Notify_event}}
+\pasteSignature{PMIx_Notify_event}
+
+{\large \refapi{PMIx_tool_attach_to_server}}
+\pasteSignature{PMIx_tool_attach_to_server}
+
+{\large \refapi{PMIx_Query_info}}
+\pasteSignature{PMIx_Query_info}
+
+{\large \refapi{PMIx_Get}}
+\pasteSignature{PMIx_Get}
+
+\littleheader{Related Attributes}
+
+\pasteAttributeItem{PMIX_SPAWN_TOOL}
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_SETUP_APP_ENVARS}
+\pasteAttributeItem{PMIX_DEBUG_STOP_IN_INIT}
+\pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
+\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
+\pasteAttributeItem{PMIX_DEBUG_JOB}
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_NOTIFY_COMPLETION}
+\pasteAttributeItem{PMIX_SETUP_APP_ENVARS}
+\pasteAttributeItem{PMIX_DEBUG_JOB}
+\pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
+
+\littleheader{Related Constants}
+
+\refconst{PMIX_LAUNCHER_READY} \\
+\refconst{PMIX_LAUNCH_COMPLETE} \\
+\refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} \\
+\refconst{PMIX_DEBUGGER_RELEASE}
+
+\subsubsection{Attaching to a Running Job}
+
+PMIx supports attaching to an already running parallel job in two ways.  In the first way, the main process of a tool calls \refapi{PMIx_Query_info} with the \refattr{PMIX_QUERY_PROC_TABLE} attribute.  This returns an array of structs containing the information required for \hyperref[subsubsec:process-acq]{process acquisition}.  This includes remote hostnames, executable names, and process IDs.  In the second way, every tool daemon calls \refapi{PMIx_Query_info} with the \refattr{PMIX_QUERY_LOCAL_PROC_TABLE} attribute.  This returns a similar array of structs but only for processes on the same node.
+
+An example of this use-case may look like the following: \code{mpiexec -n32~./myApp \&\& dbgr attach \$!}.
+
+\begingroup
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{figs/process-acquisition}
+  \end{center}
+  \caption{Attaching to a Running Job}
+  \label{fig:proc_acq}
+\end{figure*}
+\endgroup
+
+{\large \refapi{PMIx_tool_init}}
+\pasteSignature{PMIx_tool_init}
+
+{\large \refapi{PMIx_Register_event_handler}}
+\pasteSignature{PMIx_Register_event_handler}
+
+{\large \refapi{PMIx_Query_info}}
+\pasteSignature{PMIx_Query_info}
+
+{\large \refapi{PMIx_Spawn}}
+\pasteSignature{PMIx_Spawn}
+
+\pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
+\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
+\pasteAttributeItem{PMIX_DEBUG_JOB}
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_NOTIFY_COMPLETION}
+\pasteAttributeItem{PMIX_SETUP_APP_ENVARS}
+
+\pasteAttributeItem{PMIX_QUERY_NAMESPACES}
+
+\subsubsection{Tool Interaction with RM}
+
+Tools can benefit from a mechanism by which they may interact with a local PMIx server that has opted to accept such connections along with support for tool connections to system-level PMIx servers, and a logging feature. To add support for tool connections to a specified system-level, PMIx server environments could choose to launch a set of PMIx servers to support a given allocation - these servers will (if so instructed) provide a tool rendezvous point that is tagged with their pid and typically placed in an allocation-specific temporary directory to allow for possible multi-tenancy scenarios. Supporting such operations requires that a system-level PMIx connection be provided which is not associated with a specific user or allocation. A new key has been added to direct the PMIx server to expose a rendezvous point specifically for this purpose.
+
+{\large \refapi{PMIx_Query_info_nb}}
+\pasteSignature{PMIx_Query_info_nb}
+
+{\large \refapi{PMIx_Register_event_handler}}
+\pasteSignature{PMIx_Register_event_handler}
+
+{\large \refapi{PMIx_Deregister_event_handler}}
+\pasteSignature{PMIx_Deregister_event_handler}
+
+{\large \refapi{PMIx_Notify_event}}
+\pasteSignature{PMIx_Notify_event}
+
+{\large \refapi{PMIx_server_init}}
+\pasteSignature{PMIx_server_init}
+
+\littleheader{Job-specific events}
+\code{PMIX_EVENT_JOB_LEVEL       /* debugger attached, process failure */}
+
+\littleheader{Environment events}
+\code{PMIX_EVENT_ENVIRO_LEVEL  /*ECC errors, temperature excursions */}
+
+\littleheader{Errors detected by clients/peers}
+\code{Network fabric manager detects data corruption}
+
+\subsubsection{Environmental Parameter Directives for Applications and Launchers}
+
+It is sometimes desirable or required that standard environmental variables (e.g., \code{PATH}, \code{LD_LIBRARY_PATH}, \code{LD_PRELOAD}) be modified prior to executing an application binary or a starter such as mpiexec - this is particularly true when tools/debuggers are used to start the application. This RFC proposes the definition of a new PMIx structure (\refstruct{pmix_envar_t}) and associated attributes for specifying such operations.
+
+\littleheader{Related Interfaces}
+
+{\large \refapi{PMIx_Spawn}}
+\pasteSignature{PMIx_Spawn}
+
+\littleheader{Related Structs}
+
+\refstruct{pmix_envar_t}
+
+\littleheader{Related Attributes}
+
+\pasteAttributeItem{PMIX_SET_ENVAR}
+\pasteAttributeItem{PMIX_ADD_ENVAR}
+\pasteAttributeItem{PMIX_UNSET_ENVAR}
+\pasteAttributeItem{PMIX_PREPEND_ENVAR}
+\pasteAttributeItem{PMIX_APPEND_ENVAR}
+
+Resource managers and launchers must scan for relevant directives, modifying environmental parameters as directed. Directives are to be processed in the order in which they were given, starting with job-level directives (applied to each app) followed by app-level directives.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
