@@ -43,3 +43,4 @@ The community maintains a [Docker container image](https://github.com/jjhursey/p
 sudo pip2 install --upgrade pip setuptools
 sudo pip2 install Pygments
 ```
+
