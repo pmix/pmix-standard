@@ -150,12 +150,15 @@ Assuming it is supported, co-launch of debugger daemons in this use-case is supp
 \pasteAttributeItem{PMIX_QUERY_SPAWN_SUPPORT}
 \pasteAttributeItem{PMIX_QUERY_DEBUG_SUPPORT}
 \pasteAttributeItem{PMIX_DEBUG_STOP_IN_INIT}
+\pasteAttributeItem{PMIX_DEBUG_STOP_ON_EXEC}
 \pasteAttributeItem{PMIX_FWD_STDOUT}
 \pasteAttributeItem{PMIX_FWD_STDERR}
 \pasteAttributeItem{PMIX_NOTIFY_COMPLETION}
 \pasteAttributeItem{PMIX_SETUP_APP_ENVARS}
+\pasteAttributeItem{PMIX_EVENT_AFFECTED_PROC}
 \pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
-\pasteAttributeItem{PMIX_DEBUG_JOB}
+\pasteAttributeItem{PMIX_DEBUG_TARGET}
+\pasteAttributeItem{PMIX_DEBUG_WAIT_FOR_NOTIFY}
 \pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
 
 \littleheader{Related Constants}
@@ -205,27 +208,27 @@ In this operational mode, the user invokes a tool (typically on a non-compute, o
 
 \littleheader{Related Attributes}
 
+\pasteAttributeItem{PMIX_LAUNCH_DIRECTIVES}
 \pasteAttributeItem{PMIX_SPAWN_TOOL}
 \pasteAttributeItem{PMIX_FWD_STDOUT}
 \pasteAttributeItem{PMIX_FWD_STDERR}
 \pasteAttributeItem{PMIX_SETUP_APP_ENVARS}
 \pasteAttributeItem{PMIX_DEBUG_STOP_IN_INIT}
+\pasteAttributeItem{PMIX_DEBUG_STOP_ON_EXEC}
 \pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
-\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
-\pasteAttributeItem{PMIX_DEBUG_JOB}
-\pasteAttributeItem{PMIX_FWD_STDOUT}
-\pasteAttributeItem{PMIX_FWD_STDERR}
-\pasteAttributeItem{PMIX_NOTIFY_COMPLETION}
-\pasteAttributeItem{PMIX_SETUP_APP_ENVARS}
-\pasteAttributeItem{PMIX_DEBUG_JOB}
 \pasteAttributeItem{PMIX_QUERY_LOCAL_PROC_TABLE}
+\pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
+\pasteAttributeItem{PMIX_NOTIFY_COMPLETION}
+\pasteAttributeItem{PMIX_DEBUG_TARGET}
+\pasteAttributeItem{PMIX_WAIT_FOR_CONNECTION}
 
 \littleheader{Related Constants}
 
 \refconst{PMIX_LAUNCHER_READY} \\
 \refconst{PMIX_LAUNCH_COMPLETE} \\
 \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} \\
-\refconst{PMIX_DEBUGGER_RELEASE}
+\refconst{PMIX_DEBUGGER_RELEASE} \\
+\refenvar{PMIX_LAUNCHER_RNDZ_URI}
 
 \subsubsection{Attaching to a Running Job}
 
@@ -257,11 +260,11 @@ An example of this use-case may look like the following: \code{mpiexec -n32~./my
 
 \pasteAttributeItem{PMIX_QUERY_PROC_TABLE}
 \pasteAttributeItem{PMIX_DEBUGGER_DAEMONS}
-\pasteAttributeItem{PMIX_DEBUG_JOB}
+\pasteAttributeItem{PMIX_DEBUG_TARGET}
 \pasteAttributeItem{PMIX_FWD_STDOUT}
 \pasteAttributeItem{PMIX_FWD_STDERR}
 \pasteAttributeItem{PMIX_NOTIFY_COMPLETION}
-\pasteAttributeItem{PMIX_SETUP_APP_ENVARS}
+\pasteAttributeItem{PMIX_REQUESTOR_IS_TOOL}
 
 \pasteAttributeItem{PMIX_QUERY_NAMESPACES}
 
