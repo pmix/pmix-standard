@@ -12,7 +12,7 @@ The advent of \ac{PMIx} offers the possibility for creating portable tools capab
 \item querying the status of scheduling queues and estimated allocation time for various resource options
 \item job submission and allocation requests
 \item querying job status for executing applications
-\item launching and monitoring applications
+\item launching, monitoring, and debugging applications
 \end{itemize}
 
 Enabling these capabilities requires some extensions to the \ac{PMIx} Standard (both in terms of \acp{API} and attributes), and utilization of client-side \acp{API} for more tool-oriented purposes.
@@ -56,7 +56,7 @@ Non-system \ac{PMIx} servers will create a set of three rendezvous files in the 
 
 The files are identical and may be implemented as symlinks to a single instance. The individual file names are composed so as to aid the search process should a tool wish to connect to a server identified by its namespace or \ac{PID}.
 
-Servers will additionally provide a rendezvous file in any given location if the path (either absolute or relative) and filename is specified either during \refapi{PMIx_server_init} using the \refattr{PMIX_LAUNCHER_RENDEZVOUS_FILE} attribute, or by the \code{PMIX_LAUNCHER_RENDEZVOUS_FILE} environmental variable prior to executing the process containing the server. This latter mechanism may be the preferred mechanism for tools such as debuggers that need to fork/exec a launcher (e.g., "mpiexec") and then rendezvous with it. This is described in more detail in Section \ref{chap:api_tools:indirect}.
+Servers will additionally provide a rendezvous file in any given location if the path (either absolute or relative) and filename is specified either during \refapi{PMIx_server_init} using the \refattr{PMIX_LAUNCHER_RENDEZVOUS_FILE} attribute, or by the \refenvar{PMIX_LAUNCHER_RNDZ_FILE} environmental variable prior to executing the process containing the server. This latter mechanism may be the preferred mechanism for tools such as debuggers that need to fork/exec a launcher (e.g., "mpiexec") and then rendezvous with it. This is described in more detail in Section \ref{chap:api_tools:indirect}.
 
 Rendezvous file ownerships are set to the \ac{UID} and \ac{GID} of the server that created them, with permissions set according to the desires of the implementation and/or system administrator policy. All connection attempts are first governed by read access privileges to the target rendezvous file - thus, the combination of permissions, \ac{UID}, and \ac{GID} of the rendezvous files act as a first-level of security for tool access.
 
@@ -72,7 +72,8 @@ Tool process identifiers are assigned by one of the following methods:
         \item If \refattr{PMIX_TOOL_RANK} is also given, then the rank of the tool will be assigned that value.
         \item If \refattr{PMIX_TOOL_RANK} is not given, then the rank will be set to a default value of zero.
     \end{itemize}
-    \item If a process ID has not been provided, then one will be assigned by the host environment upon connection to a server. Users should note that the tool's process ID will be \emph{invalid} until a connection has been established.
+    \item If a process ID is not provided and the tool connects to a server, then one will be assigned by the host environment upon connection to that server.
+    \item If a process ID is not provided and the tool does not connect to a server (e.g., if \refattr{PMIX_TOOL_DO_NOT_CONNECT} is given), then the tool shall self-assign a unique identifier. This is often done using some combination involving hostname and \ac{PID}.
 \end{itemize}
 
 Tool process identifiers remain constant across servers. Thus, it is critical that a system-wide unique namespace be provided if the tool itself sets the identifier, and that host environments provide a system-wide unique identifier in the case where the identifier is set by the server upon connection. The host environment is required to reject any connection request that fails to meet this criterion.
@@ -175,50 +176,57 @@ The following environmental variables are used during \refapi{PMIx_tool_init} an
 
 %
 \declareEnvarNEW{PMIX_LAUNCHER_RNDZ_URI}{
-Upon completing \refapi{PMIx_server_init} or \refapi{PMIx_tool_init}, the spawned launcher is to connect back to the spawning tool using the given \ac{URI} so that the tool can provide directives (e.g., a \refapi{PMIx_Spawn} command) to it.
+The spawned tool is to be connected back to the spawning tool using the given \ac{URI} so that the spawning tool can provide directives (e.g., a \refapi{PMIx_Spawn} command) to it.
 }
 %
 \declareEnvarNEW{PMIX_LAUNCHER_RNDZ_FILE}{
-Absolute path of file where the launcher is to store its connection information so that the spawning tool can connect to it.
+If the specified file does not exist, this variable contains the absolute path of the file where the spawned tool is to store its connection information so that the spawning tool can connect to it. If the file does exist, it contains the information specifying the server to which the spawned tool is to connect.
 }
-
+%
+\declareEnvarNEW{PMIX_KEEPALIVE_PIPE}{
+An integer \code{read}-end of a POSIX pipe that the tool should monitor for closure, thereby indicating that the parent tool has terminated. Used. for example, when a tool fork/exec's an intermediate launcher that should self-terminate if the originating tool exits.
+}
+%
+Note that these environmental variables should be cleared from the environment after use and prior to forking child processes to avoid potentially unexpected behavior by the child processes.
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool connection attributes}
 \label{api:struct:attributes:connection}
 
-These attributes are defined to assist PMIx-enabled tools to connect with a \ac{PMIx} server by passing them into either the \refapi{PMIx_tool_init} or the \refapi{PMIx_tool_attach_to_server} \acp{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
+
+These attributes are defined to assist \ac{PMIx}-enabled tools to connect with a \ac{PMIx} server by passing them into either the \refapi{PMIx_tool_init} or the \refapi{PMIx_tool_attach_to_server} \acp{API} - thus, they are not typically accessed via the \refapi{PMIx_Get} \ac{API}.
 
 %
 \declareAttribute{PMIX_SERVER_PIDINFO}{"pmix.srvr.pidinfo"}{pid_t}{
-\ac{PID} of the target PMIx server for a tool.
+\ac{PID} of the target \ac{PMIx} server for a tool.
 }
 %
 \declareAttribute{PMIX_CONNECT_TO_SYSTEM}{"pmix.cnct.sys"}{bool}{
-The requester requires that a connection be made only to a local, system-level PMIx server.
+The requester requires that a connection be made only to a local, system-level \ac{PMIx} server.
 }
 %
 \declareAttribute{PMIX_CONNECT_SYSTEM_FIRST}{"pmix.cnct.sys.first"}{bool}{
-Preferentially, look for a system-level PMIx server first.
+Preferentially, look for a system-level \ac{PMIx} server first.
 }
 %
 \declareAttribute{PMIX_SERVER_URI}{"pmix.srvr.uri"}{char*}{
-\ac{URI} of the PMIx server to be contacted.
+\ac{URI} of the \ac{PMIx} server to be contacted.
 }
 %
 \declareAttribute{PMIX_SERVER_HOSTNAME}{"pmix.srvr.host"}{char*}{
-Host where target PMIx server is located.
+Host where target \ac{PMIx} server is located.
 }
 %
 \declareAttribute{PMIX_CONNECT_MAX_RETRIES}{"pmix.tool.mretries"}{uint32_t}{
-Maximum number of times to try to connect to PMIx server - the default value is implementation specific.
+Maximum number of times to try to connect to \ac{PMIx} server - the default value is implementation specific.
 }
 %
 \declareAttribute{PMIX_CONNECT_RETRY_DELAY}{"pmix.tool.retry"}{uint32_t}{
-Time in seconds between connection attempts to a PMIx server - the default value is implementation specific.
+Time in seconds between connection attempts to a \ac{PMIx} server - the default value is implementation specific.
 }
 %
 \declareAttribute{PMIX_TOOL_DO_NOT_CONNECT}{"pmix.tool.nocon"}{bool}{
-The tool wants to use internal PMIx support, but does not want to connect to a PMIx server.
+The tool wants to use internal \ac{PMIx} support, but does not want to connect to a \ac{PMIx} server.
 }
 %
 \declareAttributeNEW{PMIX_TOOL_CONNECT_OPTIONAL}{"pmix.tool.conopt"}{bool}{
@@ -331,11 +339,22 @@ termination if requested to do so. The event shall include:
 \subsection{Indirect launch}
 \label{chap:api_tools:indirect}
 
-In the indirect launch use-case, the application processes are started via an intermediate launcher (e.g., \emph{mpiexec}) that is itself started by the tool (see Fig \ref{fig:indirlnch}). Thus, at a high level, this is a two-stage launch procedure to start the application: the tool starts the \ac{IL}, which then starts the applications. In practice, additional steps may be involved if, for example, the \ac{IL} starts its own daemons to shepherd the application processes.
+In the indirect launch use-case, the application processes are started via an intermediate launcher (e.g., \emph{mpiexec}) that is itself started by the tool (see Fig \ref{fig:indirlnch}). Thus, at a high level, this is a two-stage launch procedure to start the application: the tool (henceforth referred to as the \emph{initiator}) starts the \ac{IL}, which then starts the applications. In practice, additional steps may be involved if, for example, the \ac{IL} starts its own daemons to shepherd the application processes.
 
-A key aspect of this operational mode is the avoidance of any requirement that the tool parse and/or understand the command line of the \ac{IL}. Instead, the indirect launch support relies on \refapi{PMIx_Spawn} \ac{API} to abstract the tool-launcher interaction required to start the \ac{IL} and connect to it, and then uses a second call to \refapi{PMIx_Spawn} to request that the \ac{IL} spawn the actual job.
+A key aspect of this operational mode is the avoidance of any requirement that the initiator parse and/or understand the command line of the \ac{IL}. Instead, the indirect launch procedure supports either of two methods: one where the initiator assumes responsibility for parsing its command line to obtain the application as well as the \ac{IL} and its options, and another where the initiator defers the command line parsing to the \ac{IL}. Both of these methods are described in the following sections.
 
-The tool spawns the \ac{IL} using the same procedure for launching an application - it assembles the description of the \ac{IL} (e.g., by parsing its command line) into a spawn request containing an array of \refstruct{pmix_app_t} and \refstruct{pmix_info_t} job-level information. In addition, the tool must include the \refattr{PMIX_SPAWN_TOOL} attribute indicating that the application being spawned is a \ac{PMIx} tool. An allocation of resources for the \ac{IL} itself may or may not be required – if it is, then the allocation must be made in advance or the spawn request must include allocation request information.
+\subsubsection{Initiator-based command line parsing}
+\label{chap:api_tools:indirect:tool}
+
+This method utilizes a first call to the \refapi{PMIx_Spawn} \ac{API} to start the \ac{IL} itself, and then uses a second call to \refapi{PMIx_Spawn} to request that the \ac{IL} spawn the actual job. The burden of analyzing the initial command line to separately identify the \ac{IL}'s command line from the application itself falls upon the initiator. An example is provided below:
+
+\begin{verbatim}
+$ initiator --launcher "mpiexec --verbose" -n 3 ./app <appoptions>
+\end{verbatim}
+
+The initiator spawns the \ac{IL} using the same procedure for launching an application - it begins by assembling the description of the \ac{IL} into a spawn request containing an array of \refstruct{pmix_app_t} and \refstruct{pmix_info_t} job-level information. Note that this step does not include any information regarding the application itself - only the launcher is included. In addition, the initiator must include the rendezvous \ac{URI} in the environment so the \ac{IL} knows how to connect back to it.
+
+An allocation of resources for the \ac{IL} itself may or may not be required – if it is, then the allocation must be made in advance or the spawn request must include allocation request information.
 
 \begin{figure*}[ht!]
 \centering
@@ -355,7 +374,7 @@ The tool spawns the \ac{IL} using the same procedure for launching an applicatio
 \label{fig:indirlnch}
 \end{figure*}
 
-The tool may optionally wish to include the following tool-specific attributes in the \emph{job_info} argument to \refapi{PMIx_Spawn} - note that these attributes refer to the behavior of the \ac{IL} itself and not the eventual job to be launched:
+The initiator may optionally wish to include the following tool-specific attributes in the \emph{job_info} argument to \refapi{PMIx_Spawn} - note that these attributes refer only to the behavior of the \ac{IL} itself and not the eventual job to be launched:
 
 \begin{itemize}
     \item \pasteAttributeItem{PMIX_FWD_STDIN}
@@ -374,18 +393,59 @@ The tool may optionally wish to include the following tool-specific attributes i
     \item \pasteAttributeItem{PMIX_LAUNCHER_DAEMON}
     \item \pasteAttributeItem{PMIX_FORKEXEC_AGENT}
     \item \pasteAttributeItem{PMIX_EXEC_AGENT}
+    \item \pasteAttributeItemBegin{PMIX_DEBUG_STOP_IN_INIT}In this context, the initiator is directing the \ac{IL} to stop in \refapi{PMIx_tool_init}. This gives the initiator a chance to connect to the \ac{IL} and register for events prior to the \ac{IL} launching the application job.
+    \pasteAttributeItemEnd
 \end{itemize}
 
-The tool then calls the \refapi{PMIx_Spawn} \ac{API} so that the \ac{PMIx} library can either communicate the spawn request to the server (if connected to one), or locally spawn the \ac{IL} itself if not connected to a server and the \ac{PMIx} implementation includes self-spawn support. \refapi{PMIx_Spawn} shall return an error if neither of these conditions is met.
-
-Upon successful return from \refapi{PMIx_Spawn}:
+and the following optional variables in the environment of the \ac{IL}:
 
 \begin{itemize}
-    \item The namespace of the \ac{IL} shall be returned in the \emph{nspace} parameter of the \refapi{PMIx_Spawn} \ac{API} (or in the \refapi{pmix_spawn_cbfunc_t} for the non-blocking form of that \ac{API}).
-    \item The tool shall be connected to the \ac{IL} with the \ac{IL} acting as the tool's \emph{primary} server.
+    \item \refenvar{PMIX_KEEPALIVE_PIPE} - an integer \code{read}-end of a POSIX pipe that the \ac{IL} should monitor for closure, thereby indicating that the initiator has terminated.
 \end{itemize}
 
-Once \refapi{PMIx_Spawn} has returned, the tool can proceed to spawn the actual application according to the procedure described in Section \ref{chap:api_tools:direct}.
+The initiator then calls the \refapi{PMIx_Spawn} \ac{API} so that the \ac{PMIx} library can either communicate the spawn request to a server (if connected to one), or locally spawn the \ac{IL} itself if not connected to a server and the \ac{PMIx} implementation includes self-spawn support. \refapi{PMIx_Spawn} shall return an error if neither of these conditions is met.
+
+When initialized by the \ac{IL}, the \refapi{PMIx_tool_init} function must perform two operations:
+
+\begin{itemize}
+    \item check for the presence of the \refenvar{PMIX_KEEPALIVE_PIPE} environmental variable - if provided, then the library shall monitor the pipe for closure, providing a \refconst{PMIX_EVENT_JOB_END} event when the pipe closes (thereby indicating the termination of the initiator). The \ac{IL} should register for this event after completing \refapi{PMIx_tool_init} - the initiator's namespace can be obtained via a call to \refapi{PMIx_Get} with the \refattr{PMIX_PARENT_ID} key. Note that this feature will only be available if the spawned \ac{IL} is local to the initiator.
+    \item check for the \refenvar{PMIX_LAUNCHER_RNDZ_URI} environmental parameter - if found, the library shall connect back to the initiator using the \refapi{PMIx_tool_attach_to_server} \ac{API}, retaining its current server as its primary server.
+\end{itemize}
+
+Once the \ac{IL} completes \refapi{PMIx_tool_init}, it must register for the \refconst{PMIX_EVENT_JOB_END} termination event and then idle until receiving that event - either directly from the initiator, or from the \ac{PMIx} library upon detecting closure of the keepalive pipe. The \ac{IL} idles in the intervening time as it is solely acting as a relay (if connected to a server that is performing the actual application launch) or as a \ac{PMIx} server responding to spawn requests.
+
+Upon return from the \refapi{PMIx_Spawn} \ac{API}, the initiator should set the spawned \ac{IL} as its primary server using the \refapi{PMIx_tool_set_server} \ac{API} with the nspace returned by \refapi{PMIx_Spawn} and any valid rank (a rank of zero would ordinarily be used as only one \ac{IL} process is typically started). It is advisable to set a connection timeout value when calling this function. The initiator can then proceed to spawn the actual application according to the procedure described in Section \ref{chap:api_tools:direct}.
+
+\subsubsection{\ac{IL}-based command line parsing}
+\label{chap:api_tools:indirect:tool}
+
+In the case where the initiator cannot parse its command line, it must defer that parsing to the \ac{IL}. A common example is provided below:
+
+\begin{verbatim}
+$ initiator mpiexec --verbose -n 3 ./app <appoptions>
+\end{verbatim}
+
+For this situation, the initiator proceeds as above with only one notable exception: instead of calling \refapi{PMIx_Spawn} twice (once to start the \ac{IL} and again to start the actual application), the initiator only calls that \ac{API} one time:
+
+\begin{itemize}
+    \item The \refarg{app} parameter passed to the spawn request contains only one \refstruct{pmix_app_t} that contains the entire command line, including both launcher and application(s).
+    \item The launcher executable must be in the \refarg{app.cmd} field and in \refarg{app.argv[0]}, with the rest of the command line appended to the \refarg{app.argv} array.
+    \item Any job-level directives for the \ac{IL} itself (e.g., \refattr{PMIX_FORKEXEC_AGENT} or \refattr{PMIX_FWD_STDOUT}) are included in the \refarg{job_info} parameter of the call to \refapi{PMIx_Spawn}.
+    \item The job-level directives must include both the \refattr{PMIX_SPAWN_TOOL} attribute indicating that the initiator is spawning a tool, and the \refattr{PMIX_DEBUG_STOP_IN_INIT} attribute directing the \ac{IL} to stop during the call to \refapi{PMIx_tool_init}. The latter directive allows the initiator to connect to the \ac{IL} prior to launch of the application.
+    \item The \refenvar{PMIX_LAUNCHER_RNDZ_URI} and \refenvar{PMIX_KEEPALIVE_PIPE} environmental variables are provided to the launcher in its environment via the \refarg{app.env} field.
+    \item The \ac{IL} must use \refapi{PMIx_Get} with the \refattr{PMIX_LAUNCH_DIRECTIVES} key to obtain any initiator-provided directives (e.g., \refattr{PMIX_DEBUG_STOP_IN_INIT} or \refattr{PMIX_DEBUG_STOP_ON_EXEC}) aimed at the application(s) it will spawn.
+\end{itemize}
+
+Upon return from \refapi{PMIx_Spawn}, the initiator must:
+
+\begin{itemize}
+    \item use the \refapi{PMIx_tool_set_server} \ac{API} to set the spawned \ac{IL} as its primary server
+    \item register with that server to receive the \refconst{PMIX_LAUNCH_COMPLETE} event. This allows the initiator to know when the \ac{IL} has completed launch of the application
+    \item release the \ac{IL} from its "hold" in \refapi{PMIx_tool_init} by issuing the \refconst{PMIX_DEBUGGER_RELEASE} event, specifying the \ac{IL} as the custom range. Upon receipt of the event, the \ac{IL} is free to parse its command line, apply any provided directives, and execute the application.
+\end{itemize}
+
+Upon receipt of the \refconst{PMIX_LAUNCH_COMPLETE} event, the initiator should register to receive notification of completion of the returned namespace of the application. Receipt of the \refconst{PMIX_EVENT_JOB_END} event provides a signal that the initiator may itself terminate.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool spawn-related attributes}
@@ -444,7 +504,10 @@ Path to executable that the launcher's backend daemons are to fork/exec in place
 \declareAttributeNEW{PMIX_EXEC_AGENT}{"pmix.exec.agnt"}{char*}{
 Path to executable that the launcher's backend daemons are to fork/exec in place of the actual application processes. The launcher's daemon shall pass the full command line of the application on the command line of the exec agent, which shall not connect back to the launcher's daemon. The exec agent is responsible for exec'ing the specified application process in its own place. See Section \ref{api:tools:debugger:agent} for details.
 }
-
+%
+\declareAttributeNEW{PMIX_LAUNCH_DIRECTIVES}{"pmix.lnch.dirs"}{pmix_data_array_t*}{
+Array of \refstruct{pmix_info_t} containing directives for the launcher - a convenience attribute for retrieving all directives with a single call to \refapi{PMIx_Get}.
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tool rendezvous-related events}
