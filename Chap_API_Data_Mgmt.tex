@@ -385,3 +385,105 @@ This function will append a copy of the payload in one buffer into another buffe
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_Data_load}}
+\declareapi{PMIx_Data_load}
+
+%%%%
+\summary
+
+Load a buffer with the provided payload
+
+%%%%
+\format
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Data_load(pmix_data_buffer_t *dest,
+               pmix_byte_object_t *src);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{dest}{Pointer to the destination \refstruct{pmix_data_buffer_t} (handle)}
+\argin{src}{Pointer to the source \refstruct{pmix_byte_object_t} (handle)}
+\end{arglist}
+
+Returns one of the following:
+\begin{constantdesc}
+\item \refconst{PMIX_SUCCESS} The data has been loaded as requested
+\item \refconst{PMIX_ERR_BAD_PARAM} The \refarg{dest} structure pointer is \code{NULL}
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
+\end{constantdesc}
+
+%%%%
+\descr
+
+The load function allows the caller to transfer the contents of the \refarg{src}
+\refstruct{pmix_byte_object_t} to the \refarg{dest} target buffer. If a payload
+already exists in the buffer, the function will "free" the existing data to
+release it, and then replace the data payload with the one provided
+by the caller.
+
+\adviceuserstart
+The buffer must be allocated or constructed in advance - failing to do so
+will cause the load function to return an error code or fail.
+
+The caller is responsible for pre-packing the provided
+payload - the load function cannot convert to network byte order
+any data contained in the provided payload.
+\adviceuserend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_Data_unload}}
+\declareapi{PMIx_Data_unload}
+
+%%%%
+\summary
+
+Unload a buffer into a byte object
+
+%%%%
+\format
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Data_unload(pmix_data_buffer_t *src,
+                 pmix_byte_object_t *dest);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{src}{Pointer to the source \refstruct{pmix_data_buffer_t} (handle)}
+\argin{dest}{Pointer to the destination \refstruct{pmix_byte_object_t} (handle)}
+\end{arglist}
+
+Returns one of the following:
+\begin{constantdesc}
+\item \refconst{PMIX_SUCCESS} The data has been copied as requested
+\item \refconst{PMIX_ERR_BAD_PARAM} The destination and/or source pointer is \code{NULL}
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
+\end{constantdesc}
+
+%%%%
+\descr
+
+The unload function provides the caller with a pointer to the
+portion of the data payload within the buffer that has not yet been
+unpacked, along with the size of that region. Any portion of
+the payload that was previously unpacked using the \refapi{PMIx_Data_unpack}
+routine will be ignored. This allows the user to directly access the payload.
+
+\adviceuserstart
+This is a destructive operation. While the payload returned in the
+destination \refstruct{pmix_byte_object_t} is
+undisturbed, the function will clear the \refarg{src}'s pointers to the
+payload. Thus, the \refarg{src} and the payload are completely separated,
+leaving the caller able to free or destruct the \refarg{src}.
+\adviceuserend
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
