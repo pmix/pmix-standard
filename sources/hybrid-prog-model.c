@@ -73,7 +73,7 @@ static int openmp_handler() {
   PMIX_INFO_CREATE(info, 2);
   PMIX_INFO_LOAD(&info[0], PMIX_EVENT_HDLR_NAME, "OpenMP-Master", PMIX_STRING);
   PMIX_INFO_LOAD(&info[1], PMIX_EVENT_HDLR_FIRST, &is_true, PMIX_BOOL);
-  rc = PMIx_Register_event_handler(&code, 1, info, 1, parallel_region_OMP_cb, NULL, NULL);
+  rc = PMIx_Register_event_handler(&code, 1, info, 2, parallel_region_OMP_cb, NULL, NULL);
   if (rc < 0)
     fprintf(stderr, "%s: Failed to register event handler for OpenMP region entrance\n", __FUNCTION__);
   PMIX_INFO_FREE(info, 2);
@@ -94,7 +94,7 @@ static int mpi_handler() {
   PMIX_INFO_CREATE(info, 2);
   PMIX_INFO_LOAD(&info[0], PMIX_EVENT_HDLR_NAME, "MPI-Thread", PMIX_STRING);
   PMIX_INFO_LOAD(&info[1], PMIX_EVENT_HDLR_AFTER, "OpenMP-Master", PMIX_STRING);
-  rc = PMIx_Register_event_handler(&code, 1, info, 1, parallel_region_MPI_cb, NULL, NULL);
+  rc = PMIx_Register_event_handler(&code, 1, info, 2, parallel_region_MPI_cb, NULL, NULL);
   if (rc < 0)
     fprintf(stderr, "%s: Failed to register event handler for OpenMP region entrance\n", __FUNCTION__);
   PMIX_INFO_FREE(info, 2);
@@ -104,10 +104,17 @@ static int mpi_handler() {
   return rc;
 }
 
+static void notify_complete(pmix_status_t status, void *cbdata)
+{
+  volatile bool *flag = (volatile bool*)cbdata;
+  *flag = true;
+}
+
 int main() {
   //<EG BEGIN ID="declare_model">
   pmix_proc_t myproc;
   pmix_info_t *info;
+  volatile bool wearedone = false;
 
   PMIX_INFO_CREATE(info, 4);
   PMIX_INFO_LOAD(&info[0], PMIX_PROGRAMMING_MODEL, "MPI", PMIX_STRING);
@@ -124,8 +131,10 @@ int main() {
   pmix_status_t code = PMIX_MODEL_DECLARED;
   rc = PMIx_Register_event_handler(&code, 1, NULL, 0, model_declared_cb, NULL, NULL);
   //<EG END ID="declare_model_cb">
-  if (rc < 0)
+  if (rc < 0) {
     fprintf(stderr, "Failed to register event handler for model declaration\n");
+    goto fin;
+  }
   printf("Registered event handler for model declaration\n");
 
   openmp_handler();
@@ -133,8 +142,23 @@ int main() {
 
   printf("Notifying OpenMP parallel region about to be entered\n");
   //<EG BEGIN ID="notify_event">
-  rc = PMIx_Notify_event(PMIX_OPENMP_PARALLEL_ENTERED, &myproc, PMIX_RANGE_GLOBAL, NULL, 0, NULL, NULL);
-  if (rc < 0)
-    fprintf(stderr, "Failed to notify OpenMP region entered\n");
+  PMIX_INFO_CREATE(info, 1);
+  PMIX_INFO_LOAD(&info[0], PMIX_EVENT_NON_DEFAULT, NULL, PMIX_BOOL);
+  rc = PMIx_Notify_event(PMIX_OPENMP_PARALLEL_ENTERED, &myproc, PMIX_RANGE_PROC_LOCAL, info, 1, notify_complete, (void*)&wearedone);
   //<EG END ID="notify_event">
+  if (rc < 0) {
+    fprintf(stderr, "Failed to notify OpenMP region entered\n");
+    goto fin;
+  }
+
+  while (!wearedone) {
+    struct timespec ts;
+    ts.tv_sec = 0;
+    ts.tv_nsec = 100000;
+    nanosleep(&ts, NULL);
+  }
+  printf("Test completed\n");
+
+fin:
+  PMIx_Finalize(NULL, 0);
 }
