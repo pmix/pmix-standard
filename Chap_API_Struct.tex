@@ -371,6 +371,24 @@ PMIX_CHECK_NSPACE(a, b)
 
 Returns \code{true} if the namespace matches the given value
 
+\littleheader{Check invalid namespace macro}
+\declaremacro{PMIX_NSPACE_INVALID}
+
+Check the string in a \refstruct{pmix_nspace_t}
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_NSPACE_INVALID(a)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{a}{Pointer to the structure whose value is to be checked (pointer to \refstruct{pmix_nspace_t})}
+\end{arglist}
+
+Returns \code{true} if the namespace is invalid (i.e., starts with a \code{NULL} resulting in a zero-length string value)
+
 \littleheader{Load namespace macro}
 \declaremacro{PMIX_LOAD_NSPACE}
 
@@ -454,6 +472,24 @@ PMIX_CHECK_RANK(a, b)
 \end{arglist}
 
 Returns \code{true} if the ranks are equal, or at least one of the ranks is \refconst{PMIX_RANK_WILDCARD}
+
+\littleheader{Check rank is valid macro}
+\declaremacro{PMIX_RANK_IS_VALID}
+
+Check is the given rank is a valid value
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_RANK_IS_VALID(a)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{a}{Rank to be checked (\refstruct{pmix_rank_t})}
+\end{arglist}
+
+Returns \code{true} if the given rank is valid (i.e., less than \refconst{PMIX_RANK_VALID})
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Process Structure}
@@ -604,6 +640,23 @@ Returns \code{true} if the two structures contain matching namespaces and:
     \item one of the ranks is \refconst{PMIX_RANK_WILDCARD}
 \end{itemize}
 
+\littleheader{Check if a process identifier is valid}
+\declaremacro{PMIX_PROCID_INVALID}
+
+Check for invalid namespace or rank value
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_PROCID_INVALID(a)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{a}{Pointer to a structure whose ID is to be checked (pointer to \refstruct{pmix_proc_t})}
+\end{arglist}
+
+Returns \code{true} if the process identifier contains either an empty (i.e., invalid) \refarg{nspace} field or a \refarg{rank} field of \refconst{PMIX_RANK_INVALID}
 
 \littleheader{Load a procID structure}
 \declaremacro{PMIX_LOAD_PROCID}
@@ -621,6 +674,23 @@ PMIX_LOAD_PROCID(m, n, r)
 \argin{m}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_proc_t})}
 \argin{n}{Namespace to be loaded (\refstruct{pmix_nspace_t})}
 \argin{r}{Rank to be assigned (\refstruct{pmix_rank_t})}
+\end{arglist}
+
+\littleheader{Transfer a procID structure}
+\declaremacro{PMIX_XFER_PROCID}
+
+Transfer contents of one \refstruct{pmix_proc_t} value to another \refstruct{pmix_proc_t}.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_XFER_PROCID(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the target structure (pointer to \refstruct{pmix_proc_t})}
+\argin{n}{Pointer to the source structure (pointer to \refstruct{pmix_proc_t})}
 \end{arglist}
 
 \littleheader{Construct a multi-cluster namespace}
