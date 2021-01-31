@@ -1167,3 +1167,281 @@ Log the provided information to the host environment's job record.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Resource Usage}
+\label{api:resusage}
+
+Applications and tools often want to obtain a snapshot of the resources utilized by individual
+processes and/or nodes in their job. \ac{PMIx} provides attributes for querying such information
+and accompanying structures for the results.
+
+\subsection{Process statistics}
+\label{api:pstats:struct}
+
+The process statistics structure contains information available from many \acp{OS}. The field
+corresponding to any information that is not available will be set to zero.
+
+\declarestruct{pmix_proc_stats_t}
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_proc_stats \{
+    /* process ident info */
+    char *node;
+    pmix_proc_t proc;
+    pid_t pid;
+    char *cmd;
+    /* process stats */
+    char state[2];
+    struct timeval time;
+    float percent_cpu;
+    int32_t priority;
+    uint16_t num_threads;
+    float pss;   /* in MBytes */
+    float vsize;  /* in MBytes */
+    float rss;  /* in MBytes */
+    float peak_vsize;  /* in MBytes */
+    uint16_t processor;
+    /* time at which sample was taken */
+    struct timeval sample_time;
+\} pmix_proc_stats_t;
+\end{codepar}
+\cspecificend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Process statistics support macros}
+The following macros are provided to support the \refstruct{pmix_proc_stats_t} structure.
+
+\littleheader{Initialize the proc stats structure}
+\declaremacro{PMIX_PROC_STATS_CONSTRUCT}
+
+Initialize the \refstruct{pmix_proc_stats_t} fields.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_STATS_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_proc_stats_t})}
+\end{arglist}
+
+\littleheader{Destruct the proc stats structure}
+\declaremacro{PMIX_PROC_STATS_DESTRUCT}
+
+Destruct the \refstruct{pmix_proc_stats_t} fields.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_STATS_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_proc_stats_t})}
+\end{arglist}
+
+\littleheader{Create a proc stats array}
+\declaremacro{PMIX_PROC_STATS_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_proc_stats_t} structures.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_STATS_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_proc_stats_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+
+\littleheader{Free a proc stats structure}
+\declaremacro{PMIX_PROC_STATS_RELEASE}
+
+Release a \refstruct{pmix_proc_stats_t} structure.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_STATS_RELEASE(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to a \refstruct{pmix_proc_stats_t} structure (handle)}
+\end{arglist}
+
+\littleheader{Free a proc stats array}
+\declaremacro{PMIX_PROC_STATS_FREE}
+
+Release an array of \refstruct{pmix_proc_stats_t} structures.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_STATS_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_proc_stats_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+\subsection{Process statistics attributes}
+\label{api:pstats:attrs}
+
+The following attributes can be used to query for process statistics:
+
+\declareAttributeNEW{PMIX_PROC_RESOURCE_USAGE}{"pmix.pstats"}{pmix_proc_t}{
+Return the resource usage statistics for the specified process in a \refstruct{pmix_proc_stats_t} structure.
+If a namespace is combined with
+\refconst{PMIX_RANK_WILDCARD}, then results for all processes in the given job
+will be returned in a \refstruct{pmix_data_array_t} of \refstruct{pmix_proc_stats_t} structures.
+This attribute can be used with
+qualifiers such as \refattr{PMIX_SESSION_ID} to identify the session of the namespace whose
+statistics are being requested.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Node statistics}
+\label{api:ndstats:struct}
+
+The node statistics structure contains information available from many \acp{OS}. The field
+corresponding to any information that is not available will be set to zero. Note that the
+resource usage reported in the node statistics is an aggregate of all activity on the node
+and not just activity associated with the caller's job.
+
+\declarestruct{pmix_node_stats_t}
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_node_stats \{
+    char *node;
+    /* node-level load averages */
+    float la;
+    float la5;
+    float la15;
+    /* memory usage */
+    float total_mem;  /* in MBytes */
+    float free_mem;  /* in MBytes */
+    float buffers;  /* in MBytes */
+    float cached;   /* in MBytes */
+    float swap_cached;  /* in MBytes */
+    float swap_total;   /* in MBytes */
+    float swap_free;    /* in MBytes */
+    float mapped;       /* in MBytes */
+    /* time at which sample was taken */
+    struct timeval sample_time;
+\} pmix_node_stats_t;
+\end{codepar}
+\cspecificend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Node statistics support macros}
+The following macros are provided to support the \refstruct{pmix_node_stats_t} structure.
+
+\littleheader{Initialize the node stats structure}
+\declaremacro{PMIX_NODE_STATS_CONSTRUCT}
+
+Initialize the \refstruct{pmix_node_stats_t} fields.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_NODE_STATS_CONSTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_node_stats_t})}
+\end{arglist}
+
+\littleheader{Destruct the node stats structure}
+\declaremacro{PMIX_NODE_STATS_DESTRUCT}
+
+Destruct the \refstruct{pmix_node_stats_t} fields.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_NODE_STATS_DESTRUCT(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_node_stats_t})}
+\end{arglist}
+
+\littleheader{Create a node stats array}
+\declaremacro{PMIX_NODE_STATS_CREATE}
+
+Allocate and initialize an array of \refstruct{pmix_node_stats_t} structures.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_NODE_STATS_CREATE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{m}{Address where the pointer to the array of \refstruct{pmix_node_stats_t} structures shall be stored (handle)}
+\argin{n}{Number of structures to be allocated (\code{size_t})}
+\end{arglist}
+
+
+\littleheader{Free a node stats structure}
+\declaremacro{PMIX_NODE_STATS_RELEASE}
+
+Release a \refstruct{pmix_node_stats_t} structure.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_NODE_STATS_RELEASE(m)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to a \refstruct{pmix_node_stats_t} structure (handle)}
+\end{arglist}
+
+\littleheader{Free a node stats array}
+\declaremacro{PMIX_NODE_STATS_FREE}
+
+Release an array of \refstruct{pmix_node_stats_t} structures.
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+PMIX_NODE_STATS_FREE(m, n)
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{m}{Pointer to the array of \refstruct{pmix_node_stats_t} structures (handle)}
+\argin{n}{Number of structures in the array (\code{size_t})}
+\end{arglist}
+
+\subsection{Node statistics attributes}
+\label{api:ndstats:attrs}
+
+The following attributes can be used to query for node statistics:
+
+\declareAttributeNEW{PMIX_NODE_RESOURCE_USAGE}{"pmix.ndstats"}{char*}{
+Return the resource usage statistics for the specified node in a \refstruct{pmix_node_stats_t} structure.
+If no node is specified, then
+results for all nodes hosting processes within the job of the requestor
+will be returned in a \refstruct{pmix_data_array_t} of \refstruct{pmix_node_stats_t} structures.
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

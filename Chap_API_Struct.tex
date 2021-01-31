@@ -497,6 +497,7 @@ PMIX_PROC_CONSTRUCT(m)
 
 Destruct the \refstruct{pmix_proc_t} fields.
 
+\versionMarker{1.0}
 \cspecificstart
 \begin{codepar}
 PMIX_PROC_DESTRUCT(m)
@@ -2323,6 +2324,12 @@ Bitmask describing the relative location of another process. (\refstruct{pmix_lo
 A starting point for implementer-specific data types.
 Values above this are guaranteed not to conflict with \ac{PMIx} values.
 Definitions should always be based on the \refconst{PMIX_DATA_TYPE_MAX} constant and not a specific value as the value of the constant may change.
+%
+\declareconstitemNEW{PMIX_PROC_STATS}
+Structure containing process resource usage statistics (\refstruct{pmix_proc_stats_t})
+%
+\declareconstitemNEW{PMIX_NODE_STATS}
+Structure containing node resource usage statistics (\refstruct{pmix_node_stats_t})
 %
 \end{constantdesc}
 
