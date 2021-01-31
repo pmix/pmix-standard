@@ -1097,14 +1097,58 @@ returning the \refconst{PMIX_ERR_NOT_SUPPORTED} error constant.
 The returned pointer may point to a shared memory region or an actual instance
 of the topology description. In either case, the description shall be treated
 as a "read-only" object - attempts to modify the object are likely to fail and
-return an error. The \ac{PMIx} library is responsible for performing any required cleanup when the client library finalizes.
+return an error. The \ac{PMIx} library is responsible for performing any required
+cleanup when the client library finalizes.
 
 \adviceuserstart
+This is the recommended method for obtaining a topology description as it
+provides a single point-of-access to the topology, regardless of how the
+topology is generated (shared memory, XML representation, or independent
+construction).
+
 It is the responsibility of the user to ensure that the \refarg{topo} argument
 is properly initialized prior to calling this \ac{API}, and to check the
 returned \refarg{source} to verify that the returned topology description is
 compatible with the user's code.
 \adviceuserend
+
+\subsubsection{Accessing an HWLOC shared memory region}
+\ac{HWLOC} is a widely-used topology description library that provides
+a broad range of information of use to many libraries and
+applications. However, that support comes at a cost, especially on
+many-core architectures where the hardware topology can be quite complex.
+In these circumstances, construction of the \ac{HWLOC} topology tree requires
+a fair amount of time and consumes significant memory, especially
+when multiple libraries within each process independently construct
+copies of the tree.
+
+Minimizing duplicate topology tree construction is therefore of great
+importance. Libraries that will utilize \ac{PMIx} for other purposes
+can utilize the \refapi{PMIx_Load_topology} \ac{API} to obtain a
+pointer to the local topology - this helps ensure that only one topology
+tree is created. In some cases, particularly in lower-level libraries,
+adding a dependency on \ac{PMIx} is undesirable - developers of such
+libraries often prefer to keep them “thin” with minimal dependencies
+and as small a memory footprint as possible. \ac{PMIx} provides
+additional support for such cases by exposing the three \ac{HWLOC}
+shmem “hooks” as environmental variables:
+%
+\declareEnvarNEW{PMIX_HWLOC_SHMEM_FILE}{
+The backing file containing the \ac{HWLOC} shared memory region.
+}%
+\declareEnvarNEW{PMIX_HWLOC_SHMEM_ADDR}{
+The memory address of the \ac{HWLOC} shared memory region.
+}
+%
+\declareEnvarNEW{PMIX_HWLOC_SHMEM_SIZE}{
+The size of the \ac{HWLOC} shared memory region.
+}
+%
+The values obtained from these three environmental variables can be
+used in the \emph{hwloc_topology_adapt} function to attach to the
+shared memory region. The resulting \emph{hwloc_topology_t} pointer
+can subsequently be used in any \ac{HWLOC} function call or to access
+an \ac{HWLOC} object.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Get_relative_locality}}
