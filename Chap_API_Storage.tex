@@ -83,23 +83,70 @@ The storage system is volatile (e.g., tmpfs).
 %
 \end{constantdesc}
 
-\declarestruct{pmix_storage_locality_t}
+\adviceimplstart
+PMIx implementations should maintain the same ordering for bit-mask values for \refstruct{pmix_storage_medium_t} struct as provided in this standard, since these constants are ordered to provide semantic information that may be of use to PMIx users. Namely, \refstruct{pmix_storage_medium_t} constants are ordered in terms of increasing medium bandwidth.
 
-The \refstruct{pmix_storage_locality_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different storage localities. These can be bitwise OR'd together to accommodate storage systems that combine storage localities.
+It is further recommended that implementations should try to allocate empty bits in the mask so that they can be extended to account for new constant definitions corresponding to new storage mediums or localities.
+\adviceimplend
+
+\declarestruct{pmix_storage_accessibility_t}
+
+The \refstruct{pmix_storage_accessibility_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different levels of storage accessibility (i.e,. where a storage system be accessed from). These can be bitwise OR'd together to accommodate storage systems that are accessibile in multiple ways.
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_STORAGE_LOCALITY_NODE}
-The storage system resources are node-local.
+\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_NODE}
+The storage system resources are accessible within the same node.
 %
-\declareconstitemNEW{PMIX_STORAGE_LOCALITY_NETWORK}
-The storage system resources are network-local (e.g., on the same switch).
+\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_SESSION}
+The storage system resources are accessible within the same session.
 %
-\declareconstitemNEW{PMIX_STORAGE_LOCALITY_SITE}
-The storage system resources are site-local (i.e., in the same datacenter).
+\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_JOB}
+The storage system resources are accessible within the same job.
 %
-\declareconstitemNEW{PMIX_STORAGE_LOCALITY_WAN}
-The storage system resources are on the WAN (i.e., not site-local).
+\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_RACK}
+The storage system resources are accessible within the same rack.
+%
+\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_CLUSTER}
+The storage system resources are accessible within the same cluster.
+%
+\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_BUILDING}
+The storage system resources are accessible within the same building.
+%
+\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_CAMPUS}
+The storage system resources are accessible within the same campus.
+%
+\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_WAN}
+The storage system resources are accessible on the WAN (i.e., not campus-local).
+%
+\end{constantdesc}
+
+\declarestruct{pmix_storage_persistence_t}
+
+The \refstruct{pmix_storage_persistence_t} type specifies different levels of persistence for a particular storage system.
+
+\begin{constantdesc}
+%
+\declareconstitemNEW{PMIX_STORAGE_PERSISTENCE_TEMPORARY}
+Data on the storage system is persisted only temporarily (i.e, it does not survive across sessions or node reboots).
+%
+\declareconstitemNEW{PMIX_STORAGE_PERSISTENCE_NODE}
+Data on the storage system is persisted on the node.
+%
+\declareconstitemNEW{PMIX_STORAGE_PERSISTENCE_SESSION}
+Data on the storage system is persisted for the duration of the session.
+%
+\declareconstitemNEW{PMIX_STORAGE_PERSISTENCE_JOB}
+Data on the storage system is persisted for the duration of the job.
+%
+\declareconstitemNEW{PMIX_STORAGE_PERSISTENCE_SCRATCH}
+Data on the storage system is persisted according to scratch storage policies (short-term storage, typically persisted for days to weeks).
+%
+\declareconstitemNEW{PMIX_STORAGE_PERSISTENCE_PROJECT}
+Data on the storage system is persisted according to project storage policies (long-term storage, typically persisted for the duration of a project).
+%
+\declareconstitemNEW{PMIX_STORAGE_PERSISTENCE_ARCHIVE}
+Data on the storage system is persisted according to archive storage policies (long-term storage, typically persisted indefinitely).
 %
 \end{constantdesc}
 
@@ -153,8 +200,13 @@ Types of storage mediums utilized by the storage system (e.g., SSDs, HDDs, tape)
 }
 
 %
-\declareAttributeNEW{PMIX_STORAGE_LOCALITY}{"pmix.strg.local"}{pmix_storage_locality_t}{
-Locality of storage resources provided by the storage system (e.g., node-local or network-local)
+\declareAttributeNEW{PMIX_STORAGE_ACCESSIBILITY}{"pmix.strg.access"}{pmix_storage_accessibility_t}{
+Accessibility level of the storage system (e.g., within same node, within same session)
+}
+
+%
+\declareAttributeNEW{PMIX_STORAGE_PERSISTENCE}{"pmix.strg.persist"}{pmix_storage_persistence_t}{
+Persistence level of the storage system (e.g., sratch storage or achive storage)
 }
 
 %
