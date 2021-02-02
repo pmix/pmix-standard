@@ -2,7 +2,7 @@
 % Chapter: Data Access Operations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Data Access and Sharing}
-\label{chap:api_sync_acc}
+\label{chap:data_sharing}
 
 In \ac{PMIx} key-value pairs are the primary way that information is shared 
 between processes in the \ac{PMIx} universe.  
@@ -13,17 +13,21 @@ The context or domain of a key in PMIx is called a data realm.
 %% The pmix_info_t type (See [add reference to 1.3.1 Attributes in PMIx]), is also built on key-values pairs.  
 %% However, pmix_info_t is used for influencing API calls and is not used for sharing 
 %% information between processes.  
-This chapter describes how key-values pairs are made available and accessed by clients.
+This chapter describes how key-value pairs are made available and accessed by clients.
 
 A key-value pair has a scope defined by its data realm.  
-PMIx defines data realms for sessions, jobs, apps, nodes, processes and a special 
+PMIx defines data realms for sessions, jobs, applications, nodes, processes and a special 
 realm for publish/lookup information.   
-These are explained more fully in [Add reference to chapter 6] and [Add reference to chapter publish/lookup].
+These are explained more fully in \ref{chap:api_rsvd_keys} and \ref{chap:pub}.
 
-The source or provider of information, i.e. key-value pairs, can be the host environment or a pmix client.  
-The host environment can provide key-values pairs in any realm.
+The source or provider of key-value pairs can be the host environment or a \ac{PMIx} client.  
+The host environment can provide key-values pairs in any realm except for the publish/lookup realm.
+%%% Can we have a separate effort to change this restriction on publish/lookup for consistency?
+%%% Would this get into too many other issues?
 PMIx clients can only provide key-values pairs within their own process realm and the publish/lookup realm.
+The value of a key is not necessarily static and can be modified by the original provider of the key.
 
+\ac{PMIx} classifies keys as either reserved or non-reserved.
 Any key which begins with the prefix "pmix" is called a reserved key.
 All other keys are called non-reserved keys.
 Reserved keys can only be provided by the host environment.  
@@ -35,12 +39,13 @@ Clients cannot set or modify the value of reserved keys.
 %% I think we do need to bring this text back because there are actual code difference in how 
 %% standard keys are looked up.  It really does check and if it begins with PMIx_, it actually
 %% behaves differently in how it looks things up.
-%The distinction between reserved and non-reserved keys is important for client creators to understand.
-%Clients cannot be the source of reserved keys and the way reserved keys are accessed by clients 
-%is different than for non-reserved keys.
+The distinction between reserved and non-reserved keys is important for client creators to understand.
+Clients cannot be the source of reserved keys and the way reserved keys are accessed by clients 
+is different than for non-reserved keys as explained in \ref{chap:api_rsvd_keys}.
 
-Host environments are permitted to provide non-reserved keys.  However there are important caveats to 
-doing so that are explained in Chapter [Add reference to chapter 6].
+Host environments are permitted to provide non-reserved keys and non-standardized reserved keys.  
+However there are important caveats to providing either of these categories of keys 
+that are explained in \ref{chap:data_sharing:non_rsvd_keys} and \ref{chap:api_rsvd_keys}.
 % Would like to make this statement stronger, but there is text in chapter 6 currently that
 % says it is allowed to use "custom-prefixed keys which may adhere to either the reserved or non-reserved
 % retrieval rules.
@@ -48,52 +53,66 @@ Host environments should avoid providing reserved keys which are not standardize
 If the reserved key is later standardized to behave in a way that is different from the behavior 
 provided by the host environment, the host environment will not be compliant with the PMIx standard.
  
-Reserved keys are used to access information about a clients environement.
+Reserved keys are set by the host environment and are made available at client initialization. 
+Each key is associated with a data realm and the retrieval API call will indicate the realm being queried.
+Reserved keys are used to access information about a client's execution context.
 The information is made available by the host environment prior to client initialization.
 After initialization, the client can access reserved keys using the PMIx_Get API.  
-Common information that a client may access includes 
-the name of host it is executing on, 
+Common information that a client may access includes, but is not limited to,
+the name of the host it is executing on, 
 the number of peer processes in its namespace,
 the number of peer processes in its application,
-and its rank within its peer processes within its namespace on the host it is executing on.   
-These are simply examples to give some idea of the types of information that is accessed this way.
-Reserved keys are associated with a data realm.
+and its job rank.
 
-(Do we want to make any statements about how and when values can change during the course of execution.
- PMIX_EXIT_CODE for example, UNIVERSE_SIZE could change if more resources are added?)
+%%% (Do we want to make any other statements about how and when values can change during 
+%%%  the course of execution.
+%%%  PMIX_EXIT_CODE for example, UNIVERSE_SIZE could change if more resources are added?)
 
-Non-reserved keys are generally provided by clients.
+Non-reserved keys are generally provided by clients, though host environments may choose to 
+provide some non-reserved keys.  Host envirionments which provide non-reserved keys should document 
+the keys provided to avoid conflicting with client's use those keys.
 A call to PMIx_Put will result in a key-value being associated with the calling client within 
 its process data realm.
 There is no mechanism to retract a key-value that has been made availble by a client through PMIx_Put.
 The key can be assigned a new value, but cannot be removed entirely.
-The PMIx_Get API is used to access both reserved-keys provided by the host environment and 
-non-reserved-keys provided by a specified client within the process data realm. 
+Although key values can originate from different sources, they are always retrieved using the
+\refapi{PMIx_Get} and \refapi{PMIx_Get_nb} API.
 
-The publish-lookup data realm is accessed through a separate set of API's.
+The publish/lookup data realm is accessed through a separate set of API's.
+\refapi{PMIx_Put} cannot add or modify key-values within the publish/lookup realm and 
+\refapi{PMIx_Lookup} cannot access key-values outside the publish/lookup realm.
 This data realm is described in detail is chapter [Reference to publish/lookup chapter].
 Although PMIx_Publish and PMIx_Lookup are analogous to PMIx_Put and PMIx_Get in that both pairs 
 of API's provide functionality for exposing and retreiving key-values, the semantics vary significantly.  
 For example, PMIx_Lookup includes the ability to wait until a key is defined before returning.
-PMIx_Publish can restrict the scope of who can access data to its own namespace, the host environment, the session it is executing in, all processes or even custom scopes. 
-PMIx_Get can restrict the scope of who can access data to the node it is executing on, remote nodes, 
+PMIx_Publish can restrict the scope of who can access data to its own namespace, the host environment, the session it is executing in, all processes or even custom scopes, while  
+PMIx_Put can restrict the scope of who can access data to the node it is executing on, remote nodes, 
 all nodes or only itself.
 The publish/lookup data realm is useful for advertising information that is not necessarily specific to one process to other processes in the \ac{PMIx} universe.
 The process accessing this information does \emph{not} need to know the identity of the process that provided the data.
 
 \ac{PMIx} does not provide a mechanism to asynchronously notify a process about the availability of key-value information once it is made available by another process.
-However, the nonblocking accessor interfaces (e.g., \refapi{PMIx_Get_nb}, \refapi{PMIx_Lookup_nb}) can provide a sufficient degree of asynchronous notification on information availability, if desired.
+However, the nonblocking accessor interfaces (e.g., \refapi{PMIx_Get_nb}, \refapi{PMIx_Lookup_nb}) may provide a degree of asynchronous notification on information availability.
 
-Process related key-value exchanges allow a \ac{PMIx} process to share information specific to itself, and access information specific to one or more processes in the \ac{PMIx} universe.
+Process related key-value exchanges allow a \ac{PMIx} process to share information specific to 
+itself, and access information specific to one or more processes in the \ac{PMIx} universe.
+These interactions occur within the process data realm.
 The 'put/commit/get' exchange pattern is often used to exchange process related information.
-Optionally, a 'put/commit/fence/get' exchange pattern adds the 'fence' synchronization (and possible collective exchange) for applications that desire it.
-Commonly, these exchange patterns are used in a \declareterm{business card exchange}\emph{business card exchange} (a.k.a. \declareterm{modex exchange}\emph{modex exchange}) where one \ac{PMIx} client shares its connectivity information, then other \ac{PMIx} clients access that information to establish a connection with that client.
+Optionally, a 'put/commit/fence/get' exchange pattern adds the 'fence' synchronization 
+(and possible collective exchange) for applications that desire it.
+Commonly, these exchange patterns are used in a 
+\declareterm{business card exchange} (a.k.a. \declareterm{modex exchange}) 
+where one \ac{PMIx} client shares its connectivity information, then other \ac{PMIx} clients access that information to establish a connection with that client.
 In some environments that support ``instant-on'' all connectivity information for \ac{PMIx} clients is stored in the job-level information at process creation time and is accessible to the clients without the need to perform any additional key-value exchange.
 
-\ac{PMIx} clients can access available information associated with a namespace and/or a specific process in various data realms.
-For example, a client can access the number of nodes (\refattr{PMIX_NUM_NODES}) used by a session, job, or application.
-Rather than having three different attributes, a single attribute is used but with the data realm context of the query specified as additional attributes.
-Examples of these access patterns are presented in Section \ref{chap:api_kv:getex} and Table~\ref{tab:key-value-realms} summarizes how to access such data.
+Keys can exist in multiple data realms, possibly with different values. 
+\ac{PMIx} clients can access available information associated with any of the data realms.
+For example, a client can access the number of nodes (\refattr{PMIX_NUM_NODES}) used by a 
+session, job, or application.
+Rather than having three different attributes, a single attribute is used but with the 
+data realm context of the query specified as additional attributes.
+Examples of these access patterns are presented in Section \ref{chap:api_rsvd_keys:getex} and 
+Table~\ref{tab:key-value-realms} summarizes how to access such data.
 
 \ac{PMIx} clients can share key-value pairs associated with themselves by using the \refapi{PMIx_Put} function.
 The \refapi{PMIx_Put} function automatically associates the key-value pair with the calling process, thus making it specific to that process.
@@ -101,16 +120,23 @@ A client may call \refapi{PMIx_Put} as many times as necessary and the data is n
 A client must call \refapi{PMIx_Commit} to make accessible all key-value pairs previously put by this process to all other processes in the \ac{PMIx} universe.
 This put and commit pattern provides implementors the opportunity to make individual \refapi{PMIx_Put} calls efficient local operations, and then make the whole set of key-value pairs accessible in a single step.
 
-\ac{PMIx} clients can access the key-value pairs associated with any process in the \ac{PMIx} universe (including the calling process) by passing the specific process name of the target process to the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions.
-The \ac{PMIx} server local to the calling process will retrieve that key-value pair from the \ac{PMIx} server associated with the target process.
-Clients can also access session, job, application, node, and namespace level information by using the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions as shown in Section \ref{chap:api_kv:getex} and summarized in Table~\ref{tab:key-value-realms}.
-If the key-value pair is not available, the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions will not complete, by default, until that key-value pair becomes available.
-Additional attributes can be passed to control this behavior.
-
-Optionally, \ac{PMIx} clients can use the \refapi{PMIx_Fence} and \refapi{PMIx_Fence_nb} functions to synchronize a set of processes.  For some applications, this can improve the performance of the key-value exchange as described in \ref{label:sync_api}.
+\ac{PMIx} clients can access the key-value pairs associated with any process data realm 
+in the \ac{PMIx} universe (including the calling process) by passing the specific process 
+name of the target process to the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions.
+The \ac{PMIx} server local to the calling process will retrieve that key-value pair from 
+the \ac{PMIx} server associated with the target process.
+Clients can also access session, job, application, node, and namespace level information 
+by using the \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} functions as shown in Section 
+\ref{chap:api_rsvd_keys:getex} and summarized in Table~\ref{tab:key-value-realms}.
+The completion semants for \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} differ 
+depending on the type of key and its availability.  See Sections 
+\ref{chap:data_sharing:retrules} and \ref{chap:api_rsvd_keys:retrules}.
+For example, if a non-reserved key is not available, the \refapi{PMIx_Get} or \refapi{PMIx_Get_nb} call 
+will not complete, by default, until that key-value pair becomes available.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Non-reserved keys}
+\label{chap:data_sharing:non_rsvd_keys}
 
 \emph{Non-reserved keys} are keys whose string representation begin with a
 prefix other than \code{"pmix"}. Such keys are typically defined by an
@@ -140,13 +166,14 @@ by use of the \refconst{PMIX_RANK_UNDEF} rank. In addition, the keys must be
 globally exchanged prior to retrieval as there is no way for the host to
 otherwise locate the source for the information.
 
-Note that the retrieval rules for non-reserved keys (detailed in Section \ref{chap:nrkeys:retrules}) differ significantly from those used for reserved keys.
+Note that the retrieval rules for non-reserved keys (detailed in Section 
+\ref{chap:data_sharing:retrules}) differ significantly from those used for reserved keys.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Posting Key/Value Pairs}
-\label{chap:api_kv_mgmt:set}
+\label{chap:data_sharing:set}
 
 \ac{PMIx} clients can post non-reserved key-value pairs associated with themselves by using \refapi{PMIx_Put}. Alternatively, \ac{PMIx} clients can cache arbitrary key-value pairs accessible only by the caller via the \refapi{PMIx_Store_internal} \ac{API}.
 
@@ -303,11 +330,11 @@ Users are advised to always include the call to \refapi{PMIx_Commit} in case the
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Retrieval rules for non-reserved keys}
-\label{chap:nrkeys:retrules}
+\label{chap:data_sharing:retrules}
 
 Since non-reserved keys cannot, by definition, have been provided by the host
 environment, their retrieval follows significantly different rules than those
-defined for reserved keys (as detailed in Section \ref{chap:rkeys:retrules}).
+defined for reserved keys (as detailed in Section \ref{chap:api_rsvd_keys}).
 \refapi{PMIx_Get} for a non-reserved key will obey the
 following precedence search:
 
@@ -456,14 +483,14 @@ The following attributes are optional for host environments:
 %%%%
 \descr
 
-Retrieve information for the specified \refarg{key} associated with the process identified in the given \refstruct{pmix_proc_t}, returning a pointer to the \refstruct{pmix_value_t} containing the result in the given address. See Chapters \ref{chap:api_rsvd_keys} and \ref{chap:nrkeys} for details on rules governing retrieval of information.
+Retrieve information for the specified \refarg{key} associated with the process identified in the given \refstruct{pmix_proc_t}, returning a pointer to the \refstruct{pmix_value_t} containing the result in the given address. See Chapter \ref{chap:api_rsvd_keys} and Section \ref{chap:data_sharing:non_rsvd_keys} for details on rules governing retrieval of information.
 
 A successful call will result in the memory pointed to by \refarg{val} pointing to the location information of type \refstruct{pmix_value_t}, which can be used to access the value of the key.  
 can be used to dereference memory of type \refstruct{pmix_value_t} to retreive the value of the key. 
 Unless the call specifies \refAttributeItem{PMIX_GET_STATIC_VALUES} and the return value is not \refconst{PMIX_ERR_GET_MALLOC_REQD}, the caller is responsible for releasing the memory by passing \refarg{val} to the macro  
 \refmacro{PMIX_VALUE_RELEASE}.  
 
-This is a blocking operation - the caller will block until the retrieval rules of Chapters \ref{chap:api_rsvd_keys} or \ref{chap:nrkeys} are met.
+This is a blocking operation - the caller will block until the retrieval rules of Section \ref{chap:api_rsvd_keys:retrules} or \ref{chap:data_sharing:retrules} are met.
 
 The \refarg{info} array is used to pass user directives regarding the get operation.
 
@@ -548,7 +575,7 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-The callback function will be executed once the retrieval rules of Chapters \ref{chap:api_rsvd_keys} or \ref{chap:nrkeys} are met.
+The callback function will be executed once the retrieval rules of Chapters \ref{chap:api_rsvd_keys} or \ref{chap:data_sharing:retrules} are met.
 See \refapi{PMIx_Get} for a full description.
 
 
