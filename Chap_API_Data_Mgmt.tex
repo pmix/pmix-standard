@@ -487,3 +487,98 @@ leaving the caller able to free or destruct the \refarg{src}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{\code{PMIx_Data_compress}}
+\declareapi{PMIx_Data_compress}
+
+%%%%
+\summary
+
+Perform a lossless compression on the provided data
+
+%%%%
+\format
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+bool
+PMIx_Data_compress(uint8_t *inbytes, size_t size,
+                   uint8_t **outbytes, size_t *nbytes);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{inbytes}{Pointer to the source data (handle)}
+\argin{size}{Number of bytes in the source data region (\code{size_t})}
+\argout{outbytes}{Address where the pointer to the compressed data region is to be returned (handle)}
+\argout{nbytes}{Address where the number of bytes in the compressed data region is to be returned (handle)}
+\end{arglist}
+
+Returns one of the following:
+\begin{itemize}
+\item \code{True} The data has been compressed as requested
+\item \code{False} The data has not been compressed
+\end{itemize}
+
+%%%%
+\descr
+
+Compress the provided data block. Destination memory
+will be allocated if operation is successfully concluded. Caller
+is responsible for release of the allocated region. The input
+data block will remain unaltered.
+
+Note: the compress function will return \code{False} if the operation
+would not result in a smaller data block.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{\code{PMIx_Data_decompress}}
+\declareapi{PMIx_Data_decompress}
+
+%%%%
+\summary
+
+Decompress the provided data
+
+%%%%
+\format
+
+\versionMarker{4.1}
+\cspecificstart
+\begin{codepar}
+bool
+PMIx_Data_decompress(uint8_t **outbytes, size_t *nbytes,
+                     uint8_t *inbytes, size_t size);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{outbytes}{Address where the pointer to the decompressed data region is to be returned (handle)}
+\argout{nbytes}{Address where the number of bytes in the decompressed data region is to be returned (handle)}
+\argin{inbytes}{Pointer to the source data (handle)}
+\argin{size}{Number of bytes in the source data region (\code{size_t})}
+\end{arglist}
+
+Returns one of the following:
+\begin{itemize}
+\item \code{True} The data has been decompressed as requested
+\item \code{False} The data has not been decompressed
+\end{itemize}
+
+%%%%
+\descr
+
+Decompress the provided data block. Destination memory
+will be allocated if operation is successfully concluded. Caller
+is responsible for release of the allocated region. The input
+data block will remain unaltered.
+
+Only data compressed by the \refapi{PMIx_Data_compress} \ac{API}
+can be decompressed by this function. Passing data that has not
+been compressed by \refapi{PMIx_Data_compress} will lead to
+unexpected and potentially catastrophic results.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
