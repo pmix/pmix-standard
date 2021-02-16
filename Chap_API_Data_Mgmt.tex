@@ -467,7 +467,7 @@ The buffer must be allocated or constructed in advance - failing to do so
 will cause the load function to return an error code or fail.
 
 The caller is responsible for pre-packing the provided
-payload - the load function cannot convert to network byte order
+payload. For example, the load function cannot convert to network byte order
 any data contained in the provided payload.
 \adviceuserend
 
