@@ -44,7 +44,7 @@ static void parallel_region_OMP_cb(size_t evhdlr_registration_id,
 }
 //<EG END ID="omp_thread">
 
-//<EG BEGIN ID="mpi_thread">
+//<EG BEGIN ID="mpi_process">
 static void parallel_region_MPI_cb(size_t evhdlr_registration_id,
                                    pmix_status_t status,
                                    const pmix_proc_t *source,
@@ -53,13 +53,13 @@ static void parallel_region_MPI_cb(size_t evhdlr_registration_id,
                                    pmix_event_notification_cbfunc_fn_t cbfunc,
                                    void *cbdata) {
   printf("Entered %s\n", __FUNCTION__);
-  /* do what we need MPI to do on entering a parallel region */
+  /* do what we need the MPI library to do on entering a parallel region */
   if (NULL != cbfunc) {
-    /* do what we need MPI to do on entering a parallel region */
+    /* tell the event handler that we are the last step */
     cbfunc(PMIX_EVENT_ACTION_COMPLETE, NULL, 0, NULL, NULL, cbdata);
   }
 }
-//<EG END ID="mpi_thread">
+//<EG END ID="mpi_process">
 
 static int openmp_handler() {
   pmix_info_t *info;
@@ -71,7 +71,7 @@ static int openmp_handler() {
   bool is_true = true;
   pmix_status_t code = PMIX_OPENMP_PARALLEL_ENTERED;
   PMIX_INFO_CREATE(info, 2);
-  PMIX_INFO_LOAD(&info[0], PMIX_EVENT_HDLR_NAME, "OpenMP-Master", PMIX_STRING);
+  PMIX_INFO_LOAD(&info[0], PMIX_EVENT_HDLR_NAME, "OpenMP-Primary", PMIX_STRING);
   PMIX_INFO_LOAD(&info[1], PMIX_EVENT_HDLR_FIRST, &is_true, PMIX_BOOL);
   rc = PMIx_Register_event_handler(&code, 1, info, 2, parallel_region_OMP_cb, NULL, NULL);
   if (rc < 0)
@@ -89,17 +89,17 @@ static int mpi_handler() {
 
   printf("Entered %s\n", __FUNCTION__);
 
-  //<EG BEGIN ID="mpi_thread">
+  //<EG BEGIN ID="mpi_process">
   pmix_status_t code = PMIX_OPENMP_PARALLEL_ENTERED;
   PMIX_INFO_CREATE(info, 2);
   PMIX_INFO_LOAD(&info[0], PMIX_EVENT_HDLR_NAME, "MPI-Thread", PMIX_STRING);
-  PMIX_INFO_LOAD(&info[1], PMIX_EVENT_HDLR_AFTER, "OpenMP-Master", PMIX_STRING);
+  PMIX_INFO_LOAD(&info[1], PMIX_EVENT_HDLR_AFTER, "OpenMP-Primary", PMIX_STRING);
   rc = PMIx_Register_event_handler(&code, 1, info, 2, parallel_region_MPI_cb, NULL, NULL);
   if (rc < 0)
     fprintf(stderr, "%s: Failed to register event handler for OpenMP region entrance\n", __FUNCTION__);
   PMIX_INFO_FREE(info, 2);
-  //<EG END ID="mpi_thread">
-  printf("Registered MPI event handler for OpenMP parallel region entered\n");
+  //<EG END ID="mpi_process">
+  printf("Registered event handler in the MPI library for OpenMP parallel region entered\n");
 
   return rc;
 }
@@ -120,11 +120,11 @@ int main() {
   PMIX_INFO_LOAD(&info[0], PMIX_PROGRAMMING_MODEL, "MPI", PMIX_STRING);
   PMIX_INFO_LOAD(&info[1], PMIX_MODEL_LIBRARY_NAME, "FooMPI", PMIX_STRING);
   PMIX_INFO_LOAD(&info[2], PMIX_MODEL_LIBRARY_VERSION, "1.0.0", PMIX_STRING);
-  PMIX_INFO_LOAD(&info[3], PMIX_THREADING_MODEL, "pthread", PMIX_STRING);
+  PMIX_INFO_LOAD(&info[3], PMIX_THREADING_MODEL, "pthreads", PMIX_STRING);
   pmix_status_t rc = PMIx_Init(&myproc, info, 4);
   PMIX_INFO_FREE(info, 4);
   //<EG END ID="declare_model">
-  printf("Registered MPI programming model\n");
+  printf("Registered MPI library\n");
 
   printf("Registering event handler for model declaration\n");
   //<EG BEGIN ID="declare_model_cb">
