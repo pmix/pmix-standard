@@ -14,46 +14,6 @@ These attributes can be queried by applications, I/O libraries and middleware, a
 %%%%%%%%%%%
 \section{Storage support constants}
 
-The following constants are defined to specify common storage system types (for use with the \refattr{PMIX_STORAGE_TYPE} attribute).
-
-\begin{constantdesc}
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_LUSTRE}
-Lustre storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_GPFS}
-GPFS (Spectrum Scale) storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_DATAWARP}
-Datawarp storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_NFS}
-NFS storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_CEPH}
-Ceph storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_EXT4}
-Ext4 storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_XFS}
-XFS storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_TMPFS}
-tmpfs storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_DAOS}
-DAOS storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_S3}
-S3 storage system.
-%
-\declareconstitemNEW{PMIX_STORAGE_TYPE_GCP}
-GCP (Google Cloud Platform) storage system.
-%
-\end{constantdesc}
-
-
 \declarestruct{pmix_storage_medium_t}
 
 The \refstruct{pmix_storage_medium_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different types of storage mediums. These can be bitwise OR'd together to accommodate storage systems that mix storage medium types.
@@ -86,12 +46,12 @@ The storage system is volatile (e.g., tmpfs).
 \adviceimplstart
 PMIx implementations should maintain the same ordering for bit-mask values for \refstruct{pmix_storage_medium_t} struct as provided in this standard, since these constants are ordered to provide semantic information that may be of use to PMIx users. Namely, \refstruct{pmix_storage_medium_t} constants are ordered in terms of increasing medium bandwidth.
 
-It is further recommended that implementations should try to allocate empty bits in the mask so that they can be extended to account for new constant definitions corresponding to new storage mediums or localities.
+It is further recommended that implementations should try to allocate empty bits in the mask so that they can be extended to account for new constant definitions corresponding to new storage mediums.
 \adviceimplend
 
 \declarestruct{pmix_storage_accessibility_t}
 
-The \refstruct{pmix_storage_accessibility_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different levels of storage accessibility (i.e,. where a storage system be accessed from). These can be bitwise OR'd together to accommodate storage systems that are accessibile in multiple ways.
+The \refstruct{pmix_storage_accessibility_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different levels of storage accessibility (i.e,. from where a storage system may be accessed). These can be bitwise OR'd together to accommodate storage systems that are accessibile in multiple ways.
 
 \begin{constantdesc}
 %
@@ -110,14 +70,8 @@ The storage system resources are accessible within the same rack.
 \declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_CLUSTER}
 The storage system resources are accessible within the same cluster.
 %
-\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_BUILDING}
-The storage system resources are accessible within the same building.
-%
-\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_CAMPUS}
-The storage system resources are accessible within the same campus.
-%
-\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_WAN}
-The storage system resources are accessible on the WAN (i.e., not campus-local).
+\declareconstitemNEW{PMIX_STORAGE_ACCESSIBILITY_REMOTE}
+The storage system resources are remote.
 %
 \end{constantdesc}
 
