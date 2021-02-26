@@ -182,24 +182,78 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Floating version
-%\usepackage[showboxes]{textpos}
-\usepackage{textpos}
+% Text placement in the left margin
+%
+% - \textInMargin{text}   Add the text to the left margin between line numbers and text
 
-\setlength{\TPHorizModule}{1pt}%
-\setlength{\TPVertModule}{\TPHorizModule}%
-\TPMargin{1pt}%
+%\usepackage[showboxes]{textpos}
+%\usepackage{textpos}
+%\setlength{\TPHorizModule}{1pt}
+%\setlength{\TPVertModule}{1pt}
+%\TPMargin{0pt}
+%\textblockcolor{red}
+\usepackage{lipsum}% for random text only
+
+\usepackage{soul}
+\usepackage{marginnote}
+
+% Lengths to get place the \textInMargin consistently on odd and even pages
+\newlength{\InternalNoteOddmarginwidth}
+\setlength{\InternalNoteOddmarginwidth}{\marginparwidth}
+\addtolength{\InternalNoteOddmarginwidth}{-1.4in}
+\newlength{\InternalNoteOddtextwidth}
+\setlength{\InternalNoteOddtextwidth}{\textwidth}
+\addtolength{\InternalNoteOddtextwidth}{0.2in}
+
+\newlength{\InternalNoteEvenmarginwidth}
+\setlength{\InternalNoteEvenmarginwidth}{\marginparwidth}
+\addtolength{\InternalNoteEvenmarginwidth}{-1.45in}
+\newlength{\InternalNoteEventextwidth}
+\setlength{\InternalNoteEventextwidth}{-70pt}
+
+\newcommand*\textInMargin[1]{%
+%  \edef\marginnotevadjust{0pt}%
+  \checkoddpage%
+  \ifthenelse{\boolean{oddpage}}
+  {
+    \edef\marginparwidth{\InternalNoteOddmarginwidth}%
+    \edef\marginnotetextwidth{\the\InternalNoteOddtextwidth}%
+    \marginnote[#1]{}[0pt]%
+  }{
+    \edef\marginparwidth{\InternalNoteEvenmarginwidth}%
+    \edef\marginnotetextwidth{\InternalNoteEventextwidth}%
+    \marginnote[]{#1}%
+  }
+}
+
+\reversemarginpar
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Floating version
+%
+% - \versionMarker{1.2}     Puts "PMIx v1.2" in the margin
 
 \newcommand{\versionMarker}[1]{%
- % y is 8 = \parskip
- \begin{textblock}{50}(-55,8)%
-   \textit{PMIx v#1}%
-   \raggedright
- \end{textblock}%
+  \textInMargin{\textit{PMIx v#1}}%
 }
-% Alternative is to make a box inline, but that gets tricky when positioning close
-% to codepar's
-% \makebox[-7pt][r]{\textit{PMIx #4}\raggedright}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PMIx Standard Process markers
+%
+% - Provisional items
+%   \provisionalMarker     Add a provisional label to the margin
+%   \markProvisional       Add a provisional label to the margin and highlight the provided text
+%
+
+\newcommand{\provisionalMarker}[0]{% -14
+    \textInMargin{\small{\hl{\textit{Provisional}}}}%
+}
+
+\newcommand{\markProvisional}[1]{% -14
+    \sethlcolor{yellow}%
+    \provisionalMarker{}%
+    \hl{#1}%
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Enumerated list with lowercase alphabet lettering
@@ -508,7 +562,7 @@
 % This sets the default \code{} font to tt (monospace) and bold:
 \newcommand{\code}[1]{{\texttt{\textbf{#1}}}}
 \newcommand{\var}[1] {{\textrm{\textmd{\itshape{#1}}}}}
-
+\soulregister{\code}{1}
 
 % Environment for a paragraph of literal code, single-spaced, no outline, no indenting:
 \newenvironment{codepar}[1]
