@@ -1,0 +1,25 @@
+name: PMIx Standard CI
+
+on:
+  pull_request:
+    # We don't need this to be run on all types of PR behavior
+    # See
+    #  - https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request
+    #  - https://frontside.com/blog/2020-05-26-github-actions-pull_request
+    types:
+      - opened
+      - synchronize
+      - edited
+      - reopened
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Check out the code
+        uses: actions/checkout@v1
+      # Run the container tester
+      - name: Build and Test
+        run: docker run --rm -v ${GITHUB_WORKSPACE}:/home/pmixer/pmix-standard jjhursey/pmix-standard /bin/bash -c "cp -R /home/pmixer/pmix-standard pmix-build && cd pmix-build && make"
+        shell: bash
