@@ -182,24 +182,78 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Floating version
-%\usepackage[showboxes]{textpos}
-\usepackage{textpos}
+% Text placement in the left margin
+%
+% - \textInMargin{text}   Add the text to the left margin between line numbers and text
 
-\setlength{\TPHorizModule}{1pt}%
-\setlength{\TPVertModule}{\TPHorizModule}%
-\TPMargin{1pt}%
+%\usepackage[showboxes]{textpos}
+%\usepackage{textpos}
+%\setlength{\TPHorizModule}{1pt}
+%\setlength{\TPVertModule}{1pt}
+%\TPMargin{0pt}
+%\textblockcolor{red}
+\usepackage{lipsum}% for random text only
+
+\usepackage{soul}
+\usepackage{marginnote}
+
+% Lengths to get place the \textInMargin consistently on odd and even pages
+\newlength{\InternalNoteOddmarginwidth}
+\setlength{\InternalNoteOddmarginwidth}{\marginparwidth}
+\addtolength{\InternalNoteOddmarginwidth}{-1.4in}
+\newlength{\InternalNoteOddtextwidth}
+\setlength{\InternalNoteOddtextwidth}{\textwidth}
+\addtolength{\InternalNoteOddtextwidth}{0.2in}
+
+\newlength{\InternalNoteEvenmarginwidth}
+\setlength{\InternalNoteEvenmarginwidth}{\marginparwidth}
+\addtolength{\InternalNoteEvenmarginwidth}{-1.45in}
+\newlength{\InternalNoteEventextwidth}
+\setlength{\InternalNoteEventextwidth}{-70pt}
+
+\newcommand*\textInMargin[1]{%
+%  \edef\marginnotevadjust{0pt}%
+  \checkoddpage%
+  \ifthenelse{\boolean{oddpage}}
+  {
+    \edef\marginparwidth{\InternalNoteOddmarginwidth}%
+    \edef\marginnotetextwidth{\the\InternalNoteOddtextwidth}%
+    \marginnote[#1]{}[0pt]%
+  }{
+    \edef\marginparwidth{\InternalNoteEvenmarginwidth}%
+    \edef\marginnotetextwidth{\InternalNoteEventextwidth}%
+    \marginnote[]{#1}%
+  }
+}
+
+\reversemarginpar
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Floating version
+%
+% - \versionMarker{1.2}     Puts "PMIx v1.2" in the margin
 
 \newcommand{\versionMarker}[1]{%
- % y is 8 = \parskip
- \begin{textblock}{50}(-55,8)%
-   \textit{PMIx v#1}%
-   \raggedright
- \end{textblock}%
+  \textInMargin{\textit{PMIx v#1}}%
 }
-% Alternative is to make a box inline, but that gets tricky when positioning close
-% to codepar's
-% \makebox[-7pt][r]{\textit{PMIx #4}\raggedright}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PMIx Standard Process markers
+%
+% - Provisional items
+%   \provisionalMarker     Add a provisional label to the margin
+%   \markProvisional       Add a provisional label to the margin and highlight the provided text
+%
+
+\newcommand{\provisionalMarker}[0]{% -14
+    \textInMargin{\small{\hl{\textit{Provisional}}}}%
+}
+
+\newcommand{\markProvisional}[1]{% -14
+    \sethlcolor{yellow}%
+    \provisionalMarker{}%
+    \hl{#1}%
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Enumerated list with lowercase alphabet lettering
@@ -240,21 +294,6 @@
 \newcommand{\argin}[2]{\item[IN ~~~~\code{#1}] #2}
 \newcommand{\argout}[2]{\item[OUT ~~~\code{#1}] #2}
 \newcommand{\arginout}[2]{\item[INOUT ~\code{#1}] #2}
-
-% Constant list
-%   \declareconstitem  Declare constant with description
-\newenvironment{constantdesc}
-{\begin{description}[itemsep=-1.3ex,itemindent=\dimexpr-17pt-\labelsep\relax]}
-{\end{description}}
-
-\newcommand{\declareconstitem}[1]{\item[\code{#1}] \index[index_const]{#1|indexfmt} \label{const:#1} \hspace{1em}}
-\newcommand{\declareconstitemvalue}[2]{\item[\code{#1}] \index[index_const]{#1|indexfmt} \hspace{0.25em} \code{#2}  \hspace{1em}}
-% New in this version
-\newcommand{\declareconstitemNEW}[1]{\item[\color{magenta}\code{#1}] \index[index_const]{#1|indexfmt} \label{const:#1} \hspace{1em}}
-% Deprecated
-\newcommand{\declareconstitemDEP}[1]{\item[\color{green!80!black}\code{#1}] \index[index_const]{Z_#1@\emph{#1}!\textbf{Deprecated}|indexdepfmt} \label{const:#1} \hspace{1em}}
-% Removed
-\newcommand{\declareconstitemRM}[1]{\item[\color{red!80!black}\code{#1}] \index[index_const]{Z_#1@\emph{#1}!\textbf{Removed}|indexrmfmt} \label{const:#1} \hspace{1em}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -350,10 +389,10 @@
 % Inspired by this thread:
 %   https://tex.stackexchange.com/questions/150790/how-to-make-text-be-copied-to-another-part-of-a-document
 \makeatletter
-\newcommand\StdCopy              [2] {
+\newcommand\StdCopy              [2] {%
   \immediate\write\@auxout{\unexpanded{\global\long\@namedef{clipbrd@#1}{#2}}}
 }
-\newcommand\StdCopyEcho          [2] {
+\newcommand\StdCopyEcho          [2] {%
   \StdCopy{#1}{#2}%
   #2
 }
@@ -367,103 +406,173 @@
 \makeatother
 
 
-% Envars
+%-------------------------------
+% Constants
+%
+%  \begin{constantdesc}            Start a list of constant declarations
+%
+%  \declareconstitem               Declare Attribute
+%  \declareconstitemProvisional    Declare Constant - Provisional
+%  \declareconstitemNEW            Declare Constant - New
+%  \declareconstitemDEP            Declare Constant - Deprecated
+%  \declareconstitemRM             Declare Constant - Removed
+%  \declareconstitemvalue          Declare Constant Value
+%
+%  \pasteAttributeItem             Paste a copy of the Attribute declaration
+%  \pasteAttributeItemBegin        Paste a copy of the Attribute declaration
+%  \pasteAttributeItemEnd            with space to extend the description.
+%  
+%  \refconst                       Reference a Constant
+%
 
-\newcommand{\declareEnvar}[2]{%
-    \code{#1}%
-    \index[index_envars]{#1|indexfmt} \label{envar:#1}%
+\newenvironment{constantdesc}
+{\begin{description}[itemsep=-1.3ex,itemindent=\dimexpr-17pt-\labelsep\relax]}
+{\end{description}}
+
+\newcommand{\declareconstitem}[1]{%
+  \item[\code{#1}]%
+  \index[index_const]{#1|indexfmt} \label{const:#1}%
+  \hspace{1em}%
+}
+\newcommand{\declareconstitemvalue}[2]{%
+  \item[\code{#1}]%
+  \index[index_const]{#1|indexfmt}%
+  \hspace{0.25em} \code{#2} \hspace{1em}%
+}
+
+\newcommand{\declareconstitemProvisional}[1]{%
+  \item[\hl{\code{#1}}]\provisionalMarker{}%
+  \index[index_const]{#1|indexfmt} \label{const:#1}%
+  \hspace{1em}%
+}
+
+\newcommand{\declareconstitemNEW}[1]{%
+  \item[\color{magenta}\code{#1}]%
+  \index[index_const]{#1|indexfmt} \label{const:#1}%
+  \hspace{1em}%
+}
+
+\newcommand{\declareconstitemDEP}[1]{%
+  \item[\color{green!80!black}\code{#1}]%
+  \index[index_const]{Z_#1@\emph{#1}!\textbf{Deprecated}|indexdepfmt} \label{const:#1}
+  \hspace{1em}%
+}
+
+\newcommand{\declareconstitemRM}[1]{%
+  \item[\color{red!80!black}\code{#1}]%
+  \index[index_const]{Z_#1@\emph{#1}!\textbf{Removed}|indexrmfmt} \label{const:#1}%
+  \hspace{1em}%
+}
+
+\newcommand{\refconst}[1]{\hyperref[const:#1]{\code{#1}}}
+
+
+%-------------------------------
+% Envars
+%
+%  \declareEnvar               Declare Envar
+%  \declareEnvarProvisional    Declare Envar - Provisional
+%  \declareEnvarNEW            Declare Envar - New
+%  \declareEnvarDEP            Declare Envar - Deprecated
+%  \declareEnvarRM             Declare Envar - Removed
+%
+%  \refEnvarItem or \refenvar  Reference an envar
+
+\newcommand{\InternaldeclareEnvar}[2]{%
     \vspace{-1.3ex}%
       \expandafter\begin{adjustwidth}{.95cm}{}%
       \StdCopyEcho{#1}{#2}%
     \end{adjustwidth}%
   \vspace{-1.3ex}%
+}
+
+\newcommand{\declareEnvar}[2]{%
+    \code{#1}%
+    \index[index_envars]{#1|indexfmt} \label{envar:#1}%
+    \InternaldeclareEnvar{#1}{#2}%
+}
+
+\newcommand{\declareEnvarProvisional}[2]{%
+    \hl{\code{#1}}\provisionalMarker{}%
+    \index[index_envars]{#1|indexfmt} \label{envar:#1}%
+    \InternaldeclareEnvar{#1}{#2}%
 }
 
 \newcommand{\declareEnvarNEW}[2]{%
    {\color{magenta}\code{#1}}%
     \index[index_envars]{#1|indexfmt} \label{envar:#1}%
-    \vspace{-1.3ex}%
-      \expandafter\begin{adjustwidth}{.95cm}{}%
-      \StdCopyEcho{#1}{#2}%
-    \end{adjustwidth}%
-  \vspace{-1.3ex}%
+    \InternaldeclareEnvar{#1}{#2}%
 }
 
 \newcommand{\declareEnvarDEP}[2]{%
    {\color{green!80!black}\code{#1}}%
     \index[index_envars]{Z_#1@\emph{#1}!\textbf{Deprecated}|indexdepfmt} \label{envar:#1}%
-    \vspace{-1.3ex}%
-      \expandafter\begin{adjustwidth}{.95cm}{}%
-      \StdCopyEcho{#1}{#2}%
-    \end{adjustwidth}%
-  \vspace{-1.3ex}%
+    \InternaldeclareEnvar{#1}{#2}%
 }
 
 \newcommand{\declareEnvarRM}[2]{%
    {\color{green!80!black}\code{#1}}%
     \index[index_envars]{Z_#1@\emph{#1}!\textbf{Removed}|indexrmfmt} \label{envar:#1}%
-    \vspace{-1.3ex}%
-      \expandafter\begin{adjustwidth}{.95cm}{}%
-      \StdCopyEcho{#1}{#2}%
-    \end{adjustwidth}%
-  \vspace{-1.3ex}%
+    \InternaldeclareEnvar{#1}{#2}%
 }
 
 \newcommand{\refEnvarItem}[1]{\index[index_envars]{#1}\hyperref[envar:#1]{\code{#1}}}
 \newcommand{\refenvar}[1]{\refEnvarItem{#1}}
 
+%-------------------------------
 % Attributes
-%   \declareAttribute       Declare an attribute with a description
-%   \pasteAttributeItem     Paste the attribute description here
-%   \refAttributeItem       Reference the original definition of the attribute
 %
+%  \declareAttribute               Declare Attribute
+%  \declareAttributeProvisional    Declare Attribute - Provisional
+%  \declareAttributeNEW            Declare Attribute - New
+%  \declareAttributeDEP            Declare Attribute - Deprecated
+%  \declareAttributeRM             Declare Attribute - Removed
+%
+%  \pasteAttributeItem             Paste a copy of the Attribute declaration
+%  \pasteAttributeItemBegin        Paste a copy of the Attribute declaration
+%  \pasteAttributeItemEnd            with space to extend the description.
+%  
+%  \refAttributeItem or \refattr   Reference an Attribute
+%
+
+\newcommand{\InternaldeclareAttributeBody}[4]{%
+    \StdCopy{str:#1}{\code{#2}}%
+    \StdCopy{attr:#1}{\code{#3}}%
+    \expandafter\begin{adjustwidth}{.95cm}{}% Increase left margin by .95cm, without changing right margin
+      \setlength{\parskip}{0pt}% Don't start with a paragraph skip in this block
+      \StdCopyEcho{#1}{#4}%
+    \end{adjustwidth}%
+    \vspace{-1.3ex}%
+}
 
 \newcommand{\declareAttribute}[4]{%
     \code{#1} ~~\code{#2}~~(\code{#3})%
     \index[index_attribute]{#1|indexfmt} \label{attr:#1}%
-    \StdCopy{str:#1}{\code{#2}}%
-    \StdCopy{attr:#1}{\code{#3}}%
-    \vspace{-1.3ex}%
-      \expandafter\begin{adjustwidth}{.95cm}{}%
-      \StdCopyEcho{#1}{#4}%
-    \end{adjustwidth}%
-  \vspace{-1.3ex}%
+    \InternaldeclareAttributeBody{#1}{#2}{#3}{#4}%
+}
+
+\newcommand{\declareAttributeProvisional}[4]{%
+    \hl{\code{#1} ~~\code{#2}~~(\code{#3})}\provisionalMarker{}%
+    \index[index_attribute]{#1|indexfmt} \label{attr:#1}%
+    \InternaldeclareAttributeBody{#1}{#2}{#3}{#4}%
 }
 
 \newcommand{\declareAttributeNEW}[4]{%
    {\color{magenta}\code{#1}} ~~\code{#2}~~(\code{#3})%
     \index[index_attribute]{#1|indexfmt} \label{attr:#1}%
-    \StdCopy{str:#1}{\code{#2}}%
-    \StdCopy{attr:#1}{\code{#3}}%
-    \vspace{-1.3ex}%
-      \expandafter\begin{adjustwidth}{.95cm}{}%
-      \StdCopyEcho{#1}{#4}%
-    \end{adjustwidth}%
-  \vspace{-1.3ex}%
+    \InternaldeclareAttributeBody{#1}{#2}{#3}{#4}%
 }
 
 \newcommand{\declareAttributeDEP}[4]{%
    {\color{green!80!black}\code{#1}} ~~\code{#2}~~(\code{#3})%
     \index[index_attribute]{Z_#1@\emph{#1}!\textbf{Deprecated}|indexdepfmt} \label{attr:#1}%
-    \StdCopy{str:#1}{\code{#2}}%
-    \StdCopy{attr:#1}{\code{#3}}%
-    \vspace{-1.3ex}%
-      \expandafter\begin{adjustwidth}{.95cm}{}%
-      \StdCopyEcho{#1}{#4}%
-    \end{adjustwidth}%
-  \vspace{-1.3ex}%
+    \InternaldeclareAttributeBody{#1}{#2}{#3}{#4}%
 }
 
 \newcommand{\declareAttributeRM}[4]{%
    {\color{red!80!black}\code{#1}} ~~\code{#2}~~(\code{#3})%
     \index[index_attribute]{Z_#1@\emph{#1}!\textbf{Removed}|indexrmfmt} \label{attr:#1}%
-    \StdCopy{str:#1}{\code{#2}}%
-    \StdCopy{attr:#1}{\code{#3}}%
-    \vspace{-1.3ex}%
-      \expandafter\begin{adjustwidth}{.95cm}{}%
-      \StdCopyEcho{#1}{#4}%
-    \end{adjustwidth}%
-  \vspace{-1.3ex}%
+    \InternaldeclareAttributeBody{#1}{#2}{#3}{#4}%
 }
 
 \newcommand{\pasteAttributeItemBegin}[1]{
@@ -480,8 +589,88 @@
 	\pasteAttributeItemBegin{#1}
 	\pasteAttributeItemEnd{}
 }
+
 \newcommand{\refAttributeItem}[1]{\index[index_attribute]{#1}\hyperref[attr:#1]{\code{#1}}}
 \newcommand{\refattr}[1]{\refAttributeItem{#1}}
+
+%-------------------------------
+% APIs
+%
+%  \declareapi            Declare API
+%  \declareapiDEP         Declare API - Deprecated
+%  \declareapiDEPNODISP   Declare API - Deprecated without displaying
+%
+%  \refapi                Reference API
+%  \refapiDEP             Reference Deprecated API
+%
+%  \refarg or \argref     Reference API argument
+%
+\newcommand{\declareapi}[1]{%
+  \index[index_api]{#1|indexfmt} \label{apifn:#1}%
+}
+
+\newcommand{\declareapiDEPNODISP}[1]{%
+  \index[index_api]{Z_#1@#1!\textbf{(Deprecated)}|indexdepfmt} \label{apifn:#1}%
+}
+
+\newcommand{\declareapiDEP}[1]{%
+  {\color{green!80!black}\code{#1}}%
+  \declareapiDEPNODISP{#1}%
+}
+
+\newcommand{\refapi}[1]{\index[index_api]{#1}\hyperref[apifn:#1]{\code{#1}}}
+\newcommand{\refapiDEP}[1]{\index[index_api]{Z_#1@#1!\textbf{(Deprecated)}}\hyperref[apifn:#1]{\code{#1}}}
+
+\newcommand{\refarg}[1] {{\textrm{\textmd{\itshape{#1}}}}}
+\newcommand{\argref}[1] {\refarg{#1}}
+
+%-------------------------------
+% API Bindings
+%
+%   \declareapibinding   Declare API Binding
+%
+%   \refapibinding       Reference API Binding
+
+% {Language specific function}{Primary C PMIx function}{Language Classification}
+\newcommand{\declareapibinding}[3]{%
+  \index[index_api]{#2!#1 (#3)} \label{bindingfn:#1}%
+}
+\newcommand{\refapibinding}[1]{\hyperref[bindingfn:#1]{\code{#1}}}
+
+%-------------------------------
+% Macros
+%
+%  \declaremacro        Declare Macro
+%
+%  \refmacro            Reference Macro
+
+\newcommand{\declaremacro}[1]{%
+  \index[index_macro]{#1|indexfmt} \label{macro:#1}%
+}
+
+\newcommand{\refmacro}[1]{\index[index_macro]{#1}\hyperref[macro:#1]{\code{#1}}}
+
+%-------------------------------
+% Terms
+%
+% \declaretermIdx -- internal use only
+%
+% \declareterm{myterm}
+%    - Declares a single term with no variants.
+% \declaretermAlt{myterm}{myterms,ourterms}
+%    - Declares a single term with additional variants (myterms, ourterms)
+
+\newcommand{\declaretermIdx}[1]{\index{#1|indexfmt}\label{term:#1}}
+
+\newcommand{\declareterm}[1]{\emph{#1}\declaretermIdx{#1}}
+
+\newcommand{\declaretermAlt}[2]{%
+  \declareterm{#1}%
+  \foreach \x [count=\xi] in {#2} {\declaretermIdx{\x}}%
+}
+
+\newcommand{\refterm}[1]{\index{#1}\hyperref[term:#1]{\emph{#1}}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Code and placeholder semantic tagging.
@@ -508,7 +697,7 @@
 % This sets the default \code{} font to tt (monospace) and bold:
 \newcommand{\code}[1]{{\texttt{\textbf{#1}}}}
 \newcommand{\var}[1] {{\textrm{\textmd{\itshape{#1}}}}}
-
+\soulregister{\code}{1}
 
 % Environment for a paragraph of literal code, single-spaced, no outline, no indenting:
 \newenvironment{codepar}[1]
@@ -730,50 +919,6 @@
 \newcommand{\refstruct}[1]{\index[index_struct]{#1}\hyperref[struct:#1]{\code{#1}}}
 \newcommand{\structref}[1] {\refstruct{#1}}
 \newcommand{\specrefstruct}[1]{Section~\ref{struct:#1} on page~\pageref{struct:#1}}
-
-\newcommand{\declareapi}[1]{\index[index_api]{#1|indexfmt} \label{apifn:#1}}
-\newcommand{\refapi}[1]{\index[index_api]{#1}\hyperref[apifn:#1]{\code{#1}}}
-\newcommand{\argapi}[1] {\refapi{#1}}
-
-
-\newcommand{\declareapiDEP}[1]{%
-   {\color{green!80!black}\code{#1}}%
-    \index[index_api]{Z_#1@#1!\textbf{(Deprecated)}|indexdepfmt} \label{apifn:#1}%
-}
-
-\newcommand{\declareapiDEPNODISP}[1]{%
-  \index[index_api]{Z_#1@#1!\textbf{(Deprecated)}|indexdepfmt} \label{apifn:#1}%
-}
-\newcommand{\refapiDEP}[1]{\index[index_api]{Z_#1@#1!\textbf{(Deprecated)}}\hyperref[apifn:#1]{\code{#1}}}
-
-% API references for language bindings (e.g., Python)
-% {Language specific function}{Primary C PMIx function}{Language Classification}
-\newcommand{\declareapibinding}[3]{\index[index_api]{#2!#1 (#3)} \label{bindingfn:#1}}
-\newcommand{\refapibinding}[1]{\hyperref[bindingfn:#1]{\code{#1}}}
-\newcommand{\argapibinding}[1] {\refapibinding{#1}}
-
-\newcommand{\refconst}[1]{\hyperref[const:#1]{\code{#1}}}
-
-\newcommand{\declareattr}[1]{\index[index_attribute]{#1|indexfmt} \label{attr:#1}}
-
-\newcommand{\refarg}[1] {{\textrm{\textmd{\itshape{#1}}}}}
-\newcommand{\argref}[1] {\refarg{#1}}
-
-\newcommand{\declaremacro}[1]{\index[index_macro]{#1|indexfmt} \label{macro:#1}}
-\newcommand{\refmacro}[1]{\index[index_macro]{#1}\hyperref[macro:#1]{\code{#1}}}
-
-% \declaretermIdx -- internal use only
-% \declareterm{myterm}
-%    - Declares a single term with no variants.
-% \declaretermAlt{myterm}{myterms,ourterms}
-%    - Declares a single term with additional variants (myterms, ourterms)
-\newcommand{\declaretermIdx}[1]{\index{#1|indexfmt}\label{term:#1}}
-\newcommand{\declareterm}[1]{\emph{#1}\declaretermIdx{#1}}
-\newcommand{\declaretermAlt}[2]{%
-  \declareterm{#1}%
-  \foreach \x [count=\xi] in {#2} {\declaretermIdx{\x}}%
-}
-\newcommand{\refterm}[1]{\index{#1}\hyperref[term:#1]{\emph{#1}}}
 
 % Place in text for in-text questions during review
 \newcommand{\rcomment}[1]{(REVIEW COMMENT: \textbf{#1})}
