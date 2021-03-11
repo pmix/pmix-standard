@@ -120,7 +120,7 @@ int main() {
   PMIX_INFO_LOAD(&info[0], PMIX_PROGRAMMING_MODEL, "MPI", PMIX_STRING);
   PMIX_INFO_LOAD(&info[1], PMIX_MODEL_LIBRARY_NAME, "FooMPI", PMIX_STRING);
   PMIX_INFO_LOAD(&info[2], PMIX_MODEL_LIBRARY_VERSION, "1.0.0", PMIX_STRING);
-  PMIX_INFO_LOAD(&info[3], PMIX_THREADING_MODEL, "pthreads", PMIX_STRING);
+  PMIX_INFO_LOAD(&info[3], PMIX_THREADING_MODEL, "posix", PMIX_STRING);
   pmix_status_t rc = PMIx_Init(&myproc, info, 4);
   PMIX_INFO_FREE(info, 4);
   //<EG END ID="declare_model">

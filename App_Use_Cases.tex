@@ -319,17 +319,17 @@ It is sometimes desirable or required that standard environmental variables (e.g
 
 Resource managers and launchers must scan for relevant directives, modifying environmental parameters as directed. Directives are to be processed in the order in which they were given, starting with job-level directives (applied to each app) followed by app-level directives.
 
-\section{Hybrid Programming Models}
-\label{app:uc-hybrid-programming-models}
+\section{Hybrid Applications}
+\label{app:uc-hybrid-applications}
 
 \subsection{Use Case Summary}
 
-Hybrid applications (i.e., applications that utilize more than one programming model or system, such as an application using MPI that also uses OpenMP or UPS) are growing in popularity, especially as processors with increasingly large numbers of cores and/or hardware threads proliferate. Unfortunately, the various corresponding runtime systems currently operate under the assumption that they alone control execution. This leads to conflicts in hybrid applications. Deadlock of parallel applications can occur when one runtime system prevents the other from making progress due to lack of coordination between them~\cite{2016:Hamidouche}. Sub-optimal performance can also occur due to uncoordinated division of hardware resources between the runtime systems implementing the different programming models or systems~\cite{ompix-moc,2018:Vallee}. This use-case offers potential solutions to this
+Hybrid applications (i.e., applications that utilize more than one programming model or runtime system, such as an application using MPI that also uses OpenMP or UPS) are growing in popularity, especially as processors with increasingly large numbers of cores and/or hardware threads proliferate. Unfortunately, the various corresponding runtime systems currently operate under the assumption that they alone control execution. This leads to conflicts in hybrid applications. Deadlock of parallel applications can occur when one runtime system prevents the other from making progress due to lack of coordination between them~\cite{2016:Hamidouche}. Sub-optimal performance can also occur due to uncoordinated division of hardware resources between the runtime systems implementing the different programming models or systems~\cite{ompix-moc,2018:Vallee}. This use-case offers potential solutions to this
 problem by providing a pathway for parallel runtime systems to coordinate their actions.
 
 \subsection{Use Case Details}
 
-\subsubsection{Identifying Active Programming Models}
+\subsubsection{Identifying Active Parallel Runtime Systems}
 
 The current state-of-the-practice for concurrently used runtime systems in a single application to detect one another is via set environment variables. For example, some OpenMP implementations look for environment variables to indicate that an MPI library is active.  Unfortunately, this technique is not completely reliable as environment variables change over time and with new software versions, and this detection is implementation specific. Also, the fact that an environment variable is present doesn't guarantee that a particular runtime system is in active use since Resource Managers routinely set environment variables "just in case" the application needs them. PMIx provides a reliable mechanism by which each library can determine that another runtime library is in operation.
 
