@@ -10,7 +10,8 @@ A key-value pair consists of a string key and a value data structure
 which includes the type of the value's data.  
 Each key is unique within the context or domain in which it exists.
 The context or domain of a key in PMIx is called a data realm.  
-%% The pmix_info_t type (See [add reference to 1.3.1 Attributes in PMIx]), is also built on key-values pairs.  
+%% The pmix_info_t type (See \ref{chap:introduction:portability:attributes}), 
+%% is also built on key-values pairs.  
 %% However, pmix_info_t is used for influencing API calls and is not used for sharing 
 %% information between processes.  
 This chapter describes how key-value pairs are made available and accessed by clients.
@@ -18,7 +19,7 @@ This chapter describes how key-value pairs are made available and accessed by cl
 A key-value pair has a scope defined by its data realm.  
 PMIx defines data realms for sessions, jobs, applications, nodes, processes and a special 
 realm for publish/lookup information.   
-These are explained more fully in \ref{chap:api_rsvd_keys} and \ref{chap:pub}.
+These are explained more fully in chapters \ref{chap:api_rsvd_keys} and \ref{chap:pub}.
 
 The source or provider of key-value pairs can be the host environment or a \ac{PMIx} client.  
 The host environment can provide key-values pairs in any realm except for the publish/lookup realm.
@@ -31,7 +32,7 @@ The value of a key is not necessarily static and can be modified by the original
 Any key which begins with the prefix "pmix" is called a reserved key.
 All other keys are called non-reserved keys.
 Reserved keys can only be provided by the host environment.  
-Reserved keys are documented in chapter [Add reference to chapter 6].   
+Reserved keys are documented in chapter \ref{chap:api_rsvd_keys}.
 Each reserved key has an associated macro that is documented along with its description.  
 The string representation and the macro are equivalent methods to refer to a key.
 Throughout this document, the macro is used rather than its string value to refer to reserved keys.
