@@ -29,20 +29,22 @@ PMIx clients can only provide key-values pairs within their own process realm an
 The value of a key is not necessarily static and can be modified by the original provider of the key.
 
 \ac{PMIx} classifies keys as either reserved or non-reserved.
-Any key which begins with the prefix "pmix" is called a reserved key.
-All other keys are called non-reserved keys.
-Reserved keys can only be provided by the host environment.  
+
+Only keys provided by a host environment or \ac{PMIx} implementation can begin with \code{"pmix"} and are called reserved keys.  
+Host environments and \ac{PMIx} implementations must only provide keys that begin with \code{"pmix"} to avoid conflicts with keys that are provided by clients.
 Reserved keys are documented in chapter \ref{chap:api_rsvd_keys}.
-Each reserved key has an associated macro that is documented along with its description.  
+Each standardized reserved key has an associated macro that is documented along with its description.
+Likewise clients can only provide keys that do not begin with \code{"pmix"} to avoid conflicting with keys provided by the host environment or \ac{PMIx} implementation.   
 The string representation and the macro are equivalent methods to refer to a key.
 Throughout this document, the macro is used rather than its string value to refer to reserved keys.
-Clients cannot set or modify the value of reserved keys.
-%% I think we do need to bring this text back because there are actual code difference in how 
-%% standard keys are looked up.  It really does check and if it begins with PMIx_, it actually
-%% behaves differently in how it looks things up.
-The distinction between reserved and non-reserved keys is important for client creators to understand.
-Clients cannot be the source of reserved keys and the way reserved keys are accessed by clients 
+Clients cannot create reserved keys, nor can they modify the value of reserved keys.
+The way reserved keys are accessed by clients 
 is different than for non-reserved keys as explained in \ref{chap:api_rsvd_keys}.
+
+Host environments are not required to provide all keys that are documented in the standard.  
+However, when providing keys that are documented, they must adhere to the behavior defined by the standard for reserved keys.  
+An implementation cannot provide a reserved key that behaves differently than what is in the standard.  
+Implementations are encouraged to standardize any non-standardized, reserved keys that they provide to avoid conflicting with other implementations or efforts to standardize the same key.
 
 Host environments are permitted to provide non-reserved keys and non-standardized reserved keys.  
 However there are important caveats to providing either of these categories of keys 
@@ -57,7 +59,6 @@ provided by the host environment, the host environment will not be compliant wit
 Reserved keys are set by the host environment and are made available at client initialization. 
 Each key is associated with a data realm and the retrieval API call will indicate the realm being queried.
 Reserved keys are used to access information about a client's execution context.
-The information is made available by the host environment prior to client initialization.
 After initialization, the client can access reserved keys using the PMIx_Get API.  
 Common information that a client may access includes, but is not limited to,
 the name of the host it is executing on, 
@@ -69,12 +70,10 @@ and its job rank.
 %%%  the course of execution.
 %%%  PMIX_EXIT_CODE for example, UNIVERSE_SIZE could change if more resources are added?)
 
-Non-reserved keys are generally provided by clients, though host environments may choose to 
-provide some non-reserved keys.  Host envirionments which provide non-reserved keys should document 
-the keys provided to avoid conflicting with client's use those keys.
+Non-reserved keys are provided by clients.
 A call to PMIx_Put will result in a key-value being associated with the calling client within 
 its process data realm.
-There is no mechanism to retract a key-value that has been made availble by a client through PMIx_Put.
+There is no mechanism to retract a key-value that has been made available by a client through \refapi{PMIx_Put}.
 The key can be assigned a new value, but cannot be removed entirely.
 Although key values can originate from different sources, they are always retrieved using the
 \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} API.
@@ -140,8 +139,8 @@ will not complete, by default, until that key-value pair becomes available.
 \label{chap:data_sharing:non_rsvd_keys}
 
 \emph{Non-reserved keys} are keys whose string representation begin with a
-prefix other than \code{"pmix"}. Such keys are typically defined by an
-application when information needs to be exchanged between processes (e.g.,
+prefix other than \code{"pmix"}. Such keys are defined by a
+client when information needs to be exchanged between processes, for example, 
 where connection information is required and the host environment does not
 support the \refterm{instant on} option) or where the host environment does not
 provide a required piece of data. Other than the prefix, there are no
@@ -176,7 +175,7 @@ Note that the retrieval rules for non-reserved keys (detailed in Section
 \section{Posting Key/Value Pairs}
 \label{chap:data_sharing:set}
 
-\ac{PMIx} clients can post non-reserved key-value pairs associated with themselves by using \refapi{PMIx_Put}. Alternatively, \ac{PMIx} clients can cache arbitrary key-value pairs accessible only by the caller via the \refapi{PMIx_Store_internal} \ac{API}.
+\ac{PMIx} clients can post non-reserved key-value pairs associated with themselves by using \refapi{PMIx_Put}. Alternatively, \ac{PMIx} clients can cache both reserved and non-reserved key-value pairs accessible only by the caller via the \refapi{PMIx_Store_internal} \ac{API}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -186,7 +185,7 @@ Note that the retrieval rules for non-reserved keys (detailed in Section
 %%%%
 \summary
 
-Post a key/value pair for distribution.
+Stage a key/value pair in prepartion for being made accessible to processes.
 
 %%%%
 \format
@@ -305,7 +304,7 @@ This is data that has only internal scope - it will never be posted externally. 
 %%%%
 \summary
 
-Post all previously \refapi{PMIx_Put} values for distribution.
+Make available to other processes all key-value pairs previously staged via \refapi{PMIx_Put}.
 
 %%%%
 \format
@@ -322,7 +321,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-\ac{PMIx} implementations may choose to locally cache non-reserved keys prior to submitting them for distribution. Accordingly, \ac{PMIx} provides a second \ac{API} specifically to stage all previously posted data for distribution - e.g., by transmitting the entire collection of data posted by the process to a server in one operation. This is an asynchronous operation that will immediately return to the caller while the data is staged in the background.
+\ac{PMIx} implementations may choose to locally cache non-reserved keys prior to submitting them for distribution.  \refapi{PMIx_Commit} initiates the operation of making available previously staged key-value pairs to other processes.  Depending on the implementation, this may involve transmitting the entire collection of data posted by the process to a server.  \refapi{PMIx_Commit} is an asynchronous operation that will immediately return to the caller while the data is staged in the background.
 
 \adviceuserstart
 Users are advised to always include the call to \refapi{PMIx_Commit} in case the local implementation requires it. Note that posted data will not be circulated during \refapi{PMIx_Commit}. Availability of the data by other processes upon completion of \refapi{PMIx_Commit} therefore still relies upon the exchange mechanisms described at the beginning of this chapter.
