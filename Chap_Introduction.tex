@@ -217,4 +217,19 @@ An example of a \emph{tool} process is a parallel debugger that will connect to 
 \ac{PMIx} serves as a conduit between processes acting in these three different roles.
 As such, an \ac{API} is often described by how it interacts with processes operating in other roles in the \ac{PMIx} universe.
 
+\adviceimplstart
+A \ac{PMIx} implementation may support all or a subset of the \ac{API} role groupings defined in the standard.
+A common nomenclature is defined here to aid in identifying levels of conformance of an implementation.
+
+Note that it would not make sense for an implementation to exclude the \emph{client} interfaces from their implementation since they are also used by the \emph{server} and \emph{tool} roles.
+Therefore the \emph{client} interfaces represent the minimal set of required functionality for \ac{PMIx} compliance.
+
+A \ac{PMIx} implementation that supports only the \emph{client} \acp{API} is said to be \emph{client-role \ac{PMIx} standard compliant}.
+Similarly, a \ac{PMIx} implementation that only supports the \emph{client} and \emph{tool} \acp{API} is said to be \emph{client-role and tool-role \ac{PMIx} standard compliant}.
+Finally, a \ac{PMIx} implementation that only supports the \emph{client} and \emph{server} \acp{API} is said to be \emph{client-role and server-role \ac{PMIx} standard compliant}.
+
+A \ac{PMIx} implementation that supports all three sets of the \ac{API} role groupings is said to be \emph{all-role \ac{PMIx} standard compliant}.
+These \emph{client-role,server-role, and tool-role \ac{PMIx} standard compliant} implementations have the advantage of being able to support a broad set of \ac{PMIx} consumers in the different roles.
+\adviceimplend
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
