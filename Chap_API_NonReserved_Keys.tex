@@ -202,74 +202,118 @@ defined for reserved keys (as detailed in Section \ref{chap:rkeys:retrules}).
 following precedence search:
 
 \begin{enumerate}
-    \item If the \refattr{PMIX_GET_REFRESH_CACHE} attribute is given, then the
-    request is first forwarded to the local \ac{PMIx} server which will then
-    update the client's cache. Note that this may not, depending upon
-    implementation details, result in any action.
 
-    \item Check the local \ac{PMIx} client cache for the requested key - if not found and either the \refattr{PMIX_OPTIONAL} or \refattr{PMIX_GET_REFRESH_CACHE} attribute was given, the search will stop at this point and return the \refconst{PMIX_ERR_NOT_FOUND} status.
+    \item \textbf{Refresh the local \ac{PMIx} client cache, if requested.}\\
+    If the \refattr{PMIX_GET_REFRESH_CACHE} attribute is given to \refapi{PMIx_Get}
+    then the \ac{PMIx} client library will request and wait for a refresh of the local
+    \ac{PMIx} client cache from the local \ac{PMIx} server. The local \ac{PMIx} server
+    must ensure the latest key/value data from the specified process is in the local
+    \ac{PMIx} client cache before proceeding to the next step. If it cannot refresh
+    the local \ac{PMIx} client cache then it must return an error.
+    The \refattr{PMIX_GET_REFRESH_CACHE} attribute is helpful when accessing a
+    non-reserved key that is known to have its value changed over the life of the
+    program (e.g., an increment to an epoch value).
 
-    \item Request the information from the local \ac{PMIx} server. The server
-    will check its cache for the specified key within the appropriate scope as
-    defined by the process that originally posted the key. If the value exists
-    in a scope that contains the requesting process, then the value shall be
-    returned. If the value exists, but in a scope that excludes the requesting
-    process, then the server shall immediately return the
+    \item \textbf{Search the local \ac{PMIx} client cache for the requested key.}\\
+    If the key is found the search stops here and the value is returned to the caller.
+    If the key is not found and either the \refattr{PMIX_OPTIONAL} or
+    \refattr{PMIX_GET_REFRESH_CACHE} attribute was given to \refapi{PMIx_Get},
+    then the search will stop at this point and return the
+    \refconst{PMIX_ERR_NOT_FOUND} status. If the key is not found and neither of
+    those attributes are provided then the \refapi{PMIx_Get} proceeds to the next step.
+
+    \item \textbf{Request and wait for the information from the local \ac{PMIx} server.}\\
+    The server will check the local \ac{PMIx} server cache for the specified key
+    within the appropriate scope (as defined by the process that originally posted
+    the key). If the value exists in a scope that contains the requesting process,
+    then the value shall be returned. If the value exists, but in a scope that
+    excludes the requesting process, then the server shall immediately return the
     \refconst{PMIX_ERR_EXISTS_OUTSIDE_SCOPE}.
+    % Future work: Can an implementation choose to return PMIX_ERR_NOT_FOUND instead
+    % of PMIX_ERR_EXISTS_OUTSIDE_SCOPE as an optimization. Otherwise this could require
+    % a more extensive search depending on how the data is organized.
 
-    If the value still isn't found and the \refattr{PMIX_IMMEDIATE} attribute
+    If the value still is not found and the \refattr{PMIX_IMMEDIATE} attribute
     was given, then the library shall return the \refconst{PMIX_ERR_NOT_FOUND}
     error constant to the requester. Otherwise, the \ac{PMIx} server library
-    will take one of the following actions:
+    will take one of the following actions to find the key:
     \begin{compactitemize}
-        \item If the target process has a rank of \refconst{PMIX_RANK_UNDEF},
+        \item \textbf{If the request is for globally unique data not associated with a process:}\\
+        If the target process has a rank of \refconst{PMIX_RANK_UNDEF},
         then this indicates that the key being requested is globally unique
         and \emph{not} associated with a specific process. In this case, the
         server shall hold the request until either the data appears at the
-        server or, if given, the \refattr{PMIX_TIMEOUT} is reached. In the
-        latter case, the server will return the \refconst{PMIX_ERR_TIMEOUT}
+        server or, if given, the \refattr{PMIX_TIMEOUT} is reached by using the
+        \refapi{PMIx_server_dmodex_request} function. In the
+        latter case, after the timeout has been reached without the arrival of
+        the specified data the server will return the \refconst{PMIX_ERR_TIMEOUT}
         status. Note that the server may, depending on \ac{PMIx}
         implementation, never respond if the caller failed to specify a
         \refattr{PMIX_TIMEOUT} and the requested key fails to arrive at the
         server.
+        
+        Note that there is no mechanism by which a \ac{PMIx} client can specify
+        \refconst{PMIX_RANK_UNDEF} with a key/value pair (i.e., via a \refapi{PMIx_Put}).
+        However, you can call \refapi{PMIx_Get} with \refconst{PMIX_RANK_UNDEF}.
+        This will result in the \refapi{PMIx_Get} operation searching all processes
+        in the specified namespace within the scope for the key. The application is
+        responsible to guarantee uniqueness of the keys.
+        % Note: This accommodation is not recommended best practice, but was put in
+        % place for those clients moving from PMI1/PMI2 which behave in this (likely)
+        % non-scalable way.
 
-        \item If the target process is \emph{local} (i.e., attached to the
+        \item \textbf{If the request is for data from a \emph{local} process:}\\
+        If the target process is \emph{local} (i.e., connected to the
         same \ac{PMIx} server), then the server will hold the request until
         either the target process provides the data or, if given, the
-        \refattr{PMIX_TIMEOUT} is reached. In the latter case, the server will
+        \refattr{PMIX_TIMEOUT} is reached. In the latter case, after the timeout
+        has been reached without the arrival of the specified data the server will
         return the \refconst{PMIX_ERR_TIMEOUT} status. Note that data which is
-        posted via \refapi{PMIx_Put} but not staged with \refapi{PMIx_Commit}
-        may, depending upon implementation, never appear at the server.
+        posted via \refapi{PMIx_Put} may never appear at the \ac{PMIx} server
+        if there is no subsequent call to \refapi{PMIx_Commit}, depending
+        upon the \ac{PMIx} implementation.
 
-        \item If the target process is \emph{remote} (i.e., not attached to
-        the same \ac{PMIx} server), the server will either:
+        \item \textbf{If the request is for data from a \emph{remote} process:}\\
+        If the target process is \emph{remote} (i.e., not connected to
+        the same \ac{PMIx} server), the \ac{PMIx} server library will attempt to
+        initiate a \emph{direct modex} request from the local \ac{RM} daemon to
+        the remote \ac{RM} daemon where that process resides.
+        The \ac{PMIx} server library will either:
         \begin{compactitemize}
-            \item If the host has provided the
+            \item If the local \ac{RM} daemon does not support the
+            \refapi{pmix_server_dmodex_req_fn_t} interface, then
+            the \ac{PMIx} server-side library will immediately respond to the
+            \ac{PMIx} client with the \refconst{PMIX_ERR_NOT_FOUND} status.
+
+            \item If the local \ac{RM} daemon has provided the
             \refapi{pmix_server_dmodex_req_fn_t} module function
-            interface, then the server
-            shall pass the request to its host for servicing. The host is
+            interface, then the \ac{PMIx} server-side library
+            shall pass the request to the local \ac{RM} daemon for servicing.
+            The local \ac{RM} daemon is
             responsible for determining the location of the target process and
-            passing the request to the \ac{PMIx} server at that location.
+            passing the request to the \ac{RM} daemon at that remote location.
 
-            When the remote data request is received, the target \ac{PMIx}
-            server will check its cache for the specified key. If the key is
-            not present, the request shall be held until either the target
+            When the remote data request is received, the targeted remote
+            \ac{RM} daemon will check its cache for the specified key by calling
+            \refapi{PMIx_server_dmodex_request}. If the key is present
+            then the targeted remote \ac{RM} daemon will send the data to the
+            originating \ac{RM} daemon. The originating \ac{RM} daemon will then
+            pass the data into the completion callback (\refapi{pmix_modex_cbfunc_t})
+            for the \refapi{pmix_server_dmodex_req_fn_t}.
+
+            If the key is not present, the request shall be held until either the target
             process provides the data or, if given, the \refattr{PMIX_TIMEOUT}
-            is reached. In the latter case, the server will return the
-            \refconst{PMIX_ERR_TIMEOUT} status. The host shall convey the
-            result back to the originating \ac{PMIx} server, which will reply
-            to the requesting client with the result of the request when the
-            host provides it.
+            is reached. In the latter case, the \ac{PMIx} server will return the
+            \refconst{PMIX_ERR_TIMEOUT} status. The targeted remote \ac{RM} daemon
+            shall convey the result back to the originating \ac{RM} daemon,
+            which will reply to the requesting \ac{PMIx} client with the result
+            of the request.
 
-            Note that the target server may, depending on \ac{PMIx}
+            Note that the target \ac{RM} daemon may, depending on \ac{PMIx}
             implementation, never respond if the caller failed to specify a
             \refattr{PMIX_TIMEOUT} and the target process fails to post the
             requested key.
 
-            \item if the host does not support the
-            \refapi{pmix_server_dmodex_req_fn_t} interface, then
-            the server will immediately respond to the client with the
-            \refconst{PMIX_ERR_NOT_FOUND} status
         \end{compactitemize}
     \end{compactitemize}
 \end{enumerate}
