@@ -879,6 +879,10 @@
 % convenience macro for formatting the word "Note:" at the beginning of note blocks:
 \newcommand{\noteheader}{{\textrm{\textsf{\textbf\textup\normalsize{{{{Note: }}}}}}}}
 
+% Return values
+\newcommand{\returnstart}{Returns PMIX_SUCCESS or one of the following error codes when the condition described occurs:}
+\newcommand{\returnend}{If none of the above return codes are appropriate, then an implementation must return either a general \ac{PMIx} error code or an implementation defined error code as described in Section \ref{api:struct:errors}.}
+
 % Rationale
 \newcommand{\rationalestart}{\VSPb\ratline{-1}{dashed}{Rationale}{7em}\VSPa}
 \newcommand{\rationaleend}{\VSPb\ratline{1}{dashed}{}{0em}\VSPa}

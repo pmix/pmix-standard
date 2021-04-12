@@ -172,7 +172,7 @@ PMIx_Data_pack(const pmix_proc_t *target, \\
 \argin{type}{The type of the data to be packed (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-Returns one of the following:
+\returnstart
 \begin{constantdesc}
 \item \refconst{PMIX_SUCCESS} The data has been packed as requested
 \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
@@ -181,6 +181,7 @@ Returns one of the following:
 \item \refconst{PMIX_ERR_OUT_OF_RESOURCE} Not enough memory to support the operation
 \item \refconst{PMIX_ERROR} General error
 \end{constantdesc}
+\returnend
 
 %%%%
 \descr
