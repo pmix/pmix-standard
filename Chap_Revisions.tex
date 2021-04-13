@@ -1193,3 +1193,77 @@ Architecture flag.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% History: Version 4.1
+\section{Version 4.1: TBD}
+
+The v4.1 update includes clarifications and corrections from the v4.0 document:
+
+\begin{compactitemize}
+    \item Provisional Items:
+    \begin{compactitemize}
+        \item Storage \chapterref{chap:api_storage}
+    \end{compactitemize}
+\end{compactitemize}
+
+\subsection{Added Data Structures (Provisional)}
+
+\begin{compactitemize}
+    \item \refstruct{pmix_storage_medium_t}
+    \item \refstruct{pmix_storage_accessibility_t}
+    \item \refstruct{pmix_storage_persistence_t}
+    \item \refstruct{pmix_storage_access_type_t}
+\end{compactitemize}
+
+
+\subsection{Added Constants (Provisional)}
+
+\littleheader{Storage constants}
+\refconst{PMIX_STORAGE_MEDIUM_UNKNOWN} \\
+\refconst{PMIX_STORAGE_MEDIUM_TAPE} \\
+\refconst{PMIX_STORAGE_MEDIUM_HDD} \\
+\refconst{PMIX_STORAGE_MEDIUM_SSD} \\
+\refconst{PMIX_STORAGE_MEDIUM_NVME} \\
+\refconst{PMIX_STORAGE_MEDIUM_PMEM} \\
+\refconst{PMIX_STORAGE_MEDIUM_RAM} \\
+\refconst{PMIX_STORAGE_ACCESSIBILITY_NODE} \\
+\refconst{PMIX_STORAGE_ACCESSIBILITY_SESSION} \\
+\refconst{PMIX_STORAGE_ACCESSIBILITY_JOB} \\
+\refconst{PMIX_STORAGE_ACCESSIBILITY_RACK} \\
+\refconst{PMIX_STORAGE_ACCESSIBILITY_CLUSTER} \\
+\refconst{PMIX_STORAGE_ACCESSIBILITY_REMOTE} \\
+\refconst{PMIX_STORAGE_PERSISTENCE_TEMPORARY} \\
+\refconst{PMIX_STORAGE_PERSISTENCE_NODE} \\
+\refconst{PMIX_STORAGE_PERSISTENCE_SESSION} \\
+\refconst{PMIX_STORAGE_PERSISTENCE_JOB} \\
+\refconst{PMIX_STORAGE_PERSISTENCE_SCRATCH} \\
+\refconst{PMIX_STORAGE_PERSISTENCE_PROJECT} \\
+\refconst{PMIX_STORAGE_PERSISTENCE_ARCHIVE} \\
+\refconst{PMIX_STORAGE_ACCESS_RD} \\
+\refconst{PMIX_STORAGE_ACCESS_WR} \\
+\refconst{PMIX_STORAGE_ACCESS_RDWR}
+
+\subsection{Added Attributes (Provisional)}
+
+\littleheader{Storage attributes}
+\pasteAttributeItem{PMIX_STORAGE_ID}
+\pasteAttributeItem{PMIX_STORAGE_PATH}
+\pasteAttributeItem{PMIX_STORAGE_TYPE}
+\pasteAttributeItem{PMIX_STORAGE_VERSION}
+\pasteAttributeItem{PMIX_STORAGE_MEDIUM}
+\pasteAttributeItem{PMIX_STORAGE_ACCESSIBILITY}
+\pasteAttributeItem{PMIX_STORAGE_PERSISTENCE}
+\pasteAttributeItem{PMIX_QUERY_STORAGE_LIST}
+\pasteAttributeItem{PMIX_STORAGE_CAPACITY_LIMIT}
+\pasteAttributeItem{PMIX_STORAGE_CAPACITY_USED}
+\pasteAttributeItem{PMIX_STORAGE_OBJECT_LIMIT}
+\pasteAttributeItem{PMIX_STORAGE_OBJECTS_USED}
+\pasteAttributeItem{PMIX_STORAGE_MINIMAL_XFER_SIZE}
+\pasteAttributeItem{PMIX_STORAGE_SUGGESTED_XFER_SIZE}
+\pasteAttributeItem{PMIX_STORAGE_BW_MAX}
+\pasteAttributeItem{PMIX_STORAGE_BW_CUR}
+\pasteAttributeItem{PMIX_STORAGE_IOPS_MAX}
+\pasteAttributeItem{PMIX_STORAGE_IOPS_CUR}
+\pasteAttributeItem{PMIX_STORAGE_ACCESS_TYPE}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
