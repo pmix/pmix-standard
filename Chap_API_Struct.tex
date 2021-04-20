@@ -99,28 +99,26 @@ A value to indicate that the user wants the data for the given key from every ap
 \label{api:struct:errors}
 \declarestruct{pmix_status_t}
 
-The \refstruct{pmix_status_t} structure is an \code{int} type for return status. 
-\ac{PMIx} errors are required to always be negative, with \code{0} reserved for \refconst{PMIX_SUCCESS}:
+The \refstruct{pmix_status_t} type is an \code{int} compatible value for return status values.
+\ac{PMIx} return values other than \refconst{PMIX_SUCCESS} are required to always be negative.  The return status value for a successful operation is
+\refconst{PMIX_SUCCESS}, which must have an integer value of 0:
  
 \begin{constantdesc}
 \declareconstitem{PMIX_SUCCESS}
 Success.
 \end{constantdesc}
 
-Values in the list that were deprecated in later standards are denoted as such. 
-Values added to the list in this version of the standard are shown in \textbf{\color{magenta}magenta}.
-
 \adviceimplstart
 A \ac{PMIx} implementation must define all of the return status constants defined in the \ac{PMIx} standard, even if the implementation will never return the specific value to the caller.
 \adviceimplend
 
 \adviceuserstart
-Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the integer value of any \ac{PMIx} error constant is left to the \ac{PMIx} library implementer with the constraint that it be negative and greater than  
+Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the integer value of any \ac{PMIx} error constant is left to the \ac{PMIx} library implementer with the constraint that it be negative and greater than
 \refconst{PMIX_EXTERNAL_ERR_BASE}.
 Thus, users are advised to always refer to constants by name, and not by a specific implementation's integer value, for portability between implementations and compatibility across library versions.
 \adviceuserend
 
-The presentation of each \ac{API} in this document includes a list of return status constants which are either specific to that \ac{API} or are expected to be returned by the \ac{API} in normal use.   
+The presentation of each \ac{API} in this document includes a list of return status constants which are either specific to that \ac{API} or are expected to be returned by the \ac{API} in normal use.
 
 In addition, the following are general constants covering a variety of possible reasons an implementation of an \ac{API} may return a constant other than one of the constants presented with the \ac{API}.  Although implementations can define and return additional error constants, implementations are encouraged to return one of the return constants listed with the \ac{API} or in the list presented here to encourage portability across implementations. 
 
