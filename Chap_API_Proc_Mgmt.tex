@@ -38,13 +38,13 @@ PMIx_Abort(int status, const char msg[], \\
 \argin{nprocs}{Number of elements in the \refarg{procs} array (integer)}
 \end{arglist}
 
-Returns one of the following:
+A successful return indicates that the requested processes are in a terminated state.Note that the function shall not return in this situation if the caller's own process was included in the request.
 
+\returnstart
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS} if the operation was successfully completed. Note that the function shall not return in this situation if the caller's own process was included in the request.
     \item \refconst{PMIX_ERR_PARAM_VALUE_NOT_SUPPORTED} if the \ac{PMIx} implementation and host environment support this \ac{API}, but the request includes processes that the host environment cannot abort - e.g., if the request is to abort subsets of processes from a namespace, or processes outside of the caller's own namespace, and the host environment does not permit such operations. In this case, none of the specified processes will be terminated.
-    \item a PMIx error constant indicating an error in the request.
 \end{itemize}
+\returnend
 
 %%%%
 \descr
@@ -98,7 +98,7 @@ PMIx_Spawn(const pmix_info_t job_info[], size_t ninfo, \\
 \argout{nspace}{Namespace of the new job (string)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\returnsimple
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host environment for processing.
@@ -214,13 +214,13 @@ PMIx_Spawn_nb(const pmix_info_t job_info[], size_t ninfo, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
+\returnstart
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-    \item a PMIx error constant indicating an error in the request - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
-
+\returnend
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
@@ -750,7 +750,7 @@ PMIx_Connect(const pmix_proc_t procs[], size_t nprocs, \\
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\returnsimple
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
@@ -820,14 +820,13 @@ PMIx_Connect_nb(const pmix_proc_t procs[], size_t nprocs, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
+\returnstart
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
-
+\returnend
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
@@ -877,14 +876,11 @@ PMIx_Disconnect(const pmix_proc_t procs[], size_t nprocs, \\
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \end{arglist}
 
-Returns one of the following:
-
+\returnstart
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request was successfully executed
     \item the \refconst{PMIX_ERR_INVALID_OPERATION} error indicating that the specified set of \refarg{procs} was not previously \textit{connected} via a call to \refapi{PMIx_Connect} or its non-blocking form.
-    \item a PMIx error constant indicating either an error in the input or that the request failed
 \end{itemize}
-
+\returnend
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
@@ -955,13 +951,13 @@ PMIx_Disconnect_nb(const pmix_proc_t procs[], size_t nprocs, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
+\returnstart
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
+\returnend
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing.
@@ -1035,7 +1031,9 @@ PMIx_Load_topology(pmix_topology_t *topo);
 \arginout{topo}{Address of a \refstruct{pmix_topology_t} structure where the topology information is to be loaded (handle)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{topo} was successfully loaded, or an appropriate \ac{PMIx} error constant.
+A successful return indicates that the \refarg{topo} was successfully loaded.
+
+\returnsimple
 
 %%%%
 \descr
@@ -1083,7 +1081,9 @@ PMIx_Get_relative_locality(const char *locality1, \\
 \arginout{locality}{Location where the relative locality bitmask is to be constructed (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{locality} was successfully loaded, or an appropriate \ac{PMIx} error constant.
+A successful return indicates that the \refarg{locality} was successfully loaded.
+
+\returnsimple
 
 %%%%
 \descr
@@ -1256,7 +1256,9 @@ PMIx_Parse_cpuset_string(const char *cpuset_string, \\
 \arginout{cpuset}{Address of an object where the bitmap is to be stored (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{cpuset} was successfully loaded, or an appropriate \ac{PMIx} error constant.
+A successful return indicates that the \refarg{cpuset} was successfully loaded.
+
+\returnsimple
 
 %%%%
 \descr
@@ -1285,7 +1287,9 @@ PMIx_Get_cpuset(pmix_cpuset_t *cpuset, pmix_bind_envelope_t ref);
 \argin{ref}{The binding envelope to be considered when formulating the bitmap (\refstruct{pmix_bind_envelope_t})}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS}, indicating that the \refarg{cpuset} was successfully loaded, or an appropriate \ac{PMIx} error constant.
+A successful return indicates that the \refarg{cpuset} was successfully loaded.
+
+\returnsimple
 
 %%%%
 \descr
@@ -1342,13 +1346,7 @@ PMIx_Compute_distances(pmix_topology_t *topo, \\
 \arginout{ndist}{Pointer to an address where the number of elements in the \refarg{distances} array is to be returned (handle)}
 \end{arglist}
 
-Returns one of the following:
-
-\begin{itemize}
-\item \refconst{PMIX_SUCCESS} indicating that the distances were returned.
-\item a non-zero \ac{PMIx} error constant indicating the reason the request failed.
-\end{itemize}
-
+\returnsimple
 
 %%%%
 \descr
@@ -1389,12 +1387,13 @@ PMIx_Compute_distances_nb(pmix_topology_t *topo, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
+\returnstart
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+\item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed successfully - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
+\returnend
 
 
 %%%%

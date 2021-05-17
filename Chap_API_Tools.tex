@@ -1141,7 +1141,7 @@ PMIx_tool_init(pmix_proc_t *proc, \\
 \argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\returnsimple
 
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
@@ -1214,7 +1214,7 @@ pmix_status_t \\
 PMIx_tool_finalize(void);
 }
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+\returnsimple
 
 %%%%
 \descr
@@ -1248,7 +1248,7 @@ PMIx_tool_disconnect(const pmix_proc_t *server);
 \argin{server}{\refstruct{pmix_proc_t} structure (handle)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\returnsimple
 
 %%%%
 \descr
@@ -1288,7 +1288,7 @@ PMIx_tool_attach_to_server(pmix_proc_t *proc, \\
 \argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\returnsimple
 
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
@@ -1349,7 +1349,7 @@ PMIx_tool_get_servers(pmix_proc_t *servers[], size_t *nservers);
 \arginout{nservers}{Address where the number of elements in \refarg{servers} shall be returned (handle)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\returnsimple
 
 %%%%
 \descr
@@ -1381,7 +1381,7 @@ PMIx_tool_set_server(const pmix_proc_t *server
 \argin{ninfo}{Number of elements in the \refarg{info} array (\code{size_t})}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\returnsimple
 
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
@@ -1430,7 +1430,8 @@ PMIx_IOF_pull(const pmix_proc_t procs[], size_t nprocs, \\
 \argin{regcbdata}{Data to be passed to the \refarg{regcbfunc} callback function (memory reference)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant. In the event the function returns an error, the \refarg{regcbfunc} will \textit{not} be called.
+\returnsimple
+In the event the function returns an error, the \refarg{regcbfunc} will \textit{not} be called.
 
 \reqattrstart
 The following attributes are required for \ac{PMIx} libraries that support \ac{IO} forwarding:
@@ -1489,13 +1490,13 @@ PMIx_IOF_deregister(size_t iofhdlr, \\
 \argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
-\begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
-\end{itemize}
+\returnstart
+\begin{constantdesc}
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed successfully - the \refarg{cbfunc} will \textit{not} be called.
+\end{constantdesc}
+ \returnend
 
 %%%%
 \descr
@@ -1538,13 +1539,13 @@ PMIx_IOF_push(const pmix_proc_t targets[], size_t ntargets, \\
 \argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
-\begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library \emph{must not} invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called.
-\end{itemize}
+\returnstart
+\begin{constantdesc}
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed successfully - the \refarg{cbfunc} will \textit{not} be called.
+\end{constantdesc}
+ \returnend
 
 \reqattrstart
 The following attributes are required for \ac{PMIx} libraries that support \ac{IO} forwarding:

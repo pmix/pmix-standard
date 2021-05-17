@@ -46,7 +46,7 @@ PMIx_Publish(const pmix_info_t info[], size_t ninfo);
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\returnsimple
 
 \reqattrstart
 There are no required attributes for this \ac{API}. \ac{PMIx} implementations that do not directly support the operation but are hosted by environments that do support it must pass any attributes that are provided by the client to the host environment for processing. In addition, the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that published the information to the \refarg{info} array passed to the host environment.
@@ -103,12 +103,10 @@ PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
 
 \reqattrstart
@@ -277,22 +275,17 @@ PMIx_Lookup(pmix_pdata_t data[], size_t ndata, \\
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \end{arglist}
 
-Returns one of the following:
-
+\returnstart
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} All data was found and has been returned.
-
 \item \refconst{PMIX_ERR_NOT_FOUND} None of the requested data could be found within the requester's range.
 
 \item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the requested data was found.
 Any key that cannot be found will return with a data type of \refconst{PMIX_UNDEF} in the associated \refarg{value} struct. Note that the specific reason for a particular piece of missing information (e.g., lack of permissions) cannot be communicated back to the requester in this situation.
 
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} There is no available datastore (either at the host environment or \ac{PMIx} implementation level) on this system that supports this function.
-
 \item \refconst{PMIX_ERR_NO_PERMISSIONS} All of the requested data was found and range restrictions were met for each specified key, but none of the matching data could be returned due to lack of access permissions.
 
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure.
 \end{itemize}
+\returnend
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host environment for processing, and the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the info.
@@ -353,12 +346,7 @@ PMIx_Lookup_nb(char **keys, \\
 \argin{cbdata}{Callback data to be provided to the callback function (pointer)}
 \end{arglist}
 
-Returns one of the following:
-
-\begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-    \item a PMIx error constant indicating an error in the input - the \refarg{cbfunc} will \textit{not} be called.
-\end{itemize}
+\returnsimple
 
 If executed, the status returned in the provided callback function will be one of the following constants:
 
@@ -639,7 +627,7 @@ PMIx_Unpublish(char **keys, \\
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\returnsimple
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host environment for processing, and the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the operation.
@@ -693,12 +681,10 @@ PMIx_Unpublish_nb(char **keys, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
 
 \reqattrstart
