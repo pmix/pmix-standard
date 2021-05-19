@@ -550,8 +550,8 @@ Decompress the provided data
 \cspecificstart
 \begin{codepar}
 bool
-PMIx_Data_decompress(uint8_t **outbytes, size_t *nbytes,
-                     uint8_t *inbytes, size_t size);
+PMIx_Data_decompress(const uint8_t *inbytes, size_t size,
+                     uint8_t **outbytes, size_t *nbytes,);
 \end{codepar}
 \cspecificend
 
