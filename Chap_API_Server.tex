@@ -37,14 +37,11 @@ Initialize the \ac{PMIx} server.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_init(pmix_server_module_t *module,
-                 pmix_info_t info[], size_t ninfo);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_init}{1.0}{
+pmix_status_t \\
+PMIx_server_init(pmix_server_module_t *module, \\
+\hspace*{17\sigspace}pmix_info_t info[], size_t ninfo);
+}
 
 \begin{arglist}
 \arginout{module}{\refapi{pmix_server_module_t} structure (handle)}
@@ -134,13 +131,10 @@ Finalize the PMIx server library.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
+\copySignature{PMIx_server_finalize}{1.0}{
+pmix_status_t \\
 PMIx_server_finalize(void);
-\end{codepar}
-\cspecificend
+}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
@@ -252,13 +246,10 @@ Generate a compressed representation of the input string.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
+\copySignature{PMIx_generate_regex}{1.0}{
+pmix_status_t \\
 PMIx_generate_regex(const char *input, char **output);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{input}{String to process (string)}
@@ -295,13 +286,10 @@ Generate a compressed representation of the input identifying the processes on e
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
+\copySignature{PMIx_generate_ppn}{1.0}{
+pmix_status_t \\
 PMIx_generate_ppn(const char *input, char **ppn);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{input}{String to process (string)}
@@ -329,17 +317,14 @@ Setup the data about a particular namespace.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_register_nspace(const pmix_nspace_t nspace,
-                            int nlocalprocs,
-                            pmix_info_t info[], size_t ninfo,
-                            pmix_op_cbfunc_t cbfunc,
-                            void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_register_nspace}{1.0}{
+pmix_status_t \\
+PMIx_server_register_nspace(const pmix_nspace_t nspace, \\
+\hspace*{28\sigspace}int nlocalprocs, \\
+\hspace*{28\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{28\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{28\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{nspace}{Character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the namespace identifier (string)}
@@ -867,13 +852,10 @@ Deregister a namespace.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-void PMIx_server_deregister_nspace(const pmix_nspace_t nspace,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_deregister_nspace}{1.0}{
+void PMIx_server_deregister_nspace(const pmix_nspace_t nspace, \\
+\hspace*{24\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{nspace}{Namespace (string)}
@@ -900,15 +882,12 @@ Register non-namespace related information with the local \ac{PMIx} server libra
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_register_resources(pmix_info_t info[], size_t ninfo,
-                               pmix_op_cbfunc_t cbfunc,
-                               void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_register_resources}{4.0}{
+pmix_status_t \\
+PMIx_server_register_resources(pmix_info_t info[], size_t ninfo, \\
+\hspace*{31\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{31\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{info}{Array of info structures (array of handles)}
@@ -941,15 +920,12 @@ Remove specified non-namespace related information from the local \ac{PMIx} serv
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_deregister_resources(pmix_info_t info[], size_t ninfo,
-                                 pmix_op_cbfunc_t cbfunc,
-                                 void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_deregister_resources}{4.0}{
+pmix_status_t \\
+PMIx_server_deregister_resources(pmix_info_t info[], size_t ninfo, \\
+\hspace*{33\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{33\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{info}{Array of info structures (array of handles)}
@@ -982,16 +958,13 @@ Register a client process with the PMIx server library.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_register_client(const pmix_proc_t *proc,
-                        uid_t uid, gid_t gid,
-                        void *server_object,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_register_client}{1.0}{
+pmix_status_t \\
+PMIx_server_register_client(const pmix_proc_t *proc, \\
+\hspace*{24\sigspace}uid_t uid, gid_t gid, \\
+\hspace*{24\sigspace}void *server_object, \\
+\hspace*{24\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
@@ -1041,14 +1014,11 @@ Deregister a client and purge all data relating to it.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-void
-PMIx_server_deregister_client(const pmix_proc_t *proc,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_deregister_client}{1.0}{
+void \\
+PMIx_server_deregister_client(const pmix_proc_t *proc, \\
+\hspace*{24\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
@@ -1076,14 +1046,11 @@ Setup the environment of a child process to be forked by the host.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_setup_fork(const pmix_proc_t *proc,
-                        char ***env);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_setup_fork}{1.0}{
+pmix_status_t \\
+PMIx_server_setup_fork(const pmix_proc_t *proc, \\
+\hspace*{24\sigspace}char ***env);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
@@ -1117,15 +1084,12 @@ Define a function by which the host server can request modex data from the local
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_dmodex_request(const pmix_proc_t *proc,
-                           pmix_dmodex_response_fn_t cbfunc,
-                           void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_dmodex_request}{1.0}{
+pmix_status_t \\
+PMIx_server_dmodex_request(const pmix_proc_t *proc, \\
+\hspace*{27\sigspace}pmix_dmodex_response_fn_t cbfunc, \\
+\hspace*{27\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
@@ -1166,15 +1130,12 @@ Provide a function by which the local \ac{PMIx} server library can return connec
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_dmodex_response_fn_t)(
-                    pmix_status_t status,
-                    char *data, size_t sz,
-                    void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_dmodex_response_fn_t}{1.0}{
+typedef void (*pmix_dmodex_response_fn_t)( \\
+\hspace*{20\sigspace}pmix_status_t status, \\
+\hspace*{20\sigspace}char *data, size_t sz, \\
+\hspace*{20\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{status}{Returned status of the request (\refstruct{pmix_status_t})}
@@ -1199,16 +1160,13 @@ Provide a function by which a launcher can request application-specific setup da
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_setup_application(const pmix_nspace_t nspace,
-                        pmix_info_t info[], size_t ninfo,
-                        pmix_setup_application_cbfunc_t cbfunc,
-                        void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_setup_application}{2.0}{
+pmix_status_t \\
+PMIx_server_setup_application(const pmix_nspace_t nspace, \\
+\hspace*{24\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{24\sigspace}pmix_setup_application_cbfunc_t cbfunc, \\
+\hspace*{24\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{nspace}{namespace (string)}
@@ -1293,16 +1251,13 @@ Provide a function by which the resource manager can receive application-specifi
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_setup_application_cbfunc_t)(
-                        pmix_status_t status,
-                        pmix_info_t info[], size_t ninfo,
-                        void *provided_cbdata,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_setup_application_cbfunc_t}{2.0}{
+typedef void (*pmix_setup_application_cbfunc_t)( \\
+\hspace*{24\sigspace}pmix_status_t status, \\
+\hspace*{24\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{24\sigspace}void *provided_cbdata, \\
+\hspace*{24\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{status}{returned status of the request (\refstruct{pmix_status_t})}
@@ -1351,15 +1306,12 @@ Register host environment attribute support for a function.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Register_attributes(char *function,
-                         pmix_regattr_t attrs[],
-                         size_t nattrs);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Register_attributes}{4.0}{
+pmix_status_t \\
+PMIx_Register_attributes(char *function, \\
+\hspace*{25\sigspace}pmix_regattr_t attrs[], \\
+\hspace*{25\sigspace}size_t nattrs);
+}
 
 \begin{arglist}
 \argin{function}{String name of function (string)}
@@ -1407,19 +1359,16 @@ The attributes for an identical function have already been registered at the spe
 
 The \refstruct{pmix_regattr_t} structure is used to register attribute support for a \ac{PMIx} function.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_regattr \{
-    char *name;
-    pmix_key_t *string;
-    pmix_data_type_t type;
-    pmix_info_t *info;
-    size_t ninfo;
-    char **description;
+\copySignature{pmix_regattr_t}{4.0}{
+typedef struct pmix_regattr \{ \\
+\hspace*{4\sigspace}char *name; \\
+\hspace*{4\sigspace}pmix_key_t *string; \\
+\hspace*{4\sigspace}pmix_data_type_t type; \\
+\hspace*{4\sigspace}pmix_info_t *info; \\
+\hspace*{4\sigspace}size_t ninfo; \\
+\hspace*{4\sigspace}char **description; \\
 \} pmix_regattr_t;;
-\end{codepar}
-\cspecificend
+}
 
 Note that in this structure:
 
@@ -1466,12 +1415,9 @@ The following macros are provided to support the \refstruct{pmix_regattr_t} stru
 
 Initialize the \refstruct{pmix_regattr_t} fields
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_REGATTR_CONSTRUCT}{4.0}{
 PMIX_REGATTR_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_regattr_t})}
@@ -1483,12 +1429,9 @@ PMIX_REGATTR_CONSTRUCT(m)
 
 Destruct the \refstruct{pmix_regattr_t} fields, releasing all strings.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_REGATTR_DESTRUCT}{4.0}{
 PMIX_REGATTR_DESTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_regattr_t})}
@@ -1500,12 +1443,9 @@ PMIX_REGATTR_DESTRUCT(m)
 
 Allocate and initialize an array of \refstruct{pmix_regattr_t} structures.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_REGATTR_CREATE}{4.0}{
 PMIX_REGATTR_CREATE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_regattr_t} structures shall be stored (handle)}
@@ -1518,12 +1458,9 @@ PMIX_REGATTR_CREATE(m, n)
 
 Release an array of \refstruct{pmix_regattr_t} structures.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_REGATTR_FREE}{4.0}{
 PMIX_REGATTR_FREE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Pointer to the array of \refstruct{pmix_regattr_t} structures (handle)}
@@ -1536,12 +1473,9 @@ PMIX_REGATTR_FREE(m, n)
 
 Load values into a \refstruct{pmix_regattr_t} structure. The macro can be called multiple times to add as many strings as desired to the same structure by passing the same address and a \code{NULL} key to the macro. Note that the \refarg{t} type value must be given each time.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_REGATTR_LOAD}{4.0}{
 PMIX_REGATTR_LOAD(a, n, k, t, ni, v)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{a}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_proc_t})}
@@ -1558,12 +1492,9 @@ PMIX_REGATTR_LOAD(a, n, k, t, ni, v)
 
 Non-destructively transfer the contents of a \refstruct{pmix_regattr_t} structure to another one.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_REGATTR_XFER}{4.0}{
 PMIX_REGATTR_XFER(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Pointer to the destination \refstruct{pmix_regattr_t} structure (handle)}
@@ -1583,16 +1514,13 @@ Provide a function by which the local \ac{PMIx} server can perform any applicati
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_setup_local_support(const pmix_nspace_t nspace,
-                                pmix_info_t info[], size_t ninfo,
-                                pmix_op_cbfunc_t cbfunc,
-                                void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_setup_local_support}{2.0}{
+pmix_status_t \\
+PMIx_server_setup_local_support(const pmix_nspace_t nspace, \\
+\hspace*{32\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{32\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{32\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{nspace}{Namespace (string)}
@@ -1634,17 +1562,14 @@ Provide a function by which the host environment can pass forwarded \ac{IO} to t
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_IOF_deliver(const pmix_proc_t *source,
-                        pmix_iof_channel_t channel,
-                        const pmix_byte_object_t *bo,
-                        const pmix_info_t info[], size_t ninfo,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_IOF_deliver}{3.0}{
+pmix_status_t \\
+PMIx_server_IOF_deliver(const pmix_proc_t *source, \\
+\hspace*{24\sigspace}pmix_iof_channel_t channel, \\
+\hspace*{24\sigspace}const pmix_byte_object_t *bo, \\
+\hspace*{24\sigspace}const pmix_info_t info[], size_t ninfo, \\
+\hspace*{24\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{source}{Pointer to \refstruct{pmix_proc_t} identifying source of the \ac{IO} (handle)}
@@ -1681,16 +1606,13 @@ Collect inventory of resources on a node.
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_collect_inventory(const pmix_info_t directives[],
-                              size_t ndirs,
-                              pmix_info_cbfunc_t cbfunc,
-                              void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_collect_inventory}{3.0}{
+pmix_status_t \\
+PMIx_server_collect_inventory(const pmix_info_t directives[], \\
+\hspace*{30\sigspace}size_t ndirs, \\
+\hspace*{30\sigspace}pmix_info_cbfunc_t cbfunc, \\
+\hspace*{30\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{directives}{Array of \refstruct{pmix_info_t} directing the request (array of handles)}
@@ -1722,18 +1644,15 @@ Pass collected inventory to the \ac{PMIx} server library for storage.
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_deliver_inventory(const pmix_info_t info[],
-                              size_t ninfo,
-                              const pmix_info_t directives[],
-                              size_t ndirs,
-                              pmix_op_cbfunc_t cbfunc,
-                              void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_deliver_inventory}{3.0}{
+pmix_status_t \\
+PMIx_server_deliver_inventory(const pmix_info_t info[], \\
+\hspace*{30\sigspace}size_t ninfo, \\
+\hspace*{30\sigspace}const pmix_info_t directives[], \\
+\hspace*{30\sigspace}size_t ndirs, \\
+\hspace*{30\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{30\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{info}{Array of \refstruct{pmix_info_t} containing the inventory (array of handles)}
@@ -1770,14 +1689,11 @@ Generate a \ac{PMIx} locality string from a given cpuset.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_generate_locality_string(const pmix_cpuset_t *cpuset,
-                                     char **locality);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_generate_locality_string}{4.0}{
+pmix_status_t \\
+PMIx_server_generate_locality_string(const pmix_cpuset_t *cpuset, \\
+\hspace*{37\sigspace}char **locality);
+}
 
 \begin{arglist}
 \argin{cpuset}{Pointer to a \refstruct{pmix_cpuset_t} containing the bitmap of assigned \acp{PU} (handle)}
@@ -1806,14 +1722,11 @@ Generate a \ac{PMIx} string representation of the provided cpuset.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_generate_cpuset_string(const pmix_cpuset_t *cpuset,
-                                   char **cpuset_string);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_generate_cpuset_string}{4.0}{
+pmix_status_t \\
+PMIx_server_generate_cpuset_string(const pmix_cpuset_t *cpuset, \\
+\hspace*{35\sigspace}char **cpuset_string);
+}
 
 \begin{arglist}
 \argin{cpuset}{Pointer to a \refstruct{pmix_cpuset_t} containing the bitmap of assigned \acp{PU} (handle)}
@@ -1836,15 +1749,12 @@ The function is required to return a string prefixed by the \refarg{source} fiel
 
 The \refstruct{pmix_cpuset_t} structure contains a character string identifying the source of the bitmap (e.g., "hwloc") and a pointer to the corresponding implementation-specific structure (e.g., \code{hwloc_cpuset_t}).
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_cpuset \{
-    char *source;
-    void *bitmap;
+\copySignature{pmix_cpuset_t}{4.0}{
+typedef struct pmix_cpuset \{ \\
+\hspace*{4\sigspace}char *source; \\
+\hspace*{4\sigspace}void *bitmap; \\
 \} pmix_cpuset_t;
-\end{codepar}
-\cspecificend
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Cpuset support macros}
@@ -1855,12 +1765,9 @@ The following macros support the \refstruct{pmix_cpuset_t} structure.
 
 Initialize the \refstruct{pmix_cpuset_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_CPUSET_CONSTRUCT}{4.0}{
 PMIX_CPUSET_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_cpuset_t})}
@@ -1871,12 +1778,9 @@ PMIX_CPUSET_CONSTRUCT(m)
 
 Destruct the \refstruct{pmix_cpuset_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_CPUSET_DESTRUCT}{4.0}{
 PMIX_CPUSET_DESTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_cpuset_t})}
@@ -1889,12 +1793,9 @@ PMIX_CPUSET_DESTRUCT(m)
 
 Allocate and initialize a \refstruct{pmix_cpuset_t} array.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_CPUSET_CREATE}{4.0}{
 PMIX_CPUSET_CREATE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_cpuset_t} structures shall be stored (handle)}
@@ -1906,12 +1807,9 @@ PMIX_CPUSET_CREATE(m, n)
 
 Deconstruct and free a \refstruct{pmix_cpuset_t} array.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_CPUSET_FREE}{4.0}{
 PMIX_CPUSET_FREE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address the array of \refstruct{pmix_cpuset_t} structures to be released (handle)}
@@ -1932,15 +1830,12 @@ Define a \ac{PMIx} process set.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_server_define_process_set(const pmix_proc_t members[],
-                               size_t nmembers,
-                               char *pset_name);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_server_define_process_set}{4.0}{
+pmix_status_t \\
+PMIx_server_define_process_set(const pmix_proc_t members[], \\
+\hspace*{31\sigspace}size_t nmembers, \\
+\hspace*{31\sigspace}char *pset_name);
+}
 
 \begin{arglist}
 \argin{members}{Pointer to an array of \refstruct{pmix_proc_t} containing the
@@ -1984,13 +1879,10 @@ Delete a \ac{PMIx} process set name
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
+\copySignature{PMIx_server_delete_process_set}{4.0}{
+pmix_status_t \\
 PMIx_server_delete_process_set(char *pset_name);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{pset_name}{String name of the process set being deleted (\code{char*})}
@@ -2105,16 +1997,13 @@ Notify the host server that a client connected to this server. This function mod
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_client_connected_fn_t)(
-                             const pmix_proc_t *proc,
-                             void* server_object,
-                             pmix_op_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_client_connected_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_client_connected_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}void* server_object, \\
+\hspace*{29\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
@@ -2148,17 +2037,14 @@ Notify the host server that a client connected to this server - this version of 
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_client_connected2_fn_t)(
-                             const pmix_proc_t *proc,
-                             void* server_object,
-                             pmix_info_t info[], size_t ninfo,
-                             pmix_op_cbfunc_t cbfunc,
-                             void *cbdata)
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_client_connected}{4.0}{
+typedef pmix_status_t (*pmix_server_client_connected2_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}void* server_object, \\
+\hspace*{29\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{29\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata)
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
@@ -2207,16 +2093,13 @@ Notify the host environment that a client called \refapi{PMIx_Finalize}.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_client_finalized_fn_t)(
-                             const pmix_proc_t *proc,
-                             void* server_object,
-                             pmix_op_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_client_finalized_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_client_finalized_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}void* server_object, \\
+\hspace*{29\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure (handle)}
@@ -2264,20 +2147,17 @@ Notify the host environment that a local client called \refapi{PMIx_Abort}.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_abort_fn_t)(
-                             const pmix_proc_t *proc,
-                             void *server_object,
-                             int status,
-                             const char msg[],
-                             pmix_proc_t procs[],
-                             size_t nprocs,
-                             pmix_op_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_abort_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_abort_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}void *server_object, \\
+\hspace*{29\sigspace}int status, \\
+\hspace*{29\sigspace}const char msg[], \\
+\hspace*{29\sigspace}pmix_proc_t procs[], \\
+\hspace*{29\sigspace}size_t nprocs, \\
+\hspace*{29\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 
 \begin{arglist}
@@ -2321,19 +2201,16 @@ At least one client called either \refapi{PMIx_Fence} or \refapi{PMIx_Fence_nb}.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_fencenb_fn_t)(
-                             const pmix_proc_t procs[],
-                             size_t nprocs,
-                             const pmix_info_t info[],
-                             size_t ninfo,
-                             char *data, size_t ndata,
-                             pmix_modex_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_fencenb_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_fencenb_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t procs[], \\
+\hspace*{29\sigspace}size_t nprocs, \\
+\hspace*{29\sigspace}const pmix_info_t info[], \\
+\hspace*{29\sigspace}size_t ninfo, \\
+\hspace*{29\sigspace}char *data, size_t ndata, \\
+\hspace*{29\sigspace}pmix_modex_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{procs}{Array of \refstruct{pmix_proc_t} structures identifying operation participants(array of handles)}
@@ -2421,17 +2298,14 @@ Note that the ordering of the data blobs does not matter. The host is responsibl
 
 The \refapi{pmix_modex_cbfunc_t} is used by the \refapi{pmix_server_fencenb_fn_t} and \refapi{pmix_server_dmodex_req_fn_t} PMIx server operations to return modex \ac{BCX} data.
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_modex_cbfunc_t)
-    (pmix_status_t status,
-     const char *data, size_t ndata,
-     void *cbdata,
-     pmix_release_cbfunc_t release_fn,
-     void *release_cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_modex_cbfunc_t}{1.0}{
+typedef void (*pmix_modex_cbfunc_t) \\
+\hspace*{4\sigspace}(pmix_status_t status, \\
+\hspace*{5\sigspace}const char *data, size_t ndata, \\
+\hspace*{5\sigspace}void *cbdata, \\
+\hspace*{5\sigspace}pmix_release_cbfunc_t release_fn, \\
+\hspace*{5\sigspace}void *release_cbdata);
+}
 
 \begin{arglist}
 \argin{status}{Status associated with the operation (handle)}
@@ -2461,17 +2335,14 @@ Used by the PMIx server to request its local host contact the \ac{PMIx} server o
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_dmodex_req_fn_t)(
-                             const pmix_proc_t *proc,
-                             const pmix_info_t info[],
-                             size_t ninfo,
-                             pmix_modex_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_dmodex_req_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_dmodex_req_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}const pmix_info_t info[], \\
+\hspace*{29\sigspace}size_t ninfo, \\
+\hspace*{29\sigspace}pmix_modex_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure identifying the process whose data is being requested (handle)}
@@ -2535,17 +2406,14 @@ Publish data per the PMIx API specification.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_publish_fn_t)(
-                             const pmix_proc_t *proc,
-                             const pmix_info_t info[],
-                             size_t ninfo,
-                             pmix_op_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_publish_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_publish_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}const pmix_info_t info[], \\
+\hspace*{29\sigspace}size_t ninfo, \\
+\hspace*{29\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure of the process publishing the data (handle)}
@@ -2615,18 +2483,15 @@ Lookup published data.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_lookup_fn_t)(
-                             const pmix_proc_t *proc,
-                             char **keys,
-                             const pmix_info_t info[],
-                             size_t ninfo,
-                             pmix_lookup_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_lookup_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_lookup_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}char **keys, \\
+\hspace*{29\sigspace}const pmix_info_t info[], \\
+\hspace*{29\sigspace}size_t ninfo, \\
+\hspace*{29\sigspace}pmix_lookup_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure of the process seeking the data (handle)}
@@ -2695,18 +2560,15 @@ Delete data from the data store.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_unpublish_fn_t)(
-                             const pmix_proc_t *proc,
-                             char **keys,
-                             const pmix_info_t info[],
-                             size_t ninfo,
-                             pmix_op_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_unpublish_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_unpublish_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}char **keys, \\
+\hspace*{29\sigspace}const pmix_info_t info[], \\
+\hspace*{29\sigspace}size_t ninfo, \\
+\hspace*{29\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure identifying the process making the request (handle)}
@@ -2771,19 +2633,16 @@ Spawn a set of applications/processes as per the \refapi{PMIx_Spawn} API.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_spawn_fn_t)(
-                             const pmix_proc_t *proc,
-                             const pmix_info_t job_info[],
-                             size_t ninfo,
-                             const pmix_app_t apps[],
-                             size_t napps,
-                             pmix_spawn_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_spawn_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_spawn_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}const pmix_info_t job_info[], \\
+\hspace*{29\sigspace}size_t ninfo, \\
+\hspace*{29\sigspace}const pmix_app_t apps[], \\
+\hspace*{29\sigspace}size_t napps, \\
+\hspace*{29\sigspace}pmix_spawn_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure of the process making the request (handle)}
@@ -2897,18 +2756,15 @@ Record the specified processes as \textit{connected}.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_connect_fn_t)(
-                             const pmix_proc_t procs[],
-                             size_t nprocs,
-                             const pmix_info_t info[],
-                             size_t ninfo,
-                             pmix_op_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_connect_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_connect_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t procs[], \\
+\hspace*{29\sigspace}size_t nprocs, \\
+\hspace*{29\sigspace}const pmix_info_t info[], \\
+\hspace*{29\sigspace}size_t ninfo, \\
+\hspace*{29\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{procs}{Array of \refstruct{pmix_proc_t} structures identifying participants (array of handles)}
@@ -2965,18 +2821,15 @@ Disconnect a previously connected set of processes.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_disconnect_fn_t)(
-                             const pmix_proc_t procs[],
-                             size_t nprocs,
-                             const pmix_info_t info[],
-                             size_t ninfo,
-                             pmix_op_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_disconnect_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_disconnect_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t procs[], \\
+\hspace*{29\sigspace}size_t nprocs, \\
+\hspace*{29\sigspace}const pmix_info_t info[], \\
+\hspace*{29\sigspace}size_t ninfo, \\
+\hspace*{29\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{procs}{Array of \refstruct{pmix_proc_t} structures identifying participants (array of handles)}
@@ -3035,18 +2888,15 @@ Register to receive notifications for the specified events.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
- typedef pmix_status_t (*pmix_server_register_events_fn_t)(
-                              pmix_status_t *codes,
-                              size_t ncodes,
-                              const pmix_info_t info[],
-                              size_t ninfo,
-                              pmix_op_cbfunc_t cbfunc,
-                              void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_register_events_fn_t}{1.0}{
+\hspace*{1\sigspace}typedef pmix_status_t (*pmix_server_register_events_fn_t)( \\
+\hspace*{30\sigspace}pmix_status_t *codes, \\
+\hspace*{30\sigspace}size_t ncodes, \\
+\hspace*{30\sigspace}const pmix_info_t info[], \\
+\hspace*{30\sigspace}size_t ninfo, \\
+\hspace*{30\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{30\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{codes}{Array of \refstruct{pmix_status_t} values (array of handles)}
@@ -3106,16 +2956,13 @@ Deregister to receive notifications for the specified events.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
- typedef pmix_status_t (*pmix_server_deregister_events_fn_t)(
-                              pmix_status_t *codes,
-                              size_t ncodes,
-                              pmix_op_cbfunc_t cbfunc,
-                              void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_deregister_events_fn_t}{1.0}{
+\hspace*{1\sigspace}typedef pmix_status_t (*pmix_server_deregister_events_fn_t)( \\
+\hspace*{30\sigspace}pmix_status_t *codes, \\
+\hspace*{30\sigspace}size_t ncodes, \\
+\hspace*{30\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{30\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{codes}{Array of \refstruct{pmix_status_t} values (array of handles)}
@@ -3161,19 +3008,16 @@ Notify the specified processes of an event.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_notify_event_fn_t)(
-                             pmix_status_t code,
-                             const pmix_proc_t *source,
-                             pmix_data_range_t range,
-                             pmix_info_t info[],
-                             size_t ninfo,
-                             pmix_op_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_notify_event_fn_t}{2.0}{
+typedef pmix_status_t (*pmix_server_notify_event_fn_t)( \\
+\hspace*{29\sigspace}pmix_status_t code, \\
+\hspace*{29\sigspace}const pmix_proc_t *source, \\
+\hspace*{29\sigspace}pmix_data_range_t range, \\
+\hspace*{29\sigspace}pmix_info_t info[], \\
+\hspace*{29\sigspace}size_t ninfo, \\
+\hspace*{29\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{code}{The \refstruct{pmix_status_t} event code being referenced structure (handle)}
@@ -3229,15 +3073,12 @@ Register a socket the host server can monitor for connection requests.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_listener_fn_t)(
-                             int listening_sd,
-                             pmix_connection_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_listener_fn_t}{1.0}{
+typedef pmix_status_t (*pmix_server_listener_fn_t)( \\
+\hspace*{29\sigspace}int listening_sd, \\
+\hspace*{29\sigspace}pmix_connection_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{incoming_sd}{(integer)}
@@ -3267,13 +3108,10 @@ Callback function for incoming connection request from a local client.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_connection_cbfunc_t)(
-                    int incoming_sd, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_connection_cbfunc_t}{1.0}{
+typedef void (*pmix_connection_cbfunc_t)( \\
+\hspace*{20\sigspace}int incoming_sd, void *cbdata);
+}
 
 \begin{arglist}
 \argin{incoming_sd}{(integer)}
@@ -3298,17 +3136,14 @@ Query information from the resource manager.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_query_fn_t)(
-                             pmix_proc_t *proct,
-                             pmix_query_t *queries,
-                             size_t nqueries,
-                             pmix_info_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_query_fn_t}{2.0}{
+typedef pmix_status_t (*pmix_server_query_fn_t)( \\
+\hspace*{29\sigspace}pmix_proc_t *proct, \\
+\hspace*{29\sigspace}pmix_query_t *queries, \\
+\hspace*{29\sigspace}size_t nqueries, \\
+\hspace*{29\sigspace}pmix_info_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proct}{\refstruct{pmix_proc_t} structure of the requesting process (handle)}
@@ -3378,15 +3213,12 @@ Register that a tool has connected to the server.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_server_tool_connection_fn_t)(
-                             pmix_info_t info[], size_t ninfo,
-                             pmix_tool_connection_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_tool_connection_fn_t}{2.0}{
+typedef void (*pmix_server_tool_connection_fn_t)( \\
+\hspace*{29\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{29\sigspace}pmix_tool_connection_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
@@ -3475,14 +3307,11 @@ Callback function for incoming tool connections.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_tool_connection_cbfunc_t)(
-                    pmix_status_t status,
-                    pmix_proc_t *proc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_tool_connection_cbfunc_t}{2.0}{
+typedef void (*pmix_tool_connection_cbfunc_t)( \\
+\hspace*{20\sigspace}pmix_status_t status, \\
+\hspace*{20\sigspace}pmix_proc_t *proc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{status}{\refstruct{pmix_status_t} value (handle)}
@@ -3513,16 +3342,13 @@ Log data on behalf of a client.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_server_log_fn_t)(
-                    const pmix_proc_t *client,
-                    const pmix_info_t data[], size_t ndata,
-                    const pmix_info_t directives[], size_t ndirs,
-                    pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_log_fn_t}{2.0}{
+typedef void (*pmix_server_log_fn_t)( \\
+\hspace*{20\sigspace}const pmix_proc_t *client, \\
+\hspace*{20\sigspace}const pmix_info_t data[], size_t ndata, \\
+\hspace*{20\sigspace}const pmix_info_t directives[], size_t ndirs, \\
+\hspace*{20\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{client}{\refstruct{pmix_proc_t} structure (handle)}
@@ -3580,18 +3406,15 @@ Request allocation operations on behalf of a client.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_alloc_fn_t)(
-                             const pmix_proc_t *client,
-                             pmix_alloc_directive_t directive,
-                             const pmix_info_t data[],
-                             size_t ndata,
-                             pmix_info_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_alloc_fn_t}{2.0}{
+typedef pmix_status_t (*pmix_server_alloc_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *client, \\
+\hspace*{29\sigspace}pmix_alloc_directive_t directive, \\
+\hspace*{29\sigspace}const pmix_info_t data[], \\
+\hspace*{29\sigspace}size_t ndata, \\
+\hspace*{29\sigspace}pmix_info_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{client}{\refstruct{pmix_proc_t} structure of process making request (handle)}
@@ -3674,19 +3497,16 @@ Execute a job control action on behalf of a client.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_job_control_fn_t)(
-                             const pmix_proc_t *requestor,
-                             const pmix_proc_t targets[],
-                             size_t ntargets,
-                             const pmix_info_t directives[],
-                             size_t ndirs,
-                             pmix_info_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_job_control_fn_t}{2.0}{
+typedef pmix_status_t (*pmix_server_job_control_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *requestor, \\
+\hspace*{29\sigspace}const pmix_proc_t targets[], \\
+\hspace*{29\sigspace}size_t ntargets, \\
+\hspace*{29\sigspace}const pmix_info_t directives[], \\
+\hspace*{29\sigspace}size_t ndirs, \\
+\hspace*{29\sigspace}pmix_info_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{requestor}{\refstruct{pmix_proc_t} structure of requesting process (handle)}
@@ -3765,19 +3585,16 @@ Request that a client be monitored for activity.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_monitor_fn_t)(
-                             const pmix_proc_t *requestor,
-                             const pmix_info_t *monitor,
-                             pmix_status_t error,
-                             const pmix_info_t directives[],
-                             size_t ndirs,
-                             pmix_info_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_monitor_fn_t}{2.0}{
+typedef pmix_status_t (*pmix_server_monitor_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *requestor, \\
+\hspace*{29\sigspace}const pmix_info_t *monitor, \\
+\hspace*{29\sigspace}pmix_status_t error, \\
+\hspace*{29\sigspace}const pmix_info_t directives[], \\
+\hspace*{29\sigspace}size_t ndirs, \\
+\hspace*{29\sigspace}pmix_info_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{requestor}{\refstruct{pmix_proc_t} structure of requesting process (handle)}
@@ -3847,17 +3664,14 @@ Request a credential from the host environment.
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_get_cred_fn_t)(
-                             const pmix_proc_t *proc,
-                             const pmix_info_t directives[],
-                             size_t ndirs,
-                             pmix_credential_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_get_cred_fn_t}{3.0}{
+typedef pmix_status_t (*pmix_server_get_cred_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}const pmix_info_t directives[], \\
+\hspace*{29\sigspace}size_t ndirs, \\
+\hspace*{29\sigspace}pmix_credential_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure of requesting process (handle)}
@@ -3907,16 +3721,13 @@ Callback function to return a requested security credential
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_credential_cbfunc_t)(
-                    pmix_status_t status,
-                    pmix_byte_object_t *credential,
-                    pmix_info_t info[], size_t ninfo,
-                    void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_credential_cbfunc_t}{3.0}{
+typedef void (*pmix_credential_cbfunc_t)( \\
+\hspace*{20\sigspace}pmix_status_t status, \\
+\hspace*{20\sigspace}pmix_byte_object_t *credential, \\
+\hspace*{20\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{20\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{status}{\refstruct{pmix_status_t} value (handle)}
@@ -3954,18 +3765,15 @@ Request validation of a credential.
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_validate_cred_fn_t)(
-                             const pmix_proc_t *proc,
-                             const pmix_byte_object_t *cred,
-                             const pmix_info_t directives[],
-                             size_t ndirs,
-                             pmix_validation_cbfunc_t cbfunc,
-                             void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_validate_cred_fn_t}{3.0}{
+typedef pmix_status_t (*pmix_server_validate_cred_fn_t)( \\
+\hspace*{29\sigspace}const pmix_proc_t *proc, \\
+\hspace*{29\sigspace}const pmix_byte_object_t *cred, \\
+\hspace*{29\sigspace}const pmix_info_t directives[], \\
+\hspace*{29\sigspace}size_t ndirs, \\
+\hspace*{29\sigspace}pmix_validation_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{proc}{\refstruct{pmix_proc_t} structure of requesting process (handle)}
@@ -4022,15 +3830,12 @@ Callback function for security credential validation.
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_validation_cbfunc_t)(
-                    pmix_status_t status,
-                    pmix_info_t info[], size_t ninfo,
-                    void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_validation_cbfunc_t}{3.0}{
+typedef void (*pmix_validation_cbfunc_t)( \\
+\hspace*{20\sigspace}pmix_status_t status, \\
+\hspace*{20\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{20\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{status}{\refstruct{pmix_status_t} value (handle)}
@@ -4068,18 +3873,15 @@ Request the specified IO channels be forwarded from the given array of processes
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_iof_fn_t)(
-                        const pmix_proc_t procs[],
-                        size_t nprocs,
-                        const pmix_info_t directives[],
-                        size_t ndirs,
-                        pmix_iof_channel_t channels,
-                        pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_iof_fn_t}{3.0}{
+typedef pmix_status_t (*pmix_server_iof_fn_t)( \\
+\hspace*{24\sigspace}const pmix_proc_t procs[], \\
+\hspace*{24\sigspace}size_t nprocs, \\
+\hspace*{24\sigspace}const pmix_info_t directives[], \\
+\hspace*{24\sigspace}size_t ndirs, \\
+\hspace*{24\sigspace}pmix_iof_channel_t channels, \\
+\hspace*{24\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{procs}{Array \refstruct{pmix_proc_t} identifiers whose \ac{IO} is being requested (handle)}
@@ -4146,15 +3948,12 @@ Callback function for delivering forwarded \ac{IO} to a process.
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_iof_cbfunc_t)(
-                    size_t iofhdlr, pmix_iof_channel_t channel,
-                    pmix_proc_t *source, char *payload,
-                    pmix_info_t info[], size_t ninfo);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_iof_cbfunc_t}{3.0}{
+typedef void (*pmix_iof_cbfunc_t)( \\
+\hspace*{20\sigspace}size_t iofhdlr, pmix_iof_channel_t channel, \\
+\hspace*{20\sigspace}pmix_proc_t *source, char *payload, \\
+\hspace*{20\sigspace}pmix_info_t info[], size_t ninfo);
+}
 
 \begin{arglist}
 \argin{iofhdlr}{Registration number of the handler being invoked (\code{size_t})}
@@ -4188,19 +3987,16 @@ Pass standard input data to the host environment for transmission to specified r
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_stdin_fn_t)(
-                           const pmix_proc_t *source,
-                           const pmix_proc_t targets[],
-                           size_t ntargets,
-                           const pmix_info_t directives[],
-                           size_t ndirs,
-                           const pmix_byte_object_t *bo,
-                           pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_stdin_fn_t}{3.0}{
+typedef pmix_status_t (*pmix_server_stdin_fn_t)( \\
+\hspace*{27\sigspace}const pmix_proc_t *source, \\
+\hspace*{27\sigspace}const pmix_proc_t targets[], \\
+\hspace*{27\sigspace}size_t ntargets, \\
+\hspace*{27\sigspace}const pmix_info_t directives[], \\
+\hspace*{27\sigspace}size_t ndirs, \\
+\hspace*{27\sigspace}const pmix_byte_object_t *bo, \\
+\hspace*{27\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{source}{\refstruct{pmix_proc_t} structure of source process (handle)}
@@ -4247,20 +4043,17 @@ Request group operations (construct, destruct, etc.) on behalf of a set of proce
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_grp_fn_t)(
-                           pmix_group_operation_t op,
-                           char grp[],
-                           const pmix_proc_t procs[],
-                           size_t nprocs,
-                           const pmix_info_t directives[],
-                           size_t ndirs,
-                           pmix_info_cbfunc_t cbfunc,
-                           void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_grp_fn_t}{4.0}{
+typedef pmix_status_t (*pmix_server_grp_fn_t)( \\
+\hspace*{27\sigspace}pmix_group_operation_t op, \\
+\hspace*{27\sigspace}char grp[], \\
+\hspace*{27\sigspace}const pmix_proc_t procs[], \\
+\hspace*{27\sigspace}size_t nprocs, \\
+\hspace*{27\sigspace}const pmix_info_t directives[], \\
+\hspace*{27\sigspace}size_t ndirs, \\
+\hspace*{27\sigspace}pmix_info_cbfunc_t cbfunc, \\
+\hspace*{27\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{op}{\refstruct{pmix_group_operation_t} value indicating operation the host is requested to perform (integer)}
@@ -4336,18 +4129,15 @@ Request fabric-related operations (e.g., information on a fabric) on behalf of a
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef pmix_status_t (*pmix_server_fabric_fn_t)(
-                           const pmix_proc_t *requestor,
-                           pmix_fabric_operation_t op,
-                           const pmix_info_t directives[],
-                           size_t ndirs,
-                           pmix_info_cbfunc_t cbfunc,
-                           void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_server_fabric_fn_t}{4.0}{
+typedef pmix_status_t (*pmix_server_fabric_fn_t)( \\
+\hspace*{27\sigspace}const pmix_proc_t *requestor, \\
+\hspace*{27\sigspace}pmix_fabric_operation_t op, \\
+\hspace*{27\sigspace}const pmix_info_t directives[], \\
+\hspace*{27\sigspace}size_t ndirs, \\
+\hspace*{27\sigspace}pmix_info_cbfunc_t cbfunc, \\
+\hspace*{27\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{requestor}{\refstruct{pmix_proc_t} identifying the requestor (handle)}

@@ -36,13 +36,10 @@ Publish data for later access via \refapi{PMIx_Lookup}.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
+\copySignature{PMIx_Publish}{1.0}{
+pmix_status_t \\
 PMIx_Publish(const pmix_info_t info[], size_t ninfo);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{info}{Array of info structures containing both data to be published and directives (array of handles)}
@@ -93,14 +90,11 @@ Nonblocking \refapi{PMIx_Publish} routine.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo,
-                pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Publish_nb}{1.0}{
+pmix_status_t \\
+PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo, \\
+\hspace*{16\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{info}{Array of info structures containing both data to be published and directives (array of handles)}
@@ -270,14 +264,11 @@ Lookup information published by this or another process with \refapi{PMIx_Publis
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Lookup(pmix_pdata_t data[], size_t ndata,
-            const pmix_info_t info[], size_t ninfo);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Lookup}{1.0}{
+pmix_status_t \\
+PMIx_Lookup(pmix_pdata_t data[], size_t ndata, \\
+\hspace*{12\sigspace}const pmix_info_t info[], size_t ninfo);
+}
 
 \begin{arglist}
 \arginout{data}{Array of publishable data structures (array of \refstruct{pmix_pdata_t})}
@@ -347,15 +338,12 @@ Nonblocking version of \refapi{PMIx_Lookup}.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Lookup_nb(char **keys,
-               const pmix_info_t info[], size_t ninfo,
-               pmix_lookup_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Lookup_nb}{1.0}{
+pmix_status_t \\
+PMIx_Lookup_nb(char **keys, \\
+\hspace*{15\sigspace}const pmix_info_t info[], size_t ninfo, \\
+\hspace*{15\sigspace}pmix_lookup_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{keys}{\code{NULL}-terminated array of keys (array of strings)}
@@ -415,16 +403,13 @@ Non-blocking form of the \refapi{PMIx_Lookup} function.
 
 The \refstruct{pmix_pdata_t} structure is used by \refapi{PMIx_Lookup} to describe the data being accessed.
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_pdata \{
-    pmix_proc_t proc;
-    pmix_key_t key;
-    pmix_value_t value;
+\copySignature{pmix_pdata_t}{1.0}{
+typedef struct pmix_pdata \{ \\
+\hspace*{4\sigspace}pmix_proc_t proc; \\
+\hspace*{4\sigspace}pmix_key_t key; \\
+\hspace*{4\sigspace}pmix_value_t value; \\
 \} pmix_pdata_t;
-\end{codepar}
-\cspecificend
+}
 
 where:
 \begin{itemize}
@@ -444,12 +429,9 @@ The following macros are provided to support the \refstruct{pmix_pdata_t} struct
 
 Initialize the \refstruct{pmix_pdata_t} fields
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_PDATA_CONSTRUCT}{1.0}{
 PMIX_PDATA_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_pdata_t})}
@@ -460,12 +442,9 @@ PMIX_PDATA_CONSTRUCT(m)
 
 Destruct the \refstruct{pmix_pdata_t} fields
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_PDATA_DESTRUCT}{1.0}{
 PMIX_PDATA_DESTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_pdata_t})}
@@ -477,12 +456,9 @@ PMIX_PDATA_DESTRUCT(m)
 
 Allocate and initialize an array of \refstruct{pmix_pdata_t} structures
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_PDATA_CREATE}{1.0}{
 PMIX_PDATA_CREATE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_pdata_t} structures shall be stored (handle)}
@@ -496,12 +472,9 @@ PMIX_PDATA_CREATE(m, n)
 
 Release a \refstruct{pmix_pdata_t} structure
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_PDATA_RELEASE}{4.0}{
 PMIX_PDATA_RELEASE(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to a \refstruct{pmix_pdata_t} structure (handle)}
@@ -514,12 +487,9 @@ PMIX_PDATA_RELEASE(m)
 
 Release an array of \refstruct{pmix_pdata_t} structures
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_PDATA_FREE}{1.0}{
 PMIX_PDATA_FREE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the array of \refstruct{pmix_pdata_t} structures (handle)}
@@ -532,12 +502,9 @@ PMIX_PDATA_FREE(m, n)
 
 This macro simplifies the loading of key, process identifier, and data into a \refstruct{pmix_pdata_t} by correctly assigning values to the structure's fields.
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_PDATA_LOAD}{1.0}{
 PMIX_PDATA_LOAD(m, p, k, d, t);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the \refstruct{pmix_pdata_t} structure into which the key and data are to be loaded (pointer to \refstruct{pmix_pdata_t})}
@@ -557,12 +524,9 @@ Key, process identifier, and data will all be copied into the \refstruct{pmix_pd
 
 This macro simplifies the transfer of key, process identifier, and data value between two\refstruct{pmix_pdata_t} structures.
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_PDATA_XFER}{2.0}{
 PMIX_PDATA_XFER(d, s);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{d}{Pointer to the destination \refstruct{pmix_pdata_t} (pointer to \refstruct{pmix_pdata_t})}
@@ -583,15 +547,12 @@ Key, process identifier, and data will all be copied into the destination \refst
 
 The \refapi{pmix_lookup_cbfunc_t} is used by \refapi{PMIx_Lookup_nb} to return data.
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_lookup_cbfunc_t)
-    (pmix_status_t status,
-     pmix_pdata_t data[], size_t ndata,
-     void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_lookup_cbfunc_t}{1.0}{
+typedef void (*pmix_lookup_cbfunc_t) \\
+\hspace*{4\sigspace}(pmix_status_t status, \\
+\hspace*{5\sigspace}pmix_pdata_t data[], size_t ndata, \\
+\hspace*{5\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{status}{Status associated with the operation (handle)}
@@ -666,14 +627,11 @@ Unpublish data posted by this process using the given keys.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Unpublish(char **keys,
-               const pmix_info_t info[], size_t ninfo);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Unpublish}{1.0}{
+pmix_status_t \\
+PMIx_Unpublish(char **keys, \\
+\hspace*{15\sigspace}const pmix_info_t info[], size_t ninfo);
+}
 
 \begin{arglist}
 \argin{keys}{\code{NULL}-terminated array of keys (array of strings)}
@@ -720,15 +678,12 @@ Nonblocking version of \refapi{PMIx_Unpublish}.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Unpublish_nb(char **keys,
-                  const pmix_info_t info[], size_t ninfo,
-                  pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Unpublish_nb}{1.0}{
+pmix_status_t \\
+PMIx_Unpublish_nb(char **keys, \\
+\hspace*{18\sigspace}const pmix_info_t info[], size_t ninfo, \\
+\hspace*{18\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{keys}{\code{NULL}-terminated array of keys (array of strings)}

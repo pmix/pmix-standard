@@ -312,18 +312,15 @@ Construct a \ac{PMIx} process group.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Group_construct(const char grp[],
-                     const pmix_proc_t procs[], size_t nprocs,
-                     const pmix_info_t directives[],
-                     size_t ndirs,
-                     pmix_info_t **results,
-                     size_t *nresults);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Group_construct}{4.0}{
+pmix_status_t \\
+PMIx_Group_construct(const char grp[], \\
+\hspace*{21\sigspace}const pmix_proc_t procs[], size_t nprocs, \\
+\hspace*{21\sigspace}const pmix_info_t directives[], \\
+\hspace*{21\sigspace}size_t ndirs, \\
+\hspace*{21\sigspace}pmix_info_t **results, \\
+\hspace*{21\sigspace}size_t *nresults);
+}
 
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
@@ -404,17 +401,14 @@ Non-blocking form of \refapi{PMIx_Group_construct}.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Group_construct_nb(const char grp[],
-                        const pmix_proc_t procs[], size_t nprocs,
-                        const pmix_info_t directives[],
-                        size_t ndirs,
-                        pmix_info_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Group_construct_nb}{4.0}{
+pmix_status_t \\
+PMIx_Group_construct_nb(const char grp[], \\
+\hspace*{24\sigspace}const pmix_proc_t procs[], size_t nprocs, \\
+\hspace*{24\sigspace}const pmix_info_t directives[], \\
+\hspace*{24\sigspace}size_t ndirs, \\
+\hspace*{24\sigspace}pmix_info_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
@@ -485,15 +479,12 @@ Destruct a \ac{PMIx} process group.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Group_destruct(const char grp[],
-                    const pmix_info_t directives[],
-                    size_t ndirs);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Group_destruct}{4.0}{
+pmix_status_t \\
+PMIx_Group_destruct(const char grp[], \\
+\hspace*{20\sigspace}const pmix_info_t directives[], \\
+\hspace*{20\sigspace}size_t ndirs);
+}
 
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the identifier of the group to be destructed (string)}
@@ -544,16 +535,13 @@ Non-blocking form of \refapi{PMIx_Group_destruct}.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Group_destruct_nb(const char grp[],
-                       const pmix_info_t directives[],
-                       size_t ndirs,
-                       pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Group_destruct_nb}{4.0}{
+pmix_status_t \\
+PMIx_Group_destruct_nb(const char grp[], \\
+\hspace*{23\sigspace}const pmix_info_t directives[], \\
+\hspace*{23\sigspace}size_t ndirs, \\
+\hspace*{23\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the identifier of the group to be destructed (string)}
@@ -609,16 +597,13 @@ Asynchronously construct a \ac{PMIx} process group.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Group_invite(const char grp[],
-                  const pmix_proc_t procs[], size_t nprocs,
-                  const pmix_info_t directives[], size_t ndirs,
-                  pmix_info_t **results, size_t *nresult);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Group_invite}{4.0}{
+pmix_status_t \\
+PMIx_Group_invite(const char grp[], \\
+\hspace*{18\sigspace}const pmix_proc_t procs[], size_t nprocs, \\
+\hspace*{18\sigspace}const pmix_info_t directives[], size_t ndirs, \\
+\hspace*{18\sigspace}pmix_info_t **results, size_t *nresult);
+}
 
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
@@ -689,16 +674,13 @@ Non-blocking form of \refapi{PMIx_Group_invite}.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Group_invite_nb(const char grp[],
-                     const pmix_proc_t procs[], size_t nprocs,
-                     const pmix_info_t directives[], size_t ndirs,
-                     pmix_info_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Group_invite_nb}{4.0}{
+pmix_status_t \\
+PMIx_Group_invite_nb(const char grp[], \\
+\hspace*{21\sigspace}const pmix_proc_t procs[], size_t nprocs, \\
+\hspace*{21\sigspace}const pmix_info_t directives[], size_t ndirs, \\
+\hspace*{21\sigspace}pmix_info_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
@@ -765,17 +747,14 @@ Accept an invitation to join a \ac{PMIx} process group.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Group_join(const char grp[],
-                const pmix_proc_t *leader,
-                pmix_group_opt_t opt,
-                const pmix_info_t directives[], size_t ndirs,
-                pmix_info_t **results, size_t *nresult);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Group_join}{4.0}{
+pmix_status_t \\
+PMIx_Group_join(const char grp[], \\
+\hspace*{16\sigspace}const pmix_proc_t *leader, \\
+\hspace*{16\sigspace}pmix_group_opt_t opt, \\
+\hspace*{16\sigspace}const pmix_info_t directives[], size_t ndirs, \\
+\hspace*{16\sigspace}pmix_info_t **results, size_t *nresult);
+}
 
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
@@ -835,17 +814,14 @@ Non-blocking form of \refapi{PMIx_Group_join}
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Group_join_nb(const char grp[],
-                   const pmix_proc_t *leader,
-                   pmix_group_opt_t opt,
-                   const pmix_info_t directives[], size_t ndirs,
-                   pmix_info_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Group_join_nb}{4.0}{
+pmix_status_t \\
+PMIx_Group_join_nb(const char grp[], \\
+\hspace*{19\sigspace}const pmix_proc_t *leader, \\
+\hspace*{19\sigspace}pmix_group_opt_t opt, \\
+\hspace*{19\sigspace}const pmix_info_t directives[], size_t ndirs, \\
+\hspace*{19\sigspace}pmix_info_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
@@ -922,15 +898,12 @@ Leave a \ac{PMIx} process group.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Group_leave(const char grp[],
-                 const pmix_info_t directives[],
-                 size_t ndirs);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Group_leave}{4.0}{
+pmix_status_t \\
+PMIx_Group_leave(const char grp[], \\
+\hspace*{17\sigspace}const pmix_info_t directives[], \\
+\hspace*{17\sigspace}size_t ndirs);
+}
 
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}
@@ -972,17 +945,14 @@ Non-blocking form of \refapi{PMIx_Group_leave}.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Group_leave_nb(const char grp[],
-                    const pmix_info_t directives[],
-                    size_t ndirs,
-                    pmix_op_cbfunc_t cbfunc,
-                    void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Group_leave_nb}{4.0}{
+pmix_status_t \\
+PMIx_Group_leave_nb(const char grp[], \\
+\hspace*{20\sigspace}const pmix_info_t directives[], \\
+\hspace*{20\sigspace}size_t ndirs, \\
+\hspace*{20\sigspace}pmix_op_cbfunc_t cbfunc, \\
+\hspace*{20\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{grp}{\code{NULL}-terminated character array of maximum size \refconst{PMIX_MAX_NSLEN} containing the group identifier (string)}

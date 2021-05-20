@@ -29,6 +29,7 @@ CHAPTERS= \
 	Chap_API_Tools.tex \
 	Chap_API_Storage.tex \
 	App_Python.tex \
+	App_Use_Cases.tex \
 	Acknowledgements.tex
 
 SOURCES=sources/*.c \

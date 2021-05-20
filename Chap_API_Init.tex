@@ -25,12 +25,9 @@ Determine if the \ac{PMIx} library has been initialized. This function may be us
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIx_Initialized}{1.0}{
 int PMIx_Initialized(void)
-\end{codepar}
-\cspecificend
+}
 
 A value of \code{1} (true) will be returned if the \ac{PMIx} library has been initialized, and \code{0} (false) otherwise.
 
@@ -58,12 +55,9 @@ Get the \ac{PMIx} version information. This function may be used outside of the 
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIx_Get_version}{1.0}{
 const char* PMIx_Get_version(void)
-\end{codepar}
-\cspecificend
+}
 
 %%%%
 \descr
@@ -85,14 +79,11 @@ Initialize the \ac{PMIx} client library
 %%%%
 \format
 
-\versionMarker{1.2}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Init(pmix_proc_t *proc,
-          pmix_info_t info[], size_t ninfo)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Init}{1.2}{
+pmix_status_t \\
+PMIx_Init(pmix_proc_t *proc, \\
+\hspace*{10\sigspace}pmix_info_t info[], size_t ninfo)
+}
 
 \begin{arglist}
 \arginout{proc}{proc structure (handle)}
@@ -294,13 +285,10 @@ Finalize the PMIx client library.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
+\copySignature{PMIx_Finalize}{1.0}{
+pmix_status_t \\
 PMIx_Finalize(const pmix_info_t info[], size_t ninfo)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
@@ -346,13 +334,10 @@ Progress the \ac{PMIx} library.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-void
+\copySignature{PMIx_Progress}{4.0}{
+void \\
 PMIx_Progress(void)
-\end{codepar}
-\cspecificend
+}
 
 
 %%%%

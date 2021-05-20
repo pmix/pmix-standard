@@ -25,14 +25,11 @@ Abort the specified processes
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Abort(int status, const char msg[],
-           pmix_proc_t procs[], size_t nprocs)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Abort}{1.0}{
+pmix_status_t \\
+PMIx_Abort(int status, const char msg[], \\
+\hspace*{11\sigspace}pmix_proc_t procs[], size_t nprocs)
+}
 
 \begin{arglist}
 \argin{status}{Error code to return to invoking environment (integer)}
@@ -86,15 +83,12 @@ Spawn a new job.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Spawn(const pmix_info_t job_info[], size_t ninfo,
-           const pmix_app_t apps[], size_t napps,
-           char nspace[])
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Spawn}{1.0}{
+pmix_status_t \\
+PMIx_Spawn(const pmix_info_t job_info[], size_t ninfo, \\
+\hspace*{11\sigspace}const pmix_app_t apps[], size_t napps, \\
+\hspace*{11\sigspace}char nspace[])
+}
 
 \begin{arglist}
 \argin{job_info}{Array of info structures (array of handles)}
@@ -205,15 +199,12 @@ Nonblocking version of the \refapi{PMIx_Spawn} routine.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Spawn_nb(const pmix_info_t job_info[], size_t ninfo,
-              const pmix_app_t apps[], size_t napps,
-              pmix_spawn_cbfunc_t cbfunc, void *cbdata)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Spawn_nb}{1.0}{
+pmix_status_t \\
+PMIx_Spawn_nb(const pmix_info_t job_info[], size_t ninfo, \\
+\hspace*{14\sigspace}const pmix_app_t apps[], size_t napps, \\
+\hspace*{14\sigspace}pmix_spawn_cbfunc_t cbfunc, void *cbdata)
+}
 
 \begin{arglist}
 \argin{job_info}{Array of info structures (array of handles)}
@@ -571,27 +562,24 @@ Ensure the given value appears first in the specified envar using the separator 
 
 The \refstruct{pmix_app_t} structure describes the application context for the \refapi{PMIx_Spawn} and \refapi{PMIx_Spawn_nb} operations.
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_app \{
-    /** Executable */
-    char *cmd;
-    /** Argument set, NULL terminated */
-    char **argv;
-    /** Environment set, NULL terminated */
-    char **env;
-    /** Current working directory */
-    char *cwd;
-    /** Maximum processes with this profile */
-    int maxprocs;
-    /** Array of info keys describing this application*/
-    pmix_info_t *info;
-    /** Number of info keys in 'info' array */
-    size_t ninfo;
+\copySignature{pmix_app_t}{1.0}{
+typedef struct pmix_app \{ \\
+\hspace*{4\sigspace}/** Executable */ \\
+\hspace*{4\sigspace}char *cmd; \\
+\hspace*{4\sigspace}/** Argument set, NULL terminated */ \\
+\hspace*{4\sigspace}char **argv; \\
+\hspace*{4\sigspace}/** Environment set, NULL terminated */ \\
+\hspace*{4\sigspace}char **env; \\
+\hspace*{4\sigspace}/** Current working directory */ \\
+\hspace*{4\sigspace}char *cwd; \\
+\hspace*{4\sigspace}/** Maximum processes with this profile */ \\
+\hspace*{4\sigspace}int maxprocs; \\
+\hspace*{4\sigspace}/** Array of info keys describing this application*/ \\
+\hspace*{4\sigspace}pmix_info_t *info; \\
+\hspace*{4\sigspace}/** Number of info keys in 'info' array */ \\
+\hspace*{4\sigspace}size_t ninfo; \\
 \} pmix_app_t;
-\end{codepar}
-\cspecificend
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{App structure support macros}
@@ -603,12 +591,9 @@ The following macros are provided to support the \refstruct{pmix_app_t} structur
 
 Initialize the \refstruct{pmix_app_t} fields
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_APP_CONSTRUCT}{1.0}{
 PMIX_APP_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_app_t})}
@@ -620,12 +605,9 @@ PMIX_APP_CONSTRUCT(m)
 
 Destruct the \refstruct{pmix_app_t} fields
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_APP_DESTRUCT}{1.0}{
 PMIX_APP_DESTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_app_t})}
@@ -637,12 +619,9 @@ PMIX_APP_DESTRUCT(m)
 
 Allocate and initialize an array of \refstruct{pmix_app_t} structures
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_APP_CREATE}{1.0}{
 PMIX_APP_CREATE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_app_t} structures shall be stored (handle)}
@@ -655,12 +634,9 @@ PMIX_APP_CREATE(m, n)
 
 Release a \refstruct{pmix_app_t} structure
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_APP_RELEASE}{4.0}{
 PMIX_APP_RELEASE(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to a \refstruct{pmix_app_t} structure (handle)}
@@ -672,12 +648,9 @@ PMIX_APP_RELEASE(m)
 
 Release an array of \refstruct{pmix_app_t} structures
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_APP_FREE}{1.0}{
 PMIX_APP_FREE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the array of \refstruct{pmix_app_t} structures (handle)}
@@ -690,12 +663,9 @@ PMIX_APP_FREE(m, n)
 
 Create an array of \refstruct{pmix_info_t} structures for passing application-level directives, updating the \refarg{ninfo} field of the \refstruct{pmix_app_t} structure.
 
-\versionMarker{2.2}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_APP_INFO_CREATE}{2.2}{
 PMIX_APP_INFO_CREATE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the \refstruct{pmix_app_t} structure (handle)}
@@ -712,14 +682,11 @@ PMIX_APP_INFO_CREATE(m, n)
 
 The \refapi{pmix_spawn_cbfunc_t} is used on the PMIx client side by \refapi{PMIx_Spawn_nb} and on the PMIx server side by \refapi{pmix_server_spawn_fn_t}.
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_spawn_cbfunc_t)
-    (pmix_status_t status,
-     pmix_nspace_t nspace, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_spawn_cbfunc_t}{1.0}{
+typedef void (*pmix_spawn_cbfunc_t) \\
+\hspace*{4\sigspace}(pmix_status_t status, \\
+\hspace*{5\sigspace}pmix_nspace_t nspace, void *cbdata);
+}
 
 \begin{arglist}
 \argin{status}{Status associated with the operation (handle)}
@@ -770,14 +737,11 @@ Connect namespaces.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Connect(const pmix_proc_t procs[], size_t nprocs,
-             const pmix_info_t info[], size_t ninfo)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Connect}{1.0}{
+pmix_status_t \\
+PMIx_Connect(const pmix_proc_t procs[], size_t nprocs, \\
+\hspace*{13\sigspace}const pmix_info_t info[], size_t ninfo)
+}
 
 \begin{arglist}
 \argin{procs}{Array of proc structures (array of handles)}
@@ -840,15 +804,12 @@ Nonblocking \refapi{PMIx_Connect_nb} routine.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Connect_nb(const pmix_proc_t procs[], size_t nprocs,
-                const pmix_info_t info[], size_t ninfo,
-                pmix_op_cbfunc_t cbfunc, void *cbdata)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Connect_nb}{1.0}{
+pmix_status_t \\
+PMIx_Connect_nb(const pmix_proc_t procs[], size_t nprocs, \\
+\hspace*{16\sigspace}const pmix_info_t info[], size_t ninfo, \\
+\hspace*{16\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata)
+}
 
 \begin{arglist}
 \argin{procs}{Array of proc structures (array of handles)}
@@ -903,14 +864,11 @@ Disconnect a previously connected set of processes.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Disconnect(const pmix_proc_t procs[], size_t nprocs,
-                const pmix_info_t info[], size_t ninfo);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Disconnect}{1.0}{
+pmix_status_t \\
+PMIx_Disconnect(const pmix_proc_t procs[], size_t nprocs, \\
+\hspace*{16\sigspace}const pmix_info_t info[], size_t ninfo);
+}
 
 \begin{arglist}
 \argin{procs}{Array of proc structures (array of handles)}
@@ -981,15 +939,12 @@ Nonblocking \refapi{PMIx_Disconnect} routine.
 %%%%
 \format
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Disconnect_nb(const pmix_proc_t procs[], size_t nprocs,
-                   const pmix_info_t info[], size_t ninfo,
-                   pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Disconnect_nb}{1.0}{
+pmix_status_t \\
+PMIx_Disconnect_nb(const pmix_proc_t procs[], size_t nprocs, \\
+\hspace*{19\sigspace}const pmix_info_t info[], size_t ninfo, \\
+\hspace*{19\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{procs}{Array of proc structures (array of handles)}
@@ -1071,13 +1026,10 @@ Load the local hardware topology description
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
+\copySignature{PMIx_Load_topology}{4.0}{
+pmix_status_t \\
 PMIx_Load_topology(pmix_topology_t *topo);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{topo}{Address of a \refstruct{pmix_topology_t} structure where the topology information is to be loaded (handle)}
@@ -1118,15 +1070,12 @@ Get the relative locality of two local processes given their locality strings.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Get_relative_locality(const char *locality1,
-                           const char *locality2,
-                           pmix_locality_t *locality);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Get_relative_locality}{4.0}{
+pmix_status_t \\
+PMIx_Get_relative_locality(const char *locality1, \\
+\hspace*{27\sigspace}const char *locality2, \\
+\hspace*{27\sigspace}pmix_locality_t *locality);
+}
 
 \begin{arglist}
 \argin{locality1}{String returned by the \refapi{PMIx_server_generate_locality_string} \ac{API} (handle)}
@@ -1149,15 +1098,12 @@ The \refstruct{pmix_topology_t} structure contains a (case-insensitive)
 string identifying the source of the topology (e.g., "hwloc") and a pointer
 to the corresponding implementation-specific topology description.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_topology \{
-    char *source;
-    void *topology;
+\copySignature{pmix_topoology_t}{4.0}{
+typedef struct pmix_topology \{ \\
+\hspace*{4\sigspace}char *source; \\
+\hspace*{4\sigspace}void *topology; \\
 \} pmix_topoology_t;
-\end{codepar}
-\cspecificend
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Topology support macros}
@@ -1169,12 +1115,9 @@ The following macros support the \refstruct{pmix_topology_t} structure.
 
 Initialize the \refstruct{pmix_topology_t} fields to \code{NULL}
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_TOPOLOGY_CONSTRUCT}{4.0}{
 PMIX_TOPOLOGY_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_topology_t})}
@@ -1186,12 +1129,9 @@ PMIX_TOPOLOGY_CONSTRUCT(m)
 
 Destruct the \refstruct{pmix_topology_t} fields
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_TOPOLOGY_DESTRUCT}{4.0}{
 PMIX_TOPOLOGY_DESTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_topology_t})}
@@ -1203,12 +1143,9 @@ PMIX_TOPOLOGY_DESTRUCT(m)
 
 Allocate and initialize a \refstruct{pmix_topology_t} array.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_TOPOLOGY_CREATE}{4.0}{
 PMIX_TOPOLOGY_CREATE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_topology_t} structures shall be stored (handle)}
@@ -1221,12 +1158,9 @@ PMIX_TOPOLOGY_CREATE(m, n)
 
 Release a \refstruct{pmix_topology_t} array.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_TOPOLOGY_FREE}{4.0}{
 PMIX_TOPOLOGY_FREE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address of the array of \refstruct{pmix_topology_t} structures to be released (handle)}
@@ -1311,14 +1245,11 @@ Parse the \ac{PU} binding bitmap from its string representation.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Parse_cpuset_string(const char *cpuset_string,
-                         pmix_cpuset_t *cpuset);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Parse_cpuset_string}{4.0}{
+pmix_status_t \\
+PMIx_Parse_cpuset_string(const char *cpuset_string, \\
+\hspace*{25\sigspace}pmix_cpuset_t *cpuset);
+}
 
 \begin{arglist}
 \argin{cpuset_string}{String returned by the \refapi{PMIx_server_generate_cpuset_string} \ac{API} (handle)}
@@ -1344,13 +1275,10 @@ Get the \ac{PU} binding bitmap of the current process.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
+\copySignature{PMIx_Get_cpuset}{4.0}{
+pmix_status_t \\
 PMIx_Get_cpuset(pmix_cpuset_t *cpuset, pmix_bind_envelope_t ref);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{cpuset}{Address of an object where the bitmap is to be stored (memory reference)}
@@ -1396,17 +1324,14 @@ Compute distances from specified process location to local devices.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Compute_distances(pmix_topology_t *topo,
-                       pmix_cpuset_t *cpuset,
-                       pmix_info_t info[], size_t ninfo[],
-                       pmix_device_distance_t *distances[],
-                       size_t *ndist);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Compute_distances}{4.0}{
+pmix_status_t \\
+PMIx_Compute_distances(pmix_topology_t *topo, \\
+\hspace*{23\sigspace}pmix_cpuset_t *cpuset, \\
+\hspace*{23\sigspace}pmix_info_t info[], size_t ninfo[], \\
+\hspace*{23\sigspace}pmix_device_distance_t *distances[], \\
+\hspace*{23\sigspace}size_t *ndist);
+}
 
 \begin{arglist}
 \argin{topo}{Pointer to the topology description of the node where the process is located (\code{NULL} indicates the local node) (\refstruct{pmix_topology_t})}
@@ -1446,17 +1371,14 @@ Compute distances from specified process location to local devices.
 %%%%
 \format
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Compute_distances_nb(pmix_topology_t *topo,
-                          pmix_cpuset_t *cpuset,
-                          pmix_info_t info[], size_t ninfo[],
-                          pmix_device_dist_cbfunc_t cbfunc,
-                          void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Compute_distances_nb}{4.0}{
+pmix_status_t \\
+PMIx_Compute_distances_nb(pmix_topology_t *topo, \\
+\hspace*{26\sigspace}pmix_cpuset_t *cpuset, \\
+\hspace*{26\sigspace}pmix_info_t info[], size_t ninfo[], \\
+\hspace*{26\sigspace}pmix_device_dist_cbfunc_t cbfunc, \\
+\hspace*{26\sigspace}void *cbdata);
+}
 
 \begin{arglist}
 \argin{topo}{Pointer to the topology description of the node where the process is located (\code{NULL} indicates the local node) (\refstruct{pmix_topology_t})}
@@ -1489,18 +1411,15 @@ Non-blocking form of the \refapi{PMIx_Compute_distances} \ac{API}.
 
 The \refapi{pmix_device_dist_cbfunc_t} is used to return an array of device distances.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef void (*pmix_device_dist_cbfunc_t)
-    (pmix_status_t status,
-     pmix_device_distance_t *dist,
-     size_t ndist,
-     void *cbdata,
-     pmix_release_cbfunc_t release_fn,
-     void *release_cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{pmix_device_dist_cbfunc_t}{4.0}{
+typedef void (*pmix_device_dist_cbfunc_t) \\
+\hspace*{4\sigspace}(pmix_status_t status, \\
+\hspace*{5\sigspace}pmix_device_distance_t *dist, \\
+\hspace*{5\sigspace}size_t ndist, \\
+\hspace*{5\sigspace}void *cbdata, \\
+\hspace*{5\sigspace}pmix_release_cbfunc_t release_fn, \\
+\hspace*{5\sigspace}void *release_cbdata);
+}
 
 \begin{arglist}
 \argin{status}{Status associated with the operation (\refstruct{pmix_status_t})}
@@ -1525,12 +1444,9 @@ The array of \refstruct{pmix_device_distance_t} will contain the distance inform
 
 The \refstruct{pmix_device_type_t} is a \code{uint64_t} bitmask for identifying the type(s) whose distances are being requested, or the type of a specific device being referenced (e.g., in a \refstruct{pmix_device_distance_t} object).
 
-\versionMarker{1.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{pmix_device_type_t}{1.0}{
 typedef uint16_t pmix_device_type_t;
-\end{codepar}
-\cspecificend
+}
 
 The following constants can be used to set a variable of the type \refstruct{pmix_device_type_t}.
 
@@ -1565,18 +1481,15 @@ Operating system co-processor device (e.g., "mic0" for a Xeon Phi on Linux, "ope
 
 The \refstruct{pmix_device_distance_t} structure contains the minimum and maximum relative distance from the caller to a given device.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_device_distance \{
-    char *uuid;
-    char *osname;
-    pmix_device_type_t type;
-    uint16_t mindist;
-    uint16_t maxdist;
+\copySignature{pmix_device_distance_t}{4.0}{
+typedef struct pmix_device_distance \{ \\
+\hspace*{4\sigspace}char *uuid; \\
+\hspace*{4\sigspace}char *osname; \\
+\hspace*{4\sigspace}pmix_device_type_t type; \\
+\hspace*{4\sigspace}uint16_t mindist; \\
+\hspace*{4\sigspace}uint16_t maxdist; \\
 \} pmix_device_distance_t;
-\end{codepar}
-\cspecificend
+}
 
 The \refarg{uuid} is a string identifier guaranteed to be unique within the cluster and is typically assembled from discovered device attributes (e.g., the \ac{IP} address of the device). The \refarg{osname} is the local operating system name of the device and is only unique to that node.
 
@@ -1599,12 +1512,9 @@ The following macros are provided to support the \refstruct{pmix_device_distance
 
 Initialize the \refstruct{pmix_device_distance_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_DEVICE_DIST_CONSTRUCT}{4.0}{
 PMIX_DEVICE_DIST_CONSTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_device_distance_t})}
@@ -1616,12 +1526,9 @@ PMIX_DEVICE_DIST_CONSTRUCT(m)
 
 Destruct the \refstruct{pmix_device_distance_t} fields.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_DEVICE_DIST_DESTRUCT}{4.0}{
 PMIX_DEVICE_DIST_DESTRUCT(m)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_device_distance_t})}
@@ -1633,12 +1540,9 @@ PMIX_DEVICE_DIST_DESTRUCT(m)
 
 Allocate and initialize a \refstruct{pmix_device_distance_t} array.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_DEVICE_DIST_CREATE}{4.0}{
 PMIX_DEVICE_DIST_CREATE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_device_distance_t} structures shall be stored (handle)}
@@ -1651,12 +1555,9 @@ PMIX_DEVICE_DIST_CREATE(m, n)
 
 Release an array of \refstruct{pmix_device_distance_t} structures.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIX_DEVICE_DIST_FREE}{4.0}{
 PMIX_DEVICE_DIST_FREE(m, n)
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{m}{Pointer to the array of \refstruct{pmix_device_distance_t} structures (handle)}

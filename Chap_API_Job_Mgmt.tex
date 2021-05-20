@@ -34,15 +34,12 @@ Request an allocation operation from the host resource manager.
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Allocation_request(pmix_alloc_directive_t directive,
-                        pmix_info_t info[], size_t ninfo,
-                        pmix_info_t *results[], size_t *nresults);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Allocation_request}{3.0}{
+pmix_status_t \\
+PMIx_Allocation_request(pmix_alloc_directive_t directive, \\
+\hspace*{24\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{24\sigspace}pmix_info_t *results[], size_t *nresults);
+}
 
 \begin{arglist}
 \argin{directive}{Allocation directive (\refstruct{pmix_alloc_directive_t})}
@@ -124,15 +121,12 @@ Request an allocation operation from the host resource manager.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Allocation_request_nb(pmix_alloc_directive_t directive,
-                           pmix_info_t info[], size_t ninfo,
-                           pmix_info_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Allocation_request_nb}{2.0}{
+pmix_status_t \\
+PMIx_Allocation_request_nb(pmix_alloc_directive_t directive, \\
+\hspace*{27\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{27\sigspace}pmix_info_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{directive}{Allocation directive (\refstruct{pmix_alloc_directive_t})}
@@ -329,15 +323,12 @@ Request a job control action.
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Job_control(const pmix_proc_t targets[], size_t ntargets,
-                 const pmix_info_t directives[], size_t ndirs,
-                 pmix_info_t *results[], size_t *nresults);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Job_control}{3.0}{
+pmix_status_t \\
+PMIx_Job_control(const pmix_proc_t targets[], size_t ntargets, \\
+\hspace*{17\sigspace}const pmix_info_t directives[], size_t ndirs, \\
+\hspace*{17\sigspace}pmix_info_t *results[], size_t *nresults);
+}
 
 \begin{arglist}
 \argin{targets}{Array of proc structures (array of handles)}
@@ -414,15 +405,12 @@ Request a job control action.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Job_control_nb(const pmix_proc_t targets[], size_t ntargets,
-                    const pmix_info_t directives[], size_t ndirs,
-                    pmix_info_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Job_control_nb}{2.0}{
+pmix_status_t \\
+PMIx_Job_control_nb(const pmix_proc_t targets[], size_t ntargets, \\
+\hspace*{20\sigspace}const pmix_info_t directives[], size_t ndirs, \\
+\hspace*{20\sigspace}pmix_info_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{targets}{Array of proc structures (array of handles)}
@@ -651,16 +639,13 @@ Request that application processes be monitored.
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Process_monitor(const pmix_info_t *monitor,
-                     pmix_status_t error,
-                     const pmix_info_t directives[], size_t ndirs,
-                     pmix_info_t *results[], size_t *nresults);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Process_monitor}{3.0}{
+pmix_status_t \\
+PMIx_Process_monitor(const pmix_info_t *monitor, \\
+\hspace*{21\sigspace}pmix_status_t error, \\
+\hspace*{21\sigspace}const pmix_info_t directives[], size_t ndirs, \\
+\hspace*{21\sigspace}pmix_info_t *results[], size_t *nresults);
+}
 
 \begin{arglist}
 \argin{monitor}{info (handle)}
@@ -728,17 +713,14 @@ Request that application processes be monitored.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Process_monitor_nb(const pmix_info_t *monitor,
-                        pmix_status_t error,
-                        const pmix_info_t directives[],
-                        size_t ndirs,
-                        pmix_info_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Process_monitor_nb}{2.0}{
+pmix_status_t \\
+PMIx_Process_monitor_nb(const pmix_info_t *monitor, \\
+\hspace*{24\sigspace}pmix_status_t error, \\
+\hspace*{24\sigspace}const pmix_info_t directives[], \\
+\hspace*{24\sigspace}size_t ndirs, \\
+\hspace*{24\sigspace}pmix_info_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{monitor}{info (handle)}
@@ -793,12 +775,9 @@ Send a heartbeat to the \ac{PMIx} server library
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
+\copySignature{PMIx_Heartbeat}{2.0}{
 PMIx_Heartbeat();
-\end{codepar}
-\cspecificend
+}
 
 
 %%%%
@@ -900,14 +879,11 @@ Log data to a data service.
 %%%%
 \format
 
-\versionMarker{3.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Log(const pmix_info_t data[], size_t ndata,
-         const pmix_info_t directives[], size_t ndirs);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Log}{3.0}{
+pmix_status_t \\
+PMIx_Log(const pmix_info_t data[], size_t ndata, \\
+\hspace*{9\sigspace}const pmix_info_t directives[], size_t ndirs);
+}
 
 \begin{arglist}
 \argin{data}{Array of info structures (array of handles)}
@@ -985,15 +961,12 @@ Log data to a data service.
 %%%%
 \format
 
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Log_nb(const pmix_info_t data[], size_t ndata,
-            const pmix_info_t directives[], size_t ndirs,
-            pmix_op_cbfunc_t cbfunc, void *cbdata);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Log_nb}{2.0}{
+pmix_status_t \\
+PMIx_Log_nb(const pmix_info_t data[], size_t ndata, \\
+\hspace*{12\sigspace}const pmix_info_t directives[], size_t ndirs, \\
+\hspace*{12\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+}
 
 \begin{arglist}
 \argin{data}{Array of info structures (array of handles)}

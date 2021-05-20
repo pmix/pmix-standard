@@ -39,8 +39,8 @@ if __name__ == "__main__":
             print("-"*50)
 
         # subsection.A is Appendix A: Python Bindings
-        # subsection.B is Appendix B: Revision History
-        p = subprocess.Popen("grep \"newlabel{"+ref_str+"\" pmix-standard.aux | grep -v \"subsection.A\|subsection.B\"",
+        # subsection.B is Appendix C: Revision History
+        p = subprocess.Popen("grep \"newlabel{"+ref_str+"\" pmix-standard.aux | grep -v \"subsection.A\|subsection.C\"",
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
         sout = p.communicate()[0].decode("utf-8").splitlines()
         if p.returncode != 0:
