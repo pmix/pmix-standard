@@ -9,14 +9,13 @@
 \code{"pmix"}. By definition, reserved keys are provided by the host
 environment and the \ac{PMIx} server, and are required to be available at client
 start of execution. \ac{PMIx} clients and tools are therefore prohibited from
-posting reserved keys using the \refapi{PMIx_Put} \ac{API}.
+posting reserved keys.
 
-\ac{PMIx} implementations may choose to define their own
-custom-prefixed keys which may adhere to either the \emph{reserved} or the \emph{non-reserved} retrieval rules at the discretion of the implementation. Implementations may choose to provide such custom keys at client start of execution, but this is not required.
-
-Host environments may also opt to define their own custom keys. However, \ac{PMIx} implementations are unlikely to recognize such host-defined keys and will therefore treat them according to the \emph{non-reserved} rules described in Section \ref{chap:data_sharing:non_rsvd_keys}. Users
+Host environments may opt to define non-standardized reserved keys. 
+All reserved keys, whether standardized or non-standardized, follow the same retrieval rules.
+Users
 are advised to check both the local \ac{PMIx} implementation and host environment documentation
-for a list of any custom prefixes they must avoid, and to learn of any non-standard keys that may require special handling.
+for a list of any non-standardized reserved keys they must avoid, and to learn of any non-standard keys that may require special handling.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
