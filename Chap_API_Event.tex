@@ -107,11 +107,6 @@ The result of the registration operation shall be returned in the provided callb
 
 \returnstart
 \begin{itemize}
-% TODO: should there be a PMIX_OPERATION_SUCCEEDED here?
-\item \refconst{PMIX_OPERATION_SUCCEEDED}, returned only when \refarg{cbfunc} is non-\code{NULL} and the request was immediately processed successfully - the \refarg{cbfunc} will \textit{not} be called
-% TODO: What is an "undetermined reason"?  This either says that you should
-% never return an error other than this, or that this should only be returned if
-% your application has no idea what else to return.  Either way we should fix this.
 \item \refconst{PMIX_ERR_EVENT_REGISTRATION} indicating that the registration
 has failed for an undetermined reason.
 \end{itemize}

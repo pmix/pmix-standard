@@ -1104,14 +1104,7 @@ PMIx_server_dmodex_request(const pmix_proc_t *proc, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-% TODO: Does this allow for PMIX_OPERATION_SUCCEEDED
 \returnsimplenb
-
-\returnstart
-\begin{itemize}
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
-\end{itemize}
-\returnend
 
 %%%%
 \descr
@@ -1184,15 +1177,7 @@ PMIx_server_setup_application(const pmix_nspace_t nspace, \\
 \argin{cbdata}{Data to be passed to the \refarg{cbfunc} callback function (memory reference)}
 \end{arglist}
 
-% TODO: Does this allow for PMIX_OPERATION_SUCCEEDED (I added it)
 \returnsimplenb
-
-\returnstart
-\begin{itemize}
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
-\end{itemize}
-\returnend
-
 
 \reqattrstart
 \ac{PMIx} libraries that support this operation are required to support the following:
@@ -1747,8 +1732,8 @@ PMIx_server_generate_cpuset_string(const pmix_cpuset_t *cpuset, \\
 \end{arglist}
 
 A successful return indicates that the returned string contains the generated cpuset representation string.
-\returnsimple
 
+\returnsimple
 
 %%%%
 \descr

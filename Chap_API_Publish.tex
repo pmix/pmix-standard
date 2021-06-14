@@ -105,9 +105,11 @@ PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo, \\
 
 \returnsimplenb
 
+\returnstart
 \begin{itemize}
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
+\returnend
 
 \reqattrstart
 There are no required attributes for this \ac{API}. \ac{PMIx} implementations that do not directly support the operation but are hosted by environments that do support it must pass any attributes that are provided by the client to the host environment for processing. In addition, the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that published the information to the \refarg{info} array passed to the host environment.
@@ -683,9 +685,11 @@ PMIx_Unpublish_nb(char **keys, \\
 
 \returnsimplenb
 
+\returnstart
 \begin{itemize}
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
+\returnend
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host environment for processing, and the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the operation.

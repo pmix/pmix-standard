@@ -113,12 +113,12 @@ PMIx_Fence_nb(const pmix_proc_t procs[], size_t nprocs, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-A successful return indicates that the request is being processed by the host environment and the result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+\returnsimplenb
 
 \returnstart
-\begin{constantdesc}
+\begin{itemize}
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called. This can occur if the collective involved only processes on the local node.
-\end{constantdesc}
+\end{itemize}
 \returnend
 
 The callback function \refarg{cbfunc} is only called when \refconst{PMIX_SUCCESS} is returned.
@@ -200,11 +200,11 @@ PMIx_Get(const pmix_proc_t *proc, const pmix_key_t key, \\
 A successful return indicates that the requested data has been returned in the manner requested (.e.g., in a provided static memory location ).
 
 \returnstart
-\begin{constantdesc}
+\begin{itemize}
 \item \refconst{PMIX_ERR_BAD_PARAM} A bad parameter was passed to the function call - e.g., the request included the \refattr{PMIX_GET_STATIC_VALUES} directive, but the provided storage location was \code{NULL}
 \item \refconst{PMIX_ERR_EXISTS_OUTSIDE_SCOPE} The requested key exists, but was posted in a \emph{scope} (see Section \ref{api:nres:scope}) that does not include the requester.
 \item \refconst{PMIX_ERR_NOT_FOUND} The requested data was not available.
-\end{constantdesc}
+\end{itemize}
 \returnend
 
 \reqattrstart
@@ -273,9 +273,7 @@ PMIx_Get_nb(const pmix_proc_t *proc, const char key[], \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-A successful return indicates that the request is being processed by the host environment and the result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-
-\returnsimple
+\returnsimplenb
 
 The callback function \refarg{cbfunc} is only called when \refconst{PMIX_SUCCESS} is returned.
 
@@ -477,11 +475,11 @@ PMIx_Query_info(pmix_query_t queries[], size_t nqueries, \\
 A successful return indicates that all data was found and has been returned.
 
 \returnstart
-\begin{constantdesc}
+\begin{itemize}
 \item \refconst{PMIX_ERR_NOT_FOUND} None of the requested data was available.
 \item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the requested data was found.
 The \refarg{info} array shall contain an element for each query key that returned a value.
-\end{constantdesc}
+\end{itemize}
 \returnend
 
 If a value other than \refconst{PMIX_SUCCESS} or \refconst{PMIX_ERR_PARTIAL_SUCCESS} is returned, the
