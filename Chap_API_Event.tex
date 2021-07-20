@@ -411,7 +411,7 @@ If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{n
 \returnsimplenb
 
 \begin{itemize}
-\item \refconst{PMIX_OPERATION_SUCCEEDED}, returned only when \refarg{cbfunc} is non-\code{NULL} and the request was immediately processed successfully - the \refarg{cbfunc} will \textit{not} be called
+\item \refconst{PMIX_OPERATION_SUCCEEDED}, returned when \refarg{cbfunc} is non-\code{NULL} and the request was immediately processed successfully - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
 
 The returned status code of \refarg{cbfunc} will be one of the following:
@@ -468,8 +468,7 @@ Note that a successful call does \textit{not} reflect the success or failure of 
 
 \returnstart
 \begin{itemize}
-\item \refconst{PMIX_OPERATION_SUCCEEDED}, returned only when \refarg{cbfunc} is non-\code{NULL} and the request was immediately processed successfully - the \refarg{cbfunc} will \textit{not} be called
-\item \refconst{PMIX_ERR_BAD_PARAM} The request contains at least one incorrect entry that prevents it from being processed. The callback function will \textit{not} be called.
+\item \refconst{PMIX_OPERATION_SUCCEEDED}, returned when the request was immmediately processed successfully - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
 \returnend
 

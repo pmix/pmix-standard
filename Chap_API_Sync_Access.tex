@@ -121,8 +121,6 @@ PMIx_Fence_nb(const pmix_proc_t procs[], size_t nprocs, \\
 \end{itemize}
 \returnend
 
-The callback function \refarg{cbfunc} is only called when \refconst{PMIX_SUCCESS} is returned.
-
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
 
@@ -274,8 +272,6 @@ PMIx_Get_nb(const pmix_proc_t *proc, const char key[], \\
 \end{arglist}
 
 \returnsimplenb
-
-The callback function \refarg{cbfunc} is only called when \refconst{PMIX_SUCCESS} is returned.
 
 If executed, the status returned in the provided callback function will be one of the following constants:
 

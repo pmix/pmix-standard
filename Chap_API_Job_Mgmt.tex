@@ -883,11 +883,7 @@ PMIx_Log(const pmix_info_t data[], size_t ndata, \\
 \argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
 \end{arglist}
 
-\returnstart
-\begin{constantdesc}
-    \item \refconst{PMIX_ERR_BAD_PARAM} The logging request contains at least one incorrect entry.
-\end{constantdesc}
-\returnend
+\returnsimple
 
 \reqattrstart
 If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
