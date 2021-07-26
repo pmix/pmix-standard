@@ -200,3 +200,36 @@ A default attribute name signifying that the attribute field of a \ac{PMIx} stru
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{PMIx Roles}
+
+The role of a \ac{PMIx} process in the \ac{PMIx} universe is grouped into one of three categories based on how it operates in the \ac{PMIx} environment namely as a \emph{client}, \emph{server}, or \emph{tool}.
+As a result, there are three corresponding groupings of \acp{API} each with their own initialization and finalization functions.
+If a process initializes as either a \emph{server} or a \emph{tool} that process may also access all of the \emph{client} \acp{API}.
+
+A process operating as a \refterm{client} is connected to the \ac{PMIx} server instance within an \ac{RM} when the client calls the client \ac{PMIx} initialization routine.
+The \refterm{client} is typically started directly or indirectly (for example, by an intermediate script) by that \ac{RM}.
+Additionally, a \refterm{client} may be started directly by the user and then connect to an \ac{RM} which is typically referred to as a \declareterm{singleton} launch.
+A process operating as a \declareterm{server} is responsible for starting client processes and coordinating with other server and tool processes in the same \ac{PMIx} universe.
+Often processes operating as a \emph{server} are part of the \acf{RM} infrastructure.
+A process operating as a \declareterm{tool} is started independently (e.g., via fork/exec) or by the \ac{RM} and will connect to a \ac{PMIx} \emph{server} to interact with the processes in the \ac{PMIx} universe.
+An example of a \emph{tool} process is a parallel debugger that will connect to the server to assist with attaching to a set of client processes.
+
+\ac{PMIx} serves as a conduit between processes acting in these three different roles.
+As such, an \ac{API} is often described by how it interacts with processes operating in other roles in the \ac{PMIx} universe.
+
+\adviceimplstart
+A \ac{PMIx} implementation may support all or a subset of the \ac{API} role groupings defined in the standard.
+A common nomenclature is defined here to aid in identifying levels of conformance of an implementation.
+
+Note that it would not make sense for an implementation to exclude the \emph{client} interfaces from their implementation since they are also used by the \emph{server} and \emph{tool} roles.
+Therefore the \emph{client} interfaces represent the minimal set of required functionality for \ac{PMIx} compliance.
+
+A \ac{PMIx} implementation that supports only the \emph{client} \acp{API} is said to be \emph{client-role \ac{PMIx} standard compliant}.
+Similarly, a \ac{PMIx} implementation that only supports the \emph{client} and \emph{tool} \acp{API} is said to be \emph{client-role and tool-role \ac{PMIx} standard compliant}.
+Finally, a \ac{PMIx} implementation that only supports the \emph{client} and \emph{server} \acp{API} is said to be \emph{client-role and server-role \ac{PMIx} standard compliant}.
+
+A \ac{PMIx} implementation that supports all three sets of the \ac{API} role groupings is said to be \emph{client-role, server-role, and tool-role \ac{PMIx} standard compliant}.
+These \emph{client-role,server-role, and tool-role \ac{PMIx} standard compliant} implementations have the advantage of being able to support a broad set of \ac{PMIx} consumers in the different roles.
+\adviceimplend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
