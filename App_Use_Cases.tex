@@ -448,4 +448,61 @@ From the MPI process:
 \refconst{PMIX_EVENT_PARTIAL_ACTION_TAKEN} \\
 \refconst{PMIX_EVENT_ACTION_DEFERRED} \\
 
+\section{MPI Sessions}
+\label{app:uc-MPI-sessions}
+
+\subsection{Use Case Summary}
+MPI Sessions addresses a number of the limitations of the current MPI programming model. Among the immediate problems MPI Sessions is intended to address are the following:
+
+\begin{itemize}
+\item MPI cannot be initialized within an MPI process from different application components without a priori knowledge or coordination,
+\item MPI cannot be initialized more than once, and MPI cannot be reinitialized after MPI finalize has been called.
+\item With MPI Sessions, an application no longer needs to explicitly call \code{MPI_Init} to make use of MPI, but rather can use a Session to only initialize MPI resources for specific communication needs.
+\item Unless the MPI process explicitly calls MPI_Init, there is also no explicit \code{MPI_COMM_WORLD} communicator. Sessions can be created and destroyed multiple times in an MPI process.
+\end{itemize}
+
+\subsection{Use Case Details}
+
+\begingroup
+\begin{figure*}
+  \begin{center}
+    \includegraphics[width=.5\textwidth,keepaspectratio]{figs/mpi-sessions1}
+  \end{center}
+  \caption{MPI Communicator from MPI Session Handle using PMIx}
+  \label{fig:mpi_s1}
+\end{figure*}
+\endgroup
+
+A PMIx Process Set (PSET) is a user-provided or host environment assigned
+label associated with a given set of application processes. Processes can
+belong to multiple process sets at a time. Definition of a PMIx
+process set typically occurs at time of application execution - e.g., on a
+command line: \code{prun -n 4 --pset ocean myoceanapp : -n 3 --pset ice myiceapp}
+
+PMIx PSETs are used for query functions (\code{MPI_SESSION_GET_NUM_PSETS}, \code{MPI_SESSION_GET_NTH_PSET)} and to create \code{MPI_GROUP} from a process set name.
+
+In OpenMPI's MPI Sessions prototype, PMIx groups are used during creation of \code{MPI_COMM} from an \code{MPI_GROUP}. The PMIx group constructor returns a 64-bit PMIx Group Context Identifier (PGCID) that is guaranteed to be unique for the duration of an allocation (in the case of a batch managed environment). This PGCID could be used as a direct replacement for the existing unique identifiers for communicators in MPI (E.g. Communicator Identifiers (CIDs) in Open MPI), but may have performance implications.
+
+There is an important distinction between process sets and process groups. The process set identifiers are set by the host environment and currently there are no PMIx APIs provided by which an application can change a process set membership. In contrast, PMIx process groups can only be defined dynamically by the application.
+
+\littleheader{Related Interfaces}
+
+{\large \refapi{PMIx_Get}}
+\pasteSignature{PMIx_Get}
+
+{\large \refapi{PMIx_Group_construct}}
+\pasteSignature{PMIx_Group_construct}
+
+\littleheader{Related Attributes}
+
+\pasteAttributeItem{PMIX_PSET_NAMES}
+\pasteAttributeItem{PMIX_QUERY_NUM_GROUPS}
+\pasteAttributeItem{PMIX_QUERY_GROUP_NAMES}
+\pasteAttributeItem{PMIX_QUERY_GROUP_MEMBERSHIP}
+
+\littleheader{Related Constants}
+
+\refconst{PMIX_SUCCESS}
+\refconst{PMIX_ERR_NOT_SUPPORTED}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
