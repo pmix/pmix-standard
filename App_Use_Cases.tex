@@ -6,11 +6,11 @@
 
 The \ac{PMIx} standard provides many generic interfaces that can be composed into higher-level use cases in a variety of ways. While the specific interfaces and attributes are standardized, the use cases themselves are not (and should not) be standardized. Common use cases are included here as examples of how PMIx's generic interfaces \textit{might} be composed together for a higher-level purpose. The use cases are intended for both \ac{PMIx} interface users and library implementors. Whereby a better understanding of the general usage model within the community can help users picking up PMIx for the first and help implementors optimize their implementation for the common cases.
 
-Each use case is structured to provide background information about the high-level use case as well as specific details about how the PMIx interfaces are used within the use case. Some use cases even provide code snippets. These code snippets are apart of larger code examples located within the standard's source code repository, and each complete code example is fully compilable and runnable. The related interfaces and attributes collected at the bottom of each use case are mainly for conveinence and link to the full standardized definitions.
+Each use case is structured to provide background information about the high-level use case as well as specific details about how the PMIx interfaces are used within the use case. Some use cases even provide code snippets. These code snippets are apart of larger code examples located within the standard's source code repository, and each complete code example is fully compilable and runnable. The related interfaces and attributes collected at the bottom of each use case are mainly for convenience and link to the full standardized definitions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section {Business Card Exchange for Process-to-Process Wire-up}
+\section{Business Card Exchange for Process-to-Process Wire-up}
 \label{app:uc-business-card-exchange}
 
 \subsection{Use Case Summary}
@@ -82,6 +82,8 @@ For each process this information is also useful (note that any one process may 
 
 There are other keys that are helpful to have before a synchronization point. This is not meant to be a comprehensive list.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Debugging}
 \label{app:uc-debugging}
 
@@ -319,6 +321,8 @@ It is sometimes desirable or required that standard environmental variables (e.g
 
 Resource managers and launchers must scan for relevant directives, modifying environmental parameters as directed. Directives are to be processed in the order in which they were given, starting with job-level directives (applied to each app) followed by app-level directives.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Hybrid Applications}
 \label{app:uc-hybrid-applications}
 
@@ -448,6 +452,8 @@ From the MPI process:
 \refconst{PMIX_EVENT_PARTIAL_ACTION_TAKEN} \\
 \refconst{PMIX_EVENT_ACTION_DEFERRED} \\
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{MPI Sessions}
 \label{app:uc-MPI-sessions}
 
@@ -502,7 +508,85 @@ There is an important distinction between process sets and process groups. The p
 
 \littleheader{Related Constants}
 
-\refconst{PMIX_SUCCESS}
+\refconst{PMIX_SUCCESS}\\
 \refconst{PMIX_ERR_NOT_SUPPORTED}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Cross-Version Compatibility}
+\label{app:uc-cross-version}
+
+\subsection{Use Case Summary}
+
+The \ac{PMIx} interface serves as a conduit between clients (e.g., \ac{MPI} libraries), tools (e.g., debuggers), and servers (e.g., \acp{RM}).
+As such, it is probable that a process operating in one of these roles (e.g., as a client or tool) is running a different version of the same \ac{PMIx} implementation than the process with which it is communicating that is operating in a different role (e.g., as a server).
+For processes running in containers cross-version compatibility is especially important because the container image and the system software levels will naturally evolve and drift apart.
+As such, there is a need for \ac{PMIx} implementations to provide cross-version compatibility.
+
+The responsibility for providing cross-version compatibility is a feature of a specific \ac{PMIx} implementation and not necessarily of the \ac{PMIx} standard.
+The \ac{PMIx} standard must strive to enable, and never limit, both the cross-version compatibility in any given \ac{PMIx} implementation, and the ability for a \ac{PMIx} consumer to adapt to cross-version differences in capabilities.
+
+This use case is focused on cross-version compatibility between different versions of the same \ac{PMIx} implementation and not between different \ac{PMIx} implementations.
+
+Cross-version compatibility responsibilities are not restricted to \ac{PMIx}, but a general issue for any library that coordinates across multiple processes. This includes, but not limited to, client/server libraries, and libraries with a user-space and kernel-space component (e.g., high-performance interconnect libraries).
+
+\subsection{Use Case Details}
+
+There are three scenarios that a \ac{PMIx} implementation and a \ac{PMIx} consumer must consider.
+These scenarios use a PMIx Server and a PMIx Client for clarity, though the scenarios also apply to PMIx Tools.
+\begin{enumerate}
+\item \textbf{PMIx Server version matches PMIx Client version}:
+No cross-version considerations are necessary since they are running the same version.
+\item \textbf{PMIx Server version is older than PMIx Client version}:
+The implementation must negotiate capabilities during the initial handshake.\\
+This scenario is common if the (possibly containerized) PMIx client application is being run on an established system that does not update as frequently as the application requires.
+Thus the PMIx Server in the \ac{RM} is locked to an older version of that \ac{PMIx} implementation.
+\item \textbf{PMIx Server version is newer than PMIx Client version}:
+The implementation must negotiate capabilities during the initial handshake.\\
+This scenario is common if the (possibly containerized) PMIx client application is being run after a system software upgrade on the system.
+Thus the PMIx Server in the \ac{RM} has been upgraded to a newer version of that \ac{PMIx} implementation and the client is still linked against the older version.
+\end{enumerate}
+
+When the two \ac{PMIx}-enabled processes first connect to each other they need to first check the version of the library that they are each running.
+This handshake often occurs during initialization (though it could occur on a per-operation basis depending on the specific \ac{PMIx} implementation), for example during the following operations:
+\begin{itemize}
+\item PMIx Clients: \refapi{PMIx_Init}
+\item PMIx Tools: \refapi{PMIx_tool_init}, \refapi{PMIx_tool_attach_to_server}
+\item PMIx Servers: \refapi{PMIx_server_init}, \refapi{pmix_server_client_connected2_fn_t}, \refapi{pmix_server_tool_connection_fn_t}
+\end{itemize}
+
+Commonly this cross-version handshake occurs completely transparently to the consumers of the \ac{PMIx} interface since it happens inside a specific \ac{PMIx} implementation of these interfaces.
+However, during the negotiation, some features available in one version might not be available in the other.
+The consumer of the \ac{PMIx} interface should always be prepared to receive the \refconst{PMIX_ERR_NOT_SUPPORTED} error code from a \ac{PMIx} interface call that the other side either does not support or is not available in the version of the library with which they are linked.
+After connecting to another \ac{PMIx} entity, the consumer of the \ac{PMIx} interface can use the \refapi{PMIx_Query_info} API to  determine supported functionality and adapt accordingly.
+
+\littleheader{Related Interfaces}
+
+{\large \refapi{PMIx_Init}}
+\pasteSignature{PMIx_Init}
+
+{\large \refapi{PMIx_tool_init}}
+\pasteSignature{PMIx_tool_init}
+
+{\large \refapi{PMIx_tool_attach_to_server}}
+\pasteSignature{PMIx_tool_attach_to_server}
+
+{\large \refapi{PMIx_server_init}}
+\pasteSignature{PMIx_server_init}
+
+{\large \refapi{pmix_server_client_connected2_fn_t}}
+\pasteSignature{pmix_server_client_connected2_fn_t}
+
+{\large \refapi{pmix_server_tool_connection_fn_t}}
+\pasteSignature{pmix_server_tool_connection_fn_t}
+
+{\large \refapi{PMIx_Query_info}}
+\pasteSignature{PMIx_Query_info}
+
+\littleheader{Related Constants}
+
+\refconst{PMIX_SUCCESS}\\
+\refconst{PMIX_ERR_NOT_SUPPORTED}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
