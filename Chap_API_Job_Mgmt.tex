@@ -273,21 +273,21 @@ The following constants can be used to set a variable of the type \refstruct{pmi
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_ALLOC_NEW}
+\declareconstitemvalue{PMIX_ALLOC_NEW}{1}
 A new allocation is being requested.
 The resulting allocation will be disjoint (i.e., not connected in a job sense) from the requesting allocation.
 %
-\declareconstitem{PMIX_ALLOC_EXTEND}
+\declareconstitemvalue{PMIX_ALLOC_EXTEND}{2}
 Extend the existing allocation, either in time or as additional resources.
 %
-\declareconstitem{PMIX_ALLOC_RELEASE}
+\declareconstitemvalue{PMIX_ALLOC_RELEASE}{3}
 Release part of the existing allocation.
 Attributes in the accompanying \refstruct{pmix_info_t} array may be used to specify permanent release of the identified resources, or ``lending'' of those resources for some period of time.
 %
-\declareconstitem{PMIX_ALLOC_REAQUIRE}
+\declareconstitemvalue{PMIX_ALLOC_REAQUIRE}{4}
 Reacquire resources that were previously ``lent'' back to the scheduler.
 %
-\declareconstitem{PMIX_ALLOC_EXTERNAL}
+\declareconstitemvalue{PMIX_ALLOC_EXTERNAL}{128}
 A value boundary above which implementers are free to define their own directive values.
 %
 \end{constantdesc}
@@ -477,7 +477,7 @@ The following constants are specifically defined for return by the job control \
 \begin{constantdesc}
 
 %
-\declareconstitemNEW{PMIX_ERR_CONFLICTING_CLEANUP_DIRECTIVES}
+\declareconstitemvalueNEW{PMIX_ERR_CONFLICTING_CLEANUP_DIRECTIVES}{-51}
 Conflicting directives given for job/process cleanup.
 
 \end{constantdesc}
@@ -490,22 +490,22 @@ The following job control events may be available for registration, depending up
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_JCTRL_CHECKPOINT}
+\declareconstitemvalue{PMIX_JCTRL_CHECKPOINT}{-106}
 Monitored by \ac{PMIx} client to trigger a checkpoint operation.
 %
-\declareconstitem{PMIX_JCTRL_CHECKPOINT_COMPLETE}
+\declareconstitemvalue{PMIX_JCTRL_CHECKPOINT_COMPLETE}{-107}
 Sent by a \ac{PMIx} client and monitored by a \ac{PMIx} server to notify that requested checkpoint operation has completed.
 %
-\declareconstitem{PMIX_JCTRL_PREEMPT_ALERT}
+\declareconstitemvalue{PMIX_JCTRL_PREEMPT_ALERT}{-108}
 Monitored by a \ac{PMIx} client to detect that an \ac{RM} intends to preempt the job.
 %
-\declareconstitem{PMIX_ERR_PROC_RESTART}
+\declareconstitemvalue{PMIX_ERR_PROC_RESTART}{-4}
 Error in process restart.
 %
-\declareconstitem{PMIX_ERR_PROC_CHECKPOINT}
+\declareconstitemvalue{PMIX_ERR_PROC_CHECKPOINT}{-5}
 Error in process checkpoint.
 %
-\declareconstitem{PMIX_ERR_PROC_MIGRATE}
+\declareconstitemvalue{PMIX_ERR_PROC_MIGRATE}{-6}
 Error in process migration.
 %
 \end{constantdesc}
@@ -784,10 +784,10 @@ The following monitoring events may be available for registration, depending upo
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_MONITOR_HEARTBEAT_ALERT}
+\declareconstitemvalue{PMIX_MONITOR_HEARTBEAT_ALERT}{-109}
 Heartbeat failed to arrive within specified window. The process that triggered this alert will be identified in the event.
 %
-\declareconstitem{PMIX_MONITOR_FILE_ALERT}
+\declareconstitemvalue{PMIX_MONITOR_FILE_ALERT}{-110}
 File failed its monitoring detection criteria. The file that triggered this alert will be identified in the event.
 %
 \end{constantdesc}

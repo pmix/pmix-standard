@@ -517,7 +517,7 @@ The following constants refer to events relating to rendezvous of a tool and lau
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_LAUNCHER_READY}
+\declareconstitemvalueNEW{PMIX_LAUNCHER_READY}{-155}
 An application launcher (e.g., \emph{mpiexec}) shall generate this event to signal a tool that started it that the launcher is ready to receive directives/commands (e.g., \refapi{PMIx_Spawn}). This is only used when the initiator is able to parse the command line itself, or the launcher is started as a persistent \ac{DVM}.
 %
 \end{constantdesc}
@@ -637,22 +637,22 @@ The \refstruct{pmix_iof_channel_t} structure is a \code{uint16_t} type that defi
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_FWD_NO_CHANNELS}
+\declareconstitemvalue{PMIX_FWD_NO_CHANNELS}{0x0000}
 Forward no channels.
 %
-\declareconstitem{PMIX_FWD_STDIN_CHANNEL}
+\declareconstitemvalue{PMIX_FWD_STDIN_CHANNEL}{0x0001}
 Forward \code{stdin}.
 %
-\declareconstitem{PMIX_FWD_STDOUT_CHANNEL}
+\declareconstitemvalue{PMIX_FWD_STDOUT_CHANNEL}{0x0002}
 Forward \code{stdout}.
 %
-\declareconstitem{PMIX_FWD_STDERR_CHANNEL}
+\declareconstitemvalue{PMIX_FWD_STDERR_CHANNEL}{0x0004}
 Forward \code{stderr}.
 %
-\declareconstitem{PMIX_FWD_STDDIAG_CHANNEL}
+\declareconstitemvalue{PMIX_FWD_STDDIAG_CHANNEL}{0x0008}
 Forward \code{stddiag}, if available.
 %
-\declareconstitem{PMIX_FWD_ALL_CHANNELS}
+\declareconstitemvalue{PMIX_FWD_ALL_CHANNELS}{0x00ff}
 Forward all available channels.
 %
 \end{constantdesc}
@@ -662,10 +662,10 @@ Forward all available channels.
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_ERR_IOF_FAILURE}
+\declareconstitemvalueNEW{PMIX_ERR_IOF_FAILURE}{-172}
 An \ac{IO} forwarding operation failed - the affected channel will be included in the notification.
 %
-\declareconstitemNEW{PMIX_ERR_IOF_COMPLETE}
+\declareconstitemvalueNEW{PMIX_ERR_IOF_COMPLETE}{-173}
 \ac{IO} forwarding of the standard input for this process has completed - i.e., the stdin file descriptor has closed.
 %
 \end{constantdesc}
@@ -950,19 +950,19 @@ to the \refapi{PMIx_Register_event_handler} \ac{API}.
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_EVENT_JOB_START}
+\declareconstitemvalueNEW{PMIX_EVENT_JOB_START}{-191}
 The first process in the job has been spawned - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
 %
-\declareconstitemNEW{PMIX_LAUNCH_COMPLETE}
+\declareconstitemvalueNEW{PMIX_LAUNCH_COMPLETE}{-174}
 All processes in the job have been spawned - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
 %
-\declareconstitemNEW{PMIX_EVENT_JOB_END}
+\declareconstitemvalueNEW{PMIX_EVENT_JOB_END}{-145}
 All processes in the job have terminated - includes \refattr{PMIX_EVENT_TIMESTAMP} when the last process terminated as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
 %
-\declareconstitemNEW{PMIX_EVENT_SESSION_START}
+\declareconstitemvalueNEW{PMIX_EVENT_SESSION_START}{-192}
 The allocation has been instantiated and is ready for use - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_SESSION_ID} of the allocation. This event is issued after any system-controlled prologue has completed, but before any user-specified actions are taken.
 %
-\declareconstitemNEW{PMIX_EVENT_SESSION_END}
+\declareconstitemvalueNEW{PMIX_EVENT_SESSION_END}{-193}
 The allocation has terminated - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_SESSION_ID} of the allocation. This event is issued after any user-specified actions have completed, but before any system-controlled epilogue is performed.
 %
 \end{constantdesc}
@@ -971,13 +971,13 @@ The following events relate to processes within a job:
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_EVENT_PROC_TERMINATED}
+\declareconstitemvalue{PMIX_EVENT_PROC_TERMINATED}{-201}
 The specified process(es) terminated - normal or abnormal
 termination will be indicated by the \refattr{PMIX_PROC_TERM_STATUS} in the
 \refarg{info} array of the notification. Note that a request for individual
 process events can generate a significant event volume from large-scale jobs.
 %
-\declareconstitemNEW{PMIX_ERR_PROC_TERM_WO_SYNC}
+\declareconstitemvalueNEW{PMIX_ERR_PROC_TERM_WO_SYNC}{-200}
 Process terminated without calling \refapi{PMIx_Finalize}, or was a member of an assemblage formed via \refapi{PMIx_Connect} and terminated or called \refapi{PMIx_Finalize} without first calling \refapi{PMIx_Disconnect} (or its non-blocking form) from that assemblage.
 %
 \end{constantdesc}
@@ -989,28 +989,28 @@ information regarding the reason for job abnormal termination:
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_ERR_JOB_CANCELED}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_CANCELED}{-180}
 The job was canceled by the host environment.
 %
-\declareconstitemNEW{PMIX_ERR_JOB_ABORTED}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_ABORTED}{-182}
 One or more processes in the job called abort, causing the job to be terminated.
 %
-\declareconstitemNEW{PMIX_ERR_JOB_KILLED_BY_CMD}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_KILLED_BY_CMD}{-183}
 The job was killed by user command.
 %
-\declareconstitemNEW{PMIX_ERR_JOB_ABORTED_BY_SIG}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_ABORTED_BY_SIG}{-184}
 The job was aborted due to receipt of an error signal (e.g., SIGKILL).
 %
-\declareconstitemNEW{PMIX_ERR_JOB_TERM_WO_SYNC}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_TERM_WO_SYNC}{-185}
 The job was terminated due to at least one process terminating without calling \refapi{PMIx_Finalize}, or was a member of an assemblage formed via \refapi{PMIx_Connect} and terminated or called \refapi{PMIx_Finalize} without first calling \refapi{PMIx_Disconnect} (or its non-blocking form) from that assemblage.
 %
-\declareconstitemNEW{PMIX_ERR_JOB_SENSOR_BOUND_EXCEEDED}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_SENSOR_BOUND_EXCEEDED}{-186}
 The job was terminated due to one or more processes exceeding a specified sensor limit.
 %
-\declareconstitemNEW{PMIX_ERR_JOB_NON_ZERO_TERM}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_NON_ZERO_TERM}{-187}
 The job was terminated due to one or more processes exiting with a non-zero status.
 %
-\declareconstitemNEW{PMIX_ERR_JOB_ABORTED_BY_SYS_EVENT}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_ABORTED_BY_SYS_EVENT}{-189}
 The job was aborted due to receipt of a system event.
 %
 \end{constantdesc}
@@ -1039,11 +1039,11 @@ The following constants are used in events used to coordinate applications and t
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_DEBUG_WAITING_FOR_NOTIFY}
+\declareconstitemvalueNEW{PMIX_DEBUG_WAITING_FOR_NOTIFY}{-58}
 All processes in the job to be debugged are paused waiting for a release at some point within the application. The application shall remain in a paused
 state awaiting release until receipt of the \refconst{PMIX_DEBUGGER_RELEASE}.
 %
-\declareconstitemNEW{PMIX_DEBUGGER_RELEASE}
+\declareconstitemvalueNEW{PMIX_DEBUGGER_RELEASE}{-3}
 Release processes that are paused at the \refattr{PMIX_DEBUG_WAIT_FOR_NOTIFY}
 point in the target application.
 %

@@ -83,10 +83,10 @@ notifications must register for the corresponding event:
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_PROCESS_SET_DEFINE}
+\declareconstitemvalueNEW{PMIX_PROCESS_SET_DEFINE}{-55}
 The host environment has defined a new process set - the event will include the process set name (\refattr{PMIX_PSET_NAME}) and the membership (\refattr{PMIX_PSET_MEMBERS}).
 %
-\declareconstitemNEW{PMIX_PROCESS_SET_DELETE}
+\declareconstitemvalueNEW{PMIX_PROCESS_SET_DELETE}{-56}
 The host environment has deleted a process set - the event will include the process set name (\refattr{PMIX_PSET_NAME}).
 %
 \end{constantdesc}
@@ -183,40 +183,40 @@ Asynchronous process group operations rely heavily on \ac{PMIx} events.  The fol
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_GROUP_INVITED}
+\declareconstitemvalueNEW{PMIX_GROUP_INVITED}{-159}
 The process has been invited to join a \ac{PMIx} Group - the identifier of the group and the ID's of other invited (or already joined) members will be included in the notification.
 %
-\declareconstitemNEW{PMIX_GROUP_LEFT}
+\declareconstitemvalueNEW{PMIX_GROUP_LEFT}{-160}
 A process has asynchronously left a \ac{PMIx} Group - the process identifier of the departing process will in included in the notification.
 %
-\declareconstitemNEW{PMIX_GROUP_MEMBER_FAILED}
+\declareconstitemvalueNEW{PMIX_GROUP_MEMBER_FAILED}{-170}
 A member of a \ac{PMIx} Group has abnormally terminated (i.e., without formally leaving the group prior to termination) - the process identifier of the failed process will be included in the notification.
 %
-\declareconstitemNEW{PMIX_GROUP_INVITE_ACCEPTED}
+\declareconstitemvalueNEW{PMIX_GROUP_INVITE_ACCEPTED}{-161}
 A process has accepted an invitation to join a \ac{PMIx} Group - the identifier of the group being joined will be included in the notification.
 %
-\declareconstitemNEW{PMIX_GROUP_INVITE_DECLINED}
+\declareconstitemvalueNEW{PMIX_GROUP_INVITE_DECLINED}{-162}
 A process has declined an invitation to join a \ac{PMIx} Group - the identifier of the declined group will be included in the notification.
 %
-\declareconstitemNEW{PMIX_GROUP_INVITE_FAILED}
+\declareconstitemvalueNEW{PMIX_GROUP_INVITE_FAILED}{-163}
 An invited process failed or terminated prior to responding to the invitation - the identifier of the failed process will be included in the notification.
 %
-\declareconstitemNEW{PMIX_GROUP_MEMBERSHIP_UPDATE}
+\declareconstitemvalueNEW{PMIX_GROUP_MEMBERSHIP_UPDATE}{-164}
 The membership of a \ac{PMIx} group has changed - the identifiers of the revised membership will be included in the notification.
 %
-\declareconstitemNEW{PMIX_GROUP_CONSTRUCT_ABORT}
+\declareconstitemvalueNEW{PMIX_GROUP_CONSTRUCT_ABORT}{-165}
 Any participant in a \ac{PMIx} group construct operation that returns \refconst{PMIX_GROUP_CONSTRUCT_ABORT} from the \emph{leader failed} event handler will cause all participants to receive an event notifying them of that status. Similarly, the leader may elect to abort the procedure by either returning this error code from the handler assigned to the \refconst{PMIX_GROUP_INVITE_ACCEPTED} or \refconst{PMIX_GROUP_INVITE_DECLINED} codes, or by generating an event for the abort code. Abort events will be sent to all invited or existing members of the group.
 %
-\declareconstitemNEW{PMIX_GROUP_CONSTRUCT_COMPLETE}
+\declareconstitemvalueNEW{PMIX_GROUP_CONSTRUCT_COMPLETE}{-166}
 The group construct operation has completed - the final membership will be included in the notification.
 %
-\declareconstitemNEW{PMIX_GROUP_LEADER_FAILED}
+\declareconstitemvalueNEW{PMIX_GROUP_LEADER_FAILED}{-168}
 The current \emph{leader} of a group including this process has abnormally terminated - the group identifier will be included in the notification.
 %
-\declareconstitemNEW{PMIX_GROUP_LEADER_SELECTED}
+\declareconstitemvalueNEW{PMIX_GROUP_LEADER_SELECTED}{-167}
 A new \emph{leader} of a group including this process has been selected - the identifier of the new leader will be included in the notification.
 %
-\declareconstitemNEW{PMIX_GROUP_CONTEXT_ID_ASSIGNED}
+\declareconstitemvalueNEW{PMIX_GROUP_CONTEXT_ID_ASSIGNED}{-169}
 A new \ac{PGCID} has been assigned by the host environment to a group that includes this process - the group identifier will be included in the notification.
 %
 \end{constantdesc}
@@ -849,10 +849,10 @@ The \refstruct{pmix_group_opt_t} type is a \code{uint8_t} value used with the \r
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_GROUP_DECLINE}
+\declareconstitemvalue{PMIX_GROUP_DECLINE}{0}
 Decline the invitation.
 %
-\declareconstitem{PMIX_GROUP_ACCEPT}
+\declareconstitemvalue{PMIX_GROUP_ACCEPT}{1}
 Accept the invitation.
 %
 \end{constantdesc}
