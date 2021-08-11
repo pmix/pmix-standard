@@ -2211,6 +2211,18 @@ Bitmask containing the types of devices being referenced. (\refstruct{pmix_devic
 \declareconstitemvalueNEW{PMIX_LOCTYPE}{58}
 Bitmask describing the relative location of another process. (\refstruct{pmix_locality_t}).
 %
+\declareconstitemvalueNEW{PMIX_STOR_MEDIUM}{66}
+Bitmask specifying different types of storage mediums. (\refstruct{pmix_storage_medium_t}).
+%
+\declareconstitemvalueNEW{PMIX_STOR_ACCESS}{67}
+Bitmask specifying different levels of storage accessibility (i.e,. from where a storage system may be accessed). (\refstruct{pmix_storage_accessibility_t}).
+%
+\declareconstitemvalueNEW{PMIX_STOR_PERSIST}{68}
+Bitmask specifying different levels of persistence for a particular storage system. (\refstruct{pmix_storage_persistence_t}).
+%
+\declareconstitemvalueNEW{PMIX_STOR_ACCESS_TYPE}{69}
+Bitmask specifying different storage system access types. (\refstruct{pmix_storage_access_type_t}).
+%
 \declareconstitemvalueNEW{PMIX_DATA_TYPE_MAX}{500}
 A starting point for implementer-specific data types.
 Values above this are guaranteed not to conflict with \ac{PMIx} values.
