@@ -1199,10 +1199,20 @@ Architecture flag.
 The v4.1 update includes clarifications and corrections from the v4.0 document:
 
 \begin{compactitemize}
+    \item Remove some stale language in \refsection{chap:api_event:notify}{Chapter 9.1}.
     \item Provisional Items:
     \begin{compactitemize}
         \item Storage \chapterref{chap:api_storage}
     \end{compactitemize}
+\end{compactitemize}
+
+\subsection{Added Functions (Provisional)}
+
+\begin{compactitemize}
+  \item \refapi{PMIx_Data_load}
+  \item \refapi{PMIx_Data_unload}
+  \item \refapi{PMIx_Data_compress}
+  \item \refapi{PMIx_Data_decompress}
 \end{compactitemize}
 
 \subsection{Added Data Structures (Provisional)}
@@ -1214,33 +1224,48 @@ The v4.1 update includes clarifications and corrections from the v4.0 document:
     \item \refstruct{pmix_storage_access_type_t}
 \end{compactitemize}
 
+\subsection{Added Macros (Provisional)}
+
+\begin{compactitemize}
+  \item \refmacro{PMIX_NSPACE_INVALID}
+  \item \refmacro{PMIX_RANK_IS_VALID}
+  \item \refmacro{PMIX_PROCID_INVALID}
+  \item \refmacro{PMIX_PROCID_XFER}
+\end{compactitemize}
 
 \subsection{Added Constants (Provisional)}
 
+\begin{compactitemize}
+  \item \refconst{PMIX_PROC_NSPACE}
+\end{compactitemize}
+
 \littleheader{Storage constants}
-\refconst{PMIX_STORAGE_MEDIUM_UNKNOWN} \\
-\refconst{PMIX_STORAGE_MEDIUM_TAPE} \\
-\refconst{PMIX_STORAGE_MEDIUM_HDD} \\
-\refconst{PMIX_STORAGE_MEDIUM_SSD} \\
-\refconst{PMIX_STORAGE_MEDIUM_NVME} \\
-\refconst{PMIX_STORAGE_MEDIUM_PMEM} \\
-\refconst{PMIX_STORAGE_MEDIUM_RAM} \\
-\refconst{PMIX_STORAGE_ACCESSIBILITY_NODE} \\
-\refconst{PMIX_STORAGE_ACCESSIBILITY_SESSION} \\
-\refconst{PMIX_STORAGE_ACCESSIBILITY_JOB} \\
-\refconst{PMIX_STORAGE_ACCESSIBILITY_RACK} \\
-\refconst{PMIX_STORAGE_ACCESSIBILITY_CLUSTER} \\
-\refconst{PMIX_STORAGE_ACCESSIBILITY_REMOTE} \\
-\refconst{PMIX_STORAGE_PERSISTENCE_TEMPORARY} \\
-\refconst{PMIX_STORAGE_PERSISTENCE_NODE} \\
-\refconst{PMIX_STORAGE_PERSISTENCE_SESSION} \\
-\refconst{PMIX_STORAGE_PERSISTENCE_JOB} \\
-\refconst{PMIX_STORAGE_PERSISTENCE_SCRATCH} \\
-\refconst{PMIX_STORAGE_PERSISTENCE_PROJECT} \\
-\refconst{PMIX_STORAGE_PERSISTENCE_ARCHIVE} \\
-\refconst{PMIX_STORAGE_ACCESS_RD} \\
-\refconst{PMIX_STORAGE_ACCESS_WR} \\
-\refconst{PMIX_STORAGE_ACCESS_RDWR}
+
+\begin{compactitemize}
+  \item \refconst{PMIX_STORAGE_MEDIUM_UNKNOWN}
+  \item \refconst{PMIX_STORAGE_MEDIUM_TAPE}
+  \item \refconst{PMIX_STORAGE_MEDIUM_HDD}
+  \item \refconst{PMIX_STORAGE_MEDIUM_SSD}
+  \item \refconst{PMIX_STORAGE_MEDIUM_NVME}
+  \item \refconst{PMIX_STORAGE_MEDIUM_PMEM}
+  \item \refconst{PMIX_STORAGE_MEDIUM_RAM}
+  \item \refconst{PMIX_STORAGE_ACCESSIBILITY_NODE}
+  \item \refconst{PMIX_STORAGE_ACCESSIBILITY_SESSION}
+  \item \refconst{PMIX_STORAGE_ACCESSIBILITY_JOB}
+  \item \refconst{PMIX_STORAGE_ACCESSIBILITY_RACK}
+  \item \refconst{PMIX_STORAGE_ACCESSIBILITY_CLUSTER}
+  \item \refconst{PMIX_STORAGE_ACCESSIBILITY_REMOTE}
+  \item \refconst{PMIX_STORAGE_PERSISTENCE_TEMPORARY}
+  \item \refconst{PMIX_STORAGE_PERSISTENCE_NODE}
+  \item \refconst{PMIX_STORAGE_PERSISTENCE_SESSION}
+  \item \refconst{PMIX_STORAGE_PERSISTENCE_JOB}
+  \item \refconst{PMIX_STORAGE_PERSISTENCE_SCRATCH}
+  \item \refconst{PMIX_STORAGE_PERSISTENCE_PROJECT}
+  \item \refconst{PMIX_STORAGE_PERSISTENCE_ARCHIVE}
+  \item \refconst{PMIX_STORAGE_ACCESS_RD}
+  \item \refconst{PMIX_STORAGE_ACCESS_WR}
+  \item \refconst{PMIX_STORAGE_ACCESS_RDWR}
+\end{compactitemize}
 
 \subsection{Added Attributes (Provisional)}
 
