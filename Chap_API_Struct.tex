@@ -240,7 +240,7 @@ The operation is considered successful but not all elements of the operation wer
 
 \begin{constantdesc}
 %
-\declareconstitemvalue{PMIX_EXTERNAL_ERR_BASE}{-3000}
+\declareconstitem{PMIX_EXTERNAL_ERR_BASE}
 A starting point for user-level defined error and event constants.
 Negative values that are more negative than the defined constant are guaranteed not to conflict with \ac{PMIx} values.
 Definitions should always be based on the \refconst{PMIX_EXTERNAL_ERR_BASE} constant and not a specific value as the value of the constant may change.
@@ -724,14 +724,14 @@ Process has been locally \code{fork}'ed by the \ac{RM}.
 \declareconstitemvalue{PMIX_PROC_STATE_CONNECTED}{6}
 Process has connected to PMIx server.
 %
-\declareconstitemvalue{PMIX_PROC_STATE_UNTERMINATED}{15}
+\declareconstitem{PMIX_PROC_STATE_UNTERMINATED}
 Define a ``boundary'' between the terminated states and \refconst{PMIX_PROC_STATE_CONNECTED} so users can easily and quickly determine if a process is still running or not.
 Any value less than this constant means that the process has not terminated.
 %
-\declareconstitemvalue{PMIX_PROC_STATE_TERMINATED}{20}
+\declareconstitem{PMIX_PROC_STATE_TERMINATED}
 Process has terminated and is no longer running.
 %
-\declareconstitemvalue{PMIX_PROC_STATE_ERROR}{50}
+\declareconstitem{PMIX_PROC_STATE_ERROR}
 Define a boundary so users can easily and quickly determine if a process abnormally terminated.
 Any value above this constant means that the process has terminated abnormally.
 %
@@ -911,14 +911,14 @@ All processes in the job have been suspended.
 \declareconstitemvalueNEW{PMIX_JOB_STATE_CONNECTED}{5}
 All processes in the job have connected to their \ac{PMIx} server.
 %
-\declareconstitemvalueNEW{PMIX_JOB_STATE_UNTERMINATED}{15}
+\declareconstitemNEW{PMIX_JOB_STATE_UNTERMINATED}
 Define a ``boundary'' between the terminated states and \refconst{PMIX_JOB_STATE_TERMINATED} so users can easily and quickly determine if a job is still running or not.
 Any value less than this constant means that the job has not terminated.
 %
-\declareconstitemvalueNEW{PMIX_JOB_STATE_TERMINATED}{20}
+\declareconstitemNEW{PMIX_JOB_STATE_TERMINATED}
 All processes in the job have terminated and are no longer running - typically will be accompanied by the job exit status in response to a query.
 %
-\declareconstitemvalueNEW{PMIX_JOB_STATE_TERMINATED_WITH_ERROR}{50}
+\declareconstitemNEW{PMIX_JOB_STATE_TERMINATED_WITH_ERROR}
 Define a boundary so users can easily and quickly determine if a job abnormally terminated - typically will be accompanied by a job-related error code in response to a query
 Any value above this constant means that the job terminated abnormally.
 %
@@ -2223,7 +2223,7 @@ Bitmask specifying different levels of persistence for a particular storage syst
 \declareconstitemvalueNEW{PMIX_STOR_ACCESS_TYPE}{69}
 Bitmask specifying different storage system access types. (\refstruct{pmix_storage_access_type_t}).
 %
-\declareconstitemvalueNEW{PMIX_DATA_TYPE_MAX}{500}
+\declareconstitemNEW{PMIX_DATA_TYPE_MAX}
 A starting point for implementer-specific data types.
 Values above this are guaranteed not to conflict with \ac{PMIx} values.
 Definitions should always be based on the \refconst{PMIX_DATA_TYPE_MAX} constant and not a specific value as the value of the constant may change.
