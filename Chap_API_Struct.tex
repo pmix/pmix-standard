@@ -67,7 +67,7 @@ Additional constants associated with specific data structures or types are defin
 
 \begin{constantdesc}
 %
-\declareconstitemvalue{PMIX_MAX_NSLEN}{255}
+\declareconstitem{PMIX_MAX_NSLEN}
 Maximum namespace string length as an integer.
 \end{constantdesc}
 
@@ -78,7 +78,7 @@ a space of size \refconst{PMIX_MAX_NSLEN}+1 to allow room for the \code{NULL} te
 
 \begin{constantdesc}
 %
-\declareconstitemvalue{PMIX_MAX_KEYLEN}{511}
+\declareconstitem{PMIX_MAX_KEYLEN}
 Maximum key string length as an integer.
 \end{constantdesc}
 
@@ -104,7 +104,7 @@ The \refstruct{pmix_status_t} type is an \code{int} compatible value for return 
 \refconst{PMIX_SUCCESS}, which must have an integer value of 0:
  
 \begin{constantdesc}
-\declareconstitem{PMIX_SUCCESS}
+\declareconstitemvalue{PMIX_SUCCESS}{0}
 Success.
 \end{constantdesc}
 
@@ -124,9 +124,6 @@ The presentation of each \ac{API} in this document includes a list of return sta
 In addition, the following are general constants covering a variety of possible reasons an implementation of an \ac{API} may return a constant other than one of the constants presented with the \ac{API}.  Although implementations can define and return additional error constants, implementations are encouraged to return one of the return constants listed with the \ac{API} or in the list presented here to encourage portability across implementations. 
 
 \begin{constantdesc}
-%
-\declareconstitemvalue{PMIX_SUCCESS}{0}
-Success.
 %
 \declareconstitemvalue{PMIX_ERROR}{-1}
 General Error.
