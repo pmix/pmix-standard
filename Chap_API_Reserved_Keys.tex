@@ -11,6 +11,9 @@ environment and the \ac{PMIx} server, and are required to be available at client
 start of execution. \ac{PMIx} clients and tools are therefore prohibited from
 posting reserved keys.
 
+%% TODO: Should we note that although values are required to be available at
+%% client start of execution, that some values can change during execution?
+
 Host environments may opt to define non-standardized reserved keys. 
 All reserved keys, whether standardized or non-standardized, follow the same retrieval rules.
 Users
@@ -68,7 +71,7 @@ completeness.
 Return information from the node realm regarding the node upon which the specified process is executing. If information about
 a node other than the one containing the specified process is desired, then
 the attribute array must also contain either the \refattr{PMIX_NODEID} or
-\refattr{PMIX_HOSTNAME} attribute identifying the desired target. This is useful for requesting information about a specific node even if the identity of processes running on that node are not known..
+\refattr{PMIX_HOSTNAME} attribute identifying the desired target. This is useful for requesting information about a specific node even if the identity of processes running on that node are not known.
 }
 
 \adviceuserstart
