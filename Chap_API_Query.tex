@@ -11,9 +11,38 @@
 
 As the level of interaction between applications and the host \ac{SMS} grows, so too does the need for the application to query the \ac{SMS} regarding its capabilities and state information. \ac{PMIx} provides a generalized query interface for this purpose, along with a set of standardized attribute keys to support a range of requests. This includes requests to determine the status of scheduling queues and active allocations, the scope of \ac{API} and attribute support offered by the \ac{SMS}, namespaces of active jobs, location and information about a job's processes, and information regarding available resources.
 
-An example use-case for the \refapi{PMIx_Query_info_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully (e.g., to write a checkpoint before termination) it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
+An example use-case for the \refapi{PMIx_Query_info_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully (e.g., to write a checkpoint before termination) it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.  \ac{PMIx} supports this use-case by defining an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_info_nb} interface to obtain the number of seconds remaining in the current job allocation. 
 
-\ac{PMIx} supports this use-case by defining an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_info_nb} interface to obtain the number of seconds remaining in the current job allocation. Note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time. \ac{PMIx} provides such alternate methods as a means of maximizing the probability of a host system supporting at least one method by which the application can obtain the desired service.
+\ac{PMIx} sometimes provides multiple methods by which an application can obtain information or services.  For this example, 
+note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Query Structure}
+\declarestruct{pmix_query_t}
+
+A \ac{PMIx} query is composed of one or more keys and a list of qualifiers which provide additional information to describe the query.
+Keys which use the same qualifiers can be placed in the same query for compactness, though it is permissable to put each key in its own query.
+
+The \refstruct{pmix_query_t} structure is used by the \refapi{PMIx_Query_info} \acp{API} to describe a single query operation.
+
+\versionMarker{2.0}
+\cspecificstart
+\begin{codepar}
+typedef struct pmix_query \{
+    char **keys;
+    pmix_info_t *qualifiers;
+    size_t nqual;
+\} pmix_query_t;
+\end{codepar}
+\cspecificend
+
+where:
+
+\begin{itemize}
+    \item \emph{keys} is a \code{NULL}-terminated argv-style array of strings
+    \item \emph{qualifiers} is an array of \refstruct{pmix_info_t} describing constraints on the query
+    \item \emph{nqual} is the number of elements in the \refarg{qualifiers} array
+\end{itemize}
 
 The following \acp{API} support query of various session and environment values.
 
@@ -61,7 +90,7 @@ The \refarg{info} array shall contain an element for each query key that returne
 \end{itemize}
 
 \reqattrstart
-\ac{PMIx} libraries and host environments that support this \ac{API} are required to support the following attributes:
+A call to this \ac{API} can specify multiple queries.  Each query is composed of a list of keys and a list of attributes which can influence that query.  \ac{PMIx} libraries and host environments that support this \ac{API} are required to support the following attributes which are specified on a per-query basis:
 
 \pasteAttributeItem{PMIX_QUERY_REFRESH_CACHE}
 \pasteAttributeItem{PMIX_SESSION_INFO}
@@ -81,15 +110,15 @@ The \refarg{info} array shall contain an element for each query key that returne
 \pasteAttributeItem{PMIX_HOST_ATTRIBUTES}
 \pasteAttributeItem{PMIX_TOOL_ATTRIBUTES}
 
-Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.
+Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.  Directives which are not applicable to a key are ignored. 
 
-\ac{PMIx} libraries are not required to directly support any other attributes for this function. However, all provided attributes must be passed to the host \ac{SMS} daemon for processing. The \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+% \ac{PMIx} libraries are not required to directly support any other attributes for this function. However, all provided attributes must be passed to the host \ac{SMS} daemon for processing. The \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
 \reqattrend
 
 
 \optattrstart
-The following attributes are optional for host environments that support this operation:
+The following keys may be specified in a query:
 
 \pasteAttributeItem{PMIX_QUERY_NAMESPACES}
 \pasteAttributeItem{PMIX_QUERY_JOB_STATUS}
@@ -200,9 +229,9 @@ The \refarg{info} array shall contain an element for each query key that returne
 \pasteAttributeItem{PMIX_HOST_ATTRIBUTES}
 \pasteAttributeItem{PMIX_TOOL_ATTRIBUTES}
 
-Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.
+Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.  Directives which are not applicable to a key are ignored. 
 
-\ac{PMIx} libraries are not required to directly support any other attributes for this function. However, all provided attributes must be passed to the host \ac{SMS} daemon for processing. The \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
+%\ac{PMIx} libraries are not required to directly support any other attributes for this function. However, all provided attributes must be passed to the host \ac{SMS} daemon for processing. The \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
 
 \reqattrend
 
@@ -239,15 +268,15 @@ Non-blocking form of the \refapi{PMIx_Query_info} \ac{API}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Query-specific constants}
-\label{api:struct:constants:query}
+%%\subsection{Query-specific constants}
+%%\label{api:struct:constants:query}
 
-\begin{constantdesc}
-%
-\declareconstitem{PMIX_QUERY_PARTIAL_SUCCESS}
-Some, but not all, of the requested information was returned.
-%
-\end{constantdesc}
+%%\begin{constantdesc}
+%%%
+%%\declareconstitem{PMIX_QUERY_PARTIAL_SUCCESS}
+%%Some, but not all, of the requested information was returned.
+%%%
+%%\end{constantdesc}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -405,31 +434,6 @@ Request a list of functions supported by the \ac{PMIx} tool library.
 Request attributes supported by the \ac{PMIx} tool library functions.
 }
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Query Structure}
-\declarestruct{pmix_query_t}
-
-The \refstruct{pmix_query_t} structure is used by the \refapi{PMIx_Query_info} \acp{API} to describe a single query operation.
-
-\versionMarker{2.0}
-\cspecificstart
-\begin{codepar}
-typedef struct pmix_query \{
-    char **keys;
-    pmix_info_t *qualifiers;
-    size_t nqual;
-\} pmix_query_t;
-\end{codepar}
-\cspecificend
-
-where:
-
-\begin{itemize}
-    \item \emph{keys} is a \code{NULL}-terminated argv-style array of strings
-    \item \emph{qualifiers} is an array of \refstruct{pmix_info_t} describing constraints on the query
-    \item \emph{nqual} is the number of elements in the \refarg{qualifiers} array
-\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Query structure support macros}
