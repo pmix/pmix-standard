@@ -694,7 +694,7 @@ PMIx_Fabric_register(pmix_fabric_t *fabric, \\
 \argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+\returnsimple
 
 \reqattrstart
 The following directives are required to be supported by all \ac{PMIx} libraries to aid users in identifying the fabric whose data is being sought:
@@ -750,12 +750,13 @@ PMIx_Fabric_register_nb(pmix_fabric_t *fabric, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
+\returnstart
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
 \end{itemize}
+\returnend
 
 
 %%%%
@@ -784,7 +785,7 @@ PMIx_Fabric_update(pmix_fabric_t *fabric);
 \arginout{fabric}{address of a \refstruct{pmix_fabric_t} (backed by storage) (handle)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+\returnsimple
 
 %%%%
 \descr
@@ -816,12 +817,13 @@ PMIx_Fabric_update_nb(pmix_fabric_t *fabric, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
+\returnstart
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
 \end{itemize}
+\returnend
 
 %%%%
 \descr
@@ -850,7 +852,7 @@ PMIx_Fabric_deregister(pmix_fabric_t *fabric);
 \argin{fabric}{address of a \refstruct{pmix_fabric_t} (handle)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
+\returnsimple
 
 %%%%
 \descr
@@ -882,13 +884,13 @@ pmix_status_t PMIx_Fabric_deregister_nb(pmix_fabric_t *fabric, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
+\returnstart
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
 \end{itemize}
-
+\returnend
 %%%%
 \descr
 

@@ -102,12 +102,15 @@ If \refarg{cbfunc} is \code{NULL}, the function call will be treated as a \emph{
 
 If the \refarg{cbfunc} is non-\code{NULL}, the function call will be treated as a \emph{non-blocking} call and will return the following:
 
+\returnsimplenb
+The result of the registration operation shall be returned in the provided callback function along with the assigned event handler identifier.
+
+\returnstart
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} indicating that the request has been accepted for processing and the provided callback function will be executed upon completion of the operation. Note that the library must not invoke the callback function prior to returning from the \ac{API}. The result of the registration operation shall be returned in the provided callback function along with the assigned event handler identifier.
 \item \refconst{PMIX_ERR_EVENT_REGISTRATION} indicating that the registration
 has failed for an undetermined reason.
-\item a non-zero \ac{PMIx} error constant indicating a reason for the request to have been rejected. In this case, the provided callback function will not be executed.
 \end{itemize}
+\returnend
 
 The callback function must not be executed prior to returning from the \ac{API}, and no events corresponding to this registration may be delivered prior to the completion of the registration callback function (\refarg{cbfunc}).
 
@@ -403,15 +406,15 @@ PMIx_Deregister_event_handler(size_t evhdlr_ref, \\
 
 If \refarg{cbfunc} is \code{NULL}, the function will be treated as a \emph{blocking} call and the result of the operation returned in the status code.
 
-If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{non-blocking} call and return one of the following:
+If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{non-blocking} call.
+
+\returnsimplenb
 
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS}, indicating that the request is being processed - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-\item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-\item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
+\item \refconst{PMIX_OPERATION_SUCCEEDED}, returned when the request was immediately processed successfully - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
 
-The returned status code will be one of the following:
+The returned status code of \refarg{cbfunc} will be one of the following:
 
 \begin{itemize}
 \item \refconst{PMIX_SUCCESS} The event handler was successfully deregistered.
@@ -458,14 +461,16 @@ PMIx_Notify_event(pmix_status_t status, \\
 
 If \refarg{cbfunc} is \code{NULL}, the function will be treated as a \emph{blocking} call and the result of the operation returned in the status code.
 
-If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{non-blocking} call and return one of the following:
+If \refarg{cbfunc} is non-\code{NULL}, the function will be treated as a \emph{non-blocking} call.
 
+\returnsimplenb
+Note that a successful call does \textit{not} reflect the success or failure of delivering the event to any recipients.
+
+\returnstart
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} The notification request is valid and is being processed. The callback function will be called when the process-local operation is complete and will provide the resulting status of that operation. Note that this does \textit{not} reflect the success or failure of delivering the event to any recipients. The callback function must not be executed prior to returning from the \ac{API}.
-\item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-\item \refconst{PMIX_ERR_BAD_PARAM} The request contains at least one incorrect entry that prevents it from being processed. The callback function will \textit{not} be called.
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support event notification, or in the case of a \ac{PMIx} server calling the API, the range extended beyond the local node and the host \ac{SMS} environment does not support event notification. The callback function will \textit{not} be called.
+\item \refconst{PMIX_OPERATION_SUCCEEDED}, returned when the request was immmediately processed successfully - the \refarg{cbfunc} will \textit{not} be called.
 \end{itemize}
+\returnend
 
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:

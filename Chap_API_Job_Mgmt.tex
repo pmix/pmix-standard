@@ -49,12 +49,7 @@ PMIx_Allocation_request(pmix_alloc_directive_t directive, \\
 \arginout{nresults}{Address where the number of elements in \refarg{results} can be returned (handle)}
 \end{arglist}
 
-Returns one of the following:
-
-\begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request was processed and returned \textit{success}
-    \item a PMIx error constant indicating either an error in the input or that the request was refused
-\end{itemize}
+\returnsimple
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
@@ -138,11 +133,13 @@ PMIx_Allocation_request_nb(pmix_alloc_directive_t directive, \\
 
 Returns one of the following:
 
+\returnsimplenb
+
+\returnstart
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
+\returnend
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
@@ -339,12 +336,7 @@ PMIx_Job_control(const pmix_proc_t targets[], size_t ntargets, \\
 \arginout{nresults}{Address where the number of elements in \refarg{results} can be returned (handle)}
 \end{arglist}
 
-Returns one of the following:
-
-\begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request was processed by the host environment and returned \textit{success}. Details of the result will be returned in the \refarg{results} array
-    \item a \ac{PMIx} error constant indicating either an error in the input or that the request was refused
-\end{itemize}
+\returnsimple
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
@@ -421,13 +413,13 @@ PMIx_Job_control_nb(const pmix_proc_t targets[], size_t ntargets, \\
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
-Returns one of the following:
+\returnsimplenb
 
+\returnstart
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
     \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
+\returnend
 
 \reqattrstart
 \ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host \ac{SMS} daemon for processing, and the \ac{PMIx} library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process making the request.
@@ -656,12 +648,9 @@ PMIx_Process_monitor(const pmix_info_t *monitor, \\
 \arginout{nresults}{Address where the number of elements in \refarg{results} can be returned (handle)}
 \end{arglist}
 
-Returns one of the following:
+A successful return indicates that the results have been placed in the \refarg{results} array.
 
-\begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request was processed and returned \textit{success}. Details of the result will be returned in the \refarg{results} array
-    \item a PMIx error constant indicating either an error in the input or that the request was refused
-\end{itemize}
+\returnsimple
 
 \optattrstart
 The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the requesting process:
@@ -733,11 +722,13 @@ PMIx_Process_monitor_nb(const pmix_info_t *monitor, \\
 
 Returns one of the following:
 
+\returnsimplenb
+
+\returnstart
 \begin{itemize}
-    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
-    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will \textit{not} be called.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
 \end{itemize}
+\returnend
 
 \optattrstart
 The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the requesting process:
@@ -892,14 +883,7 @@ PMIx_Log(const pmix_info_t data[], size_t ndata, \\
 \argin{ndirs}{Number of elements in the \refarg{directives} array (\code{size_t})}
 \end{arglist}
 
-Return codes are one of the following:
-
-\begin{constantdesc}
-    \item \refconst{PMIX_SUCCESS} The logging request was successful.
-    \item \refconst{PMIX_ERR_BAD_PARAM} The logging request contains at least one incorrect entry.
-    \item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation or host environment does not support this function.
-    \item other appropriate \ac{PMIx} error code
-\end{constantdesc}
+\returnsimple
 
 \reqattrstart
 If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
@@ -979,13 +963,14 @@ PMIx_Log_nb(const pmix_info_t data[], size_t ndata, \\
 
 Return codes are one of the following:
 
+\returnsimplenb
+
+\returnstart
 \begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The logging request is valid and is being processed. The resulting status from the operation will be provided in the callback function. Note that the library must not invoke the callback function prior to returning from the \ac{API}.
 \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
 \item \refconst{PMIX_ERR_BAD_PARAM} The logging request contains at least one incorrect entry that prevents it from being processed. The callback function will not be called.
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function. The callback function will not be called.
-\item other appropriate \ac{PMIx} error code - the callback function will not be called.
 \end{constantdesc}
+\returnend
 
 \reqattrstart
 If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:

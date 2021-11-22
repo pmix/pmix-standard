@@ -172,15 +172,13 @@ PMIx_Data_pack(const pmix_proc_t *target, \\
 \argin{type}{The type of the data to be packed (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-Returns one of the following:
+\returnstart
 \begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The data has been packed as requested
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
 \item \refconst{PMIX_ERR_BAD_PARAM} The provided buffer or src is \code{NULL}
 \item \refconst{PMIX_ERR_UNKNOWN_DATA_TYPE} The specified data type is not known to this implementation
 \item \refconst{PMIX_ERR_OUT_OF_RESOURCE} Not enough memory to support the operation
-\item \refconst{PMIX_ERROR} General error
 \end{constantdesc}
+\returnend
 
 %%%%
 \descr
@@ -238,15 +236,13 @@ PMIx_Data_unpack(const pmix_proc_t *source, \\
 \argin{type}{The type of the data to be unpacked --- must be one of the \ac{PMIx} defined data types (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-Returns one of the following:
+\returnstart
 \begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The data has been unpacked as requested
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
 \item \refconst{PMIX_ERR_BAD_PARAM} The provided buffer or dest is \code{NULL}
 \item \refconst{PMIX_ERR_UNKNOWN_DATA_TYPE} The specified data type is not known to this implementation
 \item \refconst{PMIX_ERR_OUT_OF_RESOURCE} Not enough memory to support the operation
-\item \refconst{PMIX_ERROR} General error
 \end{constantdesc}
+\returnend
 
 %%%%
 \descr
@@ -294,15 +290,13 @@ PMIx_Data_copy(void **dest, void *src, \\
 \argin{type}{The type of the data to be copied --- must be one of the PMIx defined data types. (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-Returns one of the following:
+\returnstart
 \begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The data has been copied as requested
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
 \item \refconst{PMIX_ERR_BAD_PARAM} The provided src or dest is \code{NULL}
 \item \refconst{PMIX_ERR_UNKNOWN_DATA_TYPE} The specified data type is not known to this implementation
 \item \refconst{PMIX_ERR_OUT_OF_RESOURCE} Not enough memory to support the operation
-\item \refconst{PMIX_ERROR} General error
 \end{constantdesc}
+\returnend
 
 %%%%
 \descr
@@ -335,12 +329,11 @@ PMIx_Data_print(char **output, char *prefix, \\
 \argin{type}{The type of the data value to be printed --- must be one of the PMIx defined data types. (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-Returns one of the following:
+\returnstart
 \begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The data has been printed as requested
 \item \refconst{PMIX_ERR_BAD_PARAM} The provided data type is not recognized.
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
 \end{constantdesc}
+\returnend
 
 %%%%
 \descr
@@ -461,12 +454,11 @@ PMIx_Data_unload(pmix_data_buffer_t *src,
 \argin{dest}{Pointer to the destination \refstruct{pmix_byte_object_t} (handle)}
 \end{arglist}
 
-Returns one of the following:
+\returnstart
 \begin{constantdesc}
-\item \refconst{PMIX_SUCCESS} The data has been copied as requested
 \item \refconst{PMIX_ERR_BAD_PARAM} The destination and/or source pointer is \code{NULL}
-\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
 \end{constantdesc}
+\returnend
 
 %%%%
 \descr

@@ -68,8 +68,11 @@ PMIx_Put(pmix_scope_t scope, \\
 \argin{value}{Reference to a \refstruct{pmix_value_t} structure (handle)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a \ac{PMIx} error constant.
-If a reserved key is provided in the \refarg{key} argument then \refapi{PMIx_Put} will return \refconst{PMIX_ERR_BAD_PARAM}.
+\returnstart
+\begin{itemize}
+\item \refconst{PMIX_ERR_BAD_PARAM} indicating a reserved key is provided in the \refarg{key} argument.
+\end{itemize}
+\returnend
 
 %%%%
 \descr
@@ -147,8 +150,11 @@ PMIx_Store_internal(const pmix_proc_t *proc, \\
 \argin{val}{Value to store (handle)}
 \end{arglist}
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
-If a reserved key is provided in the \refarg{key} argument then \refapi{PMIx_Store_internal} will return \refconst{PMIX_ERR_BAD_PARAM}.
+\returnstart
+\begin{itemize}
+\item \refconst{PMIX_ERR_BAD_PARAM} indicating a reserved key is provided in the \refarg{key} argument.
+\end{itemize}
+\returnend
 
 %%%%
 \descr
@@ -173,7 +179,7 @@ Post all previously \refapi{PMIx_Put} values for distribution.
 pmix_status_t PMIx_Commit(void);
 }
 
-Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+\returnsimple
 
 %%%%
 \descr
