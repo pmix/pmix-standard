@@ -971,6 +971,11 @@ typedef struct pmix_value \{ \\
 \} pmix_value_t;
 }
 
+The size of the \refstruct{pmix_value_t} must remain constant on a given platform regardless of the compiler.
+The \refstruct{pmix_value_t} is \code{32} bytes with \code{24} bytes reserved for the \code{data} union member.
+An implementation may add a padding member to the structure to achieve the required 32-byte size.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Value structure support}
 The following macros and \acp{API} are provided to support the \refstruct{pmix_value_t} structure.

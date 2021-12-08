@@ -142,6 +142,7 @@ critical to basic application execution (e.g., \refapi{PMIx_Get}) for certain cl
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Attributes in PMIx}
+\label{chap:intro:attributes}
 
 An area where differences between support on different systems can be challenging is regarding the attributes that provide information to the client process and/or control the behavior of a \ac{PMIx} \ac{API}.  Most
 \ac{PMIx} \ac{API} calls can accept additional information or attributes specified in the form of
@@ -231,5 +232,65 @@ Finally, a \ac{PMIx} implementation that only supports the \emph{client} and \em
 A \ac{PMIx} implementation that supports all three sets of the \ac{API} role groupings is said to be \emph{client-role, server-role, and tool-role \ac{PMIx} standard compliant}.
 These \emph{client-role,server-role, and tool-role \ac{PMIx} standard compliant} implementations have the advantage of being able to support a broad set of \ac{PMIx} consumers in the different roles.
 \adviceimplend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Application Binary Interface (ABI)}
+
+An \acf{API} defines how data types, data structures, and functions are represented in source code.
+An \acf{ABI} defines how data types, data structures, and functions are represented in machine code for a given system.
+An important aspect of an \ac{ABI} is the size, layout, and alignment of data structures.
+A stable \ac{ABI} may allow a program compiled with one implementation of the PMIx Standard to run with a different implementation of the PMIx Standard as long as both implementations adhere to the same \ac{ABI}.
+
+The PMIx Standard strives to maintain a stable \ac{ABI} to support applications and tools that rely on more than one implementation of the PMIx Standard.
+To facilitate such interoperability the PMIx \ac{ASC} maintains a set of standardized headers that are versioned with the PMIx Standard that applications and tools can reference~\footnote{PMIx Headers for ABI Compatibility \url{https://github.com/pmix/pmix-abi}}.
+
+In recognition that there are circumstances where the \ac{ABI} needs to be modified this section defines some guidance for making such modifications.
+Additions to the PMIx interface can occur without breaking \ac{ABI} compatibility.
+Deprecating and removing portions of the PMIx interface does break \ac{ABI} compatibility.
+Modifications to the existing PMIx interface do break \ac{ABI} compatibility.
+Any changes to the \ac{ABI} will occur in a major release and will be noted in the release notes.
+
+The PMIx \ac{ABI} is comprised of the following:
+\begin{compactalphaenum}
+\item Function signatures
+\item Constants and their values
+\item Structures and their membership (including field position)
+\item Attributes that are required to be implemented and their string representation
+\end{compactalphaenum}
+
+If a data structure must be changed in a way that breaks the \ac{ABI} the authors should consider creating a new data structure if possible.
+Additionally, the authors must take care to update or duplicate existing PMIx interfaces that are impacted by the change.
+
+Attributes that are required by the PMIx standard are a required part of the \ac{ABI}.
+Attributes that are not required by the PMIx standard may be included in the \ac{ABI} while others may not.
+Attributes that are part of the \ac{ABI} are denoted as such in their description.
+PMIx attributes that are not required by the PMIx standard have a well-defined behavior (see Section~\ref{chap:intro:attributes}) when the string representation is not recognized by the implementation.
+The caller of the interface already expects to respond to the scenario in which the implementation does not support that optional attribute.
+Excluding these optional attributes from the ABI allows an implementation to provide additional attributes that are non-standard.
+
+The \refstruct{pmix_value_t} data structures has an explicit size requirement to support the PMIx \ac{ABI}.
+Changes to the \refstruct{pmix_value_t} must not increase the size of the data structure.
+It is strongly recommended that if the structure needs to be extended in a way that would increase its size then a pointer be used instead.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Linker versus Build ABI}
+
+The software development community often discusses \ac{ABI} in two different ways, that of a \emph{Linker ABI} and of a \emph{Build ABI}.
+
+A \declareterm{Linker ABI} defines a stable set of symbols (i.e., functions) against which a compiler will attempt to link the binary.
+The Linker ABI does not specify constant values or macro definitions leaving those to individual implementations to define.
+If Library A version \code{1} and Library A version \code{2} are Linker ABI compatible then a program that is compiled against Library A version \code{1} can link against Library A version \code{2}.
+Note that the reverse is not necessarily true as Library A version \code{2} may define additional symbols not included in Library A version \code{1}.
+An indication of this compatibility is useful when upgrading a library package on a system.
+Often libraries rely on Semantic Versioning~\footnote{Semantic Versioning \url{https://semver.org/}} to signify breaks in the Linker ABI between versions of the library.
+
+A \declareterm{Build ABI} defines the full set of symbols, constants, and macros used by a compiler to generate the resulting binary.
+If Library A and Library B are Build ABI compatible then a program compiled against Library A will work when linked with Library B.
+
+The PMIx Standard defines a Build ABI in the PMIx Standard ABI repository~\footnote{PMIx Headers for ABI Compatibility \url{https://github.com/pmix/pmix-abi}}.
+Any program built against the headers defined in the PMIx Standard ABI version \code{X.Y} will work with any PMIx implementation that is \ac{ABI} compatible with version \code{X.Y}.
+Note that the PMIx implementation may include additional items beyond the PMIX Standard ABI at version \code{X.Y} and still report being PMIx Standard version \code{X.Y} compliant.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
