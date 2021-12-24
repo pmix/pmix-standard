@@ -82,8 +82,9 @@ This is required as many environments only guarantee unique namespaces within a
 session, and not across sessions.
 \adviceuserend
 
-The \ac{PMIx} server has corresponding attributes the host can use to specify the realm of information that it provides during namespace registration (see Section \ref{chap:api_server:assemble}).
-
+Determining the target within a realm varies between realms and is explained in detail in the realm
+descriptions below.  Note that several attributes can be either queried as a key or set as an attribute to
+specify the target within a realm.  The attributes \refattr{PMIX_SESSION_ID}, \refattr{PMIX_NSPACE} and \refattr{PMIX_APPNUM} can be used in both ways.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Session realm attributes}
@@ -100,10 +101,6 @@ referencing session-related information.
 The following keys, by default, request session-level information.
 They will return information about the caller's session unless a \refattr{PMIX_SESSION_ID} attribute is specified in the \refarg{info} array passed to \refapi{PMIx_Get}:
 
-%
-\declareAttribute{PMIX_SESSION_ID}{"pmix.session.id"}{uint32_t}{
-Session identifier assigned by the scheduler.
-}
 %
 \declareAttribute{PMIX_CLUSTER_ID}{"pmix.clid"}{char*}{
 A string name for the cluster this allocation is on.
@@ -374,7 +371,7 @@ to the process realm or by including the \refattr{PMIX_PROC_INFO} attribute
 in the \refarg{info} array passed to \refapi{PMIx_Get}.
 The target process is specified by the namespace
 and rank of the \refarg{proc} argument to \refapi{PMIx_Get}. 
-For process-related keys (other than \refattr{PMIX_PROCID}) 
+For process-related keys (other than \refattr{PMIX_PROCID} and \refattr{PMIX_NSPACE}) 
 the target process is specified by setting the namespace and rank
 of the target process in the \refarg{proc} argument passed to \refapi{PMIx_Get}.
 If information
@@ -394,7 +391,19 @@ The application number within the job in which the specified process is a member
 \declareAttribute{PMIX_RANK}{"pmix.rank"}{pmix_rank_t}{
 Process rank within the job, starting from zero.
 }
-%
+
+\declareAttribute{PMIX_NSPACE}{"pmix.nspace"}{char*}{
+Namespace of the job - may be a numerical value expressed as a string, but is often an
+alphanumeric string carrying information solely of use to the system. Required to be unique
+within the scope of the host environment.  One cannot retrieve the namespace of an arbitrary process
+since that would require already knowing the namespace of that process.  However, a processes own
+namespace can be retrieved by passing a NULL value of \refarg{proc} to \refapi{PMIx_Get}.
+}
+
+\declareAttribute{PMIX_SESSION_ID}{"pmix.session.id"}{uint32_t}{
+Session identifier assigned by the scheduler.
+}
+
 \declareAttribute{PMIX_GLOBAL_RANK}{"pmix.grank"}{pmix_rank_t}{
 Rank of the specified process spanning across all jobs in this session,
 starting with zero. Note that no ordering of the jobs is implied when computing
