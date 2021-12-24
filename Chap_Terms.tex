@@ -39,6 +39,8 @@ execution contexts within a \emph{job}.
 
 \item \declaretermAlt{client}{clients} refers to a process that was registered with the \ac{PMIx} server prior to being started, and connects to that \ac{PMIx} server via \refapi{PMIx_Init} using its assigned namespace and rank with the information required to connect to that server being provided to the process at time of start of execution.
 
+\item \declaretermAlt{tool}{tools} refers to a process that may or may not have been registered with the \ac{PMIx} server prior to being started and intializes using \refapi{PMIx_tool_init}.
+
 \item \declaretermAlt{clone}{clones} refers to a process that was directly started by a \ac{PMIx} client (e.g., using \emph{fork/exec}) and calls \refapi{PMIx_Init}, thus connecting to its local \ac{PMIx} server using the same namespace and rank as its parent process.
 
 \item \declareterm{rank} refers to the numerical location (starting from zero) of a process within the defined scope. Thus, \emph{job rank} is the rank of a process within its \emph{job} and is synonymous with its unqualified \emph{rank}, while \emph{application rank} is the rank of that process within its \emph{application}.
