@@ -7,34 +7,35 @@
 Applications may need to synchronize their operations at various points in
 their execution. Depending on a variety of factors (e.g., the programming
 model and where the synchronization point lies), the application may choose to
-execute the operation using \ac{PMIx}. This is particularly useful in
-situations where communication by other means is not yet available since
-\ac{PMIx} relies on the host environment's infrastructure for such operations.
-
+execute the operation using \ac{PMIx} to access the communication capabilities
+of the host environment's infrastructure. This is particularly useful in
+situations where communication libraries are not yet initialized by the application.
 Synchronization operations also offer an opportunity for processes to exchange
-data at a known point in their execution. Where required, this can include
-information on communication endpoints for subsequent wireup of various
-messaging protocols. 
-
+data at a known point in their execution.  For example, communication libraries within
+different processes can synchronize to exchange information on communication endpoints
+for subsequent wireup of messaging protocols.
 
 \ac{PMIx} clients can use the \refapi{PMIx_Fence} and \refapi{PMIx_Fence_nb} functions 
-to synchronize a set of processes.
+to synchronize a set of processes.  The fence operation can be useful after an application
+performs a number of \refapi{PMIx_Put} operations to coordinate with other processes that the
+data is available for access.   This avoids unsuccessful \refapi{PMIx_Get} calls that might
+otherwise be invoked before the cooresponding \refapi{PMIx_Put} call is complete.
+
 In its default form, the fence operation acts as a barrier between the processes and does not exchange data.
-The fence operation can be useful between the commit and get phases to let all or a subset of processes know that the put data is ready to be accessed.
-Additionally, the clients can pass the \refattr{PMIX_COLLECT_DATA} attribute to request 
+Clients can pass the \refattr{PMIX_COLLECT_DATA} attribute to request 
 that the \refapi{PMIx_Fence} and \refapi{PMIx_Fence_nb} functions exchange all committed 
 data between all involved servers during the synchronization operation.
 This will make local to each remote process the data put by other processes resulting 
 in faster resolution of \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} function calls at 
 the cost of a synchronous data exchange and associated memory footprint expansion.
-For applications where most or all processes access most or all other key-value pairs 
-this attribute may be beneficial.  In such applications, the a 'put/commit/fence/get' 
-pattern is common for efficiently exchanging key-value pairs.
-
-For applications where a small subset of clients access another small subset's key-value pairs 
-this attribute may not be beneficial.  As such, \ac{PMIx} does not require the use of 
-\refapi{PMIx_Fence} or \refapi{PMIx_Fence_nb} functions nor the associated data collection 
-attribute to provide applications with the necessary flexibility to meet their performance requirements.
+In many situations 
+this attribute may have performance benefits as many systems are optimized for transporting 
+larger amounts of data.  In such applications, a 'put/commit/fence/get' 
+pattern is common for efficiently exchanging key-value pairs.  
+For applications where only a small subset of clients access another small subset's key-value pairs 
+this attribute may not be beneficial.  As such, applications are not required to use
+\refapi{PMIx_Fence} or \refapi{PMIx_Fence_nb} functions nor the associated data collection
+attribute to ensure correctness of \ac{PMIx} get/put functionality.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
