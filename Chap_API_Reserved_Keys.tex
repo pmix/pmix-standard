@@ -370,6 +370,8 @@ Rank of the specified process within its application.
 Process identifier of the parent process of the specified process - typically
 used to identify the application process that caused the job containing the
 specified process to be spawned (e.g., the process that called \refapi{PMIx_Spawn}).
+This attribute is only provided for a process if it was created by a call to
+\refapi{PMIx_Spawn} or \refapi{PMIx_Spawn_nb}.
 }
 %
 \declareAttribute{PMIX_EXIT_CODE}{"pmix.exit.code"}{int}{
