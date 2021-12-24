@@ -253,6 +253,10 @@ process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation of the pro
 %
 \declareAttributeNEW{PMIX_CMD_LINE}{"pmix.cmd.line"}{char*}{
 Command line used to execute the specified job (e.g., "mpirun -n 2 --map-by foo ./myapp : -n 4 ./myapp2").
+If the job was created by a call to \refapi{PMIx_Spawn}, the string is an inorder
+concatenation of the
+values of \refattr{PMIX_APP_ARGV} for each application in the 
+job using the character ':' as a separator.
 }
 %
 \declareAttribute{PMIX_NSDIR}{"pmix.nsdir"}{char*}{
