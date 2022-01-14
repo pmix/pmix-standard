@@ -293,9 +293,16 @@ In addition to the attributes described in \refapi{PMIx_Spawn}, the tool may opt
     \item \pasteAttributeItem{PMIX_IOF_DROP_NEWEST}
     \item \pasteAttributeItem{PMIX_IOF_BUFFERING_SIZE}
     \item \pasteAttributeItem{PMIX_IOF_BUFFERING_TIME}
+    \item \pasteAttributeItem{PMIX_IOF_OUTPUT_RAW}
     \item \pasteAttributeItem{PMIX_IOF_TAG_OUTPUT}
     \item \pasteAttributeItem{PMIX_IOF_TIMESTAMP_OUTPUT}
     \item \pasteAttributeItem{PMIX_IOF_XML_OUTPUT}
+    \item \pasteAttributeItem{PMIX_IOF_RANK_OUTPUT}
+    \item \pasteAttributeItem{PMIX_IOF_OUTPUT_TO_FILE}
+    \item \pasteAttributeItem{PMIX_IOF_OUTPUT_TO_DIRECTORY}
+    \item \pasteAttributeItem{PMIX_IOF_FILE_PATTERN}
+    \item \pasteAttributeItem{PMIX_IOF_FILE_ONLY}
+    \item \pasteAttributeItem{PMIX_IOF_MERGE_STDERR_STDOUT}
     \item \pasteAttributeItem{PMIX_NOHUP}
     \item \pasteAttributeItem{PMIX_NOTIFY_JOB_EVENTS}
     \item \pasteAttributeItem{PMIX_NOTIFY_COMPLETION}
@@ -594,6 +601,7 @@ When requesting to forward \code{stdout}/\code{stderr}, the tool can specify sev
     \item \pasteAttributeItem{PMIX_IOF_TAG_OUTPUT}
     \item \pasteAttributeItem{PMIX_IOF_TIMESTAMP_OUTPUT}
     \item \pasteAttributeItem{PMIX_IOF_XML_OUTPUT}
+    \item \pasteAttributeItem{PMIX_IOF_RANK_OUTPUT}
 \end{itemize}
 
 The \ac{PMIx} client in the tool is responsible for formatting the output stream. Note that output from multiple processes will often be interleaved due to variations in arrival time - ordering of output is not guaranteed across processes and/or nodes.
@@ -677,6 +685,14 @@ An \ac{IO} forwarding operation failed - the affected channel will be included i
 The following attributes are used to control \ac{IO} forwarding behavior at the request of tools. Use of the attributes is optional - any option not provided will revert to some implementation-specific value.
 
 %
+\declareAttributeNEW{PMIX_IOF_LOCAL_OUTPUT}{"pmix.iof.local"}{bool}{
+Write output streams to local stdout/err
+}
+%
+\declareAttributeNEW{PMIX_IOF_MERGE_STDERR_STDOUT}{"pmix.iof.mrg"}{bool}{
+Merge stdout and stderr streams from application procs
+}
+%
 \declareAttribute{PMIX_IOF_CACHE_SIZE}{"pmix.iof.csize"}{uint32_t}{
 The requested size of the \ac{PMIx} server cache in bytes for each specified channel. By default, the server is allowed (but not required) to drop all bytes received beyond the max size.
 }
@@ -697,6 +713,10 @@ Requests that \ac{IO} on the specified channel(s) be aggregated in the \ac{PMIx}
 Max time in seconds to buffer \ac{IO} before delivering it. Used in conjunction with buffering size, this prevents \ac{IO} from being held indefinitely while waiting for another payload to arrive.
 }
 %
+\declareAttributeNEW{PMIX_IOF_OUTPUT_RAW}{"pmix.iof.raw"}{bool}{
+Do not buffer output to be written as complete lines - output characters as the stream delivers them
+}
+%
 \declareAttribute{PMIX_IOF_COMPLETE}{"pmix.iof.cmp"}{bool}{
 Indicates that the specified \ac{IO} channel has been closed by the source.
 }
@@ -707,6 +727,10 @@ Requests that output be prefixed with the nspace,rank of the source and a string
 %
 \declareAttribute{PMIX_IOF_TIMESTAMP_OUTPUT}{"pmix.iof.ts"}{bool}{
 Requests that output be marked with the time at which the data was received by the tool - note that this will differ from the time at which the data was collected from the source.
+}
+%
+\declareAttributeNEW{PMIX_IOF_RANK_OUTPUT}{"pmix.iof.rank"}{bool}{
+Tag output with the rank it came from
 }
 %
 \declareAttribute{PMIX_IOF_XML_OUTPUT}{"pmix.iof.xml"}{bool}{
@@ -724,7 +748,23 @@ Requests that the host environment deliver a copy of the specified output stream
 \declareAttributeNEW{PMIX_IOF_REDIRECT}{"pmix.iof.redir"}{bool}{
 Requests that the host environment intercept the specified output stream(s) and deliver it to the requesting tool instead of its current final destination. This might be used, for example, during a debugging procedure to avoid injection of debugger-related output into the application’s results file. The original output stream(s) destination is restored upon termination of the tool.
 }
-
+%
+\declareAttributeNEW{PMIX_IOF_OUTPUT_TO_FILE}{"pmix.iof.file"}{char*}{
+Direct application output into files of form "<filename>.rank" with both stdout and stderr redirected into it
+}
+%
+\declareAttributeNEW{PMIX_IOF_OUTPUT_TO_DIRECTORY}{"pmix.iof.dir"}{char*}{
+direct application output into files of form "<directory>/<jobid>/rank.<rank>/stdout[err]"
+}
+%
+\declareAttributeNEW{PMIX_IOF_FILE_PATTERN}{"pmix.iof.fpt"}{bool}{
+Specified output file is to be treated as a pattern and not automatically annotated by nspace, rank, or other parameters
+}
+%
+\declareAttributeNEW{PMIX_IOF_FILE_ONLY}{"pmix.iof.fonly"}{bool}{
+Output only into designated files - do not also output a copy to stdout/stderr
+}
+%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1185,6 +1225,7 @@ The following attributes are optional for implementers of \ac{PMIx} libraries:
 \pasteAttributeItemEnd{}
 \pasteAttributeItem{PMIX_EXTERNAL_PROGRESS}
 \pasteAttributeItem{PMIX_EVENT_BASE}
+\pasteAttributeItem{PMIX_IOF_LOCAL_OUTPUT}
 
 \optattrend
 
