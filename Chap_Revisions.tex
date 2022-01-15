@@ -1303,6 +1303,26 @@ The v4.2 update includes the following changes from the v4.1 document:
     \item Clarify \refattr{PMIX_CMD_LINE} in \refapi{PMIx_Spawn}
 \end{compactitemize}
 
+\subsection{Deprecated constants}
+
+The following constants were deprecated in v4.2:
+
+\begin{constantdesc}
+%
+\declareconstitemDEP{PMIX_DEBUG_WAITING_FOR_NOTIFY}
+Renamed to \refconst{PMIX_READY_FOR_DEBUG}
+%
+\end{constantdesc}
+
+
+\subsection{Deprecated attributes}
+
+The following attributes were deprecated in v4.2:
+
+%
+\declareAttributeDEP{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
+Renamed to \refattr{PMIX_DEBUG_STOP_IN_APP}
+}
 
 \subsection{Added Functions (Provisional)}
 
@@ -1364,3 +1384,7 @@ The v4.2 update includes the following changes from the v4.1 document:
 \pasteAttributeItem{PMIX_IOF_OUTPUT_RAW}
 \pasteAttributeItem{PMIX_IOF_OUTPUT_TO_DIRECTORY}
 \pasteAttributeItem{PMIX_IOF_OUTPUT_TO_FILE}
+\pasteAttributeItem{PMIX_BREAKPOINT}
+\pasteAttributeItem{PMIX_DEBUG_STOP_IN_APP}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
