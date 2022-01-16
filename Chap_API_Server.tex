@@ -605,7 +605,7 @@ Note that these assemblages can be used hierarchically:
 The following description is not intended to represent the actual layout of information in a given \ac{PMIx} library. Instead, it is describes how information provided in the \refarg{info} parameter of the \refapi{PMIx_server_register_nspace} shall be organized for proper processing by a \ac{PMIx} server library. The ordering of the various information elements is arbitrary - they are presented in a top-down hierarchical form solely for clarity in reading.
 
 \advicermstart
-Creating the \refarg{info} array of data requires knowing in advance the number of elements required for the array. This can be difficult to compute and somewhat fragile in practice. One method for resolving the problem is to create a linked list of objects, each containing a single \refstruct{pmix_info_t} structure. Allocation and manipulation of the list can then be accomplished using existing standard methods. Upon completion, the final \refarg{info} array can be allocated based on the number of elements on the list, and then the values in the list object \refstruct{pmix_info_t} structures transferred to the corresponding array element utilizing the \refmacro{PMIX_INFO_XFER} macro.
+Creating the \refarg{info} array of data requires knowing in advance the number of elements required for the array. This can be difficult to compute and somewhat fragile in practice. One method for resolving the problem is to create a linked list of objects, each containing a single \refstruct{pmix_info_t} structure. Allocation and manipulation of the list can then be accomplished using existing standard methods. Upon completion, the final \refarg{info} array can be allocated based on the number of elements on the list, and then the values in the list object \refstruct{pmix_info_t} structures transferred to the corresponding array element utilizing the \refapi{PMIx_Info_xfer} \ac{API}.
 \advicermend
 
 \label{cptr:api_server:noderegex}A common building block used in several areas is the construction of a regular expression identifying the nodes involved in that area - e.g., the nodes in a \refterm{session} or \refterm{job}. \ac{PMIx} provides several tools to facilitate this operation, beginning by constructing an argv-like array of node names. This array is then passed to the \refapi{PMIx_generate_regex} function to create a regular expression parseable by the \ac{PMIx} server library, as shown below:
@@ -641,7 +641,7 @@ rc = PMIx_generate_regex(nodelist, &regex);
 free(nodelist);
 
 /* pass the regex as the value to the PMIX_NODE_MAP key */
-PMIX_INFO_LOAD(&info, PMIX_NODE_MAP, regex, PMIX_REGEX);
+PMIx_Info_load(&info, PMIX_NODE_MAP, regex, PMIX_REGEX);
 /* release the regex */
 free(regex);
 \end{codepar}
@@ -698,7 +698,7 @@ rc = PMIx_generate_ppn(ppn, &regex);
 free(ppn);
 
 /* pass the regex as the value to the PMIX_PROC_MAP key */
-PMIX_INFO_LOAD(&info, PMIX_PROC_MAP, regex, PMIX_REGEX);
+PMIx_Info_load(&info, PMIX_PROC_MAP, regex, PMIX_REGEX);
 /* release the regex */
 free(regex);
 \end{codepar}
@@ -794,7 +794,7 @@ localranks = PMIX_ARGV_JOIN(ndppn, ',');
 PMIX_ARGV_FREE(ndppn);
 
 /* pass the string as the value to the PMIX_LOCAL_PEERS key */
-PMIX_INFO_LOAD(&info, PMIX_LOCAL_PEERS, localranks, PMIX_STRING);
+PMIx_Info_load(&info, PMIX_LOCAL_PEERS, localranks, PMIX_STRING);
 
 /* release the list */
 free(localranks);
@@ -823,7 +823,7 @@ localcpus = PMIX_ARGV_JOIN(ndcpus, ':');
 PMIX_ARGV_FREE(ndcpus);
 
 /* pass the string as the value to the PMIX_LOCAL_CPUSETS key */
-PMIX_INFO_LOAD(&info, PMIX_LOCAL_CPUSETS, localcpus, PMIX_STRING);
+PMIx_Info_load(&info, PMIX_LOCAL_CPUSETS, localcpus, PMIX_STRING);
 
 /* release the list */
 free(localcpus);

@@ -572,7 +572,7 @@ PMIX_PROC_LOAD(&wildcard, myproc.nspace, PMIX_RANK_WILDCARD);
 rc = PMIx_Get(&wildcard, PMIX_UNIV_SIZE, NULL, 0, &value);
 
 /* get the #nodes in our session */
-PMIX_INFO_LOAD(&info, PMIX_SESSION_INFO, NULL, PMIX_BOOL);
+PMIx_Info_load(&info, PMIX_SESSION_INFO, NULL, PMIX_BOOL);
 rc = PMIx_Get(&wildcard, PMIX_NUM_NODES, &info, 1, &value);
 \end{codepar}
 \cspecificend
@@ -592,8 +592,8 @@ PMIx_Init(&myproc, NULL, 0);
 
 /* get the #nodes in a different session */
 sid = 12345;
-PMIX_INFO_LOAD(&info[0], PMIX_SESSION_INFO, NULL, PMIX_BOOL);
-PMIX_INFO_LOAD(&info[1], PMIX_SESSION_ID, &sid, PMIX_UINT32);
+PMIx_Info_load(&info[0], PMIX_SESSION_INFO, NULL, PMIX_BOOL);
+PMIx_Info_load(&info[1], PMIX_SESSION_ID, &sid, PMIX_UINT32);
 rc = PMIx_Get(NULL, PMIX_NUM_NODES, info, 2, &value);
 \end{codepar}
 \cspecificend
@@ -619,7 +619,7 @@ PMIX_PROC_LOAD(&wildcard, myproc.nspace, PMIX_RANK_WILDCARD);
 rc = PMIx_Get(&wildcard, PMIX_JOB_NUM_APPS, NULL, 0, &value);
 
 /* get the #nodes in our job */
-PMIX_INFO_LOAD(&info, PMIX_JOB_INFO, NULL, PMIX_BOOL);
+PMIx_Info_load(&info, PMIX_JOB_INFO, NULL, PMIX_BOOL);
 rc = PMIx_Get(&wildcard, PMIX_NUM_NODES, &info, 1, &value);
 \end{codepar}
 \cspecificend
@@ -655,7 +655,7 @@ PMIX_PROC_LOAD(&otherproc, myproc.nspace, appsize);
 /* Since "otherproc" refers to a process in the second application,
  * we can simply mark that we want the info for this key from the
  * application realm */
-PMIX_INFO_LOAD(&info, PMIX_APP_INFO, NULL, PMIX_BOOL);
+PMIx_Info_load(&info, PMIX_APP_INFO, NULL, PMIX_BOOL);
 rc = PMIx_Get(&otherproc, PMIX_NUM_NODES, &info, 1, &value);
 
 /* alternatively, we can directly ask for the #nodes in
@@ -664,8 +664,8 @@ rc = PMIx_Get(&otherproc, PMIX_NUM_NODES, &info, 1, &value);
  * for application realm information about a specific appnum
  * within our own namespace, the process identifier can be NULL */
 appnum = 1;
-PMIX_INFO_LOAD(&appinfo[0], PMIX_APP_INFO, NULL, PMIX_BOOL);
-PMIX_INFO_LOAD(&appinfo[1], PMIX_APPNUM, &appnum, PMIX_UINT32);
+PMIx_Info_load(&appinfo[0], PMIX_APP_INFO, NULL, PMIX_BOOL);
+PMIx_Info_load(&appinfo[1], PMIX_APPNUM, &appnum, PMIX_UINT32);
 rc = PMIx_Get(NULL, PMIX_NUM_NODES, appinfo, 2, &value);
 \end{codepar}
 \cspecificend
@@ -697,8 +697,8 @@ PMIx_Init(&myproc, NULL, 0);
 rc = PMIx_Get(&myproc, PMIX_NODE_SIZE, NULL, 0, &value);
 
 /* get the #slots on another node */
-PMIX_INFO_LOAD(&info[0], PMIX_NODE_INFO, NULL, PMIX_BOOL);
-PMIX_INFO_LOAD(&info[1], PMIX_HOSTNAME, "remotehost", PMIX_STRING);
+PMIx_Info_load(&info[0], PMIX_NODE_INFO, NULL, PMIX_BOOL);
+PMIx_Info_load(&info[1], PMIX_HOSTNAME, "remotehost", PMIX_STRING);
 rc = PMIx_Get(NULL, PMIX_MAX_PROCS, info, 2, &value);
 
 /* get the total #procs on the remote node - note that we don't
