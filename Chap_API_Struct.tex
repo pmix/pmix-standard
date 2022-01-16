@@ -1065,8 +1065,8 @@ typedef struct pmix_value \{
 \cspecificend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Value structure support macros}
-The following macros are provided to support the \refstruct{pmix_value_t} structure.
+\subsubsection{Value structure support}
+The following macros and \acp{API} are provided to support the \refstruct{pmix_value_t} structure.
 
 %%%%
 \littleheader{Static initializer for the value structure}
@@ -1170,50 +1170,73 @@ PMIX_VALUE_FREE(m, n)
 
 %%%%%%%%%%%
 \littleheader{Load a value structure}
-\declaremacro{PMIX_VALUE_LOAD}
+\declareapi{PMIx_Value_load}
+
+%%%%
+\summary
 
 Load data into a \refstruct{pmix_value_t} structure.
 
-\versionMarker{2.0}
+%%%%
+\format
+
+\versionMarker{4.2}
 \cspecificstart
 \begin{codepar}
-PMIX_VALUE_LOAD(v, d, t);
+pmix_status_t
+PMIx_Value_load(pmix_value_t *val,
+                const void *data,
+                pmix_data_type_t type);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\argin{v}{The \refstruct{pmix_value_t} into which the data is to be loaded (pointer to \refstruct{pmix_value_t})}
-\argin{d}{Pointer to the data value to be loaded (handle)}
-\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\argin{val}{The \refstruct{pmix_value_t} into which the data is to be loaded (pointer to \refstruct{pmix_value_t})}
+\argin{data}{Pointer to the data value to be loaded (handle)}
+\argin{type}{Type of the provided data value (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-This macro simplifies the loading of data into a \refstruct{pmix_value_t} by correctly assigning values to the structure's fields.
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\adviceuserstart
-The data will be copied into the \refstruct{pmix_value_t} - thus, any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
-\adviceuserend
+%%%%
+\descr
+
+Copy the provided data into the \refstruct{pmix_value_t}. Any data stored in the source value can be modified or free'd without affecting the copied data once the function has completed.
 
 %%%%%%%%%%%
 \littleheader{Unload a value structure}
-\declaremacro{PMIX_VALUE_UNLOAD}
+\declareapi{PMIx_Value_unload}
+
+%%%%
+\summary
 
 Unload data from a \refstruct{pmix_value_t} structure.
 
-\versionMarker{2.2}
+%%%%
+\format
+
+\versionMarker{4.2}
 \cspecificstart
 \begin{codepar}
-PMIX_VALUE_UNLOAD(r, v, d, t);
+pmix_status_t
+PMIx_Value_unload(pmix_value_t *val,
+                  void **data,
+                  pmix_data_type_t *type);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\argout{r}{Status code indicating result of the operation {\refstruct{pmix_status_t}}}
-\argin{v}{The \refstruct{pmix_value_t} from which the data is to be unloaded (pointer to \refstruct{pmix_value_t})}
-\arginout{d}{Pointer to the location where the data value is to be returned (handle)}
-\arginout{t}{Pointer to return the data type of the unloaded value (handle)}
+\argin{val}{The \refstruct{pmix_value_t} from which the data is to be unloaded (pointer to \refstruct{pmix_value_t})}
+\arginout{data}{Pointer to the location where the data value is to be returned (handle)}
+\arginout{type}{Pointer to return the data type of the unloaded value (handle)}
 \end{arglist}
 
-This macro simplifies the unloading of data from a \refstruct{pmix_value_t}.
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Return a copy of the data in the \refstruct{pmix_value_t}. The source value can be modified or free'd without affecting the copied data once the function has completed.
 
 \adviceuserstart
 Memory will be allocated and the data will be in the \refstruct{pmix_value_t} returned - the source \refstruct{pmix_value_t} will not be altered.
@@ -1221,28 +1244,36 @@ Memory will be allocated and the data will be in the \refstruct{pmix_value_t} re
 
 %%%%%%%%%%%
 \littleheader{Transfer data between value structures}
-\declaremacro{PMIX_VALUE_XFER}
+\declareapi{PMIx_Value_xfer}
+
+%%%%
+\summary
 
 Transfer the data value between two \refstruct{pmix_value_t} structures.
 
-\versionMarker{2.0}
+%%%%
+\format
+
+\versionMarker{4.2}
 \cspecificstart
 \begin{codepar}
-PMIX_VALUE_XFER(r, d, s);
+pmix_status_t
+PMIx_Value_xfer(pmix_value_t *dest,
+                const pmix_value_t *src);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\argout{r}{Status code indicating success or failure of the transfer (\refstruct{pmix_status_t})}
-\argin{d}{Pointer to the \refstruct{pmix_value_t} destination (handle)}
-\argin{s}{Pointer to the \refstruct{pmix_value_t} source (handle)}
+\argin{dest}{Pointer to the \refstruct{pmix_value_t} destination (handle)}
+\argin{src}{Pointer to the \refstruct{pmix_value_t} source (handle)}
 \end{arglist}
 
-This macro simplifies the transfer of data between two \refstruct{pmix_value_t} structures, ensuring that all fields are properly copied.
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\adviceuserstart
-The data will be copied into the destination \refstruct{pmix_value_t} - thus, any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
-\adviceuserend
+%%%%
+\descr
+
+Copy the data in the source \refstruct{pmix_value_t} into the destination \refstruct{pmix_value_t}. The source value can be modified or free'd without affecting the copied data once the function has completed.
 
 %%%%%%%%%%%
 \littleheader{Retrieve a numerical value from a value struct}
@@ -1450,106 +1481,163 @@ Constructing an array of \refstruct{pmix_info_t} is a fairly common operation. T
 
 %%%%%%%%%%%
 \littleheader{Start a list of \refstruct{pmix_info_t} structures}
-\declaremacro{PMIX_INFO_LIST_START}
+\declareapi{PMIx_Info_list_start}
+
+%%%%
+\summary
 
 Initialize a list of \refstruct{pmix_info_t} structures. The actual list is opaque to the caller and is implementation-dependent.
 
-\versionMarker{4.0}
+%%%%
+\format
+
+\versionMarker{4.2}
 \cspecificstart
 \begin{codepar}
-PMIX_INFO_LIST_START(m)
+void*
+PMIx_Info_list_start(void);
 \end{codepar}
 \cspecificend
 
-\begin{arglist}
-\argin{m}{A \code{void*} pointer (handle)}
-\end{arglist}
+%%%%
+\descr
 
-Note that the pointer will be initialized to an opaque structure whose elements are implementation-dependent. The caller must not modify or dereference the object.
+Note that the returned pointer will be initialized to an opaque structure whose elements are implementation-dependent. The caller must not modify or dereference the object.
 
 %%%%%%%%%%%
 \littleheader{Add a \refstruct{pmix_info_t} structure to a list}
-\declaremacro{PMIX_INFO_LIST_ADD}
+\declareapi{PMIx_Info_list_add}
+
+%%%%
+\summary
 
 Add a \refstruct{pmix_info_t} structure containing the specified value to the provided list.
 
-\versionMarker{4.0}
+%%%%
+\format
+
+\versionMarker{4.2}
 \cspecificstart
 \begin{codepar}
-PMIX_INFO_LIST_ADD(rc, m, k, d, t)
+pmix_status_t
+PMIx_Info_list_add(void *ptr,
+                   const char *key,
+                   const void *value,
+                   pmix_data_type_t type);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\arginout{rc}{Return status for the operation (\refstruct{pmix_status_t})}
-\argin{m}{A \code{void*} pointer initialized via \refmacro{PMIX_INFO_LIST_START} (handle)}
-\argin{k}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
-\argin{d}{Pointer to the data value to be loaded (handle)}
-\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
+\argin{key}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
+\argin{value}{Pointer to the data value to be loaded (handle)}
+\argin{type}{Type of the provided data value (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-\adviceuserstart
-Both key and data will be copied into the \refstruct{pmix_info_t} on the list - thus, the key and any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
-\adviceuserend
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Copy the provided key and data into a \refstruct{pmix_info_t} on the list. The key and any data stored in the source value can be modified or free'd without affecting the copied data once the function has completed.
 
 %%%%%%%%%%%
 \littleheader{Transfer a \refstruct{pmix_info_t} structure to a list}
-\declaremacro{PMIX_INFO_LIST_XFER}
+\declareapi{PMIx_Info_list_xfer}
 
-Transfer the information in a \refstruct{pmix_info_t} structure to the provided list.
+%%%%
+\summary
 
-\versionMarker{4.0}
+Transfer the information in a \refstruct{pmix_info_t} structure to a structure on the provided list.
+
+%%%%
+\format
+
+\versionMarker{4.2}
 \cspecificstart
 \begin{codepar}
-PMIX_INFO_LIST_XFER(rc, m, s)
+pmix_status_t
+PMIx_Info_list_xfer(void *ptr,
+                    const pmix_info_t *src);
 \end{codepar}
 \cspecificend
 
+
 \begin{arglist}
-\arginout{rc}{Return status for the operation (\refstruct{pmix_status_t})}
-\argin{m}{A \code{void*} pointer initialized via \refmacro{PMIX_INFO_LIST_START} (handle)}
-\argin{s}{Pointer to the source \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
+\argin{src}{Pointer to the source \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-\adviceuserstart
-All data (including key, value, and directives) will be copied into the destination \refstruct{pmix_info_t} on the list - thus, the source \refstruct{pmix_info_t} may be free'd without affecting the copied data once the macro has completed.
-\adviceuserend
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+All data (including key, value, and directives) will be copied into a destination \refstruct{pmix_info_t} on the list. The source \refstruct{pmix_info_t} may be free'd without affecting the copied data once the function has completed.
+
 
 %%%%%%%%%%%
 \littleheader{Convert a \refstruct{pmix_info_t} list to an array}
-\declaremacro{PMIX_INFO_LIST_CONVERT}
+\declareapi{PMIx_Info_list_convert}
+
+%%%%
+\summary
 
 Transfer the information in the provided \refstruct{pmix_info_t} list to a \refstruct{pmix_data_array_t} array
 
-\versionMarker{4.0}
+%%%%
+\format
+
+\versionMarker{4.2}
 \cspecificstart
 \begin{codepar}
-PMIX_INFO_LIST_CONVERT(rc, m, d)
+pmix_status_t
+PMIx_Info_list_convert(void *ptr,
+                       pmix_data_array_t *par);
 \end{codepar}
 \cspecificend
 
+
 \begin{arglist}
-\arginout{rc}{Return status for the operation (\refstruct{pmix_status_t})}
-\argin{m}{A \code{void*} pointer initialized via \refmacro{PMIX_INFO_LIST_START} (handle)}
-\argin{d}{Pointer to an instantiated \refstruct{pmix_data_array_t} structure where the \refstruct{pmix_info_t} array is to be stored (pointer to \refstruct{pmix_data_array_t})}
+\argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
+\argin{par}{Pointer to an instantiated \refstruct{pmix_data_array_t} structure where the \refstruct{pmix_info_t} array is to be stored (pointer to \refstruct{pmix_data_array_t})}
 \end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Information collect3ed in the provided list of \refstruct{pmix_info_t} will be transferred to a \refstruct{pmix_data_array_t} containing \refstruct{pmix_info_t} structures.
+
 
 %%%%%%%%%%%
 \littleheader{Release a \refstruct{pmix_info_t} list}
-\declaremacro{PMIX_INFO_LIST_RELEASE}
+\declareapi{PMIx_Info_list_release}
+
+%%%%
+\summary
 
 Release the provided \refstruct{pmix_info_t} list
 
-\versionMarker{4.0}
+%%%%
+\format
+
+\versionMarker{4.2}
 \cspecificstart
 \begin{codepar}
-PMIX_INFO_LIST_RELEASE(m)
+void
+PMIx_Info_list_release(void *ptr);
 \end{codepar}
 \cspecificend
 
+
 \begin{arglist}
-\argin{m}{A \code{void*} pointer initialized via \refmacro{PMIX_INFO_LIST_START} (handle)}
+\argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
 \end{arglist}
+
+%%%%
+\descr
 
 Information contained in the \refstruct{pmix_info_t} on the list shall be released in addition to whatever backing storage the implementation may have allocated to support construction of the list.
 
@@ -2296,6 +2384,8 @@ PMIX_SETENV(r, name, value, env);
 Similar to \code{setenv} from the C API, this allows the caller to set an environment variable in the specified \code{env} array, which could then be passed to the \refstruct{pmix_app_t} structure or any other destination.
 
 \adviceuserstart
+This macro is \emph{not} to be used to modify or set environmental variables in the user's environment (i.e., the \code{environ} array). Changes to that array should be perfomed using the typical \code{setenv} or \code{putenv} functions.
+
 The provided name and value are copied into the destination environment array - thus, the source strings can be free'd without affecting the array once the macro has completed.
 \adviceuserend
 
