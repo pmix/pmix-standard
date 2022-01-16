@@ -557,7 +557,7 @@ Decompress the provided data
 \begin{codepar}
 bool
 PMIx_Data_decompress(const uint8_t *inbytes, size_t size,
-                     uint8_t **outbytes, size_t *nbytes,);
+                     uint8_t **outbytes, size_t *nbytes);
 \end{codepar}
 \cspecificend
 
@@ -586,5 +586,45 @@ Only data compressed by the \refapi{PMIx_Data_compress} \ac{API}
 can be decompressed by this function. Passing data that has not
 been compressed by \refapi{PMIx_Data_compress} will lead to
 unexpected and potentially catastrophic results.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{\code{PMIx_Data_embed}}
+\declareapi{PMIx_Data_embed}
+
+%%%%
+\summary
+
+Embed a data payload into a buffer
+
+%%%%
+\format
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Data_embed(pmix_data_buffer_t *buffer,
+                const pmix_byte_object_t *payload);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argout{buffer}{Address of the buffer where the payload is to be embedded (handle)}
+\argin{payload}{Address of the \refstruct{pmix_byte_object_t} structure containing the data to be embedded into the buffer (handle)}
+\end{arglist}
+
+Returns one of the following:
+\begin{constantdesc}
+\item \refconst{PMIX_SUCCESS} The data has been embedded as requested
+\item \refconst{PMIX_ERR_BAD_PARAM} The destination and/or source pointer is \code{NULL}
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} The \ac{PMIx} implementation does not support this function.
+\end{constantdesc}
+
+%%%%
+\descr
+
+The embed function is identical in operation to \refapi{PMIx_Data_load}
+except that it does \emph{not} clear the payload object upon completion.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
