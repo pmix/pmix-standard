@@ -493,6 +493,20 @@ typedef struct pmix_proc \{ \\
 \subsubsection{Process structure support macros}
 The following macros are provided to support the \refstruct{pmix_proc_t} structure.
 
+%%%%
+\littleheader{Static initializer for the proc structure}
+\declaremacro{PMIX_PROC_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_proc_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_STATIC_INIT
+\end{codepar}
+\cspecificend
+
+
 \littleheader{Initialize the proc structure}
 \declaremacro{PMIX_PROC_CONSTRUCT}
 
@@ -804,6 +818,20 @@ typedef struct pmix_proc_info \{ \\
 The following macros are provided to support the \refstruct{pmix_proc_info_t} structure.
 
 %%%%
+\littleheader{Static initializer for the proc info structure}
+\declaremacro{PMIX_PROC_INFO_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_proc_info_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_PROC_INFO_STATIC_INIT
+\end{codepar}
+\cspecificend
+
+
+%%%%
 \littleheader{Initialize the process information structure}
 \declaremacro{PMIX_PROC_INFO_CONSTRUCT}
 
@@ -972,6 +1000,20 @@ typedef struct pmix_value \{ \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Value structure support macros}
 The following macros are provided to support the \refstruct{pmix_value_t} structure.
+
+%%%%
+\littleheader{Static initializer for the value structure}
+\declaremacro{PMIX_VALUE_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_value_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_VALUE_STATIC_INIT
+\end{codepar}
+\cspecificend
+
 
 \littleheader{Initialize the value structure}
 \declaremacro{PMIX_VALUE_CONSTRUCT}
@@ -1148,6 +1190,20 @@ typedef struct pmix_info_t \{ \\
 %%%%%%%%%%%
 \subsubsection{Info structure support macros}
 The following macros are provided to support the \refstruct{pmix_info_t} structure.
+
+%%%%
+\littleheader{Static initializer for the info structure}
+\declaremacro{PMIX_INFO_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_info_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_INFO_STATIC_INIT
+\end{codepar}
+\cspecificend
+
 
 \littleheader{Initialize the info structure}
 \declaremacro{PMIX_INFO_CONSTRUCT}
@@ -1573,6 +1629,20 @@ typedef struct \{
 
 The following macros are provided to support the \refstruct{pmix_envar_t} structure.
 
+%%%%
+\littleheader{Static initializer for the envar structure}
+\declaremacro{PMIX_ENVAR_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_envar_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_ENVAR_STATIC_INIT
+\end{codepar}
+\cspecificend
+
+
 \littleheader{Initialize the envar structure}
 \declaremacro{PMIX_ENVAR_CONSTRUCT}
 
@@ -1663,6 +1733,20 @@ typedef struct pmix_byte_object \{ \\
 \subsubsection{Byte object support macros}
 The following macros support the \refstruct{pmix_byte_object_t} structure.
 
+%%%%
+\littleheader{Static initializer for the byte object structure}
+\declaremacro{PMIX_BYTE_OBJECT_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_byte_object_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_BYTE_OBJECT_STATIC_INIT
+\end{codepar}
+\cspecificend
+
+
 \littleheader{Initialize the byte object structure}
 \declaremacro{PMIX_BYTE_OBJECT_CONSTRUCT}
 
@@ -1750,6 +1834,20 @@ typedef struct pmix_data_array \{ \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Data array support macros}
 The following macros support the \refstruct{pmix_data_array_t} structure.
+
+%%%%
+\littleheader{Static initializer for the data array structure}
+\declaremacro{PMIX_DATA_ARRAY_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_data_array_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DATA_ARRAY_STATIC_INIT
+\end{codepar}
+\cspecificend
+
 
 \littleheader{Initialize a data array structure}
 \declaremacro{PMIX_DATA_ARRAY_CONSTRUCT}

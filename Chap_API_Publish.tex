@@ -414,6 +414,20 @@ where:
 
 The following macros are provided to support the \refstruct{pmix_pdata_t} structure.
 
+%%%%
+\littleheader{Static initializer for the pdata structure}
+\declaremacro{PMIX_LOOKUP_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_pdata_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_LOOKUP_STATIC_INIT
+\end{codepar}
+\cspecificend
+
+
 \littleheader{Initialize the pdata structure}
 \declaremacro{PMIX_PDATA_CONSTRUCT}
 
