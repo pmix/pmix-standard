@@ -602,6 +602,12 @@ When requesting to forward \code{stdout}/\code{stderr}, the tool can specify sev
     \item \pasteAttributeItem{PMIX_IOF_TIMESTAMP_OUTPUT}
     \item \pasteAttributeItem{PMIX_IOF_XML_OUTPUT}
     \item \pasteAttributeItem{PMIX_IOF_RANK_OUTPUT}
+    \item \pasteAttributeItem{PMIX_IOF_OUTPUT_TO_FILE}
+    \item \pasteAttributeItem{PMIX_IOF_OUTPUT_TO_DIRECTORY}
+    \item \pasteAttributeItem{PMIX_IOF_FILE_PATTERN}
+    \item \pasteAttributeItem{PMIX_IOF_FILE_ONLY}
+    \item \pasteAttributeItem{PMIX_IOF_MERGE_STDERR_STDOUT}
+
 \end{itemize}
 
 The \ac{PMIx} client in the tool is responsible for formatting the output stream. Note that output from multiple processes will often be interleaved due to variations in arrival time - ordering of output is not guaranteed across processes and/or nodes.
@@ -750,19 +756,19 @@ Requests that the host environment intercept the specified output stream(s) and 
 }
 %
 \declareAttributeNEW{PMIX_IOF_OUTPUT_TO_FILE}{"pmix.iof.file"}{char*}{
-Direct application output into files of form "<filename>.rank" with both stdout and stderr redirected into it
+Direct application output into files of form "<filename>.<nspace>.<rank>.out" (for \code{stdout}) and "<filename>.<nspace>.<rank>.err" (for \code{stderr}). If \refattr{PMIX_IOF_MERGE_STDERR_STDOUT} was given, then only the \code{stdout} file will be created and both streams will be written into it.
 }
 %
 \declareAttributeNEW{PMIX_IOF_OUTPUT_TO_DIRECTORY}{"pmix.iof.dir"}{char*}{
-direct application output into files of form "<directory>/<jobid>/rank.<rank>/stdout[err]"
+direct application output into files of form "<directory>/<nspace>/rank.<rank>/stdout" (for \code{stdout}) and "<directory>/<nspace>/rank.<rank>/stderr" (for \code{stderr}). If \refattr{PMIX_IOF_MERGE_STDERR_STDOUT} was given, then only the \code{stdout} file will be created and both streams will be written into it.
 }
 %
 \declareAttributeNEW{PMIX_IOF_FILE_PATTERN}{"pmix.iof.fpt"}{bool}{
-Specified output file is to be treated as a pattern and not automatically annotated by nspace, rank, or other parameters
+Specified output file is to be treated as a pattern and not automatically annotated by nspace, rank, or other parameters. The pattern can use \code{%n} for the namespace, and \code{%r} for the rank wherever those quantities are to be placed. The resulting filename will be appended with ".out" for the \code{stdout} stream and ".err" for the \code{stderr} stream. If \refattr{PMIX_IOF_MERGE_STDERR_STDOUT} was given, then only the \code{stdout} file will be created and both streams will be written into it.
 }
 %
 \declareAttributeNEW{PMIX_IOF_FILE_ONLY}{"pmix.iof.fonly"}{bool}{
-Output only into designated files - do not also output a copy to stdout/stderr
+Output only into designated files - do not also output a copy to the console's stdout/stderr
 }
 %
 
