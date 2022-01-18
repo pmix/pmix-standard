@@ -313,6 +313,14 @@ In addition to the attributes described in \refapi{PMIx_Spawn}, the tool may opt
     \item \pasteAttributeItem{PMIX_DEBUG_WAIT_FOR_NOTIFY}
 \end{itemize}
 
+
+\adviceuserstart
+The \refattr{PMIX_IOF_FILE_ONLY} indicates output is directed to files and
+no copy is sent back to the application.  For example, this can be combined with
+\refattr{PMIX_IOF_OUTPUT_TO_FILE} or \refattr{PMIX_IOF_OUTPUT_TO_FILE} to
+only output to files.
+\adviceuserend
+
 The tool then calls the \refapi{PMIx_Spawn} \ac{API} so that the \ac{PMIx} library can communicate the spawn request to the server.
 
 Upon receipt, the \ac{PMIx} server library passes the spawn request to its host \ac{RM} daemon for processing via the \refapi{pmix_server_spawn_fn_t} server module function. If this callback was not provided, then the \ac{PMIx} server library will return the \refconst{PMIX_ERR_NOT_SUPPORTED} error status.
