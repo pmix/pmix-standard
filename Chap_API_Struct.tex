@@ -1221,14 +1221,14 @@ Unload data from a \refstruct{pmix_value_t} structure.
 pmix_status_t
 PMIx_Value_unload(pmix_value_t *val,
                   void **data,
-                  pmix_data_type_t *type);
+                  size_t *sz);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
 \argin{val}{The \refstruct{pmix_value_t} from which the data is to be unloaded (pointer to \refstruct{pmix_value_t})}
 \arginout{data}{Pointer to the location where the data value is to be returned (handle)}
-\arginout{type}{Pointer to return the data type of the unloaded value (handle)}
+\arginout{sz}{Pointer to return the size of the unloaded value (handle)}
 \end{arglist}
 
 Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
@@ -1239,7 +1239,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 Return a copy of the data in the \refstruct{pmix_value_t}. The source value can be modified or free'd without affecting the copied data once the function has completed.
 
 \adviceuserstart
-Memory will be allocated and the data will be in the \refstruct{pmix_value_t} returned - the source \refstruct{pmix_value_t} will not be altered.
+Memory will be allocated and the pointer to that data will be in the \code{data} argument - the source \refstruct{pmix_value_t} will not be altered. The user is responsible for releasing the returned data.
 \adviceuserend
 
 %%%%%%%%%%%
