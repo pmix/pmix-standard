@@ -308,7 +308,7 @@ then the application number shall default to that of the calling process if the
 namespace is its own job, or a value of zero if the namespace is that of a
 different job.
 
-The following keys, by default, request application-level information:
+The following keys, by default, request application-level information.
 They will return information about the application indicated in \refarg{proc}:
 
 %  Removing this because its not really part of the application realm.  It is probably just
@@ -493,8 +493,8 @@ These special keys can only target the local node and also require that a namesp
 be specified using the \refarg{proc} argument to \refapi{PMIx_Get}.
 
 
-The following keys, by default, request node-level information:
-They will return information about the either the local node or the node specified by \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID}:
+The following keys, by default, request node-level information.
+They will return information about either the local node or the node specified by \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID}:
 
 %
 \declareAttribute{PMIX_HOSTNAME}{"pmix.hname"}{char*}{
