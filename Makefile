@@ -15,7 +15,7 @@ CHAPTERS= \
 	Chap_API_Struct.tex \
 	Chap_API_Init.tex \
 	Chap_API_Sync.tex \
-        Chap_API_Sharing_Basics.tex \
+	Chap_API_Sharing_Basics.tex \
 	Chap_API_Reserved_Keys.tex \
 	Chap_API_NonReserved_Keys.tex \
 	Chap_API_Query.tex \
