@@ -18,36 +18,10 @@ This helps the end user distinguish between what is defined by the PMIx standard
 \adviceimplend
 
 \adviceuserstart
-Use of increment/decrement operations on indices inside \ac{PMIx} macros is discouraged due to unpredictable behavior. For example, the following sequence:
+Use of increment/decrement operations on indices inside \ac{PMIx} macros is discouraged due to unpredictable behavior as the index may be cited more than once in
+the macro. The \ac{PMIx} standard only governs the existence and syntax of macros - it does not specify their implementation.
 
-\begin{codepar}
-PMIX_INFO_LOAD(&array[n++], "mykey", &mystring, PMIX_STRING);
-PMIX_INFO_LOAD(&array[n++], "mykey2", &myint, PMIX_INT);
-\end{codepar}
-
-will load the given key-values into incorrect locations if the macro is implemented as:
-
-\begin{codepar}
-define PMIX_INFO_LOAD(m, k, v, t)                      \textbackslash
-  do \{                                                 \textbackslash
-    if (NULL != (k)) \{                                 \textbackslash
-      pmix_strncpy((m)->key, (k), PMIX_MAX_KEYLEN);    \textbackslash
-    \}                                                  \textbackslash
-    (m)->flags = 0;                                    \textbackslash
-    pmix_value_load(&((m)->value), (v), (t));          \textbackslash
-  \} while (0)
-\end{codepar}
-
-since the index is cited more than once in the macro. The \ac{PMIx} standard only governs the existence and syntax of macros - it does not specify their implementation. Given the freedom of implementation, a safer call sequence might be as follows:
-
-\begin{codepar}
-PMIX_INFO_LOAD(&array[n], "mykey", &mystring, PMIX_STRING);
-++n;
-PMIX_INFO_LOAD(&array[n], "mykey2", &myint, PMIX_INT);
-++n;
-\end{codepar}
-
-Users are also advised to use the macros for creating, loading, and releasing
+Users are also advised to use the macros and \acp{API} for creating, loading, and releasing
 \ac{PMIx} structures to avoid potential issues with release of memory. For
 example, pointing a \refstruct{pmix_envar_t} element at a static string
 variable and then using \refmacro{PMIX_ENVAR_DESTRUCT} to clear it would
@@ -1404,52 +1378,73 @@ PMIX_INFO_FREE(m, n)
 
 %%%%%%%%%%%
 \littleheader{Load key and value data into a info struct}
-\declaremacro{PMIX_INFO_LOAD}
+\declareapi{PMIx_Info_load}
 
-\versionMarker{1.0}
+%%%%
+\summary
+
+Load data into a \refstruct{pmix_info_t} structure.
+
+%%%%
+\format
+
+\versionMarker{4.2}
 \cspecificstart
 \begin{codepar}
-PMIX_INFO_LOAD(v, k, d, t);
+pmix_status_t
+PMIx_Info_load(pmix_info_t *info,
+               const char* key,
+               const void *data,
+               pmix_data_type_t type);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\argin{v}{Pointer to the \refstruct{pmix_info_t} into which the key and data are to be loaded (pointer to \refstruct{pmix_info_t})}
-\argin{k}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
-\argin{d}{Pointer to the data value to be loaded (handle)}
-\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\argin{info}{The \refstruct{pmix_info_t} into which the data is to be loaded (handle)}
+\argin{key}{Pointer to the key to be loaded (handle)}
+\argin{data}{Pointer to the data value to be loaded (handle)}
+\argin{type}{Type of the provided data value (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-This macro simplifies the loading of key and data into a \refstruct{pmix_info_t} by correctly assigning values to the structure's fields.
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\adviceuserstart
-Both key and data will be copied into the \refstruct{pmix_info_t} - thus, the key and any data stored in the source value can be modified or free'd without affecting the copied data once the macro has completed.
-\adviceuserend
+%%%%
+\descr
+
+Copy the provided data into the \refstruct{pmix_info_t}. Any data stored in the source parameters can be modified or free'd without affecting the copied data once the function has completed.
 
 %%%%%%%%%%%
 \littleheader{Copy data between info structures}
-\declaremacro{PMIX_INFO_XFER}
+\declareapi{PMIx_Info_xfer}
 
-Copy all data (including key, value, and directives) between two \refstruct{pmix_info_t} structures.
+%%%%
+\summary
 
-\versionMarker{2.0}
+Copy all data between two \refstruct{pmix_info_t} structures.
+
+%%%%
+\format
+
+\versionMarker{4.2}
 \cspecificstart
 \begin{codepar}
-PMIX_INFO_XFER(d, s);
+pmix_status_t
+PMIx_Info_xfer(pmix_info_t *dest,
+               pmix_info_t *src);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\argin{d}{Pointer to the destination \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
-\argin{s}{Pointer to the source \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\argin{dest}{The \refstruct{pmix_info_t} into which the data is to be copied (handle)}
+\argin{src}{The \refstruct{pmix_info_t} from which the data is to be copied (handle)}
 \end{arglist}
 
-This macro simplifies the transfer of data between two\refstruct{pmix_info_t} structures.
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
 
-\adviceuserstart
-All data (including key, value, and directives) will be copied into the destination \refstruct{pmix_info_t} - thus, the source \refstruct{pmix_info_t} may be free'd without affecting the copied data once the macro has completed.
-\adviceuserend
+%%%%
+\descr
 
+Copy the data in the source \refstruct{pmix_info_t} into the destination. Any data stored in the source structure can be modified or free'd without affecting the copied data once the function has completed.
 
 %%%%%%%%%%%
 \littleheader{Test a boolean info struct}
