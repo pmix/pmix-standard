@@ -561,7 +561,7 @@ does not need to harvest them.
 }
 %
 \declareAttributeNEW{PMIX_JOB_TIMEOUT}{"pmix.job.time"}{int}{
-Time in seconds before the spawned job should time out and be terminated (0 => infinite)
+Time in seconds before the spawned job should time out and be terminated (0 => infinite), defined as the total runtime of the job (equivalent to the walltime limit of typical batch schedulers).
 }
 %
 \declareAttributeNEW{PMIX_SPAWN_TIMEOUT}{"pmix.sp.time"}{int}{
