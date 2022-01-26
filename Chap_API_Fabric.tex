@@ -202,7 +202,7 @@ All coordinate values shall be expressed as unsigned integers due to their units
 Note that the \refstruct{pmix_coord_t} structure does not imply nor mandate any requirement on how the coordinate data is to be stored within the \ac{PMIx} library. Implementers are free to store the coordinate in whatever format they choose.
 \adviceimplend
 
-A fabric coordinate is associated with a given fabric device and must be unique within a given view. Fabric devices are associated with the operating system which hosts them - thus, fabric coordinates are logically grouped within the \emph{node} realm (as described in Section \ref{api:struct:attributes:retrieval}) and can be retrieved per the rules detailed in Section \ref{chap:res:nrealm}.
+A fabric coordinate is associated with a given fabric device and must be unique within a given view. Fabric devices are associated with the operating system which hosts them - thus, fabric coordinates are logically grouped within the \emph{node} realm (as described in Section \ref{api:struct:attributes:retrieval}) and can be retrieved per the rules detailed in Section \ref{chap:api_rsvd_keys:nrealm}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fabric coordinate support macros}
@@ -291,7 +291,7 @@ All coordinate values shall be expressed as unsigned integers due to their units
 Note that the \refstruct{pmix_coord_t} structure does not imply nor mandate any requirement on how the coordinate data is to be stored within the \ac{PMIx} library. Implementers are free to store the coordinate in whatever format they choose.
 \adviceimplend
 
-A fabric coordinate is associated with a given fabric device and must be unique within a given view. Fabric devices are associated with the operating system which hosts them - thus, fabric coordinates are logically grouped within the \emph{node} realm (as described in Section \ref{api:struct:attributes:retrieval}) and can be retrieved per the rules detailed in Section \ref{chap:res:nrealm}.
+A fabric coordinate is associated with a given fabric device and must be unique within a given view. Fabric devices are associated with the operating system which hosts them - thus, fabric coordinates are logically grouped within the \emph{node} realm (as described in Section \ref{api:struct:attributes:retrieval}) and can be retrieved per the rules detailed in Section \ref{chap:api_rsvd_keys:nrealm}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -570,7 +570,7 @@ Network shape expressed as a string (e.g., \code{"10x12x2"}). If no plane is spe
 %
 %
 \vspace{\baselineskip}
-The following attributes are related to the \emph{node realm} (as described in Section \ref{chap:res:nrealm}) and are retrieved according to those rules.
+The following attributes are related to the \emph{node realm} (as described in Section \ref{chap:api_rsvd_keys:nrealm}) and are retrieved according to those rules.
 
 %
 \declareAttributeNEW{PMIX_FABRIC_DEVICES}{"pmix.fab.devs"}{pmix_data_array_t}{
@@ -642,7 +642,7 @@ A node-level unique identifier for a \ac{PCI} device. Provided only if the devic
 }
 %
 \vspace{\baselineskip}
-The following attributes are related to the \emph{process realm} (as described in Section \ref{chap:res:prealm}) and are retrieved according to those rules.
+The following attributes are related to the \emph{process realm} (as described in Section \ref{chap:api_rsvd_keys:prealm}) and are retrieved according to those rules.
 
 %
 \declareAttributeNEW{PMIX_FABRIC_ENDPT}{"pmix.fab.endpt"}{pmix_data_array_t}{
@@ -650,7 +650,7 @@ Fabric endpoints for a specified process. As multiple endpoints may be assigned 
 }
 %
 \vspace{\baselineskip}
-The following attributes are related to the \emph{job realm} (as described in Section \ref{chap:res:jrealm}) and are retrieved according to those rules. Note that distances to fabric devices are retrieved using the \refattr{PMIX_DEVICE_DISTANCES} key with the appropriate \refstruct{pmix_device_type_t} qualifier.
+The following attributes are related to the \emph{job realm} (as described in Section \ref{chap:api_rsvd_keys:jrealm}) and are retrieved according to those rules. Note that distances to fabric devices are retrieved using the \refattr{PMIX_DEVICE_DISTANCES} key with the appropriate \refstruct{pmix_device_type_t} qualifier.
 
 %
 \declareAttributeNEW{PMIX_SWITCH_PEERS}{"pmix.speers"}{pmix_data_array_t}{
