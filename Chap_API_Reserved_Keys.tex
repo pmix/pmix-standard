@@ -14,7 +14,7 @@ posting reserved keys using the \refapi{PMIx_Put} \ac{API}.
 \ac{PMIx} implementations may choose to define their own
 custom-prefixed keys which may adhere to either the \emph{reserved} or the \emph{non-reserved} retrieval rules at the discretion of the implementation. Implementations may choose to provide such custom keys at client start of execution, but this is not required.
 
-Host environments may also opt to define their own custom keys. However, \ac{PMIx} implementations are unlikely to recognize such host-defined keys and will therefore treat them according to the \emph{non-reserved} rules described in Chapter \ref{chap:nrkeys}. Users
+Host environments may also opt to define their own custom keys. However, \ac{PMIx} implementations are unlikely to recognize such host-defined keys and will therefore treat them according to the \emph{non-reserved} rules described in Chapter \ref{chap:data_sharing}. Users
 are advised to check both the local \ac{PMIx} implementation and host environment documentation
 for a list of any custom prefixes they must avoid, and to learn of any non-standard keys that may require special handling.
 
@@ -193,7 +193,7 @@ Process map equivalent to \refattr{PMIX_PROC_MAP} expressed in Argonne National 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Job realm attributes}
-\label{chap:res:jrealm}
+\label{chap:api_rsvd_keys:jrealm}
 
 Job-related information is retrieved by including the namespace of the target
 job and a rank of \refconst{PMIX_RANK_WILDCARD} in the \refarg{proc} argument
@@ -274,7 +274,7 @@ Number of applications in the specified job.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Application realm attributes}
-\label{chap:res:aprealm}
+\label{chap:api_rsvd_keys:aprealm}
 
 Application-related information can only be retrieved by including the
 \refattr{PMIX_APP_INFO} attribute in the \refarg{info} array passed to
@@ -338,7 +338,7 @@ Regular expression describing the result of the process mapping.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Process realm attributes}
-\label{chap:res:prealm}
+\label{chap:api_rsvd_keys:prealm}
 
 Process-related information is retrieved by referencing the namespace
 and rank of the target process in the call to \refapi{PMIx_Get}. If information
@@ -437,7 +437,7 @@ In addition, process-level information includes functional attributes directly a
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Node realm keys}
-\label{chap:res:nrealm}
+\label{chap:api_rsvd_keys:nrealm}
 
 Information regarding the local node can be retrieved by directly requesting the node realm key in the call to \refapi{PMIx_Get} - the keys for node-related information are not shared across other realms. The target process identifier will be ignored for keys that are not dependent upon it. Information about a node other than the local node can be retrieved by specifying the
 \refattr{PMIX_NODE_INFO} attribute in the \refarg{info} array along with
@@ -503,7 +503,7 @@ In addition, node-level information includes functional attributes directly asso
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Retrieval rules for reserved keys}
-\label{chap:rkeys:retrules}
+\label{chap:api_rsvd_keys:retrules}
 
 The retrieval rules for reserved keys are relatively simple as the keys are
 required, by definition, to be available when the client begins execution.
@@ -545,7 +545,7 @@ namespace, then the server shall take one of the following actions:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Accessing information: examples}
-\label{chap:api_kv:getex}
+\label{chap:api_rsvd_keys:getex}
 
 This section provides examples illustrating methods for accessing information from the various realms. The intent of the examples is not to provide comprehensive coding guidance, but rather to further illustrate the use of \refapi{PMIx_Get} for obtaining information on a \refterm{session}, \refterm{job}, \refterm{application}, \refterm{process}, and \refterm{node}.
 
@@ -602,7 +602,7 @@ rc = PMIx_Get(NULL, PMIX_NUM_NODES, info, 2, &value);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Job-level information}
 
-Information regarding a job can be obtained by the methods detailed in Section \ref{chap:res:jrealm}. Example requests are shown below:
+Information regarding a job can be obtained by the methods detailed in Section \ref{chap:api_rsvd_keys:jrealm}. Example requests are shown below:
 
 \cspecificstart
 \begin{codepar}
@@ -628,7 +628,7 @@ rc = PMIx_Get(&wildcard, PMIX_NUM_NODES, &info, 1, &value);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Application-level information}
 
-Information regarding an application can be obtained by the methods described in Section \ref{chap:res:aprealm}. Example requests are shown below:
+Information regarding an application can be obtained by the methods described in Section \ref{chap:api_rsvd_keys:aprealm}. Example requests are shown below:
 
 \cspecificstart
 \begin{codepar}
@@ -674,13 +674,13 @@ rc = PMIx_Get(NULL, PMIX_NUM_NODES, appinfo, 2, &value);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Process-level information}
 
-Process-level information is accessed by providing the namespace and rank of the target process. In the absence of any directive as to the level of information being requested, the \ac{PMIx} library will always return the process-level value. See Section \ref{chap:res:prealm} for details.
+Process-level information is accessed by providing the namespace and rank of the target process. In the absence of any directive as to the level of information being requested, the \ac{PMIx} library will always return the process-level value. See Section \ref{chap:api_rsvd_keys:prealm} for details.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Node-level information}
 
-Information regarding a node within the system can be obtained by the methods described in Section \ref{chap:res:nrealm}. Example requests are shown below:
+Information regarding a node within the system can be obtained by the methods described in Section \ref{chap:api_rsvd_keys:nrealm}. Example requests are shown below:
 
 \cspecificstart
 \begin{codepar}
