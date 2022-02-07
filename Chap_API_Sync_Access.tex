@@ -29,7 +29,6 @@ PMIx clients can only provide key-values pairs within their own process realm an
 The value of a key is not necessarily static and can be modified by the original provider of the key.
 
 \ac{PMIx} classifies keys as either reserved or non-reserved.
-
 Only keys provided by a host environment or \ac{PMIx} implementation can begin with \code{"pmix"} and are called reserved keys.  
 Host environments and \ac{PMIx} implementations must only provide keys that begin with \code{"pmix"} to avoid conflicts with keys that are provided by clients.
 Reserved keys are documented in chapter \ref{chap:api_rsvd_keys}.
@@ -71,19 +70,20 @@ and its job rank.
 %%%  PMIX_EXIT_CODE for example, UNIVERSE_SIZE could change if more resources are added?)
 
 Non-reserved keys are provided by clients.
-A call to PMIx_Put will result in a key-value being associated with the calling client within 
+A call to \refapi{PMIx_Put} will result in a key-value being associated with the calling client within 
 its process data realm.
 There is no mechanism to retract a key-value that has been made available by a client through \refapi{PMIx_Put}.
 The key can be assigned a new value, but cannot be removed entirely.
 Although key values can originate from different sources, they are always retrieved using the
-\refapi{PMIx_Get} and \refapi{PMIx_Get_nb} API.
+\refapi{PMIx_Get} and \refapi{PMIx_Get_nb} \ac{API}.
 
-The publish/lookup data realm is accessed through a separate set of API's.
+The publish/lookup data realm is accessed through a separate set of \acp{API}.
 \refapi{PMIx_Put} cannot add or modify key-values within the publish/lookup realm and 
 \refapi{PMIx_Lookup} cannot access key-values outside the publish/lookup realm.
-This data realm is described in detail is chapter [Reference to publish/lookup chapter].
-Although PMIx_Publish and PMIx_Lookup are analogous to PMIx_Put and PMIx_Get in that both pairs 
-of API's provide functionality for exposing and retreiving key-values, the semantics vary significantly.  
+This data realm is described in detail is chapter \ref{chap:pub}.
+[Reference to publish/lookup chapter].
+Although \refapi{PMIx_Publish} and \refapi{PMIx_Lookup} are analogous to \refapi{PMIx_Put} and \refapi{PMIx_Get} in that both pairs 
+of \acp{API} provide functionality for exposing and retreiving key-values, the semantics vary significantly.  
 For example, PMIx_Lookup includes the ability to wait until a key is defined before returning.
 PMIx_Publish can restrict the scope of who can access data to its own namespace, the host environment, the session it is executing in, all processes or even custom scopes, while  
 PMIx_Put can restrict the scope of who can access data to the node it is executing on, remote nodes, 
@@ -325,7 +325,7 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \ac{PMIx} implementations may choose to locally cache non-reserved keys prior to submitting them for distribution.  \refapi{PMIx_Commit} initiates the operation of making available previously staged key-value pairs to other processes.  Depending on the implementation, this may involve transmitting the entire collection of data posted by the process to a server.  \refapi{PMIx_Commit} is an asynchronous operation that will immediately return to the caller while the data is staged in the background.
 
 \adviceuserstart
-Users are advised to always include the call to \refapi{PMIx_Commit} in case the local implementation requires it. Note that posted data will not be circulated during \refapi{PMIx_Commit}. Availability of the data by other processes upon completion of \refapi{PMIx_Commit} therefore still relies upon the exchange mechanisms described at the beginning of this chapter.
+Users are advised to always include the call to \refapi{PMIx_Commit} in case the local implementation requires it. Note that posted data will not necessarily be circulated during \refapi{PMIx_Commit}. Availability of the data by other processes upon completion of \refapi{PMIx_Commit} therefore still relies upon the exchange mechanisms described at the beginning of this chapter.
 \adviceuserend
 
 
