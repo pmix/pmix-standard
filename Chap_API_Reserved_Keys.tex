@@ -126,8 +126,6 @@ The Resource Manager will remove any directories or files it creates in
 \acp{FQDN} are being retained by the \ac{PMIx} library.
 }
 
-\vspace{\baselineskip}
-
 %
 \declareAttribute{PMIX_RM_NAME}{"pmix.rm.name"}{char*}{
 String name of the \ac{RM}.
@@ -140,7 +138,7 @@ String name of the \ac{RM}.
 \vspace{\baselineskip}
 
 The following session-related keys default to the realms described in their descriptions but can be
-retrieved retrieved from the session realm by setting the \refattr{PMIX_SESSION_INFO} attribute in the \refarg{info} array passed to \refapi{PMIx_Get}:
+retrieved from the session realm by setting the \refattr{PMIX_SESSION_INFO} attribute in the \refarg{info} array passed to \refapi{PMIx_Get}:
 
 \declareAttribute{PMIX_ALLOCATED_NODELIST}{"pmix.alist"}{char*}{
 Comma-delimited list or regular expression of all nodes in the specified realm regardless of whether or not they currently host processes. Defaults to the \refterm{job} realm.
@@ -339,7 +337,9 @@ Type of mapping used to layout the application (e.g., \code{cyclic}).
 \declareAttribute{PMIX_APP_MAP_REGEX}{"pmix.apmap.regex"}{char*}{
 Regular expression describing the result of the process mapping.
 }
-%
+
+\vspace{\baselineskip}
+
 The following application-related keys default to the realms described in their descriptions but can be
 retrieved retrieved from the application realm by setting the \refattr{PMIX_APP_INFO} attribute in the \refarg{info} array passed to \refapi{PMIx_Get}:
 
@@ -434,7 +434,7 @@ Exit code returned when the specified process terminated.
 %
 \declareAttribute{PMIX_PROCID}{"pmix.procid"}{pmix_proc_t}{
 The caller's process identifier.  
-The value returned is identical to what PMIx_Init or PMIx_Tool_init provides.
+The value returned is identical to what \refapi{PMIx_Init} or \refapi{PMIx_Tool_init} provides.
 The process identifier in the \refapi{PMIx_Get} call is ignored when requesting this key.
 }
 %
