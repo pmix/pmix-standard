@@ -2379,8 +2379,6 @@ PMIX_SETENV(r, name, value, env);
 Similar to \code{setenv} from the C API, this allows the caller to set an environment variable in the specified \code{env} array, which could then be passed to the \refstruct{pmix_app_t} structure or any other destination.
 
 \adviceuserstart
-This macro is \emph{not} to be used to modify or set environmental variables in the user's environment (i.e., the \code{environ} array). Changes to that array should be perfomed using the typical \code{setenv} or \code{putenv} functions.
-
 The provided name and value are copied into the destination environment array - thus, the source strings can be free'd without affecting the array once the macro has completed.
 \adviceuserend
 
