@@ -125,7 +125,6 @@ The Resource Manager will remove any directories or files it creates in
 \declareAttributeNEW{PMIX_HOSTNAME_KEEP_FQDN}{"pmix.fqdn"}{bool}{
 \acp{FQDN} are being retained by the \ac{PMIx} library.
 }
-
 %
 \declareAttribute{PMIX_RM_NAME}{"pmix.rm.name"}{char*}{
 String name of the \ac{RM}.
@@ -341,7 +340,7 @@ Regular expression describing the result of the process mapping.
 \vspace{\baselineskip}
 
 The following application-related keys default to the realms described in their descriptions but can be
-retrieved retrieved from the application realm by setting the \refattr{PMIX_APP_INFO} attribute in the \refarg{info} array passed to \refapi{PMIx_Get}:
+retrieved from the application realm by setting the \refattr{PMIX_APP_INFO} attribute in the \refarg{info} array passed to \refapi{PMIx_Get}:
 
 \pasteAttributeItemBegin{PMIX_NUM_NODES}In this context, this is the number of
 nodes currently hosting processes in the specified application, which may be a
@@ -400,7 +399,7 @@ Process rank within the job, starting from zero.
 Namespace of the job - may be a numerical value expressed as a string, but is often an
 alphanumeric string carrying information solely of use to the system. Required to be unique
 within the scope of the host environment.  One cannot retrieve the namespace of an arbitrary process
-since that would require already knowing the namespace of that process.  However, a processes own
+since that would require already knowing the namespace of that process.  However, a process' own
 namespace can be retrieved by passing a NULL value of \refarg{proc} to \refapi{PMIx_Get}.
 }
 
@@ -434,7 +433,7 @@ Exit code returned when the specified process terminated.
 %
 \declareAttribute{PMIX_PROCID}{"pmix.procid"}{pmix_proc_t}{
 The caller's process identifier.  
-The value returned is identical to what \refapi{PMIx_Init} or \refapi{PMIx_Tool_init} provides.
+The value returned is identical to what \refapi{PMIx_Init} or \refapi{PMIx_tool_init} provides.
 The process identifier in the \refapi{PMIx_Get} call is ignored when requesting this key.
 }
 %
@@ -524,8 +523,7 @@ Total available physical memory on a node.
 }
 
 \declareAttribute{PMIX_LOCAL_PROCS}{"pmix.lprocs"}{pmix_proc_t array}{
-Array of \refstruct{pmix_proc_t} of all processes executing on the local node -- shortcut for \refapi{PMIx_Resolve_peers} for the local node and a \code{NULL} namespace argument. The process identifier is ignored for this attribute.  Unlike other node-realm keys, this key does not allow the caller to specify
-a specific node using \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID}. 
+Array of \refstruct{pmix_proc_t} of all processes executing on the local node -- shortcut for \refapi{PMIx_Resolve_peers} for the local node and a \code{NULL} namespace argument. The process identifier is ignored for this attribute.
 }
 %
 \declareAttributeProvisional{PMIX_NODE_OVERSUBSCRIBED}{"pmix.ndosub"}{bool}{
