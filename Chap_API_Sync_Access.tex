@@ -31,14 +31,14 @@ The value of a key is not necessarily static and can be modified by the original
 \ac{PMIx} classifies keys as either reserved or non-reserved.
 Only keys provided by a host environment or \ac{PMIx} implementation can begin with \code{"pmix"} and are called reserved keys.  
 Host environments and \ac{PMIx} implementations must only provide keys that begin with \code{"pmix"} to avoid conflicts with keys that are provided by clients.
-Reserved keys are documented in chapter \ref{chap:api_rsvd_keys}.
+Reserved keys are documented in Chapter \ref{chap:api_rsvd_keys}.
 Each standardized reserved key has an associated macro that is documented along with its description.
 Likewise clients can only provide keys that do not begin with \code{"pmix"} to avoid conflicting with keys provided by the host environment or \ac{PMIx} implementation.   
 The string representation and the macro are equivalent methods to refer to a key.
 Throughout this document, the macro is used rather than its string value to refer to reserved keys.
 Clients cannot create reserved keys, nor can they modify the value of reserved keys.
 The way reserved keys are accessed by clients 
-is different than for non-reserved keys as explained in \ref{chap:api_rsvd_keys}.
+is different than for non-reserved keys as explained in Chapter \ref{chap:api_rsvd_keys}.
 
 Host environments are not required to provide all keys that are documented in the standard.  
 However, when providing keys that are documented, they must adhere to the behavior defined by the standard for reserved keys.  
@@ -47,7 +47,7 @@ Implementations are encouraged to standardize any non-standardized, reserved key
 
 Host environments are permitted to provide non-reserved keys and non-standardized reserved keys.  
 However there are important caveats to providing either of these categories of keys 
-that are explained in \ref{chap:data_sharing:non_rsvd_keys} and \ref{chap:api_rsvd_keys}.
+that are explained in Section \ref{chap:data_sharing:non_rsvd_keys} and Chapter \ref{chap:api_rsvd_keys}.
 % Would like to make this statement stronger, but there is text in chapter 6 currently that
 % says it is allowed to use "custom-prefixed keys which may adhere to either the reserved or non-reserved
 % retrieval rules.
@@ -58,7 +58,7 @@ provided by the host environment, the host environment will not be compliant wit
 Reserved keys are set by the host environment and are made available at client initialization. 
 Each key is associated with a data realm and the retrieval API call will indicate the realm being queried.
 Reserved keys are used to access information about a client's execution context.
-After initialization, the client can access reserved keys using the PMIx_Get API.  
+After initialization, the client can access reserved keys using the \refapi{PMIx_Get} API.  
 Common information that a client may access includes, but is not limited to,
 the name of the host it is executing on, 
 the number of peer processes in its namespace,
@@ -81,12 +81,11 @@ The publish/lookup data realm is accessed through a separate set of \acp{API}.
 \refapi{PMIx_Put} cannot add or modify key-values within the publish/lookup realm and 
 \refapi{PMIx_Lookup} cannot access key-values outside the publish/lookup realm.
 This data realm is described in detail is chapter \ref{chap:pub}.
-[Reference to publish/lookup chapter].
 Although \refapi{PMIx_Publish} and \refapi{PMIx_Lookup} are analogous to \refapi{PMIx_Put} and \refapi{PMIx_Get} in that both pairs 
 of \acp{API} provide functionality for exposing and retreiving key-values, the semantics vary significantly.  
-For example, PMIx_Lookup includes the ability to wait until a key is defined before returning.
-PMIx_Publish can restrict the scope of who can access data to its own namespace, the host environment, the session it is executing in, all processes or even custom scopes, while  
-PMIx_Put can restrict the scope of who can access data to the node it is executing on, remote nodes, 
+For example, \refapi{PMIx_Lookup} includes the ability to wait until a key is defined before returning.
+\refapi{PMIx_Publish} can restrict the scope of who can access data to its own namespace, the host environment, the session it is executing in, all processes or even custom scopes, while  
+\refapi{PMIx_Put} can restrict the scope of who can access data to the node it is executing on, remote nodes, 
 all nodes or only itself.
 The publish/lookup data realm is useful for advertising information that is not necessarily specific to one process to other processes in the \ac{PMIx} universe.
 The process accessing this information does \emph{not} need to know the identity of the process that provided the data.
@@ -142,7 +141,7 @@ will not complete, by default, until that key-value pair becomes available.
 prefix other than \code{"pmix"}. Such keys are defined by a
 client when information needs to be exchanged between processes, for example, 
 where connection information is required and the host environment does not
-support the \refterm{instant on} option) or where the host environment does not
+support the \refterm{instant on} option or where the host environment does not
 provide a required piece of data. Other than the prefix, there are no
 restrictions on the use or content of non-reserved keys.
 
