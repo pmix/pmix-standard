@@ -7,7 +7,7 @@
 This chapter presents mechanisms for generalized queries that
 access information about the host environment and the system in general.
 The chapter presents the concept of a query followed by a detailed explanation 
-of the queries \acp{API} provided.  The chapter compares the use of these \acp{API} with \refapi{PMIx_Get}.  The chapter concludes with detailed information about how to use
+of the query \acp{API} provided.  The chapter compares the use of these \acp{API} with \refapi{PMIx_Get}.  The chapter concludes with detailed information about how to use
 the query interface to access information about what \ac{PMIx} \acp{API} an implementation supports as well as what attributes each supported \ac{API} supports.
 
 \section{PMIx_Query_info}
@@ -24,7 +24,7 @@ note that one could alternatively use the \refapi{PMIx_Register_event_handler} \
 \declarestruct{pmix_query_t}
 
 A \ac{PMIx} query structure is composed of one or more keys and a list of qualifiers which provide additional information to describe the query.
-Keys which use the same qualifiers can be placed in the same query for compactness, though it is permissable to put each key in its own query.
+Keys which use the same qualifiers can be placed in the same query for compactness, though it is permissible to put each key in its own query.
 
 The \refstruct{pmix_query_t} structure is used by the \refapi{PMIx_Query_info} \acp{API} to describe a single query operation.
 
@@ -110,7 +110,7 @@ Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \
 % Use of pmix_server_query_fn is covered in server interfaces chapter
 \reqattrend
 
-An implementation is not required to support any keys.  If a key is unsupported, the implementation should handle that key in the same way that it is required to handle a key which it cannot find.
+An implementation is not required to support any particular keys.  If a key is unsupported, the implementation should handle that key in the same way that it is required to handle a key which it cannot find.
 The following keys may be specified in a query:
 
 \pasteAttributeItem{PMIX_QUERY_ATTRIBUTE_SUPPORT}
@@ -221,7 +221,7 @@ Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \
 % Use of pmix_server_query_fn is covered in server interfaces chapter
 \reqattrend
 
-An implementation is not required to support any keys.  If a key is unsupported, the implementation should handle that key in the same way that it is required to handle a key which it cannot find.
+An implementation is not required to support any particular keys.  If a key is unsupported, the implementation should handle that key in the same way that it is required to handle a key which it cannot find.
 The following keys may be specified in a query:
 
 \pasteAttributeItem{PMIX_QUERY_ATTRIBUTE_SUPPORT}
@@ -357,9 +357,6 @@ Megabytes of memory currently used by the \ac{RM} daemon on the node. OPTIONAL Q
 Average Megabytes of memory used by client processes on node. OPTIONAL QUALIFERS: \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} (defaults to caller's node).
 }
 
-\vspace{\baselineskip}
-The following attributes are used as qualifiers in queries regarding attribute support within the \ac{PMIx} implementation and/or the host environment:
-
 \subsection{Query attributes}
 \label{api:struct:attributes:query}
 
@@ -397,6 +394,8 @@ String identifier of the allocation whose status is being requested. NO QUALIFIE
 \declareAttributeNEW{PMIX_SERVER_INFO_ARRAY}{"pmix.srv.arr"}{pmix_data_array_t}{
 Array of \refstruct{pmix_info_t} about a given server, starting with its \refattr{PMIX_NSPACE} and including at least one of the rendezvous-required pieces of information.
 }
+\vspace{\baselineskip}
+The following attributes are used as qualifiers in queries regarding attribute support within the \ac{PMIx} implementation and/or the host environment:
 %
 \declareAttributeNEW{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
 Request a list of functions supported by the \ac{PMIx} client library.
@@ -524,7 +523,7 @@ PMIX_QUERY_QUALIFIERS_CREATE(m, n)
 \section{\code{PMIx_Resolve_peers}}
 
 There are a number of common queries for which \ac{PMIx} provides convenience routines.
-These \acp{API} provide similified access to commonly requested queries.  Due to their simplified interface, these \acp{API} cannot be customized through the use of attributes.
+These \acp{API} provide simplified access to commonly requested queries.  Due to their simplified interface, these \acp{API} cannot be customized through the use of attributes.
 If a more specialized version of these queries are required, similar functionality can
 often be accessed through the \refapi{PMIx_Query_info} or \refapi{PMIx_Query_info_nb} \acp{API}.
 
