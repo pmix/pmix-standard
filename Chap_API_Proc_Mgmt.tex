@@ -597,6 +597,20 @@ typedef struct pmix_app \{
 \subsubsection{App structure support macros}
 The following macros are provided to support the \refstruct{pmix_app_t} structure.
 
+%%%%
+\littleheader{Static initializer for the app structure}
+\declaremacro{PMIX_APP_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_app_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_APP_STATIC_INIT
+\end{codepar}
+\cspecificend
+
+
 %%%%%%%%%%%
 \littleheader{Initialize the app structure}
 \declaremacro{PMIX_APP_CONSTRUCT}
@@ -1164,6 +1178,20 @@ typedef struct pmix_topology \{
 
 The following macros support the \refstruct{pmix_topology_t} structure.
 
+%%%%
+\littleheader{Static initializer for the topology structure}
+\declaremacro{PMIX_TOPOLOGY_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_topology_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_TOPOLOGY_STATIC_INIT
+\end{codepar}
+\cspecificend
+
+
 \littleheader{Initialize the topology structure}
 \declaremacro{PMIX_TOPOLOGY_CONSTRUCT}
 
@@ -1592,6 +1620,20 @@ A relative distance value of \code{UINT16_MAX} indicates that the distance from 
 \label{api:netenddist:macros}
 
 The following macros are provided to support the \refstruct{pmix_device_distance_t} structure.
+
+%%%%
+\littleheader{Static initializer for the device distance structure}
+\declaremacro{PMIX_DEVICE_DIST_STATIC_INIT}
+
+Provide a static initializer for the \refstruct{pmix_device_distance_t} fields.
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+PMIX_DEVICE_DIST_STATIC_INIT
+\end{codepar}
+\cspecificend
+
 
 %%%%
 \littleheader{Initialize the device distance structure}
