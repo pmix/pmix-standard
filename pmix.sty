@@ -623,6 +623,10 @@
   \index[index_api]{#1|indexfmt} \label{apifn:#1}%
 }
 
+\newcommand{\declareapiProvisional}[1]{%
+  \index[index_api]{#1|indexfmt} \label{apifn:#1}\provisionalMarker{}%
+}
+
 \newcommand{\declareapiDEPNODISP}[1]{%
   \index[index_api]{Z_#1@#1!\textbf{(Deprecated)}|indexdepfmt} \label{apifn:#1}%
 }
@@ -660,6 +664,9 @@
 
 \newcommand{\declaremacro}[1]{%
   \index[index_macro]{#1|indexfmt} \label{macro:#1}%
+}
+\newcommand{\declaremacroProvisional}[1]{%
+  \index[index_macro]{#1|indexfmt} \label{macro:#1}\provisionalMarker{}%
 }
 
 \newcommand{\refmacro}[1]{\index[index_macro]{#1}\hyperref[macro:#1]{\code{#1}}}

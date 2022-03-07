@@ -326,16 +326,16 @@ The launcher was unable to map the processes for the specified job request.
 \declareconstitemvalueNEW{PMIX_ERR_JOB_FAILED_TO_LAUNCH}{-181}
 One or more processes in the job request failed to launch
 %
-\declareconstitemNEW{PMIX_ERR_JOB_EXE_NOT_FOUND}
+\declareconstitemProvisional{PMIX_ERR_JOB_EXE_NOT_FOUND}
 Specified executable not found
 %
-\declareconstitemNEW{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}
+\declareconstitemProvisional{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}
 Insufficient resources to spawn job
 %
-\declareconstitemNEW{PMIX_ERR_JOB_SYS_OP_FAILED}
+\declareconstitemProvisional{PMIX_ERR_JOB_SYS_OP_FAILED}
 System library operation failed
 %
-\declareconstitemNEW{PMIX_ERR_JOB_WDIR_NOT_FOUND}
+\declareconstitemProvisional{PMIX_ERR_JOB_WDIR_NOT_FOUND}
 Specified working directory not found
 %
 \end{constantdesc}
@@ -546,16 +546,16 @@ corresponding job; the identity (\refattr{PMIX_PROCID}) and exit status
 Do not generate an event when this job normally terminates.
 }
 %
-\declareAttributeNEW{PMIX_ENVARS_HARVESTED}{"pmix.evar.hvstd"}{bool}{
+\declareAttributeProvisional{PMIX_ENVARS_HARVESTED}{"pmix.evar.hvstd"}{bool}{
 Environmental parameters have been harvested by the spawn requestor - the server
 does not need to harvest them.
 }
 %
-\declareAttributeNEW{PMIX_JOB_TIMEOUT}{"pmix.job.time"}{int}{
+\declareAttributeProvisional{PMIX_JOB_TIMEOUT}{"pmix.job.time"}{int}{
 Time in seconds before the spawned job should time out and be terminated (0 => infinite), defined as the total runtime of the job (equivalent to the walltime limit of typical batch schedulers).
 }
 %
-\declareAttributeNEW{PMIX_SPAWN_TIMEOUT}{"pmix.sp.time"}{int}{
+\declareAttributeProvisional{PMIX_SPAWN_TIMEOUT}{"pmix.sp.time"}{int}{
 Time in seconds before spawn operation should time out (0 => infinite).
 Logically equivalent to passing the \refattr{PMIX_TIMEOUT} attribute to the
 \refapi{PMIx_Spawn} \ac{API}, it is provided as a separate attribute to distinguish
@@ -621,7 +621,7 @@ The following macros are provided to support the \refstruct{pmix_app_t} structur
 
 %%%%
 \littleheader{Static initializer for the app structure}
-\declaremacro{PMIX_APP_STATIC_INIT}
+\declaremacroProvisional{PMIX_APP_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_app_t} fields.
 
@@ -1160,7 +1160,7 @@ The following macros support the \refstruct{pmix_topology_t} structure.
 
 %%%%
 \littleheader{Static initializer for the topology structure}
-\declaremacro{PMIX_TOPOLOGY_STATIC_INIT}
+\declaremacroProvisional{PMIX_TOPOLOGY_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_topology_t} fields.
 
@@ -1569,7 +1569,7 @@ The following macros are provided to support the \refstruct{pmix_device_distance
 
 %%%%
 \littleheader{Static initializer for the device distance structure}
-\declaremacro{PMIX_DEVICE_DIST_STATIC_INIT}
+\declaremacroProvisional{PMIX_DEVICE_DIST_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_device_distance_t} fields.
 
