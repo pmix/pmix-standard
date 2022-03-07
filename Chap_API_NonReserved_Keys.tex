@@ -104,22 +104,22 @@ If a specified scope value is not supported, then the \refapi{PMIx_Put} call mus
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_SCOPE_UNDEF}
+\declareconstitemvalue{PMIX_SCOPE_UNDEF}{0}
 Undefined scope.
 %
-\declareconstitem{PMIX_LOCAL}
+\declareconstitemvalue{PMIX_LOCAL}{1}
 The data is intended only for other application processes on the same node.
 Data marked in this way will not be included in data packages sent to remote requesters - i.e., it is only available to processes on the local node.
 %
-\declareconstitem{PMIX_REMOTE}
+\declareconstitemvalue{PMIX_REMOTE}{2}
 The data is intended solely for applications processes on remote nodes.
 Data marked in this way will not be shared with other processes on the same node - i.e., it is only available to  processes on remote nodes.
 %
-\declareconstitem{PMIX_GLOBAL}
+\declareconstitemvalue{PMIX_GLOBAL}{3}
 The data is to be shared with all other requesting processes, regardless of location.
 %
 \versionMarker{2.0}
-\declareconstitem{PMIX_INTERNAL}
+\declareconstitemvalue{PMIX_INTERNAL}{4}
 The data is intended solely for this process and is not shared with other processes.
 %
 \end{constantdesc}

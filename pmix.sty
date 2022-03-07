@@ -420,6 +420,7 @@
 %  \declareconstitemDEP            Declare Constant - Deprecated
 %  \declareconstitemRM             Declare Constant - Removed
 %  \declareconstitemvalue          Declare Constant Value
+%  \declareconstitemvalueNEW       Declare Constant Value - NEW
 %
 %  \pasteAttributeItem             Paste a copy of the Attribute declaration
 %  \pasteAttributeItemBegin        Paste a copy of the Attribute declaration
@@ -439,7 +440,12 @@
 }
 \newcommand{\declareconstitemvalue}[2]{%
   \item[\code{#1}]%
-  \index[index_const]{#1|indexfmt}%
+  \index[index_const]{#1|indexfmt} \label{const:#1}%
+  \hspace{0.25em} \code{#2} \hspace{1em}%
+}
+\newcommand{\declareconstitemvalueNEW}[2]{%
+  \item[\color{magenta}\code{#1}]%
+  \index[index_const]{#1|indexfmt} \label{const:#1}%
   \hspace{0.25em} \code{#2} \hspace{1em}%
 }
 
@@ -447,6 +453,11 @@
   \item[\hl{\code{#1}}]\provisionalMarker{}%
   \index[index_const]{#1|indexfmt} \label{const:#1}%
   \hspace{1em}%
+}
+\newcommand{\declareconstitemvalueProvisional}[2]{%
+  \item[\hl{\code{#1}}]\provisionalMarker{}%
+  \index[index_const]{#1|indexfmt} \label{const:#1}%
+  \hspace{1em} \code{#2} \hspace{1em}%
 }
 
 \newcommand{\declareconstitemNEW}[1]{%

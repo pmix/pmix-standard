@@ -81,13 +81,13 @@ The following events are defined for use in fabric-related operations.
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_FABRIC_UPDATE_PENDING}
+\declareconstitemvalueNEW{PMIX_FABRIC_UPDATE_PENDING}{-176}
 The \ac{PMIx} server library has been alerted to a change in the fabric that requires updating of one or more registered \refstruct{pmix_fabric_t} objects.
 %
-\declareconstitemNEW{PMIX_FABRIC_UPDATED}
+\declareconstitemvalueNEW{PMIX_FABRIC_UPDATED}{-175}
 The \ac{PMIx} server library has completed updating the entries of all affected \refstruct{pmix_fabric_t} objects registered with the library. Access to the entries of those objects may now resume.
 %
-\declareconstitemNEW{PMIX_FABRIC_UPDATE_ENDPOINTS}
+\declareconstitemvalueNEW{PMIX_FABRIC_UPDATE_ENDPOINTS}{-113}
 Endpoint assignments have been updated, usually in response to migration
 or restart of a process. Clients should use \refapi{PMIx_Get} to update any
 internally cached connections.
@@ -374,13 +374,13 @@ Fabric coordinates can be reported based on different \emph{views} according to 
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_COORD_VIEW_UNDEF}
+\declareconstitemvalueNEW{PMIX_COORD_VIEW_UNDEF}{0x00}
 The coordinate view has not been defined.
 %
-\declareconstitemNEW{PMIX_COORD_LOGICAL_VIEW}
+\declareconstitemvalueNEW{PMIX_COORD_LOGICAL_VIEW}{0x01}
 The coordinates are provided in a \emph{logical} view, typically given in Cartesian (x,y,z) dimensions, that describes the data flow in the fabric as defined by the arrangement of the hierarchical addressing scheme, fabric segmentation, routing domains, and other similar factors employed by that fabric.
 %
-\declareconstitemNEW{PMIX_COORD_PHYSICAL_VIEW}
+\declareconstitemvalueNEW{PMIX_COORD_PHYSICAL_VIEW}{0x02}
 The coordinates are provided in a \emph{physical} view based on the actual wiring diagram of the fabric - i.e., values along each axis reflect the relative position of that interface on the specific fabric cabling.
 %
 \end{constantdesc}
@@ -401,13 +401,13 @@ The following constants can be used to set a variable of the type \refstruct{pmi
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_LINK_STATE_UNKNOWN}
+\declareconstitemvalueNEW{PMIX_LINK_STATE_UNKNOWN}{0}
 The port state is unknown or not applicable.
 %
-\declareconstitemNEW{PMIX_LINK_DOWN}
+\declareconstitemvalueNEW{PMIX_LINK_DOWN}{1}
 The port is inactive.
 %
-\declareconstitemNEW{PMIX_LINK_UP}
+\declareconstitemvalueNEW{PMIX_LINK_UP}{2}
 The port is active.
 %
 \end{constantdesc}
@@ -421,10 +421,10 @@ The \refstruct{pmix_fabric_operation_t} data type is an enumerated type for spec
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_FABRIC_REQUEST_INFO}
+\declareconstitemvalueNEW{PMIX_FABRIC_REQUEST_INFO}{0}
 Request information on a specific fabric - if the fabric isn't specified as per \refapi{PMIx_Fabric_register}, then return information on the default fabric of the overall system. Information to be returned is described in \refstruct{pmix_fabric_t}.
 %
-\declareconstitemNEW{PMIX_FABRIC_UPDATE_INFO}
+\declareconstitemvalueNEW{PMIX_FABRIC_UPDATE_INFO}{1}
 Update information on a specific fabric - the index of the fabric (\refattr{PMIX_FABRIC_INDEX}) to be updated must be provided.
 %
 \end{constantdesc}

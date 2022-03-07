@@ -160,7 +160,7 @@ As previously stated, upon completing its work, and prior to returning, each han
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_ERR_EVENT_REGISTRATION}
+\declareconstitemvalue{PMIX_ERR_EVENT_REGISTRATION}{-144}
 Error in event registration.
 %
 \end{constantdesc}
@@ -174,10 +174,10 @@ Error in event registration.
 \declareconstitemNEW{PMIX_EVENT_SYS_BASE}
 Mark the beginning of a dedicated range of constants for system event reporting.
 %
-\declareconstitemNEW{PMIX_EVENT_NODE_DOWN}
+\declareconstitemvalueNEW{PMIX_EVENT_NODE_DOWN}{-231}
 A node has gone down - the identifier of the affected node will be included in the notification.
 %
-\declareconstitemNEW{PMIX_EVENT_NODE_OFFLINE}
+\declareconstitemvalueNEW{PMIX_EVENT_NODE_OFFLINE}{-232}
 A node has been marked as \emph{offline} - the identifier of the affected node will be included in the notification.
 %
 \declareconstitemNEW{PMIX_EVENT_SYS_OTHER}
@@ -557,16 +557,16 @@ The following status code may be returned indicating various actions taken by ot
 
 \begin{constantdesc}
 %
-\declareconstitem{PMIX_EVENT_NO_ACTION_TAKEN}
+\declareconstitemvalue{PMIX_EVENT_NO_ACTION_TAKEN}{-331}
 Event handler: No action taken.
 %
-\declareconstitem{PMIX_EVENT_PARTIAL_ACTION_TAKEN}
+\declareconstitemvalue{PMIX_EVENT_PARTIAL_ACTION_TAKEN}{-332}
 Event handler: Partial action taken.
 %
-\declareconstitem{PMIX_EVENT_ACTION_DEFERRED}
+\declareconstitemvalue{PMIX_EVENT_ACTION_DEFERRED}{-333}
 Event handler: Action deferred.
 %
-\declareconstitem{PMIX_EVENT_ACTION_COMPLETE}
+\declareconstitemvalue{PMIX_EVENT_ACTION_COMPLETE}{-334}
 Event handler: Action complete.
 %
 \end{constantdesc}

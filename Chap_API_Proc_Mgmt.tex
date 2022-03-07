@@ -305,19 +305,19 @@ In addition to the generic error constants, the following spawn-specific error c
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_ERR_JOB_ALLOC_FAILED}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_ALLOC_FAILED}{-188}
 The job request could not be executed due to failure to obtain the specified allocation
 %
-\declareconstitemNEW{PMIX_ERR_JOB_APP_NOT_EXECUTABLE}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_APP_NOT_EXECUTABLE}{-177}
 The specified application executable either could not be found, or lacks execution privileges.
 %
-\declareconstitemNEW{PMIX_ERR_JOB_NO_EXE_SPECIFIED}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_NO_EXE_SPECIFIED}{-178}
 The job request did not specify an executable.
 %
-\declareconstitemNEW{PMIX_ERR_JOB_FAILED_TO_MAP}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_FAILED_TO_MAP}{-179}
 The launcher was unable to map the processes for the specified job request.
 %
-\declareconstitemNEW{PMIX_ERR_JOB_FAILED_TO_LAUNCH}
+\declareconstitemvalueNEW{PMIX_ERR_JOB_FAILED_TO_LAUNCH}{-181}
 One or more processes in the job request failed to launch
 %
 \end{constantdesc}
@@ -1181,34 +1181,34 @@ locality value using standard bit-test methods.
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_LOCALITY_UNKNOWN}
+\declareconstitemvalueNEW{PMIX_LOCALITY_UNKNOWN}{0x0000}
 All bits are set to zero, indicating that the relative locality of the two processes is unknown
 %
-\declareconstitemNEW{PMIX_LOCALITY_NONLOCAL}
+\declareconstitemvalueNEW{PMIX_LOCALITY_NONLOCAL}{0x0000}
 The two processes do not share any common locations
 %
-\declareconstitemNEW{PMIX_LOCALITY_SHARE_HWTHREAD}
+\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_HWTHREAD}{0x0001}
 The two processes share at least one hardware thread
 %
-\declareconstitemNEW{PMIX_LOCALITY_SHARE_CORE}
+\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_CORE}{0x0002}
 The two processes share at least one core
 %
-\declareconstitemNEW{PMIX_LOCALITY_SHARE_L1CACHE}
+\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_L1CACHE}{0x0004}
 The two processes share at least an L1 cache
 %
-\declareconstitemNEW{PMIX_LOCALITY_SHARE_L2CACHE}
+\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_L2CACHE}{0x0008}
 The two processes share at least an L2 cache
 %
-\declareconstitemNEW{PMIX_LOCALITY_SHARE_L3CACHE}
+\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_L3CACHE}{0x0010}
 The two processes share at least an L3 cache
 %
-\declareconstitemNEW{PMIX_LOCALITY_SHARE_PACKAGE}
+\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_PACKAGE}{0x0020}
 The two processes share at least a package
 %
-\declareconstitemNEW{PMIX_LOCALITY_SHARE_NUMA}
+\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_NUMA}{0x0040}
 The two processes share at least one \ac{NUMA} region
 %
-\declareconstitemNEW{PMIX_LOCALITY_SHARE_NODE}
+\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_NODE}{0x4000}
 The two processes are executing on the same node
 %
 \end{constantdesc}
@@ -1307,10 +1307,10 @@ defines the envelope of threads within a possibly multi-threaded process that ar
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_CPUBIND_PROCESS}
+\declareconstitemvalueNEW{PMIX_CPUBIND_PROCESS}{0}
 Use the location of all threads in the possibly multi-threaded process.
 %
-\declareconstitemNEW{PMIX_CPUBIND_THREAD}
+\declareconstitemvalueNEW{PMIX_CPUBIND_THREAD}{1}
 Use only the location of the thread calling the \ac{API}.
 %
 \end{constantdesc}
@@ -1451,25 +1451,25 @@ The following constants can be used to set a variable of the type \refstruct{pmi
 
 \begin{constantdesc}
 %
-\declareconstitemNEW{PMIX_DEVTYPE_UNKNOWN}
+\declareconstitemvalueNEW{PMIX_DEVTYPE_UNKNOWN}{0x00}
 The device is of an unknown type - will not be included in returned device distances.
 %
-\declareconstitemNEW{PMIX_DEVTYPE_BLOCK}
+\declareconstitemvalueNEW{PMIX_DEVTYPE_BLOCK}{0x01}
 Operating system block device, or non-volatile memory device (e.g., "sda" or "dax2.0" on Linux).
 %
-\declareconstitemNEW{PMIX_DEVTYPE_GPU}
+\declareconstitemvalueNEW{PMIX_DEVTYPE_GPU}{0x02}
 Operating system \ac{GPU} device (e.g., "card0" for a Linux \ac{DRM} device).
 %
-\declareconstitemNEW{PMIX_DEVTYPE_NETWORK}
+\declareconstitemvalueNEW{PMIX_DEVTYPE_NETWORK}{0x04}
 Operating system network device (e.g., the "eth0" interface on Linux).
 %
-\declareconstitemNEW{PMIX_DEVTYPE_OPENFABRICS}
+\declareconstitemvalueNEW{PMIX_DEVTYPE_OPENFABRICS}{0x08}
 Operating system OpenFabrics device (e.g., an "mlx4_0" InfiniBand \ac{HCA}, or "hfi1_0" Omni-Path interface on Linux).
 %
-\declareconstitemNEW{PMIX_DEVTYPE_DMA}
+\declareconstitemvalueNEW{PMIX_DEVTYPE_DMA}{0x10}
 Operating system \ac{DMA} engine device (e.g., the "dma0chan0" \ac{DMA} channel on Linux).
 %
-\declareconstitemNEW{PMIX_DEVTYPE_COPROC}
+\declareconstitemvalueNEW{PMIX_DEVTYPE_COPROC}{0x20}
 Operating system co-processor device (e.g., "mic0" for a Xeon Phi on Linux, "opencl0d0" for a OpenCL device, or "cuda0" for a \ac{CUDA} device).
 %
 \end{constantdesc}

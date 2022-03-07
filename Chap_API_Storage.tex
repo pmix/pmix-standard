@@ -23,25 +23,25 @@ The \refstruct{pmix_storage_medium_t} is a \code{uint64_t} type that defines a s
 
 \begin{constantdesc}
 %
-\declareconstitemProvisional{PMIX_STORAGE_MEDIUM_UNKNOWN}
+\declareconstitemvalueProvisional{PMIX_STORAGE_MEDIUM_UNKNOWN}{0x0000000000000001}
 The storage medium type is unknown.
 %
-\declareconstitemProvisional{PMIX_STORAGE_MEDIUM_TAPE}
+\declareconstitemvalueProvisional{PMIX_STORAGE_MEDIUM_TAPE}{0x0000000000000002}
 The storage system uses tape media.
 %
-\declareconstitemProvisional{PMIX_STORAGE_MEDIUM_HDD}
+\declareconstitemvalueProvisional{PMIX_STORAGE_MEDIUM_HDD}{0x0000000000000004}
 The storage system uses HDDs with traditional SAS, SATA interfaces.
 %
-\declareconstitemProvisional{PMIX_STORAGE_MEDIUM_SSD}
+\declareconstitemvalueProvisional{PMIX_STORAGE_MEDIUM_SSD}{0x0000000000000008}
 The storage system uses SSDs with traditional SAS, SATA interfaces.
 %
-\declareconstitemProvisional{PMIX_STORAGE_MEDIUM_NVME}
+\declareconstitemvalueProvisional{PMIX_STORAGE_MEDIUM_NVME}{0x0000000000000010}
 The storage system uses SSDs with NVMe interface.
 %
-\declareconstitemProvisional{PMIX_STORAGE_MEDIUM_PMEM}
+\declareconstitemvalueProvisional{PMIX_STORAGE_MEDIUM_PMEM}{0x0000000000000020}
 The storage system uses persistent memory.
 %
-\declareconstitemProvisional{PMIX_STORAGE_MEDIUM_RAM}
+\declareconstitemvalueProvisional{PMIX_STORAGE_MEDIUM_RAM}{0x0000000000000040}
 The storage system is volatile (e.g., tmpfs).
 %
 \end{constantdesc}
@@ -59,22 +59,22 @@ The \refstruct{pmix_storage_accessibility_t} is a \code{uint64_t} type that defi
 
 \begin{constantdesc}
 %
-\declareconstitemProvisional{PMIX_STORAGE_ACCESSIBILITY_NODE}
+\declareconstitemvalueProvisional{PMIX_STORAGE_ACCESSIBILITY_NODE}{0x0000000000000001}
 The storage system resources are accessible within the same node.
 %
-\declareconstitemProvisional{PMIX_STORAGE_ACCESSIBILITY_SESSION}
+\declareconstitemvalueProvisional{PMIX_STORAGE_ACCESSIBILITY_SESSION}{0x0000000000000002}
 The storage system resources are accessible within the same session.
 %
-\declareconstitemProvisional{PMIX_STORAGE_ACCESSIBILITY_JOB}
+\declareconstitemvalueProvisional{PMIX_STORAGE_ACCESSIBILITY_JOB}{0x0000000000000004}
 The storage system resources are accessible within the same job.
 %
-\declareconstitemProvisional{PMIX_STORAGE_ACCESSIBILITY_RACK}
+\declareconstitemvalueProvisional{PMIX_STORAGE_ACCESSIBILITY_RACK}{0x0000000000000008}
 The storage system resources are accessible within the same rack.
 %
-\declareconstitemProvisional{PMIX_STORAGE_ACCESSIBILITY_CLUSTER}
+\declareconstitemvalueProvisional{PMIX_STORAGE_ACCESSIBILITY_CLUSTER}{0x0000000000000010}
 The storage system resources are accessible within the same cluster.
 %
-\declareconstitemProvisional{PMIX_STORAGE_ACCESSIBILITY_REMOTE}
+\declareconstitemvalueProvisional{PMIX_STORAGE_ACCESSIBILITY_REMOTE}{0x0000000000000020}
 The storage system resources are remote.
 %
 \end{constantdesc}
@@ -82,29 +82,29 @@ The storage system resources are remote.
 \declarestruct{pmix_storage_persistence_t}
 \provisionalMarker{}
 
-The \refstruct{pmix_storage_persistence_t} type specifies different levels of persistence for a particular storage system.
+The \refstruct{pmix_storage_persistence_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different levels of persistence for a particular storage system.
 
 \begin{constantdesc}
 %
-\declareconstitemProvisional{PMIX_STORAGE_PERSISTENCE_TEMPORARY}
+\declareconstitemvalueProvisional{PMIX_STORAGE_PERSISTENCE_TEMPORARY}{0x0000000000000001}
 Data on the storage system is persisted only temporarily (i.e, it does not survive across sessions or node reboots).
 %
-\declareconstitemProvisional{PMIX_STORAGE_PERSISTENCE_NODE}
+\declareconstitemvalueProvisional{PMIX_STORAGE_PERSISTENCE_NODE}{0x0000000000000002}
 Data on the storage system is persisted on the node.
 %
-\declareconstitemProvisional{PMIX_STORAGE_PERSISTENCE_SESSION}
+\declareconstitemvalueProvisional{PMIX_STORAGE_PERSISTENCE_SESSION}{0x0000000000000004}
 Data on the storage system is persisted for the duration of the session.
 %
-\declareconstitemProvisional{PMIX_STORAGE_PERSISTENCE_JOB}
+\declareconstitemvalueProvisional{PMIX_STORAGE_PERSISTENCE_JOB}{0x0000000000000008}
 Data on the storage system is persisted for the duration of the job.
 %
-\declareconstitemProvisional{PMIX_STORAGE_PERSISTENCE_SCRATCH}
+\declareconstitemvalueProvisional{PMIX_STORAGE_PERSISTENCE_SCRATCH}{0x0000000000000010}
 Data on the storage system is persisted according to scratch storage policies (short-term storage, typically persisted for days to weeks).
 %
-\declareconstitemProvisional{PMIX_STORAGE_PERSISTENCE_PROJECT}
+\declareconstitemvalueProvisional{PMIX_STORAGE_PERSISTENCE_PROJECT}{0x0000000000000020}
 Data on the storage system is persisted according to project storage policies (long-term storage, typically persisted for the duration of a project).
 %
-\declareconstitemProvisional{PMIX_STORAGE_PERSISTENCE_ARCHIVE}
+\declareconstitemvalueProvisional{PMIX_STORAGE_PERSISTENCE_ARCHIVE}{0x0000000000000040}
 Data on the storage system is persisted according to archive storage policies (long-term storage, typically persisted indefinitely).
 %
 \end{constantdesc}
@@ -112,17 +112,17 @@ Data on the storage system is persisted according to archive storage policies (l
 \declarestruct{pmix_storage_access_type_t}
 \provisionalMarker{}
 
-The \refstruct{pmix_storage_access_type_t} type specifies different storage system access types.
+The \refstruct{pmix_storage_access_type_t} is a \code{uint16_t} type that defines a set of bit-mask flags for specifying different storage system access types.
 
 \begin{constantdesc}
 %
-\declareconstitemProvisional{PMIX_STORAGE_ACCESS_RD}
+\declareconstitemvalueProvisional{PMIX_STORAGE_ACCESS_RD}{0x0001}
 Provide information on storage system read operations.
 %
-\declareconstitemProvisional{PMIX_STORAGE_ACCESS_WR}
+\declareconstitemvalueProvisional{PMIX_STORAGE_ACCESS_WR}{0x0002}
 Provide information on storage system write operations.
 %
-\declareconstitemProvisional{PMIX_STORAGE_ACCESS_RDWR}
+\declareconstitemvalueProvisional{PMIX_STORAGE_ACCESS_RDWR}{0x0003}
 Provide information on storage system read and write operations.
 %
 \end{constantdesc}
