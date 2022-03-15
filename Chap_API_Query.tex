@@ -144,6 +144,17 @@ Also can be used to query node-specific info such as the list of peers executing
 
 The returned \refarg{status} indicates if requested data was found or not. The returned \refarg{info} array will contain a \refattr{PMIX_QUERY_RESULTS} element for each query of the \refarg{queries} array. If qualifiers were included in the query, then the first element of each results array shall contain the \refattr{PMIX_QUERY_QUALIFIERS} key with a \refstruct{pmix_data_array_t} containing the qualifiers. The remaining \refstruct{pmix_info_t} shall contain the results of the query, one entry for each key that was found. Note that duplicate keys in the \refarg{queries} array shall result in duplicate responses within the constraints of the accompanying qualifiers. The caller is responsible for releasing the returned array.
 
+The \refapi{PMIx_Query_info} operation is expected to be called between initialization (e.g., \refapi{PMIx_Init}) and finalization (e.g., \refapi{PMIx_Finalize}) with the exeption of calling the blocking query \ac{API} exclusively with the following set of query attributes:
+\begin{compactitem}
+\item \refattr{PMIX_QUERY_ABI_VERSION}
+\end{compactitem}
+If this operation is called exclusively with one or more of those attributes then the result is computed locally to the \ac{PMIx} implementation and returns the associated value.
+
+\rationalestart
+Applications that wish to query the \ac{ABI} level supported by the \ac{PMIx} implementation wish to do so before calling any initialization routine.
+This allows such applications to query the \ac{ABI} level and take action based on that information which might include calling the initialization routine in a different manner and/or setting up the environment before the \ac{PMIx} implementation is initialized.
+\rationaleend
+
 \adviceimplstart
 It is recommended that information returned from \refapi{PMIx_Query_info} be locally cached so that retrieval by subsequent calls to \refapi{PMIx_Get}, \refapi{PMIx_Query_info}, or \refapi{PMIx_Query_info_nb} can succeed with minimal overhead. The local cache shall be checked prior to querying the \ac{PMIx} server and/or the host environment. Queries that include the \refattr{PMIX_QUERY_REFRESH_CACHE} attribute shall bypass the local cache and retrieve a new value for the query, refreshing the values in the cache upon return.
 \adviceimplend
@@ -342,6 +353,10 @@ Query list of supported attributes for specified \acp{API}. REQUIRED QUALIFIERS:
 Return an array of \refstruct{pmix_info_t}, each element itself containing a \refattr{PMIX_SERVER_INFO_ARRAY} entry holding all available data for a server on this node to which the caller might be able to connect.
 }
 %
+\declareAttributeNEW{PMIX_QUERY_ABI_VERSION}{"pmix.qry.abiversion"}{char *}{
+Query the \ac{ABI} version supported by the \ac{PMIx} library. The version returned will be of the form \code{"MAJOR.MINOR"}. For example. \code{"4.2"} representing version v4.2 of the \ac{PMIx} \ac{ABI}. NO QUALIFIERS.
+}
+
 \vspace{\baselineskip}
 These keys are used to query memory available and used in the system.
 
