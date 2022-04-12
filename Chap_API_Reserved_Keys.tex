@@ -253,6 +253,10 @@ process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation of the pro
 %
 \declareAttributeNEW{PMIX_CMD_LINE}{"pmix.cmd.line"}{char*}{
 Command line used to execute the specified job (e.g., "mpirun -n 2 --map-by foo ./myapp : -n 4 ./myapp2").
+If the job was created by a call to \refapi{PMIx_Spawn}, the string is an inorder
+concatenation of the
+values of \refattr{PMIX_APP_ARGV} for each application in the 
+job using the character ':' as a separator.
 }
 %
 \declareAttribute{PMIX_NSDIR}{"pmix.nsdir"}{char*}{
@@ -370,6 +374,8 @@ Rank of the specified process within its application.
 Process identifier of the parent process of the specified process - typically
 used to identify the application process that caused the job containing the
 specified process to be spawned (e.g., the process that called \refapi{PMIx_Spawn}).
+This attribute is only provided for a process if it was created by a call to
+\refapi{PMIx_Spawn} or \refapi{PMIx_Spawn_nb}.
 }
 %
 \declareAttribute{PMIX_EXIT_CODE}{"pmix.exit.code"}{int}{
@@ -486,7 +492,7 @@ A \refstruct{pmix_data_array_t} array of string representations of the \ac{PU} b
 Number of processes in the specified job or application realm on the caller's node. Defaults to job realm unless the \refattr{PMIX_APP_INFO} and the \refattr{PMIX_APPNUM} qualifiers are given.
 }
 %
-\declareAttributeNEW{PMIX_NODE_OVERSUBSCRIBED}{"pmix.ndosub"}{bool}{
+\declareAttributeProvisional{PMIX_NODE_OVERSUBSCRIBED}{"pmix.ndosub"}{bool}{
 True if the number of processes from this job on this node exceeds the number of slots allocated to it
 }
 

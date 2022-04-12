@@ -236,7 +236,7 @@ The host shall progress the \ac{PMIx} library via calls to \refapi{PMIx_Progress
 The nodes comprising the session are homogeneous - i.e., they each contain the same number of identical packages, fabric interfaces, \acp{GPU}, and other devices.
 }
 %
-\declareAttributeNEW{PMIX_SINGLETON}{"pmix.singleton"}{char*}{
+\declareAttributeProvisional{PMIX_SINGLETON}{"pmix.singleton"}{char*}{
 String representation (nspace.rank) of proc ID for the singleton the server was started to support
 }
 
@@ -1469,7 +1469,7 @@ The following macros are provided to support the \refstruct{pmix_regattr_t} stru
 
 %%%%
 \littleheader{Static initializer for the regattr structure}
-\declaremacro{PMIX_REGATTR_STATIC_INIT}
+\declaremacroProvisional{PMIX_REGATTR_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_regattr_t} fields.
 
@@ -1873,7 +1873,7 @@ The following macros support the \refstruct{pmix_cpuset_t} structure.
 
 %%%%
 \littleheader{Static initializer for the cpuset structure}
-\declaremacro{PMIX_CPUSET_STATIC_INIT}
+\declaremacroProvisional{PMIX_CPUSET_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_cpuset_t} fields.
 
