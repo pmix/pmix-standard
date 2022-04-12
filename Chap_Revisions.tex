@@ -1304,3 +1304,75 @@ Buffer.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% History: Version 4.2
+\section{Version 4.2: TBD}
+
+The v4.2 update includes the following changes from the v4.1 document:
+
+\begin{compactitemize}
+    \item Define when \refattr{PMIX_PARENT_ID} is set
+    \item Add adefinition for \refterm{tool}
+    \item Clarify \refattr{PMIX_CMD_LINE} in \refapi{PMIx_Spawn}
+\end{compactitemize}
+
+
+\subsection{Added Functions (Provisional)}
+
+\begin{compactitemize}
+  \item \refapi{PMIx_Data_embed}
+\end{compactitemize}
+
+\subsection{Added Macros (Provisional)}
+
+\begin{compactitemize}
+  \item \refmacro{PMIX_APP_STATIC_INIT}
+  \item \refmacro{PMIX_BYTE_OBJECT_STATIC_INIT}
+  \item \refmacro{PMIX_COORD_STATIC_INIT}
+  \item \refmacro{PMIX_CPUSET_STATIC_INIT}
+  \item \refmacro{PMIX_DATA_ARRAY_STATIC_INIT}
+  \item \refmacro{PMIX_DATA_BUFFER_STATIC_INIT}
+  \item \refmacro{PMIX_DEVICE_DIST_STATIC_INIT}
+  \item \refmacro{PMIX_ENDPOINT_STATIC_INIT}
+  \item \refmacro{PMIX_ENVAR_STATIC_INIT}
+  \item \refmacro{PMIX_FABRIC_STATIC_INIT}
+  \item \refmacro{PMIX_GEOMETRY_STATIC_INIT}
+  \item \refmacro{PMIX_INFO_STATIC_INIT}
+  \item \refmacro{PMIX_LOOKUP_STATIC_INIT}
+  \item \refmacro{PMIX_PROC_INFO_STATIC_INIT}
+  \item \refmacro{PMIX_PROC_STATIC_INIT}
+  \item \refmacro{PMIX_QUERY_STATIC_INIT}
+  \item \refmacro{PMIX_REGATTR_STATIC_INIT}
+  \item \refmacro{PMIX_TOPOLOGY_STATIC_INIT}
+  \item \refmacro{PMIX_VALUE_STATIC_INIT}
+\end{compactitemize}
+
+\subsection{Added Constants (Provisional)}
+
+\littleheader{Spawn constants}
+
+\begin{compactitemize}
+  \item \refconst{PMIX_ERR_JOB_EXE_NOT_FOUND}
+  \item \refconst{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}
+  \item \refconst{PMIX_ERR_JOB_SYS_OP_FAILED}
+  \item \refconst{PMIX_ERR_JOB_WDIR_NOT_FOUND}
+\end{compactitemize}
+
+\subsection{Added Attributes (Provisional)}
+
+\littleheader{Spawn attributes}
+\pasteAttributeItem{PMIX_ENVARS_HARVESTED}
+\pasteAttributeItem{PMIX_JOB_TIMEOUT}
+\pasteAttributeItem{PMIX_LOCAL_COLLECTIVE_STATUS}
+\pasteAttributeItem{PMIX_NODE_OVERSUBSCRIBED}
+\pasteAttributeItem{PMIX_SINGLETON}
+\pasteAttributeItem{PMIX_SPAWN_TIMEOUT}
+
+\littleheader{Tool attributes}
+\pasteAttributeItem{PMIX_IOF_FILE_PATTERN}
+\pasteAttributeItem{PMIX_IOF_FILE_ONLY}
+\pasteAttributeItem{PMIX_IOF_LOCAL_OUTPUT}
+\pasteAttributeItem{PMIX_IOF_MERGE_STDERR_STDOUT}
+\pasteAttributeItem{PMIX_IOF_RANK_OUTPUT}
+\pasteAttributeItem{PMIX_IOF_OUTPUT_RAW}
+\pasteAttributeItem{PMIX_IOF_OUTPUT_TO_DIRECTORY}
+\pasteAttributeItem{PMIX_IOF_OUTPUT_TO_FILE}
