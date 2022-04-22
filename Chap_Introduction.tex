@@ -237,7 +237,7 @@ These \emph{client-role,server-role, and tool-role \ac{PMIx} standard compliant}
 \subsection{Application Binary Interface (ABI)}
 
 An \acf{API} defines how data types, data structures, and functions are represented in source code.
-An \acf{ABI} defines how data types, data structures, and functions are represented in machine code for a given system.
+An \acf{ABI} defines how data types, data structures, and functions are represented in machine code for a given system making it platform-specific.
 An important aspect of an \ac{ABI} is the size, layout, and alignment of data structures.
 A stable \ac{ABI} may allow a program compiled with one implementation of the PMIx Standard to run with a different implementation of the PMIx Standard as long as both implementations adhere to the same \ac{ABI}.
 
@@ -268,9 +268,9 @@ PMIx attributes that are not required by the PMIx standard have a well-defined b
 The caller of the interface already expects to respond to the scenario in which the implementation does not support that optional attribute.
 Excluding these optional attributes from the ABI allows an implementation to provide additional attributes that are non-standard.
 
-The \refstruct{pmix_value_t} data structures has an explicit size requirement to support the PMIx \ac{ABI}.
-Changes to the \refstruct{pmix_value_t} must not increase the size of the data structure.
-It is strongly recommended that if the structure needs to be extended in a way that would increase its size then a pointer be used instead.
+The PMIx Standard \ac{ABI} is defined by a set of \ac{ASC} maintained headers.
+The instantiation of the PMIx Standard \ac{ABI} in binary form is platform-specific.
+The PMIx Standard and PMIx implementations must take care with data structures (e.g., \refstruct{pmix_value_t}) to ensure that the offset and size of members within the structure along with the size of the structure itself remain stable for a given platform.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Linker versus Build ABI}
