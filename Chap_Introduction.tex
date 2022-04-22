@@ -202,6 +202,7 @@ A default attribute name signifying that the attribute field of a \ac{PMIx} stru
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{PMIx Roles}
+\label{chap:intro:roles}
 
 The role of a \ac{PMIx} process in the \ac{PMIx} universe is grouped into one of three categories based on how it operates in the \ac{PMIx} environment namely as a \emph{client}, \emph{server}, or \emph{tool}.
 As a result, there are three corresponding groupings of \acp{API} each with their own initialization and finalization functions.
@@ -235,6 +236,7 @@ These \emph{client-role,server-role, and tool-role \ac{PMIx} standard compliant}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Application Binary Interface (ABI)}
+\label{chap:intro:abi}
 
 An \acf{API} defines how data types, data structures, and functions are represented in source code.
 An \acf{ABI} defines how data types, data structures, and functions are represented in machine code for a given system making it platform-specific.
@@ -251,12 +253,12 @@ Modifications to the existing PMIx interface do break \ac{ABI} compatibility.
 Any changes to the \ac{ABI} will occur in a major release and will be noted in the release notes.
 
 The PMIx \ac{ABI} is comprised of the following:
-\begin{compactalphaenum}
+\begin{compactitemize}
 \item Function signatures
 \item Constants and their values
 \item Structures and their membership (including field position)
 \item Attributes that are required to be implemented and their string representation
-\end{compactalphaenum}
+\end{compactitemize}
 
 If a data structure must be changed in a way that breaks the \ac{ABI} the authors should consider creating a new data structure if possible.
 Additionally, the authors must take care to update or duplicate existing PMIx interfaces that are impacted by the change.
@@ -273,7 +275,23 @@ The instantiation of the PMIx Standard \ac{ABI} in binary form is platform-speci
 The PMIx Standard and PMIx implementations must take care with data structures (e.g., \refstruct{pmix_value_t}) to ensure that the offset and size of members within the structure along with the size of the structure itself remain stable for a given platform.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{PMIx ABI Versioning}
+\label{chap:intro:abi:versioning}
+
+The PMIx Standard ABI is defined in two parts.
+The \textit{PMIx Standard Stable ABI} represents the Stable PMIx Standard elements (see the PMIx Governance document).
+The \textit{PMIx Standard Provisional ABI} represents the Provisional PMIx Standard elements (see the PMIx Governance document).
+
+Both the Stable ABI and Provisional ABI are versioned with two increasing numbers:
+\begin{compactitemize}
+\item \texttt{MAJOR} incremented when the ABI changed in a backward-incompatible manner.
+\item \texttt{MINOR} incremented when functionality is added to the ABI in a backward-compatible manner.
+\end{compactitemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Linker versus Build ABI}
+\label{chap:intro:abi:linkervbuild}
 
 The software development community often discusses \ac{ABI} in two different ways, that of a \emph{Linker ABI} and of a \emph{Build ABI}.
 
