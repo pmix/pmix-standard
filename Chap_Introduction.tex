@@ -248,9 +248,9 @@ To facilitate such interoperability the PMIx \ac{ASC} maintains a set of standar
 
 In recognition that there are circumstances where the \ac{ABI} needs to be modified this section defines some guidance for making such modifications.
 Additions to the PMIx interface can occur without breaking \ac{ABI} compatibility.
-Deprecating and removing portions of the PMIx interface does break \ac{ABI} compatibility.
+Deprecating portions of the PMIx interface does not break \ac{ABI} compatibility but serves as a warning that the \ac{ABI} may be impacted in the future.
+Removing portions of the PMIx interface does break \ac{ABI} compatibility.
 Modifications to the existing PMIx interface do break \ac{ABI} compatibility.
-Any changes to the \ac{ABI} will occur in a major release and will be noted in the release notes.
 
 The PMIx \ac{ABI} is comprised of the following:
 \begin{compactitemize}
@@ -260,15 +260,19 @@ The PMIx \ac{ABI} is comprised of the following:
 \item Attributes that are required to be implemented and their string representation
 \end{compactitemize}
 
-If a data structure must be changed in a way that breaks the \ac{ABI} the authors should consider creating a new data structure if possible.
-Additionally, the authors must take care to update or duplicate existing PMIx interfaces that are impacted by the change.
+The \ac{ASC} prohibits data structure and function signature changes that break the \ac{ABI}
+(e.g., modifications to data structure member alignment and/or size).
+It is preferred that the authors create a new data structure or function and
+duplicate all impacted PMIx interfaces.
 
-Attributes that are required by the PMIx standard are a required part of the \ac{ABI}.
-Attributes that are not required by the PMIx standard may be included in the \ac{ABI} while others may not.
-Attributes that are part of the \ac{ABI} are denoted as such in their description.
-PMIx attributes that are not required by the PMIx standard have a well-defined behavior (see Section~\ref{chap:intro:attributes}) when the string representation is not recognized by the implementation.
-The caller of the interface already expects to respond to the scenario in which the implementation does not support that optional attribute.
-Excluding these optional attributes from the ABI allows an implementation to provide additional attributes that are non-standard.
+\rationalestart
+Breaking the \ac{ABI} of data structures and function signatures while using the same
+name prevents a PMIx implementation from supporting backward compatible and
+cross-version compatible \ac{PMIx} libraries. 
+\rationaleend
+
+The value associated with attributes and constants are part of an \ac{API} and not part of a \refterm{Linker ABI}.
+The PMIx Standard defines a \refterm{Build ABI} where the value associated with PMIx attributes and constants can be assumed based on the \ac{ABI} version.
 
 The PMIx Standard \ac{ABI} is defined by a set of \ac{ASC} maintained headers.
 The instantiation of the PMIx Standard \ac{ABI} in binary form is platform-specific.
@@ -287,7 +291,8 @@ Both the Stable ABI and Provisional ABI are versioned with two increasing number
 \item \texttt{MAJOR} incremented when the ABI changed in a backward-incompatible manner.
 \item \texttt{MINOR} incremented when functionality is added to the ABI in a backward-compatible manner.
 \end{compactitemize}
-
+The PMIx Standard ABI version numbers largely follow the Semantic Versioning 2.0.0 specification\footnote{Semantic Versioning \url{https://semver.org/spec/v2.0.0.html}}.
+However, a PMIx implementation may use a different version numbering technique for the objects associated with that implementation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Linker versus Build ABI}
