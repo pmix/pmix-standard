@@ -1315,11 +1315,59 @@ The v4.2 update includes the following changes from the v4.1 document:
     \item Clarify \refattr{PMIX_CMD_LINE} in \refapi{PMIx_Spawn}
 \end{compactitemize}
 
+\subsection{Deprecated constants}
+
+The following constants were deprecated in v4.2:
+
+\begin{constantdesc}
+%
+\declareconstitemDEP{PMIX_DEBUG_WAITING_FOR_NOTIFY}
+Renamed to \refconst{PMIX_READY_FOR_DEBUG}
+%
+\end{constantdesc}
+
+
+\subsection{Deprecated attributes}
+
+The following attributes were deprecated in v4.2:
+
+%
+\declareAttributeDEP{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
+Renamed to \refattr{PMIX_DEBUG_STOP_IN_APP}
+}
+
+\subsection{Deprecated macros}
+
+The following macros were deprecated in v4.2:
+
+\begin{compactitemize}
+  \item \declaremacroDEP{PMIX_VALUE_LOAD} Replaced by the \refapi{PMIx_Value_load} \ac{API}
+  \item \declaremacroDEP{PMIX_VALUE_UNLOAD} Replaced by the \refapi{PMIx_Value_unload} \ac{API}
+  \item \declaremacroDEP{PMIX_VALUE_XFER} Replaced by the \refapi{PMIx_Value_xfer} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LOAD} Replaced by the \refapi{PMIx_Info_load} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_XFER} Replaced by the \refapi{PMIx_Info_xfer} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_START} Replaced by the \refapi{PMIx_Info_list_start} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_ADD} Replaced by the \refapi{PMIx_Info_list_add} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_XFER} Replaced by the \refapi{PMIx_Info_list_xfer} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_CONVERT} Replaced by the \refapi{PMIx_Info_list_convert} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_RELEASE} Replaced by the \refapi{PMIx_Info_list_release} \ac{API}
+  \item \declaremacroDEP{PMIX_TOPOLOGY_DESTRUCT} Replaced by the \refapi{PMIx_Topology_destruct} \ac{API}
+  \item \declaremacroDEP{PMIX_TOPOLOGY_FREE} Not replaced.
+\end{compactitemize}
 
 \subsection{Added Functions (Provisional)}
 
 \begin{compactitemize}
   \item \refapi{PMIx_Data_embed}
+  \item \refapi{PMIx_Value_load}
+  \item \refapi{PMIx_Value_unload}
+  \item \refapi{PMIx_Value_xfer}
+  \item \refapi{PMIx_Info_list_start}
+  \item \refapi{PMIx_Info_list_add}
+  \item \refapi{PMIx_Info_list_xfer}
+  \item \refapi{PMIx_Info_list_convert}
+  \item \refapi{PMIx_Info_list_release}
+  \item \refapi{PMIx_Topology_destruct}
 \end{compactitemize}
 
 \subsection{Added Macros (Provisional)}
@@ -1376,3 +1424,7 @@ The v4.2 update includes the following changes from the v4.1 document:
 \pasteAttributeItem{PMIX_IOF_OUTPUT_RAW}
 \pasteAttributeItem{PMIX_IOF_OUTPUT_TO_DIRECTORY}
 \pasteAttributeItem{PMIX_IOF_OUTPUT_TO_FILE}
+\pasteAttributeItem{PMIX_BREAKPOINT}
+\pasteAttributeItem{PMIX_DEBUG_STOP_IN_APP}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

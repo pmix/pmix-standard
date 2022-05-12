@@ -1186,19 +1186,33 @@ PMIX_TOPOLOGY_CONSTRUCT(m)
 \end{arglist}
 
 
-\littleheader{Destruct the topology structure}
-\declaremacro{PMIX_TOPOLOGY_DESTRUCT}
+\littleheader{Destruct a topology structure}
+\declareapi{PMIx_Topology_destruct}
 
-Destruct the \refstruct{pmix_topology_t} fields
+%%%%
+\summary
 
-\copySignature{PMIX_TOPOLOGY_DESTRUCT}{4.0}{
-PMIX_TOPOLOGY_DESTRUCT(m)
-}
+Destruct a \refstruct{pmix_topology_t} fields
+
+%%%%
+\format
+
+\versionMarker{4.2}
+\cspecificstart
+\begin{codepar}
+void
+PMIx_Topology_destruct(pmix_topology_t *topo);
+\end{codepar}
+\cspecificend
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_topology_t})}
+\argin{topo}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_topology_t})}
 \end{arglist}
 
+%%%%
+\descr
+
+Release any memory storage held by the \refstruct{pmix_topology_t} structure
 
 \littleheader{Create a topology array}
 \declaremacro{PMIX_TOPOLOGY_CREATE}
@@ -1212,21 +1226,6 @@ PMIX_TOPOLOGY_CREATE(m, n)
 \begin{arglist}
 \arginout{m}{Address where the pointer to the array of \refstruct{pmix_topology_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (size_t)}
-\end{arglist}
-
-
-\littleheader{Release a topology array}
-\declaremacro{PMIX_TOPOLOGY_FREE}
-
-Release a \refstruct{pmix_topology_t} array.
-
-\copySignature{PMIX_TOPOLOGY_FREE}{4.0}{
-PMIX_TOPOLOGY_FREE(m, n)
-}
-
-\begin{arglist}
-\arginout{m}{Address of the array of \refstruct{pmix_topology_t} structures to be released (handle)}
-\argin{n}{Number of structures in the array (size_t)}
 \end{arglist}
 
 

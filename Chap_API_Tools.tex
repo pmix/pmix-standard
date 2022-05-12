@@ -310,7 +310,7 @@ In addition to the attributes described in \refapi{PMIx_Spawn}, the tool may opt
     \item \pasteAttributeItem{PMIX_LOG_COMPLETION}
     \item \pasteAttributeItem{PMIX_DEBUG_STOP_ON_EXEC}
     \item \pasteAttributeItem{PMIX_DEBUG_STOP_IN_INIT}
-    \item \pasteAttributeItem{PMIX_DEBUG_WAIT_FOR_NOTIFY}
+    \item \pasteAttributeItem{PMIX_DEBUG_STOP_IN_APP}
 \end{itemize}
 
 
@@ -801,9 +801,9 @@ A key element of the debugging process is the ability of the debugger to require
     \pasteAttributeItemEnd{}
     \item \pasteAttributeItemBegin{PMIX_DEBUG_STOP_IN_INIT}\ac{PMIx} implementations that do not support this operation shall return an error from \refapi{PMIx_Init} if this behavior is requested. Launchers that cannot support this operation shall return an error from the \refapi{PMIx_Spawn} \ac{API} if this behavior is requested.
     \pasteAttributeItemEnd{}
-    \item \pasteAttributeItemBegin{PMIX_DEBUG_WAIT_FOR_NOTIFY}Launchers that cannot support this operation shall return an error from the \refapi{PMIx_Spawn} \ac{API} if this behavior is requested.
+    \item \pasteAttributeItemBegin{PMIX_DEBUG_STOP_IN_APP}Launchers that cannot support this operation shall return an error from the \refapi{PMIx_Spawn} \ac{API} if this behavior is requested.
 
-    Note that there is no mechanism by which the \ac{PMIx} library or the launcher can verify that an application will recognize and support the \refattr{PMIX_DEBUG_WAIT_FOR_NOTIFY} request. Debuggers utilizing this attachment method must, therefore, be prepared to deal with the case where the application fails to recognize and/or honor the request.
+    Note that there is no mechanism by which the \ac{PMIx} library or the launcher can verify that an application will recognize and support the \refattr{PMIX_DEBUG_STOP_IN_APP} request. Debuggers utilizing this attachment method must, therefore, be prepared to deal with the case where the application fails to recognize and/or honor the request.
     \pasteAttributeItemEnd{}
 \end{itemize}
 
@@ -1093,13 +1093,11 @@ The following constants are used in events used to coordinate applications and t
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_DEBUG_WAITING_FOR_NOTIFY}{-58}
-All processes in the job to be debugged are paused waiting for a release at some point within the application. The application shall remain in a paused
-state awaiting release until receipt of the \refconst{PMIX_DEBUGGER_RELEASE}.
+\declareconstitemvalueNEW{PMIX_READY_FOR_DEBUG}{-58}
+Event indicating a job (or specified set of processes) is ready for debug - includes identification of the target processes as well as the \refattr{PMIX_BREAKPOINT} indicating where the target is waiting
 %
 \declareconstitemvalueNEW{PMIX_DEBUGGER_RELEASE}{-3}
-Release processes that are paused at the \refattr{PMIX_DEBUG_WAIT_FOR_NOTIFY}
-point in the target application.
+Release a tool that is paused during \refapi{PMIx_tool_init}.
 %
 \end{constantdesc}
 
@@ -1115,12 +1113,23 @@ Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t}
 }
 %
 \declareAttribute{PMIX_DEBUG_STOP_IN_INIT}{"pmix.dbg.init"}{bool}{
-Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The \ac{PMIx} client library in each resulting application process shall notify its \ac{PMIx} server that it is pausing and then pause during \refapi{PMIx_Init} of the spawned processes until either released by debugger modification of an appropriate variable or receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event when all processes have reached the pause point.
+Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The \ac{PMIx} client library in each resulting application process shall notify its \ac{PMIx} server that it is pausing and then pause during \refapi{PMIx_Init} of the spawned processes until either released by debugger modification of an appropriate variable or receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_READY_FOR_DEBUG} event (stipulating a breakpoint of \"pmix-init\") when all processes have reached the pause point.
 }
 %
-\declareAttribute{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
-Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The resulting application processes are to notify their server (by generating
-the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event) when they reach some application-determined location and pause at that point until either released by debugger modification of an appropriate variable or receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_DEBUG_WAITING_FOR_NOTIFY} event when all processes have indicated they are at the pause point.
+\declareAttributeNEW{PMIX_DEBUG_STOP_IN_APP}{"pmix.dbg.notify"}{varies}{
+Direct specified ranks to stop at application-specific point and notify they are ready-to-debug. The attribute's value can be any
+of three data types:
+\begin{compactitemize}
+    \item bool - true indicating all ranks
+    \item \refstruct{pmix_rank_t} - the rank of one proc, or \refconst{PMIX_RANK_WILDCARD} for all
+    \item a \refstruct{pmix_data_array_t} if an array of individual processes are specified
+\end{compactitemize}
+The resulting application processes are to notify their server (by generating
+the \refconst{PMIX_READY_FOR_DEBUG} event) when they reach some application-determined location - the event shall include the \refattr{PMIX_BREAKPOINT} attribute indicating where the application has stopped. The application shall pause at that point until released by debugger modification of an appropriate variable. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_READY_FOR_DEBUG} event when all processes have indicated they are at the pause point.
+}
+%
+\declareAttributeNEW{PMIX_BREAKPOINT}{"pmix.brkpnt"}{char*}{
+String ID of the breakpoint where the process(es) is(are) waiting.
 }
 %
 \declareAttributeNEW{PMIX_DEBUG_TARGET}{"pmix.dbg.tgt"}{pmix_proc_t*}{

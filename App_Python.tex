@@ -111,8 +111,8 @@ Converting a C-based program to its Python equivalent requires translation of th
 
 pmix_info_t info[2];
 
-PMIX_INFO_LOAD(&info[0], PMIX_PROGRAMMING_MODEL, "TEST", PMIX_STRING)
-PMIX_INFO_LOAD(&info[1], PMIX_MODEL_LIBRARY_NAME, "PMIX", PMIX_STRING)
+PMIx_Info_load(&info[0], PMIX_PROGRAMMING_MODEL, "TEST", PMIX_STRING)
+PMIx_Info_load(&info[1], PMIX_MODEL_LIBRARY_NAME, "PMIX", PMIX_STRING)
 
 rc = PMIx_Init(&myproc, info, 2);
 
