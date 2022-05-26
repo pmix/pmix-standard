@@ -25,7 +25,7 @@ In its default form, the fence operation acts as a barrier between the processes
 Clients can pass the \refattr{PMIX_COLLECT_DATA} attribute to request 
 that the \refapi{PMIx_Fence} and \refapi{PMIx_Fence_nb} functions exchange all committed 
 data between all involved servers during the synchronization operation.
-This will make local to each remote process the data put by other processes resulting 
+This will make local to each process the data put by other processes resulting 
 in faster resolution of \refapi{PMIx_Get} and \refapi{PMIx_Get_nb} function calls at 
 the cost of a synchronous data exchange and associated memory footprint expansion.
 In many situations 
