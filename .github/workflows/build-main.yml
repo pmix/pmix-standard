@@ -1,0 +1,15 @@
+name: PMIx Standard
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Check out the code
+        uses: actions/checkout@v1
+      # Run the container tester
+      - name: Build and Test
+        run: docker run --rm -v ${GITHUB_WORKSPACE}:/home/pmixer/pmix-standard jjhursey/pmix-standard /bin/bash -c "cp -R /home/pmixer/pmix-standard pmix-build && cd pmix-build && make"
+        shell: bash

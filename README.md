@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/pmix/pmix-standard.svg?branch=master)](https://travis-ci.org/pmix/pmix-standard)
+[![Build Status](https://github.com/pmix/pmix-standard/actions/workflows/build-main.yml/badge.svg)](https://github.com/pmix/pmix-standard/actions/workflows/build-main.yml)
 
 # PMIx Standard
 
