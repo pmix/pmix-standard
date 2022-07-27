@@ -56,8 +56,9 @@
 \setboolean{is_unofficial_draft}{true}
 
 % Text to appear in the footer on even-numbered pages:
+% Release candidates are marked as an Unofficial Draft
 \ifthenelse{\boolean{is_unofficial_draft}}
-  {\newcommand{\VER}{5.0 (Draft)}
+  {\newcommand{\VER}{5.0dev0 (Draft)}
    \newcommand{\VERDATE}{\emph{Created on \today}}
   }
   {\newcommand{\VER}{5.0}
