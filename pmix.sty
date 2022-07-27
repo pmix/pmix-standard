@@ -244,12 +244,25 @@
 % PMIx Standard Process markers
 %
 % - Provisional items
-%   \provisionalMarker     Add a provisional label to the margin
-%   \markProvisional       Add a provisional label to the margin and highlight the provided text
+%   \provisionalMarker     Add a provisional label
+%   \markProvisional       Add a provisional label and highlight the provided text
 %
 
+% Putting this in the margin is not consistently working.
+% Instead put this marker in-line in the text.
+%\newcommand{\provisionalMarker}[0]{% -14
+%    \textInMargin{\small{\hl{\textit{Provisional}}}}%
+%}
 \newcommand{\provisionalMarker}[0]{% -14
-    \textInMargin{\small{\hl{\textit{Provisional}}}}%
+    \small{\hl{\textit{(Provisional)}}}%
+}
+
+\newcommand{\provisionalChapter}[1]{% -14
+    \chapter{#1 \small{\textit{(Provisional)}}}%
+}
+
+\newcommand{\provisionalSection}[1]{% -14
+    \section{#1 \small{\textit{(Provisional)}}}%
 }
 
 \newcommand{\markProvisional}[1]{% -14
@@ -450,7 +463,7 @@
 }
 
 \newcommand{\declareconstitemProvisional}[1]{%
-  \item[\hl{\code{#1}}]\provisionalMarker{}%
+  \item[\hl{\code{#1}}] \provisionalMarker{}%
   \index[index_const]{#1|indexfmt} \label{const:#1}%
   \hspace{1em}%
 }
@@ -507,7 +520,7 @@
 }
 
 \newcommand{\declareEnvarProvisional}[2]{%
-    \hl{\code{#1}}\provisionalMarker{}%
+    \hl{\code{#1}} \provisionalMarker{}%
     \index[index_envars]{#1|indexfmt} \label{envar:#1}%
     \InternaldeclareEnvar{#1}{#2}%
 }
@@ -566,7 +579,7 @@
 }
 
 \newcommand{\declareAttributeProvisional}[4]{%
-    \hl{\code{#1} ~~\code{#2}~~(\code{#3})}\provisionalMarker{}%
+    \hl{\code{#1} ~~\code{#2}~~(\code{#3})} \provisionalMarker{}%
     \index[index_attribute]{#1|indexfmt} \label{attr:#1}%
     \InternaldeclareAttributeBody{#1}{#2}{#3}{#4}%
 }
@@ -624,7 +637,7 @@
 }
 
 \newcommand{\declareapiProvisional}[1]{%
-  \index[index_api]{#1|indexfmt} \label{apifn:#1}\provisionalMarker{}%
+  \index[index_api]{#1|indexfmt} \label{apifn:#1} \provisionalMarker{}%
 }
 
 \newcommand{\declareapiDEPNODISP}[1]{%
@@ -666,7 +679,7 @@
   \index[index_macro]{#1|indexfmt} \label{macro:#1}%
 }
 \newcommand{\declaremacroProvisional}[1]{%
-  \index[index_macro]{#1|indexfmt} \label{macro:#1}\provisionalMarker{}%
+  \index[index_macro]{#1|indexfmt} \label{macro:#1} \provisionalMarker{}%
 }
 
 \newcommand{\refmacro}[1]{\index[index_macro]{#1}\hyperref[macro:#1]{\code{#1}}}

@@ -1,10 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Chapter: Storage support
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Storage Support Definitions}
+\provisionalChapter{Storage Support Definitions}
 \label{chap:api_storage}
-
-\provisionalMarker{}
 
 Distributed and parallel computing systems are increasingly embracing storage hierarchies to meet the diverse data management needs of applications and other systems software in a cost-effective manner.
 These hierarchies provide access to a number of distinct storage layers, with each potentially composed of different storage hardware (e.g., HDD, SSD, tape, PMEM), deployed at different locations (e.g., on-node, on-switch, on-site, WAN), and designed using different storage paradigms (e.g., file-based, object-based).
@@ -14,12 +12,10 @@ PMIx enables users to better understand storage hierarchies by defining attribut
 These attributes can be queried by applications, I/O libraries and middleware, and workflow systems to discover available storage resources and to inform on which resources are most suitable for different I/O workload requirements.
 
 %%%%%%%%%%%
-\section{Storage support constants}
-
+\provisionalSection{Storage support constants}
 \declarestruct{pmix_storage_medium_t}
-\provisionalMarker{}
 
-The \refstruct{pmix_storage_medium_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different types of storage mediums. These can be bitwise OR'd together to accommodate storage systems that mix storage medium types.
+The \refstruct{pmix_storage_medium_t}~\provisionalMarker{} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different types of storage mediums. These can be bitwise OR'd together to accommodate storage systems that mix storage medium types.
 
 \begin{constantdesc}
 %
@@ -53,9 +49,8 @@ It is further recommended that implementations should try to allocate empty bits
 \adviceimplend
 
 \declarestruct{pmix_storage_accessibility_t}
-\provisionalMarker{}
 
-The \refstruct{pmix_storage_accessibility_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different levels of storage accessibility (i.e,. from where a storage system may be accessed). These can be bitwise OR'd together to accommodate storage systems that are accessibile in multiple ways.
+The \refstruct{pmix_storage_accessibility_t}~\provisionalMarker{} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different levels of storage accessibility (i.e,. from where a storage system may be accessed). These can be bitwise OR'd together to accommodate storage systems that are accessibile in multiple ways.
 
 \begin{constantdesc}
 %
@@ -80,9 +75,8 @@ The storage system resources are remote.
 \end{constantdesc}
 
 \declarestruct{pmix_storage_persistence_t}
-\provisionalMarker{}
 
-The \refstruct{pmix_storage_persistence_t} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different levels of persistence for a particular storage system.
+The \refstruct{pmix_storage_persistence_t}~\provisionalMarker{} is a \code{uint64_t} type that defines a set of bit-mask flags for specifying different levels of persistence for a particular storage system.
 
 \begin{constantdesc}
 %
@@ -110,9 +104,8 @@ Data on the storage system is persisted according to archive storage policies (l
 \end{constantdesc}
 
 \declarestruct{pmix_storage_access_type_t}
-\provisionalMarker{}
 
-The \refstruct{pmix_storage_access_type_t} is a \code{uint16_t} type that defines a set of bit-mask flags for specifying different storage system access types.
+The \refstruct{pmix_storage_access_type_t}~\provisionalMarker{} is a \code{uint16_t} type that defines a set of bit-mask flags for specifying different storage system access types.
 
 \begin{constantdesc}
 %
@@ -129,7 +122,7 @@ Provide information on storage system read and write operations.
 
 
 %%%%%%%%%%%
-\section{Storage support attributes}
+\provisionalSection{Storage support attributes}
 \label{api:struct:attributes:pstrg}
 
 The following attributes may be returned in response to queries (e.g., \refapi{PMIx_Get} or \refapi{PMIx_Query_info}) made by processes or tools.
