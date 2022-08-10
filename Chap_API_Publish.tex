@@ -79,9 +79,6 @@ Publishing duplicate keys is permitted provided they are published to different
 ranges. Custom ranges are consider different if they have different members.
 Duplicate keys being published on the same data range shall return the
 \refconst{PMIX_ERR_DUPLICATE_KEY} error.
-publishing to a \refconst{PMIX_RANGE_CUSTOM}
-range which does not include the publisher will prevent
-any processes from using \refapi{PMIx_Lookup} to access the published data.
 
 In some cases, implementations may be incapable of distinguishing which
 info keys in the \refarg{info} array are for publishing and which info keys are
@@ -92,7 +89,7 @@ If the \refarg{info} array contains a \refattr{PMIX_DATA_TO_PUBLISH} info,
 all other elements of the info array will be treated as directives.
 If the info array does not include a \refattr{PMIX_DATA_TO_PUBLISH} info,
 the implementation should
-distinguishing between info array elements that specify keys and directives as follows:
+distinguish between info array elements that specify keys and directives as follows:
 All standardized directives to the publish call,
 including optional attributes the implementation does not support,
 should be treated as
@@ -603,7 +600,7 @@ The key being looked up will match with a published key only if all of the follo
     \item The lookup key matches the published key.
     \item The type of range specified by the publisher is the same as the type of range specified by the requester.
     \item If a custom range is specified by the publisher and the requester, the members described in both cases must be identical.  The publisher is not required to be a member of a custom range.
-    \item The requestor must be a member of the publisher's range.
+    \item The requestor must be a member of the range specified by the publisher.
 
 %%option2:
 %%
