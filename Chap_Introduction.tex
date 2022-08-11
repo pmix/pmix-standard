@@ -142,6 +142,7 @@ critical to basic application execution (e.g., \refapi{PMIx_Get}) for certain cl
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Attributes in PMIx}
+\label{chap:intro:attributes}
 
 An area where differences between support on different systems can be challenging is regarding the attributes that provide information to the client process and/or control the behavior of a \ac{PMIx} \ac{API}.  Most
 \ac{PMIx} \ac{API} calls can accept additional information or attributes specified in the form of
@@ -201,6 +202,7 @@ A default attribute name signifying that the attribute field of a \ac{PMIx} stru
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{PMIx Roles}
+\label{chap:intro:roles}
 
 The role of a \ac{PMIx} process in the \ac{PMIx} universe is grouped into one of three categories based on how it operates in the \ac{PMIx} environment namely as a \emph{client}, \emph{server}, or \emph{tool}.
 As a result, there are three corresponding groupings of \acp{API} each with their own initialization and finalization functions.
@@ -231,5 +233,87 @@ Finally, a \ac{PMIx} implementation that only supports the \emph{client} and \em
 A \ac{PMIx} implementation that supports all three sets of the \ac{API} role groupings is said to be \emph{client-role, server-role, and tool-role \ac{PMIx} standard compliant}.
 These \emph{client-role,server-role, and tool-role \ac{PMIx} standard compliant} implementations have the advantage of being able to support a broad set of \ac{PMIx} consumers in the different roles.
 \adviceimplend
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Application Binary Interface (ABI)}
+\label{chap:intro:abi}
+
+An \acf{API} defines how data types, data structures, and functions are represented in source code.
+An \acf{ABI} defines how data types, data structures, and functions are represented in machine code for a given system making it platform-specific.
+An important aspect of an \ac{ABI} is the size, layout, and alignment of data structures.
+A stable \ac{ABI} may allow a program compiled with one implementation of the PMIx Standard to run with a different implementation of the PMIx Standard as long as both implementations adhere to the same \ac{ABI}.
+
+The PMIx Standard strives to maintain a stable \ac{ABI} to support applications and tools that rely on more than one implementation of the PMIx Standard.
+To facilitate such interoperability the PMIx \ac{ASC} maintains a set of standardized headers that are versioned with the PMIx Standard that applications and tools can reference~\footnote{PMIx Headers for ABI Compatibility \url{https://github.com/pmix/pmix-abi}}.
+
+In recognition that there are circumstances where the \ac{ABI} needs to be modified this section defines some guidance for making such modifications.
+Additions to the PMIx interface can occur without breaking \ac{ABI} compatibility.
+Deprecating portions of the PMIx interface does not break \ac{ABI} compatibility but serves as a warning that the \ac{ABI} may be impacted in the future.
+Removing portions of the PMIx interface does break \ac{ABI} compatibility.
+Modifications to the existing PMIx interface do break \ac{ABI} compatibility.
+
+The PMIx \ac{ABI} is comprised of the following:
+\begin{compactitemize}
+\item Function signatures
+\item Constants and their values
+\item Structures and their membership (including field position)
+\item Attributes that are required to be implemented and their string representation
+\end{compactitemize}
+
+The \ac{ASC} prohibits data structure and function signature changes that break the \ac{ABI}
+(e.g., modifications to data structure member alignment and/or size).
+It is preferred that the authors create a new data structure or function and
+duplicate all impacted PMIx interfaces.
+
+\rationalestart
+Breaking the \ac{ABI} of data structures and function signatures while using the same
+name prevents a PMIx implementation from supporting backward compatible and
+cross-version compatible \ac{PMIx} libraries. 
+\rationaleend
+
+The value associated with attributes and constants are part of an \ac{API} and not part of a \refterm{Linker ABI}.
+The PMIx Standard defines a \refterm{Build ABI} where the value associated with PMIx attributes and constants can be assumed based on the \ac{ABI} version.
+
+The PMIx Standard \ac{ABI} is defined by a set of \ac{ASC} maintained headers.
+The instantiation of the PMIx Standard \ac{ABI} in binary form is platform-specific.
+The PMIx Standard and PMIx implementations must take care with data structures (e.g., \refstruct{pmix_value_t}) to ensure that the offset and size of members within the structure along with the size of the structure itself remain stable for a given platform.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{PMIx ABI Versioning}
+\label{chap:intro:abi:versioning}
+
+The PMIx Standard ABI is defined in two parts.
+The \textit{PMIx Standard Stable ABI} represents the Stable PMIx Standard elements (see the PMIx Governance document).
+The \textit{PMIx Standard Provisional ABI} represents the Provisional PMIx Standard elements (see the PMIx Governance document).
+
+Both the Stable ABI and Provisional ABI are versioned with two increasing numbers:
+\begin{compactitemize}
+\item \texttt{MAJOR} incremented when the ABI changed in a backward-incompatible manner.
+\item \texttt{MINOR} incremented when functionality is added to the ABI in a backward-compatible manner.
+\end{compactitemize}
+The PMIx Standard ABI version numbers largely follow the Semantic Versioning 2.0.0 specification\footnote{Semantic Versioning \url{https://semver.org/spec/v2.0.0.html}}.
+However, a PMIx implementation may use a different version numbering technique for the objects associated with that implementation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Linker versus Build ABI}
+\label{chap:intro:abi:linkervbuild}
+
+The software development community often discusses \ac{ABI} in two different ways, that of a \emph{Linker ABI} and of a \emph{Build ABI}.
+
+A \declareterm{Linker ABI} defines a stable set of symbols (i.e., functions) against which a compiler will attempt to link the binary.
+The Linker ABI does not specify constant values or macro definitions leaving those to individual implementations to define.
+If Library A version \code{1} and Library A version \code{2} are Linker ABI compatible then a program that is compiled against Library A version \code{1} can link against Library A version \code{2}.
+Note that the reverse is not necessarily true as Library A version \code{2} may define additional symbols not included in Library A version \code{1}.
+An indication of this compatibility is useful when upgrading a library package on a system.
+Often libraries rely on Semantic Versioning~\footnote{Semantic Versioning \url{https://semver.org/}} to signify breaks in the Linker ABI between versions of the library.
+
+A \declareterm{Build ABI} defines the full set of symbols, constants, and macros used by a compiler to generate the resulting binary.
+If Library A and Library B are Build ABI compatible then a program compiled against Library A will work when linked with Library B.
+
+The PMIx Standard defines a Build ABI in the PMIx Standard ABI repository~\footnote{PMIx Headers for ABI Compatibility \url{https://github.com/pmix/pmix-abi}}.
+Any program built against the headers defined in the PMIx Standard ABI version \code{X.Y} will work with any PMIx implementation that is \ac{ABI} compatible with version \code{X.Y}.
+Note that the PMIx implementation may include additional items beyond the PMIX Standard ABI at version \code{X.Y} and still report being PMIx Standard version \code{X.Y} compliant.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
