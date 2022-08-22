@@ -429,11 +429,9 @@
 %
 %  \declareconstitem               Declare Attribute
 %  \declareconstitemProvisional    Declare Constant - Provisional
-%  \declareconstitemNEW            Declare Constant - New
 %  \declareconstitemDEP            Declare Constant - Deprecated
 %  \declareconstitemRM             Declare Constant - Removed
 %  \declareconstitemvalue          Declare Constant Value
-%  \declareconstitemvalueNEW       Declare Constant Value - NEW
 %
 %  \pasteAttributeItem             Paste a copy of the Attribute declaration
 %  \pasteAttributeItemBegin        Paste a copy of the Attribute declaration
@@ -456,11 +454,6 @@
   \index[index_const]{#1|indexfmt} \label{const:#1}%
   \hspace{0.25em} \code{#2} \hspace{1em}%
 }
-\newcommand{\declareconstitemvalueNEW}[2]{%
-  \item[\color{magenta}\code{#1}]%
-  \index[index_const]{#1|indexfmt} \label{const:#1}%
-  \hspace{0.25em} \code{#2} \hspace{1em}%
-}
 
 \newcommand{\declareconstitemProvisional}[1]{%
   \item[\hl{\code{#1}}] \provisionalMarker{}%
@@ -471,12 +464,6 @@
   \item[\hl{\code{#1}}]\provisionalMarker{}%
   \index[index_const]{#1|indexfmt} \label{const:#1}%
   \hspace{1em} \code{#2} \hspace{1em}%
-}
-
-\newcommand{\declareconstitemNEW}[1]{%
-  \item[\color{magenta}\code{#1}]%
-  \index[index_const]{#1|indexfmt} \label{const:#1}%
-  \hspace{1em}%
 }
 
 \newcommand{\declareconstitemDEP}[1]{%
@@ -499,7 +486,6 @@
 %
 %  \declareEnvar               Declare Envar
 %  \declareEnvarProvisional    Declare Envar - Provisional
-%  \declareEnvarNEW            Declare Envar - New
 %  \declareEnvarDEP            Declare Envar - Deprecated
 %  \declareEnvarRM             Declare Envar - Removed
 %
@@ -525,12 +511,6 @@
     \InternaldeclareEnvar{#1}{#2}%
 }
 
-\newcommand{\declareEnvarNEW}[2]{%
-   {\color{magenta}\code{#1}}%
-    \index[index_envars]{#1|indexfmt} \label{envar:#1}%
-    \InternaldeclareEnvar{#1}{#2}%
-}
-
 \newcommand{\declareEnvarDEP}[2]{%
    {\color{green!80!black}\code{#1}}%
     \index[index_envars]{Z_#1@\emph{#1}!\textbf{Deprecated}|indexdepfmt} \label{envar:#1}%
@@ -551,7 +531,6 @@
 %
 %  \declareAttribute               Declare Attribute
 %  \declareAttributeProvisional    Declare Attribute - Provisional
-%  \declareAttributeNEW            Declare Attribute - New
 %  \declareAttributeDEP            Declare Attribute - Deprecated
 %  \declareAttributeRM             Declare Attribute - Removed
 %
@@ -580,12 +559,6 @@
 
 \newcommand{\declareAttributeProvisional}[4]{%
     \hl{\code{#1} ~~\code{#2}~~(\code{#3})} \provisionalMarker{}%
-    \index[index_attribute]{#1|indexfmt} \label{attr:#1}%
-    \InternaldeclareAttributeBody{#1}{#2}{#3}{#4}%
-}
-
-\newcommand{\declareAttributeNEW}[4]{%
-   {\color{magenta}\code{#1}} ~~\code{#2}~~(\code{#3})%
     \index[index_attribute]{#1|indexfmt} \label{attr:#1}%
     \InternaldeclareAttributeBody{#1}{#2}{#3}{#4}%
 }

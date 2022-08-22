@@ -63,7 +63,7 @@ a space of size \refconst{PMIX_MAX_KEYLEN}+1 to allow room for the \code{NULL} t
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_APP_WILDCARD}{UINT32_MAX}
+\declareconstitemvalue{PMIX_APP_WILDCARD}{UINT32_MAX}
 A value to indicate that the user wants the data for the given key from every application that posted that key, or that the given value applies to all applications within the given namespace.
 \end{constantdesc}
 
@@ -102,11 +102,11 @@ In addition, the following are general constants covering a variety of possible 
 \declareconstitemvalue{PMIX_ERROR}{-1}
 General Error.
 %
-\declareconstitemvalueNEW{PMIX_ERR_EXISTS}{-11}
+\declareconstitemvalue{PMIX_ERR_EXISTS}{-11}
 The requested operation would overwrite an existing value - typically returned
 when an operation would overwrite an existing file or directory.
 %
-\declareconstitemvalueNEW{PMIX_ERR_EXISTS_OUTSIDE_SCOPE}{-62}
+\declareconstitemvalue{PMIX_ERR_EXISTS_OUTSIDE_SCOPE}{-62}
 The requested key exists, but was posted in a \emph{scope} (see Section \ref{api:nres:scope}) that does not include the requester
 %
 \declareconstitemvalue{PMIX_ERR_INVALID_CRED}{-12}
@@ -153,7 +153,7 @@ suitable connection either has not been or can not be made.
 \declareconstitemvalue{PMIX_ERR_BAD_PARAM}{-27}
 One or more incorrect parameters (e.g., passing an attribute with a value of the wrong type), or multiple parameters containing conflicting directives (e.g., multiple instances of the same attribute with different values, or different attributes specifying conflicting behaviors), were passed to a \ac{PMIx} \ac{API}.
 %
-\declareconstitemvalueNEW{PMIX_ERR_EMPTY}{-60}
+\declareconstitemvalue{PMIX_ERR_EMPTY}{-60}
 An array or list was given that has no members in it - i.e., the object is empty.
 %
 \declareconstitemvalue{PMIX_ERR_RESOURCE_BUSY}{-28}
@@ -177,14 +177,14 @@ The requested information was not found.
 The requested operation is not supported by either the \ac{PMIx} implementation
 or the host environment.
 %
-\declareconstitemvalueNEW{PMIX_ERR_PARAM_VALUE_NOT_SUPPORTED}{-59}
+\declareconstitemvalue{PMIX_ERR_PARAM_VALUE_NOT_SUPPORTED}{-59}
 The requested operation is supported by the \ac{PMIx} implementation and (if applicable) the host environment. However, at least one supplied parameter was given an unsupported value, and the operation cannot therefore be executed as requested.
 %
 \declareconstitemvalue{PMIX_ERR_COMM_FAILURE}{-49}
 Communication failure - a message failed to be sent or received, but the
 connection remains intact.
 %
-\declareconstitemvalueNEW{PMIX_ERR_LOST_CONNECTION}{-61}
+\declareconstitemvalue{PMIX_ERR_LOST_CONNECTION}{-61}
 Lost connection between server and client or tool.
 %
 \declareconstitemvalue{PMIX_ERR_INVALID_OPERATION}{-158}
@@ -197,7 +197,7 @@ shall therefore be ignored.
 \declareconstitemvalue{PMIX_OPERATION_SUCCEEDED}{-157}
 The requested operation was performed atomically - no callback function will be executed.
 %
-\declareconstitemvalueNEW{PMIX_ERR_PARTIAL_SUCCESS}{-52}
+\declareconstitemvalue{PMIX_ERR_PARTIAL_SUCCESS}{-52}
 The operation is considered successful but not all elements of the operation were concluded (e.g., some members of a group construct operation chose not to participate).
 %
 \end{constantdesc}
@@ -738,13 +738,13 @@ Process exited without calling \refapi{PMIx_Finalize}.
 \declareconstitemvalue{PMIX_PROC_STATE_COMM_FAILED}{56}
 Process communication has failed.
 %
-\declareconstitemvalueNEW{PMIX_PROC_STATE_SENSOR_BOUND_EXCEEDED}{57}
+\declareconstitemvalue{PMIX_PROC_STATE_SENSOR_BOUND_EXCEEDED}{57}
 Process exceeded a specified sensor limit.
 %
 \declareconstitemvalue{PMIX_PROC_STATE_CALLED_ABORT}{58}
 Process called \refapi{PMIx_Abort}.
 %
-\declareconstitemvalueNEW{PMIX_PROC_STATE_HEARTBEAT_FAILED}{59}
+\declareconstitemvalue{PMIX_PROC_STATE_HEARTBEAT_FAILED}{59}
 Frocess failed to send heartbeat within specified time limit.
 %
 \declareconstitemvalue{PMIX_PROC_STATE_MIGRATING}{60}
@@ -892,22 +892,22 @@ The fine-grained nature of the following constants may exceed the ability of an 
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_JOB_STATE_UNDEF}{0}
+\declareconstitemvalue{PMIX_JOB_STATE_UNDEF}{0}
 Undefined job state.
 %
-\declareconstitemvalueNEW{PMIX_JOB_STATE_AWAITING_ALLOC}{1}
+\declareconstitemvalue{PMIX_JOB_STATE_AWAITING_ALLOC}{1}
 Job is waiting for resources to be allocated to it.
 %
-\declareconstitemvalueNEW{PMIX_JOB_STATE_LAUNCH_UNDERWAY}{2}
+\declareconstitemvalue{PMIX_JOB_STATE_LAUNCH_UNDERWAY}{2}
 Job launch is underway.
 %
-\declareconstitemvalueNEW{PMIX_JOB_STATE_RUNNING}{3}
+\declareconstitemvalue{PMIX_JOB_STATE_RUNNING}{3}
 All processes in the job have been spawned and are executing.
 %
-\declareconstitemvalueNEW{PMIX_JOB_STATE_SUSPENDED}{4}
+\declareconstitemvalue{PMIX_JOB_STATE_SUSPENDED}{4}
 All processes in the job have been suspended.
 %
-\declareconstitemvalueNEW{PMIX_JOB_STATE_CONNECTED}{5}
+\declareconstitemvalue{PMIX_JOB_STATE_CONNECTED}{5}
 All processes in the job have connected to their \ac{PMIx} server.
 %
 \declareconstitemvalue{PMIX_JOB_STATE_UNTERMINATED}{15}
@@ -1561,13 +1561,13 @@ The following constants were introduced in version 2.0 (unless otherwise marked)
 \declareconstitemvalue{PMIX_INFO_REQD}{0x00000001}
 The behavior defined in the \refstruct{pmix_info_t} array is required, and not optional. This is a bit-mask value.
 %
-\declareconstitemvalueNEW{PMIX_INFO_REQD_PROCESSED}{0x00000004}
+\declareconstitemvalue{PMIX_INFO_REQD_PROCESSED}{0x00000004}
 Mark that this required attribute has been processed. A required attribute can be handled at any level - the \ac{PMIx} client library might take care of it, or it may be resolved by the \ac{PMIx} server library, or it may pass up to the host environment for handling. If a level does not recognize or support the required attribute, it is required to pass it upwards to give the next level an opportunity to process it. Thus, the host environment (or the server library if the host does not support the given operation) must know if a lower level has handled the requirement so it can return a \refconst{PMIX_ERR_NOT_SUPPORTED} error status if the host itself cannot meet the request. Upon processing the request, the level must therefore mark the attribute with this directive to alert any subsequent levels that the requirement has been met.
 %
 \declareconstitemvalue{PMIX_INFO_ARRAY_END}{0x00000002}
 Mark that this \refstruct{pmix_info_t} struct is at the end of an array created by the \refmacro{PMIX_INFO_CREATE} macro. This is a bit-mask value.
 %
-\declareconstitemvalueNEW{PMIX_INFO_DIR_RESERVED}{0xffff0000}
+\declareconstitemvalue{PMIX_INFO_DIR_RESERVED}{0xffff0000}
 A bit-mask identifying the bits reserved for internal use by implementers - these currently are set as \code{0xffff0000}.
 %
 \end{constantdesc}
@@ -2347,7 +2347,7 @@ Data array (\refstruct{pmix_data_array_t}).
 \declareconstitemvalue{PMIX_PROC_RANK}{40}
 Process rank (\refstruct{pmix_rank_t}).
 %
-\declareconstitemvalueNEW{PMIX_PROC_NSPACE}{60}
+\declareconstitemvalue{PMIX_PROC_NSPACE}{60}
 Process namespace (\refstruct{pmix_nspace_t}).
 \%
 \declareconstitemvalue{PMIX_QUERY}{41}
@@ -2368,52 +2368,52 @@ Input/output forwarding channel (\refstruct{pmix_iof_channel_t}).
 \declareconstitemvalue{PMIX_ENVAR}{46}
 Environmental variable structure (\refstruct{pmix_envar_t}).
 %
-\declareconstitemvalueNEW{PMIX_COORD}{47}
+\declareconstitemvalue{PMIX_COORD}{47}
 Structure containing fabric coordinates (\refstruct{pmix_coord_t}).
 %
-\declareconstitemvalueNEW{PMIX_REGATTR}{48}
+\declareconstitemvalue{PMIX_REGATTR}{48}
 Structure supporting attribute registrations (\refstruct{pmix_regattr_t}).
 %
-\declareconstitemvalueNEW{PMIX_REGEX}{49}
+\declareconstitemvalue{PMIX_REGEX}{49}
 Regular expressions - can be a valid NULL-terminated string or an arbitrary array of bytes.
 %
-\declareconstitemvalueNEW{PMIX_JOB_STATE}{50}
+\declareconstitemvalue{PMIX_JOB_STATE}{50}
 Job state (\refstruct{pmix_job_state_t}).
 %
-\declareconstitemvalueNEW{PMIX_LINK_STATE}{51}
+\declareconstitemvalue{PMIX_LINK_STATE}{51}
 Link state (\refstruct{pmix_link_state_t}).
 %
-\declareconstitemvalueNEW{PMIX_PROC_CPUSET}{52}
+\declareconstitemvalue{PMIX_PROC_CPUSET}{52}
 Structure containing the binding bitmap of a process (\refstruct{pmix_cpuset_t}).
 %
-\declareconstitemvalueNEW{PMIX_GEOMETRY}{53}
+\declareconstitemvalue{PMIX_GEOMETRY}{53}
 Geometry structure containing the fabric coordinates of a specified device.(\refstruct{pmix_geometry_t}).
 %
-\declareconstitemvalueNEW{PMIX_DEVICE_DIST}{54}
+\declareconstitemvalue{PMIX_DEVICE_DIST}{54}
 Structure containing the minimum and maximum relative distance from the caller to a given fabric device. (\refstruct{pmix_device_distance_t}).
 %
-\declareconstitemvalueNEW{PMIX_ENDPOINT}{55}
+\declareconstitemvalue{PMIX_ENDPOINT}{55}
 Structure containing an assigned endpoint for a given fabric device. (\refstruct{pmix_endpoint_t}).
 %
-\declareconstitemvalueNEW{PMIX_TOPO}{56}
+\declareconstitemvalue{PMIX_TOPO}{56}
 Structure containing the topology for a given node. (\refstruct{pmix_topology_t}).
 %
-\declareconstitemvalueNEW{PMIX_DEVTYPE}{57}
+\declareconstitemvalue{PMIX_DEVTYPE}{57}
 Bitmask containing the types of devices being referenced. (\refstruct{pmix_device_type_t}).
 %
-\declareconstitemvalueNEW{PMIX_LOCTYPE}{58}
+\declareconstitemvalue{PMIX_LOCTYPE}{58}
 Bitmask describing the relative location of another process. (\refstruct{pmix_locality_t}).
 %
-\declareconstitemvalueNEW{PMIX_STOR_MEDIUM}{66}
+\declareconstitemvalue{PMIX_STOR_MEDIUM}{66}
 Bitmask specifying different types of storage mediums. (\refstruct{pmix_storage_medium_t}).
 %
-\declareconstitemvalueNEW{PMIX_STOR_ACCESS}{67}
+\declareconstitemvalue{PMIX_STOR_ACCESS}{67}
 Bitmask specifying different levels of storage accessibility (i.e,. from where a storage system may be accessed). (\refstruct{pmix_storage_accessibility_t}).
 %
-\declareconstitemvalueNEW{PMIX_STOR_PERSIST}{68}
+\declareconstitemvalue{PMIX_STOR_PERSIST}{68}
 Bitmask specifying different levels of persistence for a particular storage system. (\refstruct{pmix_storage_persistence_t}).
 %
-\declareconstitemvalueNEW{PMIX_STOR_ACCESS_TYPE}{69}
+\declareconstitemvalue{PMIX_STOR_ACCESS_TYPE}{69}
 Bitmask specifying different storage system access types. (\refstruct{pmix_storage_access_type_t}).
 %
 \declareconstitemvalue{PMIX_DATA_TYPE_MAX}{500}

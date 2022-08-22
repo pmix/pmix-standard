@@ -175,15 +175,15 @@ Tool is a launcher and needs to create rendezvous files.
 The following environmental variables are used during \refapi{PMIx_tool_init} and \refapi{PMIx_server_init} to control various rendezvous-related operations when the process is started manually (e.g., on a command line) or by a fork/exec-like operation.
 
 %
-\declareEnvarNEW{PMIX_LAUNCHER_RNDZ_URI}{
+\declareEnvar{PMIX_LAUNCHER_RNDZ_URI}{
 The spawned tool is to be connected back to the spawning tool using the given \ac{URI} so that the spawning tool can provide directives (e.g., a \refapi{PMIx_Spawn} command) to it.
 }
 %
-\declareEnvarNEW{PMIX_LAUNCHER_RNDZ_FILE}{
+\declareEnvar{PMIX_LAUNCHER_RNDZ_FILE}{
 If the specified file does not exist, this variable contains the absolute path of the file where the spawned tool is to store its connection information so that the spawning tool can connect to it. If the file does exist, it contains the information specifying the server to which the spawned tool is to connect.
 }
 %
-\declareEnvarNEW{PMIX_KEEPALIVE_PIPE}{
+\declareEnvar{PMIX_KEEPALIVE_PIPE}{
 An integer \code{read}-end of a POSIX pipe that the tool should monitor for closure, thereby indicating that the parent tool has terminated. Used. for example, when a tool fork/exec's an intermediate launcher that should self-terminate if the originating tool exits.
 }
 %
@@ -229,23 +229,23 @@ Time in seconds between connection attempts to a \ac{PMIx} server - the default 
 The tool wants to use internal \ac{PMIx} support, but does not want to connect to a \ac{PMIx} server.
 }
 %
-\declareAttributeNEW{PMIX_TOOL_CONNECT_OPTIONAL}{"pmix.tool.conopt"}{bool}{
+\declareAttribute{PMIX_TOOL_CONNECT_OPTIONAL}{"pmix.tool.conopt"}{bool}{
 The tool shall connect to a server if available, but otherwise continue to operate unconnected.
 }
 %
-\declareAttributeNEW{PMIX_TOOL_ATTACHMENT_FILE}{"pmix.tool.attach"}{char*}{
+\declareAttribute{PMIX_TOOL_ATTACHMENT_FILE}{"pmix.tool.attach"}{char*}{
 Pathname of file containing connection information to be used for attaching to a specific server.
 }
 %
-\declareAttributeNEW{PMIX_LAUNCHER_RENDEZVOUS_FILE}{"pmix.tool.lncrnd"}{char*}{
+\declareAttribute{PMIX_LAUNCHER_RENDEZVOUS_FILE}{"pmix.tool.lncrnd"}{char*}{
 Pathname of file where the launcher is to store its connection information so that the spawning tool can connect to it.
 }
 %
-\declareAttributeNEW{PMIX_PRIMARY_SERVER}{"pmix.pri.srvr"}{bool}{
+\declareAttribute{PMIX_PRIMARY_SERVER}{"pmix.pri.srvr"}{bool}{
 The server to which the tool is connecting shall be designated the \emph{primary} server once connection has been accomplished.
 }
 %
-\declareAttributeNEW{PMIX_WAIT_FOR_CONNECTION}{"pmix.wait.conn"}{bool}{
+\declareAttribute{PMIX_WAIT_FOR_CONNECTION}{"pmix.wait.conn"}{bool}{
 Wait until the specified process has connected to the requesting tool or server, or the operation times out (if the \refattr{PMIX_TIMEOUT} directive is included in the request).
 }
 
@@ -504,23 +504,23 @@ specify the callback function and other options for delivery of the forwarded
 output.
 }
 %
-\declareAttributeNEW{PMIX_NOHUP}{"pmix.nohup"}{bool}{
+\declareAttribute{PMIX_NOHUP}{"pmix.nohup"}{bool}{
 Any processes started on behalf of the calling tool (or the specified namespace, if such specification is included in the list of attributes) should continue after the tool disconnects from its server.
 }
 %
-\declareAttributeNEW{PMIX_LAUNCHER_DAEMON}{"pmix.lnch.dmn"}{char*}{
+\declareAttribute{PMIX_LAUNCHER_DAEMON}{"pmix.lnch.dmn"}{char*}{
 Path to executable that is to be used as the backend daemon for the launcher. This replaces the launcher's own daemon with the specified executable. Note that the user is therefore responsible for ensuring compatibility of the specified executable and the host launcher.
 }
 %
-\declareAttributeNEW{PMIX_FORKEXEC_AGENT}{"pmix.frkex.agnt"}{char*}{
+\declareAttribute{PMIX_FORKEXEC_AGENT}{"pmix.frkex.agnt"}{char*}{
 Path to executable that the launcher's backend daemons are to fork/exec in place of the actual application processes. The fork/exec agent shall connect back (as a \ac{PMIx} tool) to the launcher's daemon to receive its spawn instructions, and is responsible for starting the actual application process it replaced. See Section \ref{api:tools:debugger:agent} for details.
 }
 %
-\declareAttributeNEW{PMIX_EXEC_AGENT}{"pmix.exec.agnt"}{char*}{
+\declareAttribute{PMIX_EXEC_AGENT}{"pmix.exec.agnt"}{char*}{
 Path to executable that the launcher's backend daemons are to fork/exec in place of the actual application processes. The launcher's daemon shall pass the full command line of the application on the command line of the exec agent, which shall not connect back to the launcher's daemon. The exec agent is responsible for exec'ing the specified application process in its own place. See Section \ref{api:tools:debugger:agent} for details.
 }
 %
-\declareAttributeNEW{PMIX_LAUNCH_DIRECTIVES}{"pmix.lnch.dirs"}{pmix_data_array_t*}{
+\declareAttribute{PMIX_LAUNCH_DIRECTIVES}{"pmix.lnch.dirs"}{pmix_data_array_t*}{
 Array of \refstruct{pmix_info_t} containing directives for the launcher - a convenience attribute for retrieving all directives with a single call to \refapi{PMIx_Get}.
 }
 
@@ -532,7 +532,7 @@ The following constants refer to events relating to rendezvous of a tool and lau
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_LAUNCHER_READY}{-155}
+\declareconstitemvalue{PMIX_LAUNCHER_READY}{-155}
 An application launcher (e.g., \emph{mpiexec}) shall generate this event to signal a tool that started it that the launcher is ready to receive directives/commands (e.g., \refapi{PMIx_Spawn}). This is only used when the initiator is able to parse the command line itself, or the launcher is started as a persistent \ac{DVM}.
 %
 \end{constantdesc}
@@ -684,10 +684,10 @@ Forward all available channels.
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_ERR_IOF_FAILURE}{-172}
+\declareconstitemvalue{PMIX_ERR_IOF_FAILURE}{-172}
 An \ac{IO} forwarding operation failed - the affected channel will be included in the notification.
 %
-\declareconstitemvalueNEW{PMIX_ERR_IOF_COMPLETE}{-173}
+\declareconstitemvalue{PMIX_ERR_IOF_COMPLETE}{-173}
 \ac{IO} forwarding of the standard input for this process has completed - i.e., the stdin file descriptor has closed.
 %
 \end{constantdesc}
@@ -751,15 +751,15 @@ Tag output with the rank it came from
 Requests that output be formatted in \ac{XML}.
 }
 %
-\declareAttributeNEW{PMIX_IOF_PUSH_STDIN}{"pmix.iof.stdin"}{bool}{
+\declareAttribute{PMIX_IOF_PUSH_STDIN}{"pmix.iof.stdin"}{bool}{
 Requests that the \ac{PMIx} library collect the \code{stdin} of the requester and forward it to the processes specified in the \refapi{PMIx_IOF_push} call. All collected data is sent to the same targets until \code{stdin} is closed, or a subsequent call to \refapi{PMIx_IOF_push} is made that includes the \refattr{PMIX_IOF_COMPLETE} attribute indicating that forwarding of \code{stdin} is to be terminated.
 }
 %
-\declareAttributeNEW{PMIX_IOF_COPY}{"pmix.iof.cpy"}{bool}{
+\declareAttribute{PMIX_IOF_COPY}{"pmix.iof.cpy"}{bool}{
 Requests that the host environment deliver a copy of the specified output stream(s) to the tool, letting the stream(s) continue to also be delivered to the default location. This allows the tool to tap into the output stream(s) without redirecting it from its current final destination.
 }
 %
-\declareAttributeNEW{PMIX_IOF_REDIRECT}{"pmix.iof.redir"}{bool}{
+\declareAttribute{PMIX_IOF_REDIRECT}{"pmix.iof.redir"}{bool}{
 Requests that the host environment intercept the specified output stream(s) and deliver it to the requesting tool instead of its current final destination. This might be used, for example, during a debugging procedure to avoid injection of debugger-related output into the application’s results file. The original output stream(s) destination is restored upon termination of the tool.
 }
 %
@@ -1004,19 +1004,19 @@ to the \refapi{PMIx_Register_event_handler} \ac{API}.
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_EVENT_JOB_START}{-191}
+\declareconstitemvalue{PMIX_EVENT_JOB_START}{-191}
 The first process in the job has been spawned - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
 %
-\declareconstitemvalueNEW{PMIX_LAUNCH_COMPLETE}{-174}
+\declareconstitemvalue{PMIX_LAUNCH_COMPLETE}{-174}
 All processes in the job have been spawned - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
 %
-\declareconstitemvalueNEW{PMIX_EVENT_JOB_END}{-145}
+\declareconstitemvalue{PMIX_EVENT_JOB_END}{-145}
 All processes in the job have terminated - includes \refattr{PMIX_EVENT_TIMESTAMP} when the last process terminated as well as the \refattr{PMIX_JOBID} and/or \refattr{PMIX_NSPACE} of the job.
 %
-\declareconstitemvalueNEW{PMIX_EVENT_SESSION_START}{-192}
+\declareconstitemvalue{PMIX_EVENT_SESSION_START}{-192}
 The allocation has been instantiated and is ready for use - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_SESSION_ID} of the allocation. This event is issued after any system-controlled prologue has completed, but before any user-specified actions are taken.
 %
-\declareconstitemvalueNEW{PMIX_EVENT_SESSION_END}{-193}
+\declareconstitemvalue{PMIX_EVENT_SESSION_END}{-193}
 The allocation has terminated - includes \refattr{PMIX_EVENT_TIMESTAMP} as well as the \refattr{PMIX_SESSION_ID} of the allocation. This event is issued after any user-specified actions have completed, but before any system-controlled epilogue is performed.
 %
 \end{constantdesc}
@@ -1031,7 +1031,7 @@ termination will be indicated by the \refattr{PMIX_PROC_TERM_STATUS} in the
 \refarg{info} array of the notification. Note that a request for individual
 process events can generate a significant event volume from large-scale jobs.
 %
-\declareconstitemvalueNEW{PMIX_ERR_PROC_TERM_WO_SYNC}{-200}
+\declareconstitemvalue{PMIX_ERR_PROC_TERM_WO_SYNC}{-200}
 Process terminated without calling \refapi{PMIx_Finalize}, or was a member of an assemblage formed via \refapi{PMIx_Connect} and terminated or called \refapi{PMIx_Finalize} without first calling \refapi{PMIx_Disconnect} (or its non-blocking form) from that assemblage.
 %
 \end{constantdesc}
@@ -1043,28 +1043,28 @@ information regarding the reason for job abnormal termination:
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_CANCELED}{-180}
+\declareconstitemvalue{PMIX_ERR_JOB_CANCELED}{-180}
 The job was canceled by the host environment.
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_ABORTED}{-182}
+\declareconstitemvalue{PMIX_ERR_JOB_ABORTED}{-182}
 One or more processes in the job called abort, causing the job to be terminated.
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_KILLED_BY_CMD}{-183}
+\declareconstitemvalue{PMIX_ERR_JOB_KILLED_BY_CMD}{-183}
 The job was killed by user command.
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_ABORTED_BY_SIG}{-184}
+\declareconstitemvalue{PMIX_ERR_JOB_ABORTED_BY_SIG}{-184}
 The job was aborted due to receipt of an error signal (e.g., SIGKILL).
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_TERM_WO_SYNC}{-185}
+\declareconstitemvalue{PMIX_ERR_JOB_TERM_WO_SYNC}{-185}
 The job was terminated due to at least one process terminating without calling \refapi{PMIx_Finalize}, or was a member of an assemblage formed via \refapi{PMIx_Connect} and terminated or called \refapi{PMIx_Finalize} without first calling \refapi{PMIx_Disconnect} (or its non-blocking form) from that assemblage.
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_SENSOR_BOUND_EXCEEDED}{-186}
+\declareconstitemvalue{PMIX_ERR_JOB_SENSOR_BOUND_EXCEEDED}{-186}
 The job was terminated due to one or more processes exceeding a specified sensor limit.
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_NON_ZERO_TERM}{-187}
+\declareconstitemvalue{PMIX_ERR_JOB_NON_ZERO_TERM}{-187}
 The job was terminated due to one or more processes exiting with a non-zero status.
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_ABORTED_BY_SYS_EVENT}{-189}
+\declareconstitemvalue{PMIX_ERR_JOB_ABORTED_BY_SYS_EVENT}{-189}
 The job was aborted due to receipt of a system event.
 %
 \end{constantdesc}
@@ -1093,10 +1093,10 @@ The following constants are used in events used to coordinate applications and t
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_READY_FOR_DEBUG}{-58}
+\declareconstitemvalue{PMIX_READY_FOR_DEBUG}{-58}
 Event indicating a job (or specified set of processes) is ready for debug - includes identification of the target processes as well as the \refattr{PMIX_BREAKPOINT} indicating where the target is waiting
 %
-\declareconstitemvalueNEW{PMIX_DEBUGGER_RELEASE}{-3}
+\declareconstitemvalue{PMIX_DEBUGGER_RELEASE}{-3}
 Release a tool that is paused during \refapi{PMIx_tool_init}.
 %
 \end{constantdesc}
@@ -1116,7 +1116,7 @@ Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t}
 Included in either the \refstruct{pmix_info_t} array in a \refstruct{pmix_app_t} description (if the directive applies only to that application) or in the \emph{job_info} array if it applies to all applications in the given spawn request. Indicates that the specified application is being spawned under a debugger. The \ac{PMIx} client library in each resulting application process shall notify its \ac{PMIx} server that it is pausing and then pause during \refapi{PMIx_Init} of the spawned processes until either released by debugger modification of an appropriate variable or receipt of the \refconst{PMIX_DEBUGGER_RELEASE} event. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_READY_FOR_DEBUG} event (stipulating a breakpoint of \"pmix-init\") when all processes have reached the pause point.
 }
 %
-\declareAttributeNEW{PMIX_DEBUG_STOP_IN_APP}{"pmix.dbg.notify"}{varies}{
+\declareAttribute{PMIX_DEBUG_STOP_IN_APP}{"pmix.dbg.notify"}{varies}{
 Direct specified ranks to stop at application-specific point and notify they are ready-to-debug. The attribute's value can be any
 of three data types:
 \begin{compactitemize}
@@ -1128,11 +1128,11 @@ The resulting application processes are to notify their server (by generating
 the \refconst{PMIX_READY_FOR_DEBUG} event) when they reach some application-determined location - the event shall include the \refattr{PMIX_BREAKPOINT} attribute indicating where the application has stopped. The application shall pause at that point until released by debugger modification of an appropriate variable. The launcher (\ac{RM} or \ac{IL}) is responsible for generating the \refconst{PMIX_READY_FOR_DEBUG} event when all processes have indicated they are at the pause point.
 }
 %
-\declareAttributeNEW{PMIX_BREAKPOINT}{"pmix.brkpnt"}{char*}{
+\declareAttribute{PMIX_BREAKPOINT}{"pmix.brkpnt"}{char*}{
 String ID of the breakpoint where the process(es) is(are) waiting.
 }
 %
-\declareAttributeNEW{PMIX_DEBUG_TARGET}{"pmix.dbg.tgt"}{pmix_proc_t*}{
+\declareAttribute{PMIX_DEBUG_TARGET}{"pmix.dbg.tgt"}{pmix_proc_t*}{
 Identifier of process(es) to be debugged - a rank of \refconst{PMIX_RANK_WILDCARD} indicates that all processes in the specified namespace are to be included.
 }
 %
@@ -1144,7 +1144,7 @@ Included in the \refstruct{pmix_info_t} array of a \refstruct{pmix_app_t}, this 
 Designated application is to be spawned as a disconnected job - i.e., the launcher shall not include the application in any of the job-level values (e.g., \refattr{PMIX_RANK} within the job) provided to any other application process generated by the same spawn request. Typically used to cospawn debugger daemons alongside an application.
 }
 %
-\declareAttributeNEW{PMIX_DEBUG_DAEMONS_PER_PROC}{"pmix.dbg.dpproc"}{uint16_t}{
+\declareAttribute{PMIX_DEBUG_DAEMONS_PER_PROC}{"pmix.dbg.dpproc"}{uint16_t}{
 Number of debugger daemons to be spawned per application process. The launcher
 is to pass the identifier of the namespace to be debugged by including the
 \refattr{PMIX_DEBUG_TARGET} attribute in the daemon's job-level information. The debugger daemons spawned on a given node are responsible for
@@ -1153,7 +1153,7 @@ their own \refattr{PMIX_LOCAL_RANK} in the daemon debugger job versus the
 corresponding \refattr{PMIX_LOCAL_RANK} of the target processes on the node.
 }
 %
-\declareAttributeNEW{PMIX_DEBUG_DAEMONS_PER_NODE}{"pmix.dbg.dpnd"}{uint16_t}{
+\declareAttribute{PMIX_DEBUG_DAEMONS_PER_NODE}{"pmix.dbg.dpnd"}{uint16_t}{
 Number of debugger daemons to be spawned on each node where the target job is
 executing. The launcher is to pass the identifier of the namespace to be
 debugged by including the \refattr{PMIX_DEBUG_TARGET} attribute in the daemon's
