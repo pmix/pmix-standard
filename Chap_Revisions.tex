@@ -1433,15 +1433,36 @@ The following macros were deprecated in v4.2:
 %%%%%%%%%% History: Version 5.0
 \section{Version 5.0: TBD}
 
-%\begin{compactitemize}
-%    \item ...
-%\end{compactitemize}
+\begin{compactitemize}
+  \item First release prepared using procedures defined in the PMIx
+    Governance v1.7 document\footnote{\url{https://github.com/pmix/governance/releases/tag/v1.7}}.
+  \item Add specific values to constant definitions to ensure
+    consistency across implementations.
+  \item Add Use-Cases appendix with descriptions for Business Card
+    Exchange, Debugging, Hybrid Applications, MPI Sessions, and
+    Cross-Version Compatibility.
+  \item Add guidance on how PMIx defines an Application Binary Interface (ABI).
+  \item Add ABI query attributes.
+  \item Clarify three roles of consumers of the PMIx interface (client, server, tool).
+  \item Clarify when \refattr{PMIX_PARENT_ID} attribute is provided.
+  \item Clarify the value of \refattr{PMIX_CMD_LINE} attribute in spawn case.
+  \item Clarifications to Terms and Conventions chapter and addition of additional term definitions.
+  \item Re-organize the presentation of data access, syncronization, reserved keys and non-reserved keys.
+  \item Make presentation of return values consistent across APIs.
+  \item Attributes supported by PRRTE are no longer color coded.  Refer to PRRTE documentation to see what is supported for a particular PRRTE version.
+\end{compactitemize}
+
 %
 %\subsection{Added \acp{API}}
 %
 %\subsection{Added Constants}
 %
-%\subsection{Added Attributes}
+\subsection{Added Attributes}
+
+\littleheader{ABI attributes}
+\pasteAttributeItem{PMIX_QUERY_STABLE_ABI_VERSION}
+\pasteAttributeItem{PMIX_QUERY_PROVISIONAL_ABI_VERSION}
+
 %
 %\subsection{Added Macros}
 %
