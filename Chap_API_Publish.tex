@@ -13,7 +13,7 @@ retrieving process knows the identifier of the process that posted it) or
 requires a synchronization operation prior to retrieval (e.g., the case of
 globally unique non-reserved keys). However, another requirement exists for an
 asynchronous exchange of data where neither the posting nor the retrieving
-process is known in advance, for example, two namespaces that do not share a child-parent relationship.
+process is known in advance (e.g. two namespaces that do not share a child-parent relationship).
 The \acp{API} defined in this section focus on resolving that specific
 situation by allowing processes to publish data that can subsequently be
 retrieved solely by referral to its key. Mechanisms for constraining
@@ -76,7 +76,7 @@ Changes to those values, and any additional directives, can be included in the \
 The blocking form of this call will block until it has obtained confirmation from the datastore that the data is available for lookup. The \refarg{info} array can be released upon return from the blocking function call.
 
 Publishing duplicate keys is permitted provided they are published to different
-ranges. Custom ranges are consider different if they have different members.
+ranges. Custom ranges are considered different if they have different members.
 Duplicate keys being published on the same data range shall return the
 \refconst{PMIX_ERR_DUPLICATE_KEY} error.
 
@@ -98,7 +98,7 @@ may be ignored as outlined in Section \ref{intro:portability:attributes},
 but should not be treated as data to
 publish.  The implementation may treat any custom (non-standardized) directives it
 supports as directives.  All other \refarg{info} array elements
-should it be assumed to be data to be published.
+should be assumed to be data to be published.
 Since additional directives may be added to the standard and implementations may add support for additional custom directives, the use of \refattr{PMIX_DATA_TO_PUBLISH} is the only reliable way to ensure that
 future implementations will not mis-classify elements of an \refarg{info} array.
 
@@ -227,7 +227,8 @@ The following constants can be used to set a variable of the type \refstruct{pmi
 Undefined range.
 %
 \declareconstitemvalue{PMIX_RANGE_RM}{1}
-Published data and generated events are restricted to processes executing under the same instance of the host environment as the publisher or event creator.  Lookup of data is restricted to data published by processes running under the same instance of the host environment as the requester.
+Data is intended for the host environment, or lookup is restricted to 
+data published by the host environment.
 %
 \declareconstitemvalue{PMIX_RANGE_LOCAL}{2}
 Published data and generated events are restricted to processes on the same node as the publisher or event creator.  Lookup of data is restricted to data published by processes on the same node as the requester.
@@ -352,7 +353,7 @@ PMIx_Lookup(pmix_pdata_t data[], size_t ndata, \\
 \item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the requested data was found.
 Any key that cannot be found will return with a data type of \refconst{PMIX_UNDEF} in the associated \refarg{value} struct. Note that the specific reason for a particular piece of missing information (e.g., lack of permissions) cannot be communicated back to the requester in this situation.
 
-\item \refconst{PMIX_ERR_NO_PERMISSIONS} All of the requested data was found and range restrictions were met for each specified key, but none of the matching data could be returned due to lack of access permissions.
+\item \refconst{PMIX_ERR_NO_PERMISSIONS} All requested data was found and range restrictions were met for each specified key, but none of the matching data could be returned due to lack of access permissions.
 
 \end{itemize}
 \returnend
