@@ -22,6 +22,133 @@ targeting of the eventual recipient(s).
 
 Note that no presumption is made regarding how the published information is to be stored, nor as to the entity (host environment or \ac{PMIx} implementation) that shall act as the datastore. The descriptions in the remainder of this chapter shall simply refer to that entity as the \emph{datastore}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Publish2}}
+
+\declareapi{PMIx_Publish2}
+
+%%%%
+\summary
+
+Publish data for later access via \refapi{PMIx_Lookup}.
+
+%%%%
+\format
+
+
+
+
+\versionMarkerProvisional{5.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t \\
+PMIx_Publish2(const pmix_info_t pinfo[], size_t npinfo) \\
+\hspace*{12\sigspace}const pmix_info_t info[], size_t ninfo);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{pinfo}{Array of key value pairs to publish (array of \refstruct{pmix_info_t})}
+\argin{npinfo}{Number of elements in the \refarg{pinfo} array (integer)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t})}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\end{arglist}
+%
+\returnsimple
+%
+\reqattrstart
+There are no required attributes for this \ac{API}. \ac{PMIx} implementations that do not directly support the operation but are hosted by environments that do support it must pass any attributes that are provided by the client to the host environment for processing. In addition, the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that published the information to the \refarg{info} array passed to the host environment.
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_PERSISTENCE}
+\pasteAttributeItem{PMIX_ACCESS_USERIDS}
+\pasteAttributeItem{PMIX_ACCESS_GRPIDS}
+\pasteAttributeItem{PMIX_ACCESS_PERMISSIONS}
+
+\optattrend
+
+%%%%
+\descr
+
+Publish the data in the \refarg{pinfo} array for subsequent lookup.
+By default, the data will be published into the \refconst{PMIX_RANGE_SESSION} range and with \refconst{PMIX_PERSIST_APP} persistence.
+Changes to those values, and any additional directives, can be included in the \refarg{info} array. Attempts to access the data by processes outside of the provided data range shall be rejected. The \refattr{PMIX_PERSISTENCE} attribute instructs the datastore holding the published information as to how long that information is to be retained.
+
+The blocking form of this call will block until it has obtained confirmation from the datastore that the data is available for lookup. The \refarg{info} array can be released upon return from the blocking function call.
+
+Publishing duplicate keys is permitted provided they are published to different
+ranges. Custom ranges are considered different if they have different members.
+Duplicate keys being published on the same data range shall return the
+\refconst{PMIX_ERR_DUPLICATE_KEY} error.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Publish2_nb}}
+
+\declareapi{PMIx_Publish2_nb}
+
+%%%%
+\summary
+
+Nonblocking \refapi{PMIx_Publish2} routine.
+
+%%%%
+\format
+
+\versionMarkerProvisional{5.0}
+\cspecificstart
+\begin{codepar}
+pmix_status_t \\
+PMIx_Publish2_nb(const pmix_info_t pinfo[], size_t npinfo, \\
+\hspace*{12\sigspace}const pmix_info_t info[], size_t ninfo, \\
+\hspace*{16\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{pinfo}{Array of key value pairs to publish (array of \refstruct{pmix_info_t})}
+\argin{npinfo}{Number of elements in the \refarg{pinfo} array (integer)}
+\argin{info}{Array of info structures (array of \refstruct{pmix_info_t})}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+\returnsimplenb
+
+\returnstart
+\begin{itemize}
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
+\end{itemize}
+\returnend
+
+\reqattrstart
+There are no required attributes for this \ac{API}. \ac{PMIx} implementations that do not directly support the operation but are hosted by environments that do support it must pass any attributes that are provided by the client to the host environment for processing. In addition, the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that published the information to the \refarg{info} array passed to the host environment.
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_PERSISTENCE}
+\pasteAttributeItem{PMIX_ACCESS_USERIDS}
+\pasteAttributeItem{PMIX_ACCESS_GRPIDS}
+\pasteAttributeItem{PMIX_ACCESS_PERMISSIONS}
+
+\optattrend
+
+%%%%
+\descr
+
+Nonblocking \refapi{PMIx_Publish2} routine.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -49,9 +176,8 @@ PMIx_Publish(const pmix_info_t info[], size_t ninfo);
 \returnsimple
 
 \reqattrstart
-The following attributes are required to be supported by all PMIx libraries:
+There are no required attributes for this \ac{API}. \ac{PMIx} implementations that do not directly support the operation but are hosted by environments that do support it must pass any attributes that are provided by the client to the host environment for processing. In addition, the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that published the information to the \refarg{info} array passed to the host environment.
 
-\pasteAttributeItem{PMIX_DATA_TO_PUBLISH}
 \reqattrend
 
 \optattrstart
@@ -80,31 +206,32 @@ ranges. Custom ranges are considered different if they have different members.
 Duplicate keys being published on the same data range shall return the
 \refconst{PMIX_ERR_DUPLICATE_KEY} error.
 
-In some cases, implementations may be incapable of distinguishing which
-info keys in the \refarg{info} array are for publishing and which info keys are
-directives.  To make it clear, it is recommended that the keys to be published
-are designated by passing them as a \refstruct{pmix_data_array_t} using the
-\refattr{PMIX_DATA_TO_PUBLISH} directive.
-If the \refarg{info} array contains a \refattr{PMIX_DATA_TO_PUBLISH} info,
-all other elements of the info array will be treated as directives.
-If the info array does not include a \refattr{PMIX_DATA_TO_PUBLISH} info,
-the implementation should
-distinguish between info array elements that specify keys and directives as follows:
-All standardized directives to the publish call,
-including optional attributes the implementation does not support,
-should be treated as
-directives.  Non-supported directives
-may be ignored as outlined in Section \ref{intro:portability:attributes},
-but should not be treated as data to
-publish.  The implementation may treat any custom (non-standardized) directives it
-supports as directives.  All other \refarg{info} array elements
-should be assumed to be data to be published.
-Since additional directives may be added to the standard and implementations may add support for additional custom directives, the use of \refattr{PMIX_DATA_TO_PUBLISH} is the only reliable way to ensure that
-future implementations will not mis-classify elements of an \refarg{info} array.
+%In some cases, implementations may be incapable of distinguishing which
+%info keys in the \refarg{info} array are for publishing and which info keys are
+%directives.  To make it clear, it is recommended that the keys to be published
+%are designated by passing them as a \refstruct{pmix_data_array_t} using the
+%\refattr{PMIX_DATA_TO_PUBLISH} directive.
+%If the \refarg{info} array contains a \refattr{PMIX_DATA_TO_PUBLISH} info,
+%all other elements of the info array will be treated as directives.
+%If the info array does not include a \refattr{PMIX_DATA_TO_PUBLISH} info,
+%the implementation should
+%distinguish between info array elements that specify keys and directives as follows:
+%All standardized directives to the publish call,
+%including optional attributes the implementation does not support,
+%should be treated as
+%directives.  Non-supported directives
+%may be ignored as outlined in Section \ref{intro:portability:attributes},
+%but should not be treated as data to
+%publish.  The implementation may treat any custom (non-standardized) directives it
+%supports as directives.  All other \refarg{info} array elements
+%should be assumed to be data to be published.
+%Since additional directives may be added to the standard and implementations may add support for additional custom directives, the use of \refattr{PMIX_DATA_TO_PUBLISH} is the only reliable way to ensure that
+%future implementations will not mis-classify elements of an \refarg{info} array.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{\code{PMIx_Publish_nb}}
+
 \declareapi{PMIx_Publish_nb}
 
 %%%%
@@ -137,9 +264,7 @@ PMIx_Publish_nb(const pmix_info_t info[], size_t ninfo, \\
 \returnend
 
 \reqattrstart
-The following attributes are required to be supported by all PMIx libraries:
-
-\pasteAttributeItem{PMIX_DATA_TO_PUBLISH}
+There are no required attributes for this \ac{API}. \ac{PMIx} implementations that do not directly support the operation but are hosted by environments that do support it must pass any attributes that are provided by the client to the host environment for processing. In addition, the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that published the information to the \refarg{info} array passed to the host environment.
 \reqattrend
 
 \optattrstart
@@ -201,17 +326,12 @@ Array of effective \acp{UID} that are allowed to access the published data.
 Array of effective \acp{GID} that are allowed to access the published data.
 }
 %
-\declareAttributeNEW{PMIX_DATA_TO_PUBLISH}{"pmix.publishdata"}{pmix_data_array_t}{
-Array of \refstruct{pmix_info_t} containing data to be published.
-}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Publish-Lookup Datatypes}
 
 The following data types are defined for use with the \refapi{PMIx_Publish} \acp{API}.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Range of Published Data}
@@ -227,8 +347,7 @@ The following constants can be used to set a variable of the type \refstruct{pmi
 Undefined range.
 %
 \declareconstitemvalue{PMIX_RANGE_RM}{1}
-Data is intended for the host environment, or lookup is restricted to 
-data published by the host environment.
+Data is intended for the host environment, or lookup is restricted to data published by the host environment.
 %
 \declareconstitemvalue{PMIX_RANGE_LOCAL}{2}
 Published data and generated events are restricted to processes on the same node as the publisher or event creator.  Lookup of data is restricted to data published by processes on the same node as the requester.
