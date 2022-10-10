@@ -719,16 +719,8 @@ The key being looked up will match with a published key only if all of the follo
 \begin{enumerate}
     \item The lookup key matches the published key.
     \item The type of range specified by the publisher is the same as the type of range specified by the requester.
-    \item If a custom range is specified by the publisher and the requester, the members described in both cases must be identical.  The publisher is not required to be a member of a custom range.
     \item The requestor must be a member of the range specified by the publisher.
-
-%%option2:
-%%
-%%    \item The publisher's range must describe the same set of processes as the requestor's range.
-%%    \item The requestor must be a member of the range specified.
-%%
-%% The difference here is in how custom ranges are handled in which the publisher is not a member of the custom range it describes.   The later case allows the publisher to publish to a custom range that includes a set of processes not including itself.
-
+    \item The publisher must be a member of the range specified by the requestor.
     \item If the publisher specified access permissions, the effective \ac{UID} and \ac{GID} of the requester must meet those requirements.
 \end{enumerate}
 
