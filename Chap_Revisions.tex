@@ -1290,68 +1290,30 @@ The v4.1 update includes clarifications and corrections from the v4.0 document:
 \pasteAttributeItem{PMIX_STORAGE_IOPS_CUR}
 \pasteAttributeItem{PMIX_STORAGE_ACCESS_TYPE}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%% History: Version 4.2
-\section{Version 4.2: TBD}
+%%%%%%%%%% History: Version 5.0
+\section{Version 5.0: May 2023}
 
-The v4.2 update includes the following changes from the v4.1 document:
-
-\begin{compactitemize}
-    \item Define when \refattr{PMIX_PARENT_ID} is set
-    \item Add a definition for \refterm{tool}
-    \item Clarify \refattr{PMIX_CMD_LINE} in \refapi{PMIx_Spawn}
-    \item Add that using \refapi{PMIx_Info_load} with a \code{NULL} \refconst{PMIX_BOOL} data sets the value to true
-    \item Revision history now contains a list of errata changes
-\end{compactitemize}
-
-\subsection{Errata}
-
-The following errors were corrected in v4.2:
+The v5.0 update includes the following changes from the v4.1 document:
 
 \begin{compactitemize}
-  \item Parameter type for the key argument in \refapi{PMIx_Get_nb} has been changed to the equivalent type \refstruct{pmix_key_t} so that it is uniform with the argument in \refapi{PMIx_Get}.
-  \item Parameter type for the payload argument in \refapi{pmix_iof_cbfunc_t} has been changed to a pointer to the type \refstruct{pmix_byte_object_t}.
-\end{compactitemize}
-
-\subsection{Deprecated constants}
-
-The following constants were deprecated in v4.2:
-
-\begin{constantdesc}
-%
-\declareconstitemDEP{PMIX_DEBUG_WAITING_FOR_NOTIFY}
-Renamed to \refconst{PMIX_READY_FOR_DEBUG}
-%
-\end{constantdesc}
-
-
-\subsection{Deprecated attributes}
-
-The following attributes were deprecated in v4.2:
-
-%
-\declareAttributeDEP{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
-Renamed to \refattr{PMIX_DEBUG_STOP_IN_APP}
-}
-
-\subsection{Deprecated macros}
-
-The following macros were deprecated in v4.2:
-
-\begin{compactitemize}
-  \item \declaremacroDEP{PMIX_VALUE_LOAD} Replaced by the \refapi{PMIx_Value_load} \ac{API}
-  \item \declaremacroDEP{PMIX_VALUE_UNLOAD} Replaced by the \refapi{PMIx_Value_unload} \ac{API}
-  \item \declaremacroDEP{PMIX_VALUE_XFER} Replaced by the \refapi{PMIx_Value_xfer} \ac{API}
-  \item \declaremacroDEP{PMIX_INFO_LOAD} Replaced by the \refapi{PMIx_Info_load} \ac{API}
-  \item \declaremacroDEP{PMIX_INFO_XFER} Replaced by the \refapi{PMIx_Info_xfer} \ac{API}
-  \item \declaremacroDEP{PMIX_INFO_LIST_START} Replaced by the \refapi{PMIx_Info_list_start} \ac{API}
-  \item \declaremacroDEP{PMIX_INFO_LIST_ADD} Replaced by the \refapi{PMIx_Info_list_add} \ac{API}
-  \item \declaremacroDEP{PMIX_INFO_LIST_XFER} Replaced by the \refapi{PMIx_Info_list_xfer} \ac{API}
-  \item \declaremacroDEP{PMIX_INFO_LIST_CONVERT} Replaced by the \refapi{PMIx_Info_list_convert} \ac{API}
-  \item \declaremacroDEP{PMIX_INFO_LIST_RELEASE} Replaced by the \refapi{PMIx_Info_list_release} \ac{API}
-  \item \declaremacroDEP{PMIX_TOPOLOGY_DESTRUCT} Replaced by the \refapi{PMIx_Topology_destruct} \ac{API}
-  \item \declaremacroDEP{PMIX_TOPOLOGY_FREE} Not replaced.
+  \item First release prepared using procedures defined in the PMIx
+    Governance v1.7 document\footnote{\url{https://github.com/pmix/governance/releases/tag/v1.7}}.
+  \item Add specific values to constant definitions to ensure
+    consistency across implementations.
+  \item Add \nameref{app:use-cases} appendix with descriptions for Business Card
+    Exchange, Debugging, Hybrid Applications, MPI Sessions, and
+    Cross-Version Compatibility.
+  \item Add guidance on how PMIx defines an Application Binary Interface (ABI).
+  \item Add ABI query attributes.
+  \item Clarify three roles of consumers of the PMIx interface (client, server, tool).
+  \item Clarify when \refattr{PMIX_PARENT_ID} attribute is provided.
+  \item Clarify the value of \refattr{PMIX_CMD_LINE} attribute in spawn case.
+  \item Clarifications to Terms and Conventions chapter and addition of additional term definitions.
+  \item Re-organize the presentation of data access, synchronization, reserved keys and non-reserved keys.
+  \item Make presentation of return values consistent across APIs.
+  \item Attributes supported by PRRTE are no longer color coded.  Refer to PRRTE documentation to see what is supported for a particular PRRTE version.
+  \item NEW markers are removed from item declarations. Refer to \nameref{chap:revisions} to see when something was added.
 \end{compactitemize}
 
 \subsection{Added Functions (Provisional)}
@@ -1404,6 +1366,12 @@ The following macros were deprecated in v4.2:
   \item \refconst{PMIX_ERR_JOB_WDIR_NOT_FOUND}
 \end{compactitemize}
 
+\subsection{Added Attributes}
+
+\littleheader{ABI attributes}
+\pasteAttributeItem{PMIX_QUERY_STABLE_ABI_VERSION}
+\pasteAttributeItem{PMIX_QUERY_PROVISIONAL_ABI_VERSION}
+
 \subsection{Added Attributes (Provisional)}
 
 \littleheader{Spawn attributes}
@@ -1426,4 +1394,53 @@ The following macros were deprecated in v4.2:
 \pasteAttributeItem{PMIX_BREAKPOINT}
 \pasteAttributeItem{PMIX_DEBUG_STOP_IN_APP}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Deprecated constants}
+
+The following constants were deprecated in v5.0:
+
+\begin{constantdesc}
+%
+\declareconstitemDEP{PMIX_DEBUG_WAITING_FOR_NOTIFY}
+Renamed to \refconst{PMIX_READY_FOR_DEBUG}
+%
+\end{constantdesc}
+
+
+\subsection{Deprecated attributes}
+
+The following attributes were deprecated in v5.0:
+
+%
+\declareAttributeDEP{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
+Renamed to \refattr{PMIX_DEBUG_STOP_IN_APP}
+}
+
+\subsection{Deprecated macros}
+
+The following macros were deprecated in v5.0:
+
+\begin{compactitemize}
+  \item \declaremacroDEP{PMIX_VALUE_LOAD} Replaced by the \refapi{PMIx_Value_load} \ac{API}
+  \item \declaremacroDEP{PMIX_VALUE_UNLOAD} Replaced by the \refapi{PMIx_Value_unload} \ac{API}
+  \item \declaremacroDEP{PMIX_VALUE_XFER} Replaced by the \refapi{PMIx_Value_xfer} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LOAD} Replaced by the \refapi{PMIx_Info_load} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_XFER} Replaced by the \refapi{PMIx_Info_xfer} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_START} Replaced by the \refapi{PMIx_Info_list_start} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_ADD} Replaced by the \refapi{PMIx_Info_list_add} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_XFER} Replaced by the \refapi{PMIx_Info_list_xfer} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_CONVERT} Replaced by the \refapi{PMIx_Info_list_convert} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_RELEASE} Replaced by the \refapi{PMIx_Info_list_release} \ac{API}
+  \item \declaremacroDEP{PMIX_TOPOLOGY_DESTRUCT} Replaced by the \refapi{PMIx_Topology_destruct} \ac{API}
+  \item \declaremacroDEP{PMIX_TOPOLOGY_FREE} Not replaced.
+\end{compactitemize}
+
+\subsection{Removed Constants}
+
+The following constants were removed:
+
+\begin{constantdesc}
+\declareconstitemRM{PMIX_QUERY_PARTIAL_SUCCESS}
+Some, but not all, of the requested information was returned.
+Replaced by \refconst{PMIX_ERR_PARTIAL_SUCCESS}.
+\end{constantdesc}
+
