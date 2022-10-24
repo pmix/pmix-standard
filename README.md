@@ -40,6 +40,9 @@ The community maintains a [Docker container image](https://github.com/jjhursey/p
  * If you are building on Ubuntu then take a look at [this Dockerfile](https://github.com/jjhursey/pmix-standard-dockerfile/blob/master/Dockerfile)
  * If you are building on Mac OSX start with [MacTeX](https://www.tug.org/mactex/) then add the rest of the dependencies:
 ```
-sudo pip2 install --upgrade pip setuptools
-sudo pip2 install Pygments
+# Mac only
+brew install python pygments
+# Python3 install
+sudo pip3 install --upgrade pip setuptools
+sudo pip3 install Pygments
 ```
