@@ -43,7 +43,7 @@ Publish data for later access via \refapi{PMIx_Lookup}.
 \cspecificstart
 \begin{codepar}
 pmix_status_t \\
-PMIx_Publish2(const pmix_info_t pinfo[], size_t npinfo) \\
+PMIx_Publish2(const pmix_info_t pinfo[], size_t npinfo, \\
 \hspace*{12\sigspace}const pmix_info_t info[], size_t ninfo);
 \end{codepar}
 \cspecificend
@@ -80,7 +80,7 @@ Publish the data in the \refarg{pinfo} array for subsequent lookup.
 By default, the data will be published into the \refconst{PMIX_RANGE_SESSION} range and with \refconst{PMIX_PERSIST_APP} persistence.
 Changes to those values, and any additional directives, can be included in the \refarg{info} array. Attempts to access the data by processes outside of the provided data range shall be rejected. The \refattr{PMIX_PERSISTENCE} attribute instructs the datastore holding the published information as to how long that information is to be retained.
 
-The blocking form of this call will block until it has obtained confirmation from the datastore that the data is available for lookup. The \refarg{info} array can be released upon return from the blocking function call.
+The blocking form of this call will block until it has obtained confirmation from the datastore that the data is available for lookup. The \refarg{pinfo} array can be released upon return from the blocking function call.
 
 Publishing duplicate keys is permitted provided they are published to different
 ranges. Custom ranges are considered different if they have different members.
