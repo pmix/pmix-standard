@@ -141,7 +141,7 @@ The following constants are defined for use with the \refapi{PMIx_Publish} \acp{
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_ERR_DUPLICATE_KEY}{-53}
+\declareconstitemvalue{PMIX_ERR_DUPLICATE_KEY}{-53}
 The provided key has already been published on the same data range.
 %
 \end{constantdesc}
@@ -162,15 +162,15 @@ Define constraints on the processes that can access the provided data. Only proc
 Declare how long the datastore shall retain the provided data. The datastore is to delete the data upon reaching the persistence criterion.
 }
 %
-\declareAttributeNEW{PMIX_ACCESS_PERMISSIONS}{"pmix.aperms"}{pmix_data_array_t}{
+\declareAttribute{PMIX_ACCESS_PERMISSIONS}{"pmix.aperms"}{pmix_data_array_t}{
 Define access permissions for the published data. The value shall contain an array of \refstruct{pmix_info_t} structs containing the specified permissions.
 }
 %
-\declareAttributeNEW{PMIX_ACCESS_USERIDS}{"pmix.auids"}{pmix_data_array_t}{
+\declareAttribute{PMIX_ACCESS_USERIDS}{"pmix.auids"}{pmix_data_array_t}{
 Array of effective \acp{UID} that are allowed to access the published data.
 }
 %
-\declareAttributeNEW{PMIX_ACCESS_GRPIDS}{"pmix.agids"}{pmix_data_array_t}{
+\declareAttribute{PMIX_ACCESS_GRPIDS}{"pmix.agids"}{pmix_data_array_t}{
 Array of effective \acp{GID} that are allowed to access the published data.
 }
 

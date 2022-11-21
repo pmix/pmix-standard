@@ -122,7 +122,7 @@ The Resource Manager will remove any directories or files it creates in
 \refattr{PMIX_TMPDIR}.
 }
 %
-\declareAttributeNEW{PMIX_HOSTNAME_KEEP_FQDN}{"pmix.fqdn"}{bool}{
+\declareAttribute{PMIX_HOSTNAME_KEEP_FQDN}{"pmix.fqdn"}{bool}{
 \acp{FQDN} are being retained by the \ac{PMIx} library.
 }
 %
@@ -143,7 +143,7 @@ retrieved from the session realm by setting the \refattr{PMIX_SESSION_INFO} attr
 Comma-delimited list or regular expression of all nodes in the specified realm regardless of whether or not they currently host processes. Defaults to the \refterm{job} realm.
 }
 %
-\declareAttributeNEW{PMIX_NUM_ALLOCATED_NODES}{"pmix.num.anodes"}{uint32_t}{
+\declareAttribute{PMIX_NUM_ALLOCATED_NODES}{"pmix.num.anodes"}{uint32_t}{
 Number of nodes in the specified realm regardless of whether or not they currently host processes. Defaults to the \refterm{job} realm.
 }
 %
@@ -163,7 +163,7 @@ the equivalent to \refattr{PMIX_MAX_PROCS} -
 it is included in the \ac{PMIx} Standard for historical reasons. Defaults to the \refterm{job} realm.
 }
 %
-\declareAttributeNEW{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
+\declareAttribute{PMIX_NUM_NODES}{"pmix.num.nodes"}{uint32_t}{
 Number of nodes currently hosting processes in the specified realm. Defaults to the \refterm{job} realm.
 }
 
@@ -172,7 +172,7 @@ Number of nodes currently hosting processes in the specified realm. Defaults to 
 Regular expression of nodes currently hosting processes in the specified realm - see \ref{cptr:api_server:noderegex} for an explanation of its generation. Defaults to the \refterm{job} realm.
 }
 %
-\declareAttributeNEW{PMIX_NODE_MAP_RAW}{"pmix.nmap.raw"}{char*}{
+\declareAttribute{PMIX_NODE_MAP_RAW}{"pmix.nmap.raw"}{char*}{
 Comma-delimited list of nodes containing procs within the specified realm. Defaults to the \refterm{job} realm.
 }
 %
@@ -180,7 +180,7 @@ Comma-delimited list of nodes containing procs within the specified realm. Defau
 Regular expression describing processes on each node in the specified realm - see \ref{cptr:api_server:ppnregex} for an explanation of its generation. Defaults to the \refterm{job} realm.
 }
 %
-\declareAttributeNEW{PMIX_PROC_MAP_RAW}{"pmix.pmap.raw"}{char*}{
+\declareAttribute{PMIX_PROC_MAP_RAW}{"pmix.pmap.raw"}{char*}{
 Semi-colon delimited list of strings, each string containing a comma-delimited list of ranks on the corresponding node within the specified realm. Defaults to the \refterm{job} realm.
 }
 %
@@ -254,7 +254,7 @@ point in time.
 process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation of the processes in the specified job.
 \pasteAttributeItemEnd{}
 %
-\declareAttributeNEW{PMIX_CMD_LINE}{"pmix.cmd.line"}{char*}{
+\declareAttribute{PMIX_CMD_LINE}{"pmix.cmd.line"}{char*}{
 Command line used to execute the specified job (e.g., "mpirun -n 2 --map-by foo ./myapp : -n 4 ./myapp2").
 If the job was created by a call to \refapi{PMIx_Spawn}, the string is an inorder
 concatenation of the
@@ -325,7 +325,7 @@ Lowest rank in the specified application.
 Number of processes in the specified application, regardless of their execution state - i.e., this number may include processes that either failed to start or have already terminated.
 }
 %
-\declareAttributeNEW{PMIX_APP_ARGV}{"pmix.app.argv"}{char*}{
+\declareAttribute{PMIX_APP_ARGV}{"pmix.app.argv"}{char*}{
 Consolidated argv passed to the spawn command for the given application (e.g., "./myapp arg1 arg2 arg3").
 }
 %
@@ -445,7 +445,7 @@ Rank of the specified process on its node - refers to the numerical location (st
 Rank of the specified process on its node spanning all jobs- refers to the numerical location (starting from zero) of the process on its node when counting all processes (regardless of job) that share the node, ordered by their overall rank within the job. The value represents a snapshot in time when the specified process was started on its node and is not dynamically adjusted as processes from other jobs are started or terminated on the node.
 }
 %
-\declareAttributeNEW{PMIX_PACKAGE_RANK}{"pmix.pkgrank"}{uint16_t}{
+\declareAttribute{PMIX_PACKAGE_RANK}{"pmix.pkgrank"}{uint16_t}{
 Rank of the specified process on the \refterm{package} where this process resides - refers to the numerical location (starting from zero) of the process on its package when counting only those processes from the same job that share the package, ordered by their overall rank within that job. Note that processes that are not bound to \acp{PU} within a single specific package cannot have a package rank.
 }
 %
@@ -461,7 +461,7 @@ Full path to the subdirectory under \refattr{PMIX_NSDIR} assigned to the specifi
 A string representation of the \ac{PU} binding bitmap applied to the process upon launch. The string shall begin with the name of the library that generated it (e.g., "hwloc") followed by a colon and the bitmap string itself.
 }
 %
-\declareAttributeNEW{PMIX_CPUSET_BITMAP}{"pmix.bitmap"}{pmix_cpuset_t*}{
+\declareAttribute{PMIX_CPUSET_BITMAP}{"pmix.bitmap"}{pmix_cpuset_t*}{
 Bitmap applied to the process upon launch.
 }
 %
@@ -473,7 +473,7 @@ Security credential assigned to the process.
 \code{true} if this process resulted from a call to \refapi{PMIx_Spawn}. Lack of inclusion (i.e., a return status of \refconst{PMIX_ERR_NOT_FOUND}) corresponds to a value of \code{false} for this attribute.
 }
 %
-\declareAttributeNEW{PMIX_REINCARNATION}{"pmix.reinc"}{uint32_t}{
+\declareAttribute{PMIX_REINCARNATION}{"pmix.reinc"}{uint32_t}{
 Number of times this process has been re-instantiated - i.e, a value of zero indicates that the process has never been restarted.
 }
 
@@ -506,7 +506,7 @@ They will return information about either the local node or the node specified b
 Name of the host, as returned by the \code{gethostname} utility or its equivalent.
 }
 %
-\declareAttributeNEW{PMIX_HOSTNAME_ALIASES}{"pmix.alias"}{char*}{
+\declareAttribute{PMIX_HOSTNAME_ALIASES}{"pmix.alias"}{char*}{
 Comma-delimited list of names by which the target node is known.
 }
 %

@@ -189,11 +189,11 @@ Attributes used to describe the job allocation - these are values passed to and/
 User-provided string identifier for this allocation request which can later be used to query status of the request.
 }
 %
-\declareAttributeNEW{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
+\declareAttribute{PMIX_ALLOC_ID}{"pmix.alloc.id"}{char*}{
 A string identifier (provided by the host environment) for the resulting allocation which can later be used to reference the allocated resources in, for example, a call to \refapi{PMIx_Spawn}.
 }
 %
-\declareAttributeNEW{PMIX_ALLOC_QUEUE}{"pmix.alloc.queue"}{char*}{
+\declareAttribute{PMIX_ALLOC_QUEUE}{"pmix.alloc.queue"}{char*}{
 Name of the \ac{WLM} queue to which the allocation request is to be directed, or the queue being referenced in a query.
 }
 %
@@ -477,7 +477,7 @@ The following constants are specifically defined for return by the job control \
 \begin{constantdesc}
 
 %
-\declareconstitemvalueNEW{PMIX_ERR_CONFLICTING_CLEANUP_DIRECTIVES}{-51}
+\declareconstitemvalue{PMIX_ERR_CONFLICTING_CLEANUP_DIRECTIVES}{-51}
 Conflicting directives given for job/process cleanup.
 
 \end{constantdesc}

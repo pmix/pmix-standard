@@ -153,12 +153,12 @@ All memory usage is released.
 These attributes are used to direct the configuration and operation of the \ac{PMIx} server library by passing them into \refapi{PMIx_server_init}.
 
 %
-\declareAttributeNEW{PMIX_TOPOLOGY2}{"pmix.topo2"}{pmix_topology_t}{
+\declareAttribute{PMIX_TOPOLOGY2}{"pmix.topo2"}{pmix_topology_t}{
 Provide a pointer to an implementation-specific description of the local node
 topology.
 }
 %
-\declareAttributeNEW{PMIX_SERVER_SHARE_TOPOLOGY}{"pmix.srvr.share"}{bool}{
+\declareAttribute{PMIX_SERVER_SHARE_TOPOLOGY}{"pmix.srvr.share"}{bool}{
 The \ac{PMIx} server is to share its copy of the local node topology (whether given to it or self-discovered) with any clients.
 }
 %
@@ -186,11 +186,11 @@ Allow connections from remote tools. Forces the PMIx server to not exclusively u
 The host \ac{RM} wants to declare itself as being the local system server for PMIx connection requests.
 }
 %
-\declareAttributeNEW{PMIX_SERVER_SESSION_SUPPORT}{"pmix.srvr.sess"}{bool}{
+\declareAttribute{PMIX_SERVER_SESSION_SUPPORT}{"pmix.srvr.sess"}{bool}{
 The host \ac{RM} wants to declare itself as being the local session server for PMIx connection requests.
 }
 %
-\declareAttributeNEW{PMIX_SERVER_START_TIME}{"pmix.srvr.strtime"}{char*}{
+\declareAttribute{PMIX_SERVER_START_TIME}{"pmix.srvr.strtime"}{char*}{
 Time when the server started - i.e., when the server created it's rendezvous file (given in ctime string format).
 }
 %
@@ -218,15 +218,15 @@ Rank of this PMIx server.
 Server is acting as a gateway for PMIx requests that cannot be serviced on backend nodes (e.g., logging to email).
 }
 %
-\declareAttributeNEW{PMIX_SERVER_SCHEDULER}{"pmix.srv.sched"}{bool}{
+\declareAttribute{PMIX_SERVER_SCHEDULER}{"pmix.srv.sched"}{bool}{
 Server is supporting system scheduler and desires access to appropriate \ac{WLM}-supporting features. Indicates that the library is to be initialized for scheduler support.
 }
 %
-\declareAttributeNEW{PMIX_EXTERNAL_PROGRESS}{"pmix.evext"}{bool}{
+\declareAttribute{PMIX_EXTERNAL_PROGRESS}{"pmix.evext"}{bool}{
 The host shall progress the \ac{PMIx} library via calls to \refapi{PMIx_Progress}
 }
 %
-\declareAttributeNEW{PMIX_HOMOGENEOUS_SYSTEM}{"pmix.homo"}{bool}{
+\declareAttribute{PMIX_HOMOGENEOUS_SYSTEM}{"pmix.homo"}{bool}{
 The nodes comprising the session are homogeneous - i.e., they each contain the same number of identical packages, fabric interfaces, \acp{GPU}, and other devices.
 }
 %
@@ -570,19 +570,19 @@ The following attributes are used to assemble information according to its data 
 Provide an array of \refstruct{pmix_info_t} containing session-realm  information. The \refattr{PMIX_SESSION_ID} attribute is required to be included in the array.
 }
 %
-\declareAttributeNEW{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_JOB_INFO_ARRAY}{"pmix.job.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing job-realm information. The \refattr{PMIX_SESSION_ID} attribute of the \refterm{session} containing the \refterm{job} is required to be included in the array whenever the \ac{PMIx} server library may host multiple sessions (e.g., when executing with a host \ac{RM} daemon). As information is registered one job (aka namespace) at a time via the \refapi{PMIx_server_register_nspace} \ac{API}, there is no requirement that the array contain either the \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes when used in that context (though either or both of them may be included). At least one of the job identifiers must be provided in all other contexts where the job being referenced is ambiguous.
 }
 %
-\declareAttributeNEW{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_APP_INFO_ARRAY}{"pmix.app.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing application-realm information. The \refattr{PMIX_NSPACE} or \refattr{PMIX_JOBID} attributes of the \refterm{job} containing the application, plus its \refattr{PMIX_APPNUM} attribute, must to be included in the array when the array is \textit{not} included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the application is ambiguous. The job identification is otherwise optional.
 }
 %
-\declareAttributeNEW{PMIX_PROC_INFO_ARRAY}{"pmix.pdata"}{pmix_data_array_t}{
+\declareAttribute{PMIX_PROC_INFO_ARRAY}{"pmix.pdata"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing process-realm information. The \refattr{PMIX_RANK} and \refattr{PMIX_NSPACE} attributes, or the \refattr{PMIX_PROCID} attribute, are required to be included in the array when the array is not included as part of a call to \refapi{PMIx_server_register_nspace} - i.e., when the job containing the process is ambiguous. All three may be included if desired. When the array is included in some broader structure that identifies the job, then only the \refattr{PMIX_RANK} or the \refattr{PMIX_PROCID} attribute must be included (the others are optional).
 }
 %
-\declareAttributeNEW{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_NODE_INFO_ARRAY}{"pmix.node.arr"}{pmix_data_array_t}{
 Provide an array of \refstruct{pmix_info_t} containing node-realm information. At a minimum, either the \refattr{PMIX_NODEID} or \refattr{PMIX_HOSTNAME} attribute is required to be included in the array, though both may be included.
 }
 
@@ -1350,7 +1350,7 @@ Constants supporting attribute registration.
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_ERR_REPEAT_ATTR_REGISTRATION}{-171}
+\declareconstitemvalue{PMIX_ERR_REPEAT_ATTR_REGISTRATION}{-171}
 The attributes for an identical function have already been registered at the specified level (host, server, or client).
 %
 \end{constantdesc}
@@ -1394,15 +1394,15 @@ Although not strictly required, both \ac{PMIx} library implementers and host env
 The following attributes relate to the nature of the values being reported
 in the \refstruct{pmix_regattr_t} structures.
 
-\declareAttributeNEW{PMIX_MAX_VALUE}{"pmix.descr.maxval"}{varies}{
+\declareAttribute{PMIX_MAX_VALUE}{"pmix.descr.maxval"}{varies}{
 Used in \refstruct{pmix_regattr_t} to describe the maximum valid value for the associated attribute.
 }
 %
-\declareAttributeNEW{PMIX_MIN_VALUE}{"pmix.descr.minval"}{varies}{
+\declareAttribute{PMIX_MIN_VALUE}{"pmix.descr.minval"}{varies}{
 Used in \refstruct{pmix_regattr_t} to describe the minimum valid value for the associated attribute.
 }
 %
-\declareAttributeNEW{PMIX_ENUM_VALUE}{"pmix.descr.enum"}{char*}{
+\declareAttribute{PMIX_ENUM_VALUE}{"pmix.descr.enum"}{char*}{
 Used in \refstruct{pmix_regattr_t} to describe accepted values for the associated attribute. Numerical values shall be presented in a form convertible to the attribute's declared data type. Named values (i.e., values defined by constant names via a typical C-language enum declaration) must be provided as their numerical equivalent.
 }
 
@@ -2421,7 +2421,7 @@ The directives are optional unless the \emph{mandatory} flag has been set - in s
 \subsubsection{Dmodex attributes}
 
 %
-\declareAttributeNEW{PMIX_REQUIRED_KEY}{"pmix.req.key"}{char*}{
+\declareAttribute{PMIX_REQUIRED_KEY}{"pmix.req.key"}{char*}{
 Identifies a key that must be included in the requested information. If the specified key is not already available, then the \ac{PMIx} servers are required to delay response to the dmodex request until either the key becomes available or the request times out.
 }
 
@@ -4152,10 +4152,10 @@ The \refstruct{pmix_group_operation_t} structure is a \code{uint8_t} value for s
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_GROUP_CONSTRUCT}{0}
+\declareconstitemvalue{PMIX_GROUP_CONSTRUCT}{0}
 Construct a group composed of the specified processes - used by a \ac{PMIx} server library to direct host operation.
 %
-\declareconstitemvalueNEW{PMIX_GROUP_DESTRUCT}{1}
+\declareconstitemvalue{PMIX_GROUP_DESTRUCT}{1}
 Destruct the specified group - used by a \ac{PMIx} server library to direct host operation.
 %
 \end{constantdesc}

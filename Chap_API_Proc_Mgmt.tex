@@ -311,19 +311,19 @@ In addition to the generic error constants, the following spawn-specific error c
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_ALLOC_FAILED}{-188}
+\declareconstitemvalue{PMIX_ERR_JOB_ALLOC_FAILED}{-188}
 The job request could not be executed due to failure to obtain the specified allocation
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_APP_NOT_EXECUTABLE}{-177}
+\declareconstitemvalue{PMIX_ERR_JOB_APP_NOT_EXECUTABLE}{-177}
 The specified application executable either could not be found, or lacks execution privileges.
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_NO_EXE_SPECIFIED}{-178}
+\declareconstitemvalue{PMIX_ERR_JOB_NO_EXE_SPECIFIED}{-178}
 The job request did not specify an executable.
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_FAILED_TO_MAP}{-179}
+\declareconstitemvalue{PMIX_ERR_JOB_FAILED_TO_MAP}{-179}
 The launcher was unable to map the processes for the specified job request.
 %
-\declareconstitemvalueNEW{PMIX_ERR_JOB_FAILED_TO_LAUNCH}{-181}
+\declareconstitemvalue{PMIX_ERR_JOB_FAILED_TO_LAUNCH}{-181}
 One or more processes in the job request failed to launch
 %
 \declareconstitemProvisional{PMIX_ERR_JOB_EXE_NOT_FOUND}
@@ -427,7 +427,7 @@ Merge \code{stdout} and \code{stderr} streams - can be assigned to the entire jo
 Direct output (both stdout and stderr) into files of form \code{"<filename>.rank"} - can be assigned to the entire job (by including attribute in the \refarg{job_info} array) or on a per-application basis in the \refarg{info} array for each \refstruct{pmix_app_t}.
 }
 %
-\declareAttributeNEW{PMIX_OUTPUT_TO_DIRECTORY}{"pmix.outdir"}{char*}{
+\declareAttribute{PMIX_OUTPUT_TO_DIRECTORY}{"pmix.outdir"}{char*}{
 Direct output into files of form \code{"<directory>/\allowbreak <jobid>/\allowbreak rank.<rank>/\allowbreak stdout[err]"} - can be assigned to the entire job (by including attribute in the \refarg{job_info} array) or on a per-application basis in the \refarg{info} array for each \refstruct{pmix_app_t}.
 }
 %
@@ -471,15 +471,15 @@ Maximum number of times to restart a process - when accessed using \refapi{PMIx_
 Indicate that the job being spawned is a tool.
 }
 %
-\declareAttributeNEW{PMIX_TIMEOUT_STACKTRACES}{"pmix.tim.stack"}{bool}{
+\declareAttribute{PMIX_TIMEOUT_STACKTRACES}{"pmix.tim.stack"}{bool}{
 Include process stacktraces in timeout report from a job.
 }
 %
-\declareAttributeNEW{PMIX_TIMEOUT_REPORT_STATE}{"pmix.tim.state"}{bool}{
+\declareAttribute{PMIX_TIMEOUT_REPORT_STATE}{"pmix.tim.state"}{bool}{
 Report process states in timeout report from a job.
 }
 %
-\declareAttributeNEW{PMIX_NOTIFY_JOB_EVENTS}{"pmix.note.jev"}{bool}{
+\declareAttribute{PMIX_NOTIFY_JOB_EVENTS}{"pmix.note.jev"}{bool}{
 Requests that the launcher generate the
 \refconst{PMIX_EVENT_JOB_START}, \refconst{PMIX_LAUNCH_COMPLETE}, and
 \refconst{PMIX_EVENT_JOB_END} events. Each event is to include at least the
@@ -504,34 +504,34 @@ Note that the requester must register for the event or capture and process it
 within a default event handler.
 }
 %
-\declareAttributeNEW{PMIX_NOTIFY_PROC_TERMINATION}{"pmix.noteproc"}{bool}{
+\declareAttribute{PMIX_NOTIFY_PROC_TERMINATION}{"pmix.noteproc"}{bool}{
 Requests that the launcher generate the \refconst{PMIX_EVENT_PROC_TERMINATED}
 event whenever a process either normally or abnormally terminates.
 }
 %
-\declareAttributeNEW{PMIX_NOTIFY_PROC_ABNORMAL_TERMINATION}{"pmix.noteabproc"}{bool}{
+\declareAttribute{PMIX_NOTIFY_PROC_ABNORMAL_TERMINATION}{"pmix.noteabproc"}{bool}{
 Requests that the launcher generate the \refconst{PMIX_EVENT_PROC_TERMINATED}
 event only when a process abnormally terminates.
 }
 %
-\declareAttributeNEW{PMIX_LOG_PROC_TERMINATION}{"pmix.logproc"}{bool}{
+\declareAttribute{PMIX_LOG_PROC_TERMINATION}{"pmix.logproc"}{bool}{
 Requests that the launcher log the \refconst{PMIX_EVENT_PROC_TERMINATED} event
 whenever a process either normally or abnormally terminates.
 }
 %
-\declareAttributeNEW{PMIX_LOG_PROC_ABNORMAL_TERMINATION}{"pmix.logabproc"}{bool}{
+\declareAttribute{PMIX_LOG_PROC_ABNORMAL_TERMINATION}{"pmix.logabproc"}{bool}{
 Requests that the launcher log the \refconst{PMIX_EVENT_PROC_TERMINATED} event
 only when a process abnormally terminates.
 }
 %
-\declareAttributeNEW{PMIX_LOG_JOB_EVENTS}{"pmix.log.jev"}{bool}{
+\declareAttribute{PMIX_LOG_JOB_EVENTS}{"pmix.log.jev"}{bool}{
 Requests that the launcher log the \refconst{PMIX_EVENT_JOB_START},
 \refconst{PMIX_LAUNCH_COMPLETE}, and \refconst{PMIX_EVENT_JOB_END} events using
 \refapi{PMIx_Log}, subject to the logging attributes of Section
 \ref{api:struct:attributes:log}.
 }
 %
-\declareAttributeNEW{PMIX_LOG_COMPLETION}{"pmix.logcomp"}{bool}{
+\declareAttribute{PMIX_LOG_COMPLETION}{"pmix.logcomp"}{bool}{
 Requests that the launcher log the \refconst{PMIX_EVENT_JOB_END} event
 for normal or abnormal termination of the spawned job using
 \refapi{PMIx_Log}, subject to the logging attributes of Section
@@ -586,7 +586,7 @@ Prepend the given value to the specified environmental value using the given sep
 Append the given value to the specified environmental value using the given separator character, creating the variable if it doesn't already exist
 }
 %
-\declareAttributeNEW{PMIX_FIRST_ENVAR}{"pmix.envar.first"}{pmix_envar_t*}{
+\declareAttribute{PMIX_FIRST_ENVAR}{"pmix.envar.first"}{pmix_envar_t*}{
 Ensure the given value appears first in the specified envar using the separator character, creating the envar if it doesn't already exist
 }
 
@@ -1242,34 +1242,34 @@ locality value using standard bit-test methods.
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_LOCALITY_UNKNOWN}{0x0000}
+\declareconstitemvalue{PMIX_LOCALITY_UNKNOWN}{0x0000}
 All bits are set to zero, indicating that the relative locality of the two processes is unknown
 %
-\declareconstitemvalueNEW{PMIX_LOCALITY_NONLOCAL}{0x0000}
+\declareconstitemvalue{PMIX_LOCALITY_NONLOCAL}{0x0000}
 The two processes do not share any common locations
 %
-\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_HWTHREAD}{0x0001}
+\declareconstitemvalue{PMIX_LOCALITY_SHARE_HWTHREAD}{0x0001}
 The two processes share at least one hardware thread
 %
-\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_CORE}{0x0002}
+\declareconstitemvalue{PMIX_LOCALITY_SHARE_CORE}{0x0002}
 The two processes share at least one core
 %
-\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_L1CACHE}{0x0004}
+\declareconstitemvalue{PMIX_LOCALITY_SHARE_L1CACHE}{0x0004}
 The two processes share at least an L1 cache
 %
-\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_L2CACHE}{0x0008}
+\declareconstitemvalue{PMIX_LOCALITY_SHARE_L2CACHE}{0x0008}
 The two processes share at least an L2 cache
 %
-\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_L3CACHE}{0x0010}
+\declareconstitemvalue{PMIX_LOCALITY_SHARE_L3CACHE}{0x0010}
 The two processes share at least an L3 cache
 %
-\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_PACKAGE}{0x0020}
+\declareconstitemvalue{PMIX_LOCALITY_SHARE_PACKAGE}{0x0020}
 The two processes share at least a package
 %
-\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_NUMA}{0x0040}
+\declareconstitemvalue{PMIX_LOCALITY_SHARE_NUMA}{0x0040}
 The two processes share at least one \ac{NUMA} region
 %
-\declareconstitemvalueNEW{PMIX_LOCALITY_SHARE_NODE}{0x4000}
+\declareconstitemvalue{PMIX_LOCALITY_SHARE_NODE}{0x4000}
 The two processes are executing on the same node
 %
 \end{constantdesc}
@@ -1368,10 +1368,10 @@ defines the envelope of threads within a possibly multi-threaded process that ar
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_CPUBIND_PROCESS}{0}
+\declareconstitemvalue{PMIX_CPUBIND_PROCESS}{0}
 Use the location of all threads in the possibly multi-threaded process.
 %
-\declareconstitemvalueNEW{PMIX_CPUBIND_THREAD}{1}
+\declareconstitemvalue{PMIX_CPUBIND_THREAD}{1}
 Use only the location of the thread calling the \ac{API}.
 %
 \end{constantdesc}
@@ -1512,25 +1512,25 @@ The following constants can be used to set a variable of the type \refstruct{pmi
 
 \begin{constantdesc}
 %
-\declareconstitemvalueNEW{PMIX_DEVTYPE_UNKNOWN}{0x00}
+\declareconstitemvalue{PMIX_DEVTYPE_UNKNOWN}{0x00}
 The device is of an unknown type - will not be included in returned device distances.
 %
-\declareconstitemvalueNEW{PMIX_DEVTYPE_BLOCK}{0x01}
+\declareconstitemvalue{PMIX_DEVTYPE_BLOCK}{0x01}
 Operating system block device, or non-volatile memory device (e.g., "sda" or "dax2.0" on Linux).
 %
-\declareconstitemvalueNEW{PMIX_DEVTYPE_GPU}{0x02}
+\declareconstitemvalue{PMIX_DEVTYPE_GPU}{0x02}
 Operating system \ac{GPU} device (e.g., "card0" for a Linux \ac{DRM} device).
 %
-\declareconstitemvalueNEW{PMIX_DEVTYPE_NETWORK}{0x04}
+\declareconstitemvalue{PMIX_DEVTYPE_NETWORK}{0x04}
 Operating system network device (e.g., the "eth0" interface on Linux).
 %
-\declareconstitemvalueNEW{PMIX_DEVTYPE_OPENFABRICS}{0x08}
+\declareconstitemvalue{PMIX_DEVTYPE_OPENFABRICS}{0x08}
 Operating system OpenFabrics device (e.g., an "mlx4_0" InfiniBand \ac{HCA}, or "hfi1_0" Omni-Path interface on Linux).
 %
-\declareconstitemvalueNEW{PMIX_DEVTYPE_DMA}{0x10}
+\declareconstitemvalue{PMIX_DEVTYPE_DMA}{0x10}
 Operating system \ac{DMA} engine device (e.g., the "dma0chan0" \ac{DMA} channel on Linux).
 %
-\declareconstitemvalueNEW{PMIX_DEVTYPE_COPROC}{0x20}
+\declareconstitemvalue{PMIX_DEVTYPE_COPROC}{0x20}
 Operating system co-processor device (e.g., "mic0" for a Xeon Phi on Linux, "opencl0d0" for a OpenCL device, or "cuda0" for a \ac{CUDA} device).
 %
 \end{constantdesc}
@@ -1644,15 +1644,15 @@ PMIX_DEVICE_DIST_FREE(m, n)
 
 The following attributes can be used to retrieve device distances from the \ac{PMIx} data store. Note that distances stored by the host environment are based on the process location at the time of start of execution and may not reflect changes to location imposed by the process itself.
 %
-\declareAttributeNEW{PMIX_DEVICE_DISTANCES}{"pmix.dev.dist"}{pmix_data_array_t}{
+\declareAttribute{PMIX_DEVICE_DISTANCES}{"pmix.dev.dist"}{pmix_data_array_t}{
 Return an array of \refstruct{pmix_device_distance_t} containing the minimum and maximum distances of the given process location to all devices of the specified type on the local node.
 }
 %
-\declareAttributeNEW{PMIX_DEVICE_TYPE}{"pmix.dev.type"}{pmix_device_type_t}{
+\declareAttribute{PMIX_DEVICE_TYPE}{"pmix.dev.type"}{pmix_device_type_t}{
 Bitmask specifying the type(s) of device(s) whose information is being requested. Only used as a directive/qualifier.
 }
 %
-\declareAttributeNEW{PMIX_DEVICE_ID}{"pmix.dev.id"}{string}{
+\declareAttribute{PMIX_DEVICE_ID}{"pmix.dev.id"}{string}{
 System-wide \ac{UUID} or node-local \ac{OS} name of a particular device.
 }
 

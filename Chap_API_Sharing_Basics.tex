@@ -590,15 +590,15 @@ Look only in the client's local data store for the requested value - do not requ
 Specified operation should immediately return an error from the \ac{PMIx} server if the requested data cannot be found - do not request it from the host \ac{RM}.
 }
 %
-\declareAttributeNEW{PMIX_GET_POINTER_VALUES}{"pmix.get.pntrs"}{bool}{
+\declareAttribute{PMIX_GET_POINTER_VALUES}{"pmix.get.pntrs"}{bool}{
 Request that any pointers in the returned value point directly to values in the key-value store. The user \emph{must not} release any returned data pointers.
 }
 %
-\declareAttributeNEW{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
+\declareAttribute{PMIX_GET_STATIC_VALUES}{"pmix.get.static"}{bool}{
 Request that the data be returned in the provided storage location. The caller is responsible for destructing the \refstruct{pmix_value_t} using the \refmacro{PMIX_VALUE_DESTRUCT} macro when done.
 }
 %
-\declareAttributeNEW{PMIX_GET_REFRESH_CACHE}{"pmix.get.refresh"}{bool}{
+\declareAttribute{PMIX_GET_REFRESH_CACHE}{"pmix.get.refresh"}{bool}{
 When retrieving data for a remote process, refresh the existing local data cache for the process in case new values have been put and committed by the process since the last refresh. Local process information is assumed to be automatically updated upon posting by the process. A \code{NULL} key will cause all values associated with the process to be refreshed - otherwise, only the indicated key will be updated. A process rank of \refconst{PMIX_RANK_WILDCARD} can be used to update job-related information in dynamic environments. The user is responsible for subsequently updating refreshed values they may have cached in their own local memory.
 }
 %

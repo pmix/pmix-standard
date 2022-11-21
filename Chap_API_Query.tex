@@ -292,7 +292,7 @@ The following keys may be queried using the
 Returns comma-delimited list of keys supported by the query function. NO QUALIFIERS.
 }
 %
-\declareAttributeNEW{PMIX_QUERY_SUPPORTED_QUALIFIERS}{"pmix.qry.quals"}{char*}{
+\declareAttribute{PMIX_QUERY_SUPPORTED_QUALIFIERS}{"pmix.qry.quals"}{char*}{
 Return comma-delimited list of qualifiers supported by a query on the provided key, instead of actually performing the query on the key. NO QUALIFIERS.
 }
 %
@@ -300,7 +300,7 @@ Return comma-delimited list of qualifiers supported by a query on the provided k
 Request a comma-delimited list of active namespaces. NO QUALIFIERS.
 }
 %
-\declareAttributeNEW{PMIX_QUERY_NAMESPACE_INFO}{"pmix.qry.nsinfo"}{pmix_data_array_t*}{
+\declareAttribute{PMIX_QUERY_NAMESPACE_INFO}{"pmix.qry.nsinfo"}{pmix_data_array_t*}{
 Return an array of active namespace information - each element will itself contain an array including the namespace plus the command line of the application executing within it. OPTIONAL QUALIFIERS: \refattr{PMIX_NSPACE} of specific namespace whose info is being requested.
 }
 %
@@ -340,7 +340,7 @@ Return information on memory usage for the processes indicated in the qualifiers
 Query number of seconds (\code{uint32_t}) remaining in allocation for the specified namespace. OPTIONAL QUALIFIERS: \refattr{PMIX_NSPACE} of the namespace whose info is being requested (defaults to allocation containing the caller).
 }
 %
-\declareAttributeNEW{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
+\declareAttribute{PMIX_QUERY_ATTRIBUTE_SUPPORT}{"pmix.qry.attrs"}{bool}{
 Query list of supported attributes for specified \acp{API}. REQUIRED QUALIFIERS: one or more of \refattr{PMIX_CLIENT_FUNCTIONS}, \refattr{PMIX_SERVER_FUNCTIONS}, \refattr{PMIX_TOOL_FUNCTIONS}, and \refattr{PMIX_HOST_FUNCTIONS}.
 }
 %
@@ -350,17 +350,17 @@ Query list of supported attributes for specified \acp{API}. REQUIRED QUALIFIERS:
 %
 \pasteAttributeItem{PMIX_QUERY_PSET_MEMBERSHIP}
 %
-\declareAttributeNEW{PMIX_QUERY_AVAIL_SERVERS}{"pmix.qry.asrvrs"}{pmix_data_array_t*}{
+\declareAttribute{PMIX_QUERY_AVAIL_SERVERS}{"pmix.qry.asrvrs"}{pmix_data_array_t*}{
 Return an array of \refstruct{pmix_info_t}, each element itself containing a \refattr{PMIX_SERVER_INFO_ARRAY} entry holding all available data for a server on this node to which the caller might be able to connect.
 }
 %
-\declareAttributeNEW{PMIX_QUERY_STABLE_ABI_VERSION}{"pmix.qry.stabiver"}{char *}{
+\declareAttribute{PMIX_QUERY_STABLE_ABI_VERSION}{"pmix.qry.stabiver"}{char *}{
 Query the PMIx Standard Stable \ac{ABI} version(s) supported by the \ac{PMIx} library. The version returned will be of the form \code{"MAJOR.MINOR"}. If multiple versions are supported then a comma-separated list of version numbers will be returned.
 See Section~\ref{chap:intro:abi:versioning} for versioning advice.
 NO QUALIFIERS.
 }
 %
-\declareAttributeNEW{PMIX_QUERY_PROVISIONAL_ABI_VERSION}{"pmix.qry.prabiver"}{char *}{
+\declareAttribute{PMIX_QUERY_PROVISIONAL_ABI_VERSION}{"pmix.qry.prabiver"}{char *}{
 Query the PMIx Standard Provisional \ac{ABI} version(s) supported by the \ac{PMIx} library. The version returned will be of the form \code{"MAJOR.MINOR"}. If multiple versions are supported then a comma-separated list of version numbers will be returned.
 See Section~\ref{chap:intro:abi:versioning} for versioning advice.
 NO QUALIFIERS.
@@ -387,11 +387,11 @@ Average Megabytes of memory used by client processes on node. OPTIONAL QUALIFERS
 Attributes used to direct behavior of the 
 \refapi{PMIx_Query_info} and \refapi{PMIx_Query_info_nb} \acp{API}:
 
-\declareAttributeNEW{PMIX_QUERY_RESULTS}{"pmix.qry.res"}{pmix_data_array_t}{
+\declareAttribute{PMIX_QUERY_RESULTS}{"pmix.qry.res"}{pmix_data_array_t}{
 Contains an array of query results for a given \refstruct{pmix_query_t} passed to the \refapi{PMIx_Query_info} \acp{API}. If qualifiers were included in the query, then the first element of the array shall be the \refattr{PMIX_QUERY_QUALIFIERS} attribute containing those qualifiers. Each of the remaining elements of the array is a \refstruct{pmix_info_t} containing the query key and the corresponding value returned by the query. This attribute is solely for reporting purposes and cannot be used in \refapi{PMIx_Get} or other query operations.
 }
 %
-\declareAttributeNEW{PMIX_QUERY_QUALIFIERS}{"pmix.qry.quals"}{pmix_data_array_t}{
+\declareAttribute{PMIX_QUERY_QUALIFIERS}{"pmix.qry.quals"}{pmix_data_array_t}{
 Contains an array of qualifiers that were included in the query that produced the provided results. This attribute is solely for reporting purposes and cannot be used in \refapi{PMIx_Get} or other query operations.
 }
 %
@@ -415,41 +415,41 @@ Report minimum and maximum values. NO QUALIFIERS.
 String identifier of the allocation whose status is being requested. NO QUALIFIERS.
 }
 %
-\declareAttributeNEW{PMIX_SERVER_INFO_ARRAY}{"pmix.srv.arr"}{pmix_data_array_t}{
+\declareAttribute{PMIX_SERVER_INFO_ARRAY}{"pmix.srv.arr"}{pmix_data_array_t}{
 Array of \refstruct{pmix_info_t} about a given server, starting with its \refattr{PMIX_NSPACE} and including at least one of the rendezvous-required pieces of information.
 }
 \vspace{\baselineskip}
 The following attributes are used as qualifiers in queries regarding attribute support within the \ac{PMIx} implementation and/or the host environment:
 %
-\declareAttributeNEW{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
+\declareAttribute{PMIX_CLIENT_FUNCTIONS}{"pmix.client.fns"}{bool}{
 Request a list of functions supported by the \ac{PMIx} client library.
 }
 %
-\declareAttributeNEW{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
+\declareAttribute{PMIX_CLIENT_ATTRIBUTES}{"pmix.client.attrs"}{bool}{
 Request attributes supported by the \ac{PMIx} client library.
 }
 %
-\declareAttributeNEW{PMIX_SERVER_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
+\declareAttribute{PMIX_SERVER_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
 Request a list of functions supported by the \ac{PMIx} server library.
 }
 %
-\declareAttributeNEW{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
+\declareAttribute{PMIX_SERVER_ATTRIBUTES}{"pmix.srvr.attrs"}{bool}{
 Request attributes supported by the \ac{PMIx} server library.
 }
 %
-\declareAttributeNEW{PMIX_HOST_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
+\declareAttribute{PMIX_HOST_FUNCTIONS}{"pmix.srvr.fns"}{bool}{
 Request a list of functions supported by the host environment.
 }
 %
-\declareAttributeNEW{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
+\declareAttribute{PMIX_HOST_ATTRIBUTES}{"pmix.host.attrs"}{bool}{
 Request attributes supported by the host environment.
 }
 %
-\declareAttributeNEW{PMIX_TOOL_FUNCTIONS}{"pmix.tool.fns"}{bool}{
+\declareAttribute{PMIX_TOOL_FUNCTIONS}{"pmix.tool.fns"}{bool}{
 Request a list of functions supported by the \ac{PMIx} tool library.
 }
 %
-\declareAttributeNEW{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
+\declareAttribute{PMIX_TOOL_ATTRIBUTES}{"pmix.setup.env"}{bool}{
 Request attributes supported by the \ac{PMIx} tool library functions.
 }
 
