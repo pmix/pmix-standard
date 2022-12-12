@@ -1310,7 +1310,7 @@ Register host environment attribute support for a function.
 
 \copySignature{PMIx_Register_attributes}{4.0}{
 pmix_status_t \\
-PMIx_Register_attributes(char *function, \\
+PMIx_Register_attributes(const char *function, \\
 \hspace*{25\sigspace}pmix_regattr_t attrs[], \\
 \hspace*{25\sigspace}size_t nattrs);
 }
@@ -1867,14 +1867,14 @@ Define a \ac{PMIx} process set.
 pmix_status_t \\
 PMIx_server_define_process_set(const pmix_proc_t members[], \\
 \hspace*{31\sigspace}size_t nmembers, \\
-\hspace*{31\sigspace}char *pset_name);
+\hspace*{31\sigspace}const char *pset_name);
 }
 
 \begin{arglist}
 \argin{members}{Pointer to an array of \refstruct{pmix_proc_t} containing the
 identifiers of the processes in the process set (handle)}
 \argin{nmembers}{Number of elements in \refarg{members} (integer)}
-\argin{pset_name}{String name of the process set being defined (\code{char*})}
+\argin{pset_name}{String name of the process set being defined (\code{const char*})}
 \end{arglist}
 
 \returnsimple
@@ -1914,11 +1914,11 @@ Delete a \ac{PMIx} process set name
 
 \copySignature{PMIx_server_delete_process_set}{4.0}{
 pmix_status_t \\
-PMIx_server_delete_process_set(char *pset_name);
+PMIx_server_delete_process_set(const char *pset_name);
 }
 
 \begin{arglist}
-\argin{pset_name}{String name of the process set being deleted (\code{char*})}
+\argin{pset_name}{String name of the process set being deleted (\code{const char*})}
 \end{arglist}
 
 \returnsimple
