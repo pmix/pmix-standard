@@ -24,26 +24,24 @@ Note that no presumption is made regarding how the published information is to b
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{\code{PMIx_Publish2}}
+\section{\code{PMIx_Publish_datastore}}
 
-\declareapi{PMIx_Publish2}
+\declareapiProvisional{PMIx_Publish_datastore}
 
 %%%%
 \summary
 
-Publish data for later access via \refapi{PMIx_Lookup}.
+Publish data for later access via \refapi{PMIx_Lookup_datastore}.
 
 %%%%
 \format
 
 
-
-
-\versionMarkerProvisional{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t \\
-PMIx_Publish2(const pmix_info_t pinfo[], size_t npinfo, \\
+PMIx_Publish_datastore(const pmix_info_t pinfo[], size_t npinfo, \\
+\hspace*{12\sigspace}pmix_publish_id_t *publish_id, \\
 \hspace*{12\sigspace}const pmix_info_t info[], size_t ninfo);
 \end{codepar}
 \cspecificend
@@ -51,6 +49,7 @@ PMIx_Publish2(const pmix_info_t pinfo[], size_t npinfo, \\
 \begin{arglist}
 \argin{pinfo}{Array of key value pairs to publish (array of \refstruct{pmix_info_t})}
 \argin{npinfo}{Number of elements in the \refarg{pinfo} array (integer)}
+\argout{publish_id}{The epoch number associated with this call}
 \argin{info}{Array of info structures (array of \refstruct{pmix_info_t})}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \end{arglist}
@@ -77,37 +76,78 @@ The following attributes are optional for host environments that support this op
 \descr
 
 Publish the data in the \refarg{pinfo} array for subsequent lookup.
-By default, the data will be published into the \refconst{PMIX_RANGE_SESSION} range and with \refconst{PMIX_PERSIST_APP} persistence.
-Changes to those values, and any additional directives, can be included in the \refarg{info} array. Attempts to access the data by processes outside of the provided data range shall be rejected. The \refattr{PMIX_PERSISTENCE} attribute instructs the datastore holding the published information as to how long that information is to be retained.
+By default, data is accessible by all processes in the same session as the publisher.  
+The attributes \refconst{PMIX_RANGE}, 
+\refconst{PMIX_ACCESS_USERIDS}, \refconst{PMIX_ACCESS_GRPIDS} and \refconst{PMIX_ACCESS_PERMISSIONS} 
+can be included in the \refarg{info} array to restrict the processes that can access the published data on systems 
+which support these attributes.  
+By default, the data will remain published until
+all processes in the publishing application terminate.  The attribute \refconst{PMIX_PERSISTENCE} 
+can be included in the \refarg{info} array to change if and when data will be automatically 
+unpublished for systems which support this attribute (See Section \ref{chap:pub:types:persist})
 
-The blocking form of this call will block until it has obtained confirmation from the datastore that the data is available for lookup. The \refarg{pinfo} array can be released upon return from the blocking function call.
+Each published key is assigned a epoch number when it is published to help identify the relative order
+that value assignments are made to a key when a key is assigned multiple values.
+All of the keys in the \refarg{pinfo} array will be associated with the same epoch number.  
+Within a single process, each call to \refapi{PMIx_Publish_datastore} or \refapi{PMIx_Publish_datastore_nb}
+will return a unique value.   
+If one call to \refapi{PMIx_Publish_datastore} or \refapi{PMIx_Publish_datastore_nb} returns successfully before 
+another call to either \ac{API} is initiated by a process,
+the former should assign a smaller epoch number than the 
+later call.  In the case where two calls by processes on the same host overlap in time, 
+the implementation should make a best effort to determine which call was made first and assign the 
+keys of that call a smaller epoch number.  
+A key with a greater epoch number be never be visible to other processes before a key with 
+a lesser epoch number.
 
-Publishing duplicate keys is permitted provided they are published to different
-ranges. Custom ranges are considered different if they have different members.
-Duplicate keys being published on the same data range shall return the
-\refconst{PMIX_ERR_DUPLICATE_KEY} error.
+\adviceuserstart
+To ensure that one call to \refapi{PMIx_Publish_datastore} call is assigned a smaller value than another 
+call across multiple threads or processes it may be necessary to use synchronization primatives. 
+\refapi{PMIx_Fence} is a \ac{PMIx} \ac{API} that can be used for synchronizing across multiple processes.
+\adviceuserend
+
+\adviceimplstart
+The requirement for an implementation to assign an epoch number permits a variety of implementations.  If a centeralized 
+datastore is used, the epoch number can be a simple epoch number such as a counter that is incremented on each
+\refapi{PMIx_Publish_datastore} and \refapi{PMIx_Publish_datastore_nb} call.  Alternatively, the epoch number can
+be a time value if hosts are guaranteed to have clocks with sufficient resolution and synchronization to ensure
+that consecutive calls can be distiguished as occuring at different points of time.
+\adviceimplend
+
+The returned \refarg{publish_id} is used to associate the published key values with the specific publish
+call used to publish them.  A \refstruct{pmix_publish_id_t} can be used to determine the publishing
+process (\refstruct{pmix_proc_t}) and the epoch number of a call to publish data.. 
+The \refarg{publish_epoch} must be retained for unpublishing and may be transfered to other processes 
+either for unpublishing or to uniquely identify a specific value of a key.
+
+The blocking form of this call will block until it has obtained confirmation from the datastore that the data is available for lookup. 
+The \refarg{pinfo} array can be released upon return from the blocking function call.
+
+Clients performing a lookup operation with \refapi{PMIx_Lookup_datastore} on
+a key will
+receive a list of all accessible values published for that key.  The lookup \acp{API} also allows the caller to further
+restrict what values are considered accessible, such as restricting which publishing processes to consider.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{\code{PMIx_Publish2_nb}}
+\section{\code{PMIx_Publish_datastore_nb}}
 
-\declareapi{PMIx_Publish2_nb}
+\declareapiProvisional{PMIx_Publish_datastore_nb}
 
 %%%%
 \summary
 
-Nonblocking \refapi{PMIx_Publish2} routine.
+Nonblocking \refapi{PMIx_Publish_datastore} routine.
 
 %%%%
 \format
 
-\versionMarkerProvisional{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t \\
-PMIx_Publish2_nb(const pmix_info_t pinfo[], size_t npinfo, \\
+PMIx_Publish_datastore_nb(const pmix_info_t pinfo[], size_t npinfo, \\
 \hspace*{12\sigspace}const pmix_info_t info[], size_t ninfo, \\
-\hspace*{16\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+\hspace*{16\sigspace}pmix_publish_datastore_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
@@ -116,17 +156,11 @@ PMIx_Publish2_nb(const pmix_info_t pinfo[], size_t npinfo, \\
 \argin{npinfo}{Number of elements in the \refarg{pinfo} array (integer)}
 \argin{info}{Array of info structures (array of \refstruct{pmix_info_t})}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbfunc}{Callback function \refapi{pmix_publish_datastore_cbfunc_t} (function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
 
 \returnsimplenb
-
-\returnstart
-\begin{itemize}
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
-\end{itemize}
-\returnend
 
 \reqattrstart
 There are no required attributes for this \ac{API}. \ac{PMIx} implementations that do not directly support the operation but are hosted by environments that do support it must pass any attributes that are provided by the client to the host environment for processing. In addition, the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that published the information to the \refarg{info} array passed to the host environment.
@@ -147,8 +181,285 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Nonblocking \refapi{PMIx_Publish2} routine.
+Nonblocking \refapi{PMIx_Publish_datastore} routine.  The handle to the published data is returned 
+as a parameter to the callback function during a successful call.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Lookup_datastore}}
+\declareapiProvisional{PMIx_Lookup_datastore}
+
+%%%%
+\summary
+
+Lookup information published by a process or host environment using \refapi{PMIx_Publish_datastore} or \refapi{PMIx_Publish_datastore_nb}.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t \\
+PMIx_Lookup_datastore(pmix_pdsdata_t** data, \\  
+\hspace*{12\sigspace}size_t ndata, \\
+\hspace*{12\sigspace}const pmix_info_t info[], \\
+\hspace*{12\sigspace}size_t ninfo);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\arginout{data}{Array of \refstruct{pmix_pdsdata_t} structures indicating the keys to lookup and providing storage for the results. (array of \refstruct{pmix_pdsdata_t})}
+\argin{ndata}{Number of elements in the \refarg{data} array (integer)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\end{arglist}
+
+\returnstart
+\begin{itemize}
+\item \refconst{PMIX_ERR_NOT_FOUND} None of the requested data could be found within the requester's range.  The address pointed to by \refarg{nresults} will be set to 0.
+
+\item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the requested data was found.  
+Any key that cannot be found will return with a data type of \refconst{PMIX_UNDEF} in the associated \refarg{value} struct. Note that the specific reason for a particular piece of missing information (e.g., lack of permissions) cannot be communicated back to the requester in this situation.
+Only found data will be included in the returned \refarg{data} array. Note that the specific reason for a particular piece of missing information (e.g., lack of permissions or the data has not been published) cannot be communicated back to the requester in this situation.
+
+\end{itemize}
+\returnend
+
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host environment for processing, and the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the info.
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_WAIT}
+
+\optattrend
+
+%%%%
+\descr
+
+Lookup information published by a process or host environment using \refapi{PMIx_Publishdatastore_} 
+or \refapi{PMIx_Publish_datastore_nb}.
+A lookup operation is always performed on a range which can be specified using the directive \refAttributeItem{PMIX_RANGE} or otherwise defaults to \refconst{PMIX_RANGE_SESSION}.
+
+The lookup operation will be constrained to data published to the specified range.
+Data is returned per the retrieval rules of Section \ref{chap:pub:retrules}.
+
+The \argref{data} parameter consists of an array of \refstruct{pmix_pdsdata_t} structures with the keys specifying the requested information.
+Data will be returned for each \code{key} field in the associated \code{value} and \code{publish_id} fields of this structure.
+The length of the arrays \code{publish_id} and \code{value} will be the number of published values matching the requested
+key and may be 0.  The \code{value} \refstruct{pmix_data_array_t} will have a \code{type} of \refstruct{pmix_value_t} 
+and the \code{publish_id} \refstruct{pmix_data_array_t} will have a \code{type} of \refstruct{pmix_publish_id_t}.
+
+SOLT: TODO: discuss how these are released/freed.
+
+\adviceuserstart
+Although this is a blocking function, it will not wait by default for the requested data to be published.
+Instead, it will block for the time required by the datastore to lookup its current data and return any found items.
+Thus, the caller is responsible for either ensuring that data is published prior to executing a lookup, using \refattr{PMIX_WAIT} to instruct the datastore to wait for the data to be published, or retrying until the requested data is found.
+\adviceuserend
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Lookup_datastore_nb}}
+\declareapi{PMIx_Lookup_datastore_nb}
+
+%%%%
+\summary
+
+Nonblocking version of \refapi{PMIx_Lookup_datastore}.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t \\
+PMIx_Lookup_datastore_nb(pmix_key_t keys[], \\
+\hspace*{15\sigspace}const pmix_info_t info[], size_t ninfo, \\
+\hspace*{15\sigspace}pmix_lookup_datastore_cbfunc_t cbfunc, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{keys}{\code{NULL}-terminated array of keys (array of strings)}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function (handle)}
+\argin{cbdata}{Callback data to be provided to the callback function (pointer)}
+\end{arglist}
+
+\returnsimplenb
+
+If executed, the status returned in the provided callback function will be one of the following constants:
+
+\begin{itemize}
+\item \refconst{PMIX_SUCCESS} All data was found and has been returned.
+
+\item \refconst{PMIX_ERR_NOT_FOUND} None of the requested data was available within the requester's range. The \refarg{pdata} array in the callback function shall be \code{NULL} and the \refarg{npdata} parameter set to zero.
+
+\item \refconst{PMIX_ERR_PARTIAL_SUCCESS} Some of the requested data was found.
+Only found data will be included in the returned \refarg{pdata} array. Note that the specific reason for a particular piece of missing information (e.g., lack of permissions or the data has not been published) cannot be communicated back to the requester in this situation.
+
+\item \refconst{PMIX_ERR_NOT_SUPPORTED} There is no available datastore (either at the host environment or \ac{PMIx} implementation level) on this system that supports this function.
+
+\item \refconst{PMIX_ERR_NO_PERMISSIONS} All of the requested data was found and range restrictions were met for each specified key, but none of the matching data could be returned due to lack of access permissions.
+
+\item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure.
+\end{itemize}
+
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host environment for processing, and the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the info.
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+\pasteAttributeItem{PMIX_WAIT}
+
+\optattrend
+
+%%%%
+\descr
+
+Non-blocking form of the \refapi{PMIx_Lookup_datastore} function.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Unpublish_datastore}}
+\declareapiProvisional{PMIx_Unpublish_datastore}
+
+%%%%
+\summary
+
+Unpublish a list of keys published by the calling process using \refapi{PMIx_Publish_datastore}.
+
+SOLT: TODO: special unpublish all keys with this publish-id
+
+SOLT: TODO: special all keys even with any publish-id I have access to.
+
+SOLT: TODO: publish-id to proc + epoch number + publish_id
+
+SOLT: TODO: declare what an epoch number type is
+
+SOLT: TODO: declare publish_id
+
+SOLT: TODO: macro's for creating/freeing pmix_pdsdata_t's
+
+SOLT: TODO: lookup blocking and non-blocking are so different.  Should we separate keys from return values?
+
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t \\
+PMIx_Unpublish_datastore(const pmix_key_t keys_to_unpublish[], \\
+\hspace*{15\sigspace}const pmix_publish_id_t publish_id[], \\
+\hspace*{15\sigspace}size_t nkeys, \\
+\hspace*{15\sigspace}const pmix_info_t info[], size_t ninfo);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{keys_to_unpublish}{Array of keys to unpublish (array of handles)}
+\argin{publish_id}{Array of publish identifiers indicating the publishing call that published the corresponding entry in \refarg{keys_to_unpublish} (array of handles)}
+\argin{nkeys}{Number of elements in the \refarg{keys_to_unpublish} and \refarg{publish_id} keys}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\end{arglist}
+
+\returnsimple
+
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host environment for processing, and the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the operation.
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+\pasteAttributeItem{PMIX_RANGE}
+
+\optattrend
+
+%%%%
+\descr
+
+Unpublish a list of keys published by the calling process using \refapi{PMIx_Publish_datastore}.
+The function will block until the data has been removed by the server (i.e., it keys associated with the handle are no longer visible to to other processes).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\code{PMIx_Unpublish_datastore_nb}}
+\declareapiProvisional{PMIx_Unpublish_datastore_nb}
+
+%%%%
+\summary
+
+Nonblocking version of \refapi{PMIx_Unpublish_datastore}.
+
+%%%%
+\format
+
+\cspecificstart
+\begin{codepar}
+pmix_status_t \\
+PMIx_Unpublish_datastore_nb(const pmix_key_t keys_to_unpublish[], \\
+\hspace*{15\sigspace}const pmix_publish_id_t publish_id[], \\
+\hspace*{15\sigspace}size_t nkeys, \\
+\hspace*{15\sigspace}const pmix_info_t info[], size_t ninfo, \\
+\hspace*{18\sigspace}pmix_op_cbfunc_t cbfunc, void *cbdata);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{keys_to_unpublish}{Array of keys to unpublish (array of handles)}
+\argin{publish_id}{Array of publish identifiers indicating the publishing call that published the corresponding entry in \refarg{keys_to_unpublish} (array of handles)}
+\argin{nkeys}{Number of elements in the \refarg{keys_to_unpublish} and \refarg{publish_id} keys}
+\argin{info}{Array of info structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_op_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+\returnsimplenb
+
+\returnstart
+\begin{itemize}
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called.
+\end{itemize}
+\returnend
+
+\reqattrstart
+\ac{PMIx} libraries are not required to directly support any attributes for this function. However, any provided attributes must be passed to the host environment for processing, and the \ac{PMIx} library is required to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the client process that is requesting the operation.
+
+\reqattrend
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_TIMEOUT}
+
+\optattrend
+
+%%%%
+\descr
+
+Non-blocking form of the \refapi{PMIx_Unpublish} function.
+The callback function will be executed once the server confirms removal of the specified data. The \refarg{info} array must be maintained until the callback is provided.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -170,6 +481,7 @@ PMIx_Publish(const pmix_info_t info[], size_t ninfo);
 
 \begin{arglist}
 \argin{info}{Array of info structures containing both data to be published and directives (array of handles)}
+%% (array of handles is used everywhere, but it is not really an array of handles, so I'm not sure why)
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \end{arglist}
 
@@ -383,6 +695,7 @@ Invalid value - typically used to indicate that a range has not yet been set.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Data Persistence Structure}
+\label{chap:pub:types:persist}
 \declarestruct{pmix_persistence_t}
 
 \versionMarker{1.0}
@@ -438,6 +751,28 @@ where:
     \item \emph{value} is the value associated with the \emph{key}.
 \end{itemize}
 
+\declarestruct{pmix_pdsdata_t}
+
+The \refstruct{pmix_pds_data_t} structure is used both to request the lookup of keys and to describe the value and publishing process of any keys that were successfully retrieved.
+A request to lookup published values is described by an array of \refstruct{pmix_pdsdata_t} structures.
+Only the key field is used in the lookup request.
+The results of the lookup operation are returned in the same array with the proc and value fields set when the key is successfully found.
+The value field's data type is set to \refconst{PMIX_UNDEF} in the associated \refarg{value} struct of any key which was not retrieved.
+%
+typedef struct pmix_pdsdata \{ \\
+\hspace*{4\sigspace}pmix_key_t key; \\
+\hspace*{4\sigspace}pmix_data_array_t value; \\
+\hspace*{4\sigspace}pmix_data_array_t publish_id; \\
+\} pmix_pdata_t;
+
+where:
+
+where:
+\begin{itemize}
+    \item \emph{key} is the string key of the published data.
+    \item \emph{publish_id} is the identifier of the publish call that created the value.
+    \item \emph{value} is the value associated with the \emph{key}.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
