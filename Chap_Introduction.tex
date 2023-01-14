@@ -186,14 +186,14 @@ This ensures that the proposal has undergone at least some minimal level of scru
 \item Ease of adoption.\\
 The \ac{PRI} is designed to be particularly easy for resource managers (and the \ac{SMS} in general) to adopt, thus facilitating a rapid uptake into that community for application portability.
 Both client and server \ac{PMIx} libraries are included, along with examples of client usage and server-side integration.
-A list of supported environments and versions is maintained on the \ac{PMIx} web site \url{https://pmix.org/support/faq/what-apis-are-supported-on-my-rm/}
+A list of supported environments and versions is maintained on the OpenPMIx web site \url{https://openpmix.org}
 \end{itemize}
 
 The \ac{PRI} does provide some internal implementations that lie outside the scope of the \ac{PMIx} standard. This includes several convenience macros as well as support for consolidating collectives for optimization purposes (e.g., the \ac{PMIx} server aggregates all local \refapi{PMIx_Fence} calls before
 passing them to the \ac{SMS} for global execution). In a few additional cases, the \ac{PMIx} community (in partnership with the \ac{SMS} subsystem providers) have determined that a base level of support for a given operation can best be portably provided by including it in the \ac{PRI}.
 
 Instructions for downloading, and installing the \ac{PRI} are available
-on the community's web site \url{https://pmix.org/code/getting-the-reference-implementation/}.The \ac{PRI} targets support for the Linux operating system.
+on the OpenPMIx web site \url{https://openpmix.org}. The \ac{PRI} targets support for the Linux operating system.
 A reasonable effort is made to support all major, modern Linux distributions; however, validation is limited to the most recent 2-3 releases of RedHat Enterprise Linux (RHEL), Fedora, CentOS, and SUSE Linux Enterprise Server (SLES).
 In addition, development support is maintained for Mac OSX.
 Production support for vendor-specific operating systems is included as provided by the vendor.
@@ -207,7 +207,7 @@ containing the reference implementation and capable of operating within a host \
 provides an easy way of exploring \ac{PMIx} capabilities and testing PMIx-based
 applications outside of a PMIx-enabled environment by providing a ``shim'' between the application and the host environment that includes full support for the \ac{PRI}. The intent of \ac{PRRTE} is not to replace any existing production environment, but rather to enable developers to work on systems that do not yet feature a PMIx-enabled host \ac{SMS} or one that lacks a \ac{PMIx} feature of interest. Instructions for downloading,
 installing, and using \ac{PRRTE} are available
-on the community's web site \url{https://pmix.org/code/getting-the-pmix-reference-server/}
+on the OpenPMIx web site \url{https://openpmix.org}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Organization of this document}
