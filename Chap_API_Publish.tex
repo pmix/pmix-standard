@@ -199,16 +199,18 @@ Lookup information published by a process or host environment using \refapi{PMIx
 \cspecificstart
 \begin{codepar}
 pmix_status_t \\
-PMIx_Lookup_datastore(pmix_pdsdata_t data[], \\  
-\hspace*{12\sigspace}size_t ndata, \\
+PMIx_Lookup_datastore(pmix_key_t keys[], \\
+\hspace*{12\sigspace}pmix_pdsdata_t data[], \\  
+\hspace*{12\sigspace}size_t nkeys_and_data, \\
 \hspace*{12\sigspace}const pmix_info_t info[], \\
 \hspace*{12\sigspace}size_t ninfo);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\arginout{data}{Array of \refstruct{pmix_pdsdata_t} structures indicating the keys to lookup and providing storage for the results. (array of \refstruct{pmix_pdsdata_t})}
-\argin{ndata}{Number of elements in the \refarg{data} array (integer)}
+\argin{keys}{array of keys (array of strings)}
+\arginout{data}{Array of \refstruct{pmix_pdsdata_t} structures providing storage for the results. (array of \refstruct{pmix_pdsdata_t})}
+\argin{nkeys_and_data}{Number of elements in the \refarg{keys} and \refarg{data} arrays (integer)}
 \argin{info}{Array of info structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
 \end{arglist}
@@ -248,11 +250,14 @@ A lookup operation is always performed on a range which can be specified using t
 The lookup operation will be constrained to data published to the specified range.
 Data is returned per the retrieval rules of Section \ref{chap:pub:retrules}.
 
-The \argref{data} parameter consists of an array of \refstruct{pmix_pdsdata_t} structures with the keys specifying the requested information.
-Data will be returned for each \code{key} field in the associated \code{value} and \code{publish_id} fields of this structure.
-The length of the arrays \code{publish_id} and \code{value} will be the number of published values matching the requested
-key and may be 0.  The \code{value} \refstruct{pmix_data_array_t} will have a \code{type} of \refstruct{pmix_value_t} 
-and the \code{publish_id} \refstruct{pmix_data_array_t} will have a \code{type} of \refstruct{pmix_publish_id_t}.
+The \argref{key} parameter consists of an array of \refstruct{pmix_key_t} structures specifying the requested information.
+The \argref{data} parameter provides space for the results.  The operation will fill in each 
+\argref{data} structure's key field with the corresponding key in the \argref{key} array. 
+The \code{value} and \code{publish_id} fields will be filled in with the results of the lookup operation.
+The length of the \code{publish_id} and \code{value} data arrays will be the number of published values matching the requested
+key and may be 0.  The \code{value} field of \refstruct{pmix_data_array_t} will contain \refstruct{pmix_value_t} elements and will have its \code{type} field set to \refconst{PMIX_VALUE}.
+The \code{publish_id} field of \refstruct{pmix_data_array_t} will contain \refstruct{pmix_publish_id_t} elements 
+and will have its \code{type} field set to \refconst{PMIX_PUBLISH_ID}.
 
 \adviceuserstart
 Although this is a blocking function, it will not wait by default for the requested data to be published.
@@ -278,16 +283,18 @@ Nonblocking version of \refapi{PMIx_Lookup_datastore}.
 \begin{codepar}
 pmix_status_t \\
 PMIx_Lookup_datastore_nb(pmix_key_t keys[], \\
+\hspace*{15\sigspace}size_t nkeys, \\
 \hspace*{15\sigspace}const pmix_info_t info[], size_t ninfo, \\
 \hspace*{15\sigspace}pmix_lookup_datastore_cbfunc_t cbfunc, void *cbdata);
 \end{codepar}
 \cspecificend
 
 \begin{arglist}
-\argin{keys}{\code{NULL}-terminated array of keys (array of strings)}
+\argin{keys}{array of keys (array of strings)}
+\argin{nkeys}{Number of elements in the \refarg{keys} array (integer)}
 \argin{info}{Array of info structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function (handle)}
+\argin{cbfunc}{Callback function \refapi{pmix_lookup_datastore_cbfunc_t} (function reference)}
 \argin{cbdata}{Callback data to be provided to the callback function (pointer)}
 \end{arglist}
 
@@ -327,7 +334,8 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Non-blocking form of the \refapi{PMIx_Lookup_datastore} function.
+Non-blocking form of the \refapi{PMIx_Lookup_datastore} function.  The \refapi{pmix_lookup_datastore_cbfunc_t} 
+will be called on successful completion and will provide available values for the requested keys.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{\code{PMIx_Unpublish_datastore}}
@@ -896,7 +904,7 @@ PMIx_Lookup_nb(char **keys, \\
 \argin{keys}{\code{NULL}-terminated array of keys (array of strings)}
 \argin{info}{Array of info structures (array of handles)}
 \argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
-\argin{cbfunc}{Callback function (handle)}
+\argin{cbfunc}{Callback function \refapi{pmix_lookup_cbfunc_t} (function reference)}
 \argin{cbdata}{Callback data to be provided to the callback function (pointer)}
 \end{arglist}
 
