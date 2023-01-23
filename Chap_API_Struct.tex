@@ -2501,10 +2501,10 @@ function, so the receiver must copy/protect the data prior to returning if it ne
 %%%%
 \summary
 
-The \refapi{pmix_lookup_cbfunc_t} is used by \refapi{PMIx_Lookup_datastore_nb} to return data.
+The \refapi{pmix_lookup_datastore_cbfunc_t} is used by \refapi{PMIx_Lookup_datastore_nb} to return data.
 
 \versionMarkerProvisional{5.1}
-typedef void (*pmix_lookup_cbfunc_t) \\
+typedef void (*pmix_lookup_datastore_cbfunc_t) \\
 \hspace*{4\sigspace}(pmix_status_t status, \\
 \hspace*{5\sigspace}pmix_pdsdata_t data[], size_t ndata, \\
 \hspace*{5\sigspace}void *cbdata);
@@ -2521,10 +2521,10 @@ typedef void (*pmix_lookup_cbfunc_t) \\
 
 A callback function for calls to \refapi{PMIx_Lookup_nb}.
 The function will be called upon completion of the \refapi{PMIx_Lookup_nb} \ac{API} with the \refarg{status} indicating the success or failure of the request.
-Any retrieved data will be returned in an array of \refstruct{pmix_pdata_t} structs.
+Any retrieved data will be returned in an array of \refstruct{pmix_pdsdata_t} structs.
 The namespace and rank of the process that provided each data element is also returned.
 
-Note that the \refstruct{pmix_pdata_t} structures will be released upon return from the callback
+Note that the \refstruct{pmix_pdsdata_t} structures will be released upon return from the callback
 function, so the receiver must copy/protect the data prior to returning if it needs to be retained.
 
 \declareapi{pmix_lookup_cbfunc_t}
