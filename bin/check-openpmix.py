@@ -12,9 +12,9 @@ def check_missing_pmix_standard(std_all_refs, openpmix_all_refs,
                                 openpmix_deprecated, verbose=False):
     """Check for OpenPMIx definitions missing from the PMIx Standard"""
 
-    print "-"*50
-    print "Checking: Defined in OpenPMIx, but not in the PMIx Standard"
-    print "-"*50
+    print("-"*50)
+    print ("Checking: Defined in OpenPMIx, but not in the PMIx Standard")
+    print ("-"*50)
 
     missing_refs = []
     for openpmix_ref in openpmix_all_refs:
@@ -35,6 +35,7 @@ def check_missing_pmix_standard(std_all_refs, openpmix_all_refs,
                 possible_error = False
                 for line in p.stdout:
                     line = line.rstrip()
+                    line = line.decode()
                     parts = line.split(":", 2)
 
                     # if this reference is in a comment then ignore it
@@ -63,9 +64,9 @@ def check_missing_openpmix(std_all_refs, openpmix_all_refs,
                            openpmix_deprecated, verbose=False):
     """Check for PMIx Standard definitions missing from OpenPMIx"""
 
-    print "-"*50
-    print "Checking: Defined in PMIx Standard, but not in OpenPMIx"
-    print "-"*50
+    print ("-"*50)
+    print ("Checking: Defined in PMIx Standard, but not in OpenPMIx")
+    print ("-"*50)
 
     missing_refs = []
     for std_ref in std_all_refs:
@@ -80,12 +81,13 @@ def check_missing_openpmix(std_all_refs, openpmix_all_refs,
                                  stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
             p.wait()
             if p.returncode != 0 and p.returncode != 1:
-                print("Error: Failed to grep and confirm missing item \""+std_ref+"\". grep error code "+str(p.returncode)+")");
+                print("ERROR in script: Failed to grep and confirm missing item \""+std_ref+"\". grep error code "+str(p.returncode)+")");
                 sys.exit(2)
             if p.returncode == 0:
                 possible_error = False
                 for line in p.stdout:
                     line = line.rstrip()
+                    line = line.decode()
                     parts = line.split(":", 2)
 
                     # if this reference is in a comment then ignore it
@@ -110,7 +112,7 @@ def check_missing_openpmix(std_all_refs, openpmix_all_refs,
                     elif any(std_ref in s for s in std_removed):
                         continue
                     else:
-                        print("ERROR1: Suspected Missing \""+std_ref+"\" but found on "+parts[0]+"("+parts[1]+"):"+parts[2])
+                        print("ERROR in script: Suspected Missing \""+std_ref+"\" but found on "+parts[0]+"("+parts[1]+"):"+parts[2])
                         possible_error = True
 
                 if possible_error is True:
@@ -162,9 +164,9 @@ if __name__ == "__main__":
     # * pmix-standard.aux
     # * check-openpmix
     #
-    print "-"*50
-    print "Checking: OpenPMIx checkout (branch: "+args.branch+")"
-    print "-"*50
+    print ("-"*50)
+    print ("Checking: OpenPMIx checkout (branch: "+args.branch+")")
+    print ("-"*50)
     if os.path.exists("check-openpmix") is False:
         print("Warning: Missing OpenPMIx checkout. Trying to clone now")
         cmd = "git clone --single-branch -b " + args.branch + " https://github.com/openpmix/openpmix.git check-openpmix"
@@ -181,7 +183,7 @@ if __name__ == "__main__":
             print("       Command: " + cmd)
             sys.exit(1)
 
-    print "-"*50
+    print("-"*50)
     print("")
 
     if os.path.exists("pmix-standard.aux") is False or os.path.exists("check-openpmix") is False:
@@ -202,9 +204,9 @@ if __name__ == "__main__":
     all_ref_strs = ["attr", "const", "struct", "macro", "apifn", "envar"]
     for ref_str in all_ref_strs:
         if args.verbose is True:
-            print "-"*50
-            print "Extracting Standard: \""+ref_str+"\""
-            print "-"*50
+            print ("-"*50)
+            print ("Extracting Standard: \""+ref_str+"\"")
+            print ("-"*50)
 
         # subsection.A is Appendix A: Python Bindings
         p = subprocess.Popen("grep \"newlabel{"+ref_str+"\" pmix-standard.aux | grep -v subsection.A",
@@ -216,6 +218,7 @@ if __name__ == "__main__":
 
         for line in p.stdout:
             line = line.rstrip()
+            line = line.decode()
             m = re.match(r"\s*\\newlabel{"+ re.escape(ref_str) + r":(\w+)", line)
             if m is None:
                 print("Error: Failed to extract an \""+ref_str+"\" on the following line")
@@ -245,31 +248,31 @@ if __name__ == "__main__":
                 sys.exit(1)
 
     if args.verbose is True and 0 == 1:
-        print "-"*50
+        print ("-"*50)
         for val in std_attributes:
             print("Std Attribute: " + val)
-        print "-"*50
+        print ("-"*50)
         for val in std_consts:
             print("Std Const    : " + val)
-        print "-"*50
+        print ("-"*50)
         for val in std_structs:
             print("Std Struct   : " + val)
-        print "-"*50
+        print ("-"*50)
         for val in std_macros:
             print("Std Macro    : " + val)
-        print "-"*50
+        print ("-"*50)
         for val in std_apis:
             print("Std API      : " + val)
-        print "-"*50
+        print ("-"*50)
         for val in std_deprecated:
             print("Std Deprecated      : " + val)
-        print "-"*50
+        print ("-"*50)
         for val in std_removed:
             print("Std Removed      : " + val)
-        print "-"*50
+        print ("-"*50)
         for val in std_envars:
             print("Std Envar    : " + val)
-        print "-"*50
+        print ("-"*50)
 
     print("Number of Standard attributes  : " + str(len(std_attributes)))
     print("Number of Standard consts      : " + str(len(std_consts)))
@@ -297,9 +300,9 @@ if __name__ == "__main__":
     for openpmix_file in openpmix_files:
         openpmix_file = "check-openpmix/include/" + openpmix_file
         if args.verbose is True:
-            print "-"*50
-            print "Extracting OpenPMIx Definitions from: " + openpmix_file
-            print "-"*50
+            print ("-"*50)
+            print ("Extracting OpenPMIx Definitions from: " + openpmix_file)
+            print ("-"*50)
 
         if "deprecated.h" in openpmix_file:
             parse_deprecated = True
@@ -419,6 +422,54 @@ if __name__ == "__main__":
                         defs_found = defs_found + 1
                     continue
 
+                # PMIX_EXPORT <type>* PMI<function>
+                m = re.match(r'PMIX_EXPORT\s+\w+\*\s+(PMI\w+)', line);
+                if m is not None:
+                    if parse_deprecated:
+                        openpmix_deprecated.append(m.group(1))
+                    else:
+                        openpmix_apis[m.group(1)] = -1
+                        openpmix_all_refs[m.group(1)] = -1
+                        #print("API3: "+m.group(1))
+                        defs_found = defs_found + 1
+                    continue
+
+                # PMIX_EXPORT <type>** PMI<function>
+                m = re.match(r'PMIX_EXPORT\s+\w+\*+\*+\s+(PMI\w+)', line);
+                if m is not None:
+                    if parse_deprecated:
+                        openpmix_deprecated.append(m.group(1))
+                    else:
+                        openpmix_apis[m.group(1)] = -1
+                        openpmix_all_refs[m.group(1)] = -1
+                        print("API4: "+m.group(1))
+                        defs_found = defs_found + 1
+                    continue
+
+                # PMIX_EXPORT <type> *PMI<function>
+                m = re.match(r'PMIX_EXPORT\s+\w+\s+\*+(PMI\w+)', line);
+                if m is not None:
+                    if parse_deprecated:
+                        openpmix_deprecated.append(m.group(1))
+                    else:
+                        openpmix_apis[m.group(1)] = -1
+                        openpmix_all_refs[m.group(1)] = -1
+                        #print("API3: "+m.group(1))
+                        defs_found = defs_found + 1
+                    continue
+
+                # PMIX_EXPORT <type> **PMI<function>
+                m = re.match(r'PMIX_EXPORT\s+\w+\s+\*+\*+(PMI\w+)', line);
+                if m is not None:
+                    if parse_deprecated:
+                        openpmix_deprecated.append(m.group(1))
+                    else:
+                        openpmix_apis[m.group(1)] = -1
+                        openpmix_all_refs[m.group(1)] = -1
+                        print("API4: "+m.group(1))
+                        defs_found = defs_found + 1
+                    continue
+
                 # PMIX_EXPORT pmix_status_t PMIx_Init(
                 m = re.match(r'PMIX_EXPORT\s+\w+\s+(PMI\w+)', line);
                 if m is not None:
@@ -465,7 +516,7 @@ if __name__ == "__main__":
                                                openpmix_deprecated, args.verbose)
     total_missing_refs = total_missing_refs + len(missing_refs)
     if len(missing_refs) > 0:
-        print "-"*50
+        print ("-"*50)
         print("Found "+str(len(missing_refs))+" references defined in OpenPMIx, but not in the PMIx Standard")
         for ref in sorted(missing_refs):
             print("PMIx Standard Missing: "+ref)
@@ -480,7 +531,7 @@ if __name__ == "__main__":
                                           openpmix_deprecated, args.verbose)
     total_missing_refs = total_missing_refs + len(missing_refs)
     if len(missing_refs) > 0:
-        print "-"*50
+        print ("-"*50)
         print("Found "+str(len(missing_refs))+" references defined in PMIx Standard, but not in OpenPMIx")
         for ref in sorted(missing_refs):
             print("OpenPMIx Missing: "+ref)
