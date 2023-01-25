@@ -7,14 +7,18 @@ import argparse
 import subprocess
 import shutil
 
+all_triage_symbols = []
+
 def check_missing_pmix_standard(std_all_refs, openpmix_all_refs,
                                 std_deprecated, std_removed,
                                 openpmix_deprecated, verbose=False):
     """Check for OpenPMIx definitions missing from the PMIx Standard"""
 
+    global all_triage_symbols
+
     print("-"*50)
-    print ("Checking: Defined in OpenPMIx, but not in the PMIx Standard")
-    print ("-"*50)
+    print("Checking: Defined in OpenPMIx, but not in the PMIx Standard")
+    print("-"*50)
 
     missing_refs = []
     for openpmix_ref in openpmix_all_refs:
@@ -54,8 +58,10 @@ def check_missing_pmix_standard(std_all_refs, openpmix_all_refs,
                 if possible_error is True:
                     sys.exit(1)
 
-
-            missing_refs.append(openpmix_ref)
+            if openpmix_ref not in all_triage_symbols:
+                missing_refs.append(openpmix_ref)
+            else:
+                all_triage_symbols.remove(openpmix_ref)
 
     return missing_refs
 
@@ -155,9 +161,27 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="PMIx Standard / OpenPMIx Cross Check")
     parser.add_argument("-v", "--verbose", help="Verbose output", action="store_true")
     parser.add_argument("-b", "--branch", help="OpenPMIx branch to be checked", nargs='?', default="master")
+    parser.add_argument("-t", "--triage", help="Symbols in OpenPMIx not in PMIx Standard", required=False, dest="triage_file")
 
     parser.parse_args()
     args = parser.parse_args()
+
+    if args.triage_file is not None and os.path.isfile(args.triage_file) is False:
+        print("Error: Triage File not found. " + args.triage_file)
+        os._exit(1)
+
+    # Read in the traige file
+    if args.triage_file is not None:
+        with open(args.triage_file, 'r') as tf:
+            for line in tf:
+                line = line.rstrip()
+                m = re.match(r'^#', line)
+                if m is not None:
+                    continue
+                m = re.match(r'^\s*$', line)
+                if m is not None:
+                    continue
+                all_triage_symbols.append(line)
 
     #
     # Verify that we have the necessary files in the current working directory
@@ -513,7 +537,8 @@ if __name__ == "__main__":
 
     missing_refs = check_missing_pmix_standard(std_all_refs, openpmix_all_refs,
                                                std_deprecated, std_removed,
-                                               openpmix_deprecated, args.verbose)
+                                               openpmix_deprecated,
+                                               args.verbose)
     total_missing_refs = total_missing_refs + len(missing_refs)
     if len(missing_refs) > 0:
         print ("-"*50)
@@ -521,6 +546,14 @@ if __name__ == "__main__":
         for ref in sorted(missing_refs):
             print("PMIx Standard Missing: "+ref)
         print("")
+
+    if len(all_triage_symbols) > 0:
+        print("-"*50)
+        print("Found "+str(len(all_triage_symbols))+" references defined in the Triage file, but were not listed as in OpenPMIx, but not in the PMIx Standard")
+        print("Please check these references in your traige file!")
+
+        for ref in sorted(all_triage_symbols):
+            print("Triage Reference: "+ref)
 
 
     # --------------------------------------------------
