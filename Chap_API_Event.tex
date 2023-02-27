@@ -23,7 +23,7 @@ These interfaces are designed to support the reporting of events to/from clients
 Both \ac{SMS} elements and applications can register for events of either type.
 
 \adviceimplstart
-Race conditions can cause the registration to come after events of possible interest (e.g., a memory \ac{ECC} event that occurs after start of execution but prior to registration, or an application process generating an event prior to another process registering to receive it). \ac{SMS} vendors are \textit{requested} to cache environment events for some time to mitigate this situation, but are not \textit{required} to do so. However, \ac{PMIx} implementers are \textit{required} to cache all events received by the \ac{PMIx} server library and to deliver them to registering clients in the same order in which they were received
+Race conditions can cause the registration to come after events of possible interest (e.g., a memory \ac{ECC} event that occurs after start of execution but prior to registration, or an application process generating an event prior to another process registering to receive it). \ac{SMS} vendors are \textit{requested} to cache environment events for some time to mitigate this situation, but are not \textit{required} to do so. However, \ac{PMIx} implementers are \textit{required} to cache all events received by the \ac{PMIx} server library and to deliver them to registering clients in the same order in which they were received.
 \adviceimplend
 
 \adviceuserstart
@@ -43,7 +43,10 @@ Event notifications provide the process identifier of the source of the event pl
 %
 \end{itemize}
 
-Users can specify the callback order of a handler within its category at the time of registration. Ordering can be specified by providing the relevant event handler names, if the user specified an event handler name when registering the corresponding event. Thus, users can specify that a given handler be executed before or after another handler should both handlers appear in an event chain (the ordering is ignored if the other handler isn't included). Note that ordering does not imply immediate relationships. For example, multiple handlers registered to be serviced after event handler \textit{A} will all be executed after \textit{A}, but are not guaranteed to be executed in any particular order amongst themselves.
+Users can specify the callback order of a handler within its category at the time of registration. 
+Users can specify that a given handler be executed before or after another target handler should both handlers appear in an event chain (the ordering is ignored if the other handler isn't included). 
+The ordering is dictated by providing the event handler name of the target.  The name must have been assigned when registereding the target handler. 
+Note that ordering does not imply immediate relationships. For example, multiple handlers registered to be serviced after event handler \textit{A} will all be executed after \textit{A}, but are not guaranteed to be executed in any particular order amongst themselves.
 
 In addition, one event handler can be declared as the \textit{first} handler to be executed in the chain. This handler will \textit{always} be called prior to any other handler, regardless of category, provided the incoming event matches both the specified range and event code. Only one handler can be so designated --- attempts to designate additional handlers as \textit{first} will return an error. Deregistration of the declared \textit{first} handler will re-open the position for subsequent assignment.
 
@@ -143,10 +146,10 @@ Host environments that implement support for \ac{PMIx} event notification are re
 %%%%
 \descr
 
-Register an event handler to report events. Note that the codes being registered do \textit{not} need to be \ac{PMIx} error constants --- any integer value can be registered. This allows for registration of non-PMIx events such as those defined by a particular \ac{SMS} vendor or by an application itself.
+Register an event handler to report events. Note that the codes being registered do \textit{not} need to be \ac{PMIx} event constants --- any integer value can be registered. This allows for registration of non-PMIx events such as those defined by a particular \ac{SMS} vendor or by an application itself.
 
 \adviceuserstart
-In order to avoid potential conflicts, users are advised to only define codes that lie outside the range of the \ac{PMIx} standard's error codes. Thus, \ac{SMS} vendors and application developers should constrain their definitions to positive values or negative values beyond the \refconst{PMIX_EXTERNAL_ERR_BASE} boundary.
+In order to avoid potential conflicts, users are advised to only use values as event codes if they lie outside the range of the \ac{PMIx} standard's error codes. Thus, \ac{SMS} vendors and application developers should constrain their definitions to positive values or negative values beyond the \refconst{PMIX_EXTERNAL_ERR_BASE} boundary.
 \adviceuserend
 
 
@@ -375,7 +378,7 @@ Support for these options is left to the discretion of the host \ac{RM}. Info ke
 \adviceuserend
 
 \advicermstart
-On the server side, the notification function is used to inform the \ac{PMIx} server library's host of a detected event in the \ac{PMIx} server library. Events generated by \ac{PMIx} clients are communicated to the \ac{PMIx} server library, but will be relayed to the host via the \refapi{pmix_server_notify_event_fn_t} function pointer, if provided.
+On the server side, the notification function, \refapi{pmix_server_notify_event_fn_t} (See \ref{chap:server:func_pointers}), is used to inform the \ac{PMIx} server library's host of a detected event in the \ac{PMIx} server library. Events generated by \ac{PMIx} clients are communicated to the \ac{PMIx} server library, but will be relayed to the host via this \refapi{pmix_server_notify_event_fn_t} function pointer, if provided.
 \advicermend
 
 
@@ -504,7 +507,9 @@ Host environments that support \ac{PMIx} event notification may offer notificati
 %%%%
 \descr
 
-Report an event for notification via any registered event handler. This function can be called by any \ac{PMIx} process, including application processes, \ac{PMIx} servers, and \ac{SMS} elements. The \ac{PMIx} server calls this \ac{API} to report events it detected itself so that the host \ac{SMS} daemon distribute and handle them, and to pass events given to it by its host down to any attached client processes for processing. Examples might include notification of the failure of another process, detection of an impending node failure due to rising temperatures, or an intent to preempt the application. Events may be locally generated or come from anywhere in the system.
+Report an event for notification via any registered event handler. This function can be called by any \ac{PMIx} process, including application processes, \ac{PMIx} servers, and \ac{SMS} elements. 
+
+The \ac{PMIx} server calls this \ac{API} to report events it detected itself so that the host \ac{SMS} daemon can distribute and handle them, and to pass events given to it by its host down to any attached client processes for processing. Examples might include notification of the failure of another process, detection of an impending node failure due to rising temperatures, or an intent to preempt the application. Events may be locally generated or come from anywhere in the system.
 
 Host \ac{SMS} daemons call the \ac{API} to pass events down to its embedded \ac{PMIx} server both for transmittal to local client processes and for the host's own internal processing where the host has registered its own event handlers. The \ac{PMIx} server library is not allowed to echo any event given to it by its host via this \ac{API} back to the host through the \refapi{pmix_server_notify_event_fn_t} server module function. The host is required to deliver the event to all \ac{PMIx} servers where the targeted processes either are currently running, or (if they haven't started yet) might be running at some point in the future as the events are required to be cached by the \ac{PMIx} server library.
 
@@ -512,7 +517,7 @@ Client application processes can call this function to notify the \ac{SMS} and/o
 
 \adviceuserstart
 The callback function will be called upon completion of the
-\code{notify_event} function's actions. At that time, any messages required for executing the operation (e.g., to send the notification to the local \ac{PMIx} server) will
+\refapi{PMIx_Notify_event} function's actions. At that time, any messages required for executing the operation (e.g., to send the notification to the local \ac{PMIx} server) will
 have been queued, but may not yet have been transmitted. The caller is required to maintain the input
 data until the callback function has been executed --- the sole purpose of the callback function is to indicate when the input data is no longer required.
 \adviceuserend
@@ -567,7 +572,7 @@ Event handler: Partial action taken.
 Event handler: Action deferred.
 %
 \declareconstitemvalue{PMIX_EVENT_ACTION_COMPLETE}{-334}
-Event handler: Action complete.
+Event handler: Action complete. Further handlers in the same chain are not called.
 %
 \end{constantdesc}
 
