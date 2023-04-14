@@ -46,7 +46,7 @@ Maximum namespace string length as an integer.
 \end{constantdesc}
 
 \adviceimplstart
-\refconst{PMIX_MAX_NSLEN} should have a minimum value of 63 characters. Namespace arrays in \ac{PMIx} defined structures must reserve
+Namespace arrays in \ac{PMIx} defined structures must reserve
 a space of size \refconst{PMIX_MAX_NSLEN}+1 to allow room for the \code{NULL} terminator
 \adviceimplend
 
@@ -57,7 +57,7 @@ Maximum key string length as an integer.
 \end{constantdesc}
 
 \adviceimplstart
-\refconst{PMIX_MAX_KEYLEN} should have a minimum value of 63 characters. Key arrays in \ac{PMIx} defined structures must reserve
+Key arrays in \ac{PMIx} defined structures must reserve
 a space of size \refconst{PMIX_MAX_KEYLEN}+1 to allow room for the \code{NULL} terminator
 \adviceimplend
 
