@@ -87,10 +87,8 @@ A \ac{PMIx} implementation must define all of the return status constants define
 \adviceimplend
 
 \adviceuserstart
-Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the integer value of any \ac{PMIx} error constant is left to the \ac{PMIx} library implementer with the constraint that it be negative and greater magnitude (i.e. of larger absolute value) 
-than
-\refconst{PMIX_EXTERNAL_ERR_BASE}.
-Thus, users are advised to always refer to constants by name, and not by a specific implementation's integer value, for portability between implementations and compatibility across library versions.
+Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the integer value of any \ac{PMIx} error constant are negative and of greater magnitude (i.e. of larger absolute value) than\refconst{PMIX_EXTERNAL_ERR_BASE}.
+For compatibility with future versions, users are advised to always refer to constants by name, and not by their integer value which may be specific to an \ac{ABI} version.
 \adviceuserend
 
 The presentation of each \ac{API} in this document includes a list of return status constants which are either specific to that \ac{API} or are expected to be returned by the \ac{API} in normal use.
