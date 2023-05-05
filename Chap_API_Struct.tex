@@ -46,7 +46,7 @@ Maximum namespace string length as an integer.
 \end{constantdesc}
 
 \adviceimplstart
-\refconst{PMIX_MAX_NSLEN} should have a minimum value of 63 characters. Namespace arrays in \ac{PMIx} defined structures must reserve
+Namespace arrays in \ac{PMIx} defined structures must reserve
 a space of size \refconst{PMIX_MAX_NSLEN}+1 to allow room for the \code{NULL} terminator
 \adviceimplend
 
@@ -57,7 +57,7 @@ Maximum key string length as an integer.
 \end{constantdesc}
 
 \adviceimplstart
-\refconst{PMIX_MAX_KEYLEN} should have a minimum value of 63 characters. Key arrays in \ac{PMIx} defined structures must reserve
+Key arrays in \ac{PMIx} defined structures must reserve
 a space of size \refconst{PMIX_MAX_KEYLEN}+1 to allow room for the \code{NULL} terminator
 \adviceimplend
 
@@ -87,10 +87,8 @@ A \ac{PMIx} implementation must define all of the return status constants define
 \adviceimplend
 
 \adviceuserstart
-Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the integer value of any \ac{PMIx} error constant is left to the \ac{PMIx} library implementer with the constraint that it be negative and greater magnitude (i.e. of larger absolute value) 
-than
-\refconst{PMIX_EXTERNAL_ERR_BASE}.
-Thus, users are advised to always refer to constants by name, and not by a specific implementation's integer value, for portability between implementations and compatibility across library versions.
+Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the integer value of any \ac{PMIx} error constant are negative and of greater magnitude (i.e. of larger absolute value) than\refconst{PMIX_EXTERNAL_ERR_BASE}.
+For compatibility with future versions, users are advised to always refer to constants by name, and not by their integer value which may be specific to an \ac{ABI} version.
 \adviceuserend
 
 The presentation of each \ac{API} in this document includes a list of return status constants which are either specific to that \ac{API} or are expected to be returned by the \ac{API} in normal use.
@@ -473,7 +471,7 @@ The following macros are provided to support the \refstruct{pmix_proc_t} structu
 
 Provide a static initializer for the \refstruct{pmix_proc_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_PROC_STATIC_INIT
@@ -797,7 +795,7 @@ The following macros are provided to support the \refstruct{pmix_proc_info_t} st
 
 Provide a static initializer for the \refstruct{pmix_proc_info_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_PROC_INFO_STATIC_INIT
@@ -981,7 +979,7 @@ The following macros and \acp{API} are provided to support the \refstruct{pmix_v
 
 Provide a static initializer for the \refstruct{pmix_value_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_VALUE_STATIC_INIT
@@ -1072,7 +1070,7 @@ Load data into a \refstruct{pmix_value_t} structure.
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1107,7 +1105,7 @@ Unload data from a \refstruct{pmix_value_t} structure.
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1146,7 +1144,7 @@ Transfer the data value between two \refstruct{pmix_value_t} structures.
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1211,7 +1209,7 @@ The following macros are provided to support the \refstruct{pmix_info_t} structu
 
 Provide a static initializer for the \refstruct{pmix_info_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_INFO_STATIC_INIT
@@ -1288,7 +1286,7 @@ Load data into a \refstruct{pmix_info_t} structure.
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1325,7 +1323,7 @@ Copy all data between two \refstruct{pmix_info_t} structures.
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1383,7 +1381,7 @@ Initialize a list of \refstruct{pmix_info_t} structures. The actual list is opaq
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 void*
@@ -1408,7 +1406,7 @@ Add a \refstruct{pmix_info_t} structure containing the specified value to the pr
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1445,7 +1443,7 @@ Transfer the information in a \refstruct{pmix_info_t} structure to a structure o
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1480,7 +1478,7 @@ Transfer the information in the provided \refstruct{pmix_info_t} list to a \refs
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1515,7 +1513,7 @@ Release the provided \refstruct{pmix_info_t} list
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 void
@@ -1733,7 +1731,7 @@ The following macros are provided to support the \refstruct{pmix_envar_t} struct
 
 Provide a static initializer for the \refstruct{pmix_envar_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_ENVAR_STATIC_INIT
@@ -1837,7 +1835,7 @@ The following macros support the \refstruct{pmix_byte_object_t} structure.
 
 Provide a static initializer for the \refstruct{pmix_byte_object_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_BYTE_OBJECT_STATIC_INIT
@@ -1939,7 +1937,7 @@ The following macros support the \refstruct{pmix_data_array_t} structure.
 
 Provide a static initializer for the \refstruct{pmix_data_array_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_DATA_ARRAY_STATIC_INIT
