@@ -3989,7 +3989,7 @@ Callback function for delivering forwarded \ac{IO} to a process.
 \copySignature{pmix_iof_cbfunc_t}{3.0}{
 typedef void (*pmix_iof_cbfunc_t)( \\
 \hspace*{20\sigspace}size_t iofhdlr, pmix_iof_channel_t channel, \\
-\hspace*{20\sigspace}pmix_proc_t *source, char *payload, \\
+\hspace*{20\sigspace}pmix_proc_t *source, pmix_byte_object_t *payload, \\
 \hspace*{20\sigspace}pmix_info_t info[], size_t ninfo);
 }
 
@@ -3997,7 +3997,7 @@ typedef void (*pmix_iof_cbfunc_t)( \\
 \argin{iofhdlr}{Registration number of the handler being invoked (\code{size_t})}
 \argin{channel}{bitmask identifying the channel the data arrived on (\refstruct{pmix_iof_channel_t})}
 \argin{source}{Pointer to a \refstruct{pmix_proc_t} identifying the namespace/rank of the process that generated the data (\code{char*})}
-\argin{payload}{Pointer to character array containing the data.}
+\argin{payload}{Pointer to a \refstruct{pmix_byte_object_t} that describes the character array containing the data.}
 \argin{info}{Array of \refstruct{pmix_info_t} provided by the source containing metadata about the payload. This could include \refattr{PMIX_IOF_COMPLETE} (handle)}
 \argin{ninfo}{Number of elements in \refarg{info} (\code{size_t})}
 \end{arglist}
