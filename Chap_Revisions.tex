@@ -1462,8 +1462,17 @@ Replaced by \refconst{PMIX_ERR_PARTIAL_SUCCESS}.
 
 The v5.1 update includes the following changes from the v5.0 document:
 
-%\begin{compactitemize}
-%\end{compactitemize}
+\begin{compactitemize}
+   \item Revision history now contains a list of errata changes
+\end{compactitemize}
+
+\subsection{Errata}
+
+The following errors were corrected in v5.1:
+
+\begin{compactitemize}
+  \item Parameter type for the key argument in \refapi{PMIx_Get_nb} has been changed to the equivalent type \refstruct{pmix_key_t} so that it is uniform with the argument in \refapi{PMIx_Get}.
+\end{compactitemize}
 
 \subsection{Added Functions (Provisional)}
 
