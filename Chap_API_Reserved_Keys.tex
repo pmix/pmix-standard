@@ -460,7 +460,7 @@ Node identifier expressed as the node's index (beginning at zero) in an array of
 }
 %
 \declareAttribute{PMIX_NODE_SIZE}{"pmix.node.size"}{uint32_t}{
-Number of processes across all jobs that are executing upon the node.
+Number of processes across all jobs executing upon the node, independent of whether the process has or will use PMIx.
 }
 %
 \declareAttribute{PMIX_AVAIL_PHYS_MEMORY}{"pmix.pmem"}{uint64_t}{
