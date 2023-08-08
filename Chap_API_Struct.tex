@@ -1059,6 +1059,34 @@ PMIX_VALUE_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
+\littleheader{Get size of data in a value structure}
+\declareapiProvisional{PMIx_Value_get_size}
+
+%%%%
+\summary
+
+Compute and return the size (in bytes) of the data payload in a \refstruct{pmix_value_t} structure.
+
+%%%%
+\format
+
+\versionMarker{5.1}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Value_get_size(const pmix_value_t *val,
+                    size_t *size);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{val}{The \refstruct{pmix_value_t} where the data is located (pointer to \refstruct{pmix_value_t})}
+\argin{size}{Pointer to variable where size will be returned}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%%%%%%%%
 \littleheader{Load a value structure}
 \declareapi{PMIx_Value_load}
 
@@ -1275,6 +1303,34 @@ PMIX_INFO_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
+\littleheader{Get size of data in an info structure}
+\declareapiProvisional{PMIx_Info_get_size}
+
+%%%%
+\summary
+
+Compute and return the size (in bytes) of the data payload in an \refstruct{pmix_info_t} structure.
+
+%%%%
+\format
+
+\versionMarker{5.1}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Info_get_size(const pmix_info_t *info,
+                   size_t *size);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{The \refstruct{pmix_info_t} where the data is located}
+\argin{type}{Pointer to variable where size will be returned}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%%%%%%%%
 \littleheader{Load key and value data into a info struct}
 \declareapi{PMIx_Info_load}
 
@@ -1430,6 +1486,78 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 \descr
 
 Copy the provided key and data into a \refstruct{pmix_info_t} on the list. The key and any data stored in the source value can be modified or free'd without affecting the copied data once the function has completed.
+
+%%%%%%%%%%%
+\littleheader{Retrieve next \refstruct{pmix_info_t} on a list}
+\declareapiProvisional{PMIx_Info_list_get_info}
+
+%%%%
+\summary
+
+Retrieve next \refstruct{pmix_info_t} on a list.
+
+%%%%
+\format
+
+\versionMarker{5.0}
+\cspecificstart
+\begin{codepar}
+pmix_info_t *
+PMIx_Info_list_get_info(void *ptr,
+                        void *prev,
+                        void **next);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
+\argin{prev}{Pointer to previous list element}
+\argout{next}{Pointer to next list element}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Retrieve the next info on the list. Passing NULL to the prev parameter will return the first pmix_info_t on the list. If next is set to NULL, it indicates the end of the list.
+
+%%%%%%%%%%%
+\littleheader{Prepend a \refstruct{pmix_info_t} structure to a list}
+\declareapiProvisional{PMIx_Info_list_prepend}
+
+%%%%
+\summary
+
+Prepend a \refstruct{pmix_info_t} structure containing the specified value to the provided list.
+
+%%%%
+\format
+
+\versionMarker{5.1}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Info_list_prepend(void *ptr,
+                       const char *key,
+                       const void *value,
+                       pmix_data_type_t type);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
+\argin{key}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
+\argin{value}{Pointer to the data value to be loaded (handle)}
+\argin{type}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Copy the provided key and data into a \refstruct{pmix_info_t} at the head of list. The key and any data stored in the source value can be modified or free'd without affecting the copied data once the function has completed.
 
 %%%%%%%%%%%
 \littleheader{Transfer a \refstruct{pmix_info_t} structure to a list}
