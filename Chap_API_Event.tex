@@ -149,7 +149,7 @@ Host environments that implement support for \ac{PMIx} event notification are re
 Register an event handler to report events. Note that the codes being registered do \textit{not} need to be \ac{PMIx} event constants --- any integer value can be registered. This allows for registration of non-PMIx events such as those defined by a particular \ac{SMS} vendor or by an application itself.
 
 \adviceuserstart
-In order to avoid potential conflicts, users are advised to only use values as event codes if they lie outside the range of the \ac{PMIx} standard's error and event codes (See \ref{api:struct:usererrors}). Thus, \ac{SMS} vendors and application developers should constrain their definitions to positive values or negative values beyond the \refconst{PMIX_EXTERNAL_ERR_BASE} boundary.
+In order to avoid potential conflicts, users are advised to only use event code values that lie outside the range of the \ac{PMIx} standard's error and event codes (See \ref{api:struct:usererrors}). Thus, \ac{SMS} vendors and application developers should constrain their definitions to positive values or negative values beyond the \refconst{PMIX_EXTERNAL_ERR_BASE} boundary.
 \adviceuserend
 
 
