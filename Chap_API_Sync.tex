@@ -91,7 +91,7 @@ The following attributes are optional for host environments:
 Passing a \code{NULL} pointer as the \refarg{procs} parameter indicates that the fence is to span all processes in the client's namespace.
 Each provided \refstruct{pmix_proc_t} struct can pass \refconst{PMIX_RANK_WILDCARD} to indicate that all processes in the given namespace are participating.
 The ordering of the entries in the \refarg{procs} has no significance.  However, all processes engaged in a given 
-\refapi{PMIx_Fence} 
+\refapi{PMIx_Fence}
 operation must use the same method to identify processes.  Callers which describe
 the target set of processes using PMIX_RANK_WILDCARD will not be matched with 
 callers which list the individual processes of a namespace explicitly.

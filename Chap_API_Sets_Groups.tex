@@ -365,6 +365,7 @@ Each provided \refstruct{pmix_proc_t} struct can pass \refconst{PMIX_RANK_WILDCA
 The ordering of the entries in the \refarg{procs} has no significance, neither is the method used for identifying processes.
 Some callers may describe the target set of processes using PMIX_RANK_WILDCARD while other 
 callers may list the individual processes of a namespace explicitly.
+This is unlike \refapi{PMIx_Connect}, because in this group operation, the group name \refarg{grp} is used to determine the uniqueness of the collective.
 
 If the \refattr{PMIX_GROUP_NOTIFY_TERMINATION} attribute is provided and has a value of \code{true}, then either the construct leader (if \refattr{PMIX_GROUP_LEADER} is provided) or all participants who register for the \refconst{PMIX_GROUP_MEMBER_FAILED} event will receive events whenever a process fails or terminates prior to calling \refapi{PMIx_Group_construct} – i.e. if a \emph{group leader} is declared, \textit{only} that process will receive the event. In the absence of a declared leader, \textit{all} specified group members will receive the event.
 
