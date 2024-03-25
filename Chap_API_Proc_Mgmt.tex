@@ -217,7 +217,7 @@ Host environments are required to support the following attributes when present 
 \reqattrend
 
 \optattrstart
-The following attributes are optional for \ac{PMIx} implementations:
+The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_ADD_HOSTFILE}
 \pasteAttributeItem{PMIX_ADD_HOST}
@@ -372,7 +372,8 @@ Comma-delimited list of hosts to use for spawned processes.
 }
 %
 \declareAttribute{PMIX_HOSTFILE}{"pmix.hostfile"}{char*}{
-Hostfile to use for spawned processes.  The format of this file is determined by the \ac{PMIx} implementation or host environment.  The file may not be portable across implementations.
+Hostfile to use for spawned processes.  
+The format of this file is determined by the host environment, therefore a file may not be portable across different host environments.
 }
 %
 \declareAttribute{PMIX_ADD_HOST}{"pmix.addhost"}{char*}{
@@ -380,7 +381,8 @@ Comma-delimited list of hosts to add to the allocation.
 }
 %
 \declareAttribute{PMIX_ADD_HOSTFILE}{"pmix.addhostfile"}{char*}{
-Hostfile containing hosts to add to existing allocation.  The format of this file is determined by the \ac{PMIx} implementation or host environment.  The file may not be portable across implementations.
+Hostfile containing hosts to add to existing allocation.  
+The format of this file is determined by the host environment, therefore a file may not be portable across different host environments.
 }
 %
 \declareAttribute{PMIX_PREFIX}{"pmix.prefix"}{char*}{
@@ -392,7 +394,7 @@ Working directory for spawned processes.
 }
 %
 \declareAttribute{PMIX_DISPLAY_MAP}{"pmix.dispmap"}{bool}{
-Provide process mapping upon spawn.  Format of the provided map is implementation specific.
+Provide process mapping upon spawn.  The format of the provided map is specific to the host environment providing it.
 }
 %
 \declareAttribute{PMIX_PPR}{"pmix.ppr"}{char*}{
@@ -464,7 +466,7 @@ Do not oversubscribe the nodes - i.e., do not place more processes than allocate
 }
 %
 \declareAttribute{PMIX_REPORT_BINDINGS}{"pmix.repbind"}{bool}{
-Report bindings of the individual processes.  How and where this information is reported is implementation dependent as well as dependent on whether the processes are created through a launching tool or by a direct call to \refapi{PMIx_Spawn}.
+Report bindings of the individual processes.  How and where this information is reported is host environment dependent as well as dependent on whether the processes are created through a launching tool or by a direct call to \refapi{PMIx_Spawn}.
 }
 %
 \declareAttribute{PMIX_CPU_LIST}{"pmix.cpulist"}{char*}{
@@ -484,7 +486,7 @@ Maximum number of times to restart a process - when accessed using \refapi{PMIx_
 }
 %
 \declareAttribute{PMIX_SPAWN_TOOL}{"pmix.spwn.tool"}{bool}{
-Indicate that the job being spawned is a tool.  The repercussions of setting this attribute varies based on implementation.  For example, some implementations may not perform cpu-binding on process marked as a tool. 
+Indicate that the job being spawned is a tool.  The repercussions of setting this attribute varies based on the underlying host environment.  For example, some host environments may not perform cpu-binding on a process marked as a tool. 
 }
 %
 \declareAttribute{PMIX_TIMEOUT_STACKTRACES}{"pmix.tim.stack"}{bool}{
@@ -849,7 +851,7 @@ PMIx_Connect(const pmix_proc_t procs[], size_t nprocs, \\
 \reqattrend
 
 \optattrstart
-The following attributes are optional for \ac{PMIx} implementations:
+The following attributes are optional for host environments that support this operation:
 
 \pasteAttributeItem{PMIX_ALL_CLONES_PARTICIPATE}
 \pasteAttributeItem{PMIX_TIMEOUT}
