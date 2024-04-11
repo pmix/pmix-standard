@@ -46,7 +46,7 @@ Maximum namespace string length as an integer.
 \end{constantdesc}
 
 \adviceimplstart
-\refconst{PMIX_MAX_NSLEN} should have a minimum value of 63 characters. Namespace arrays in \ac{PMIx} defined structures must reserve
+Namespace arrays in \ac{PMIx} defined structures must reserve
 a space of size \refconst{PMIX_MAX_NSLEN}+1 to allow room for the \code{NULL} terminator
 \adviceimplend
 
@@ -57,7 +57,7 @@ Maximum key string length as an integer.
 \end{constantdesc}
 
 \adviceimplstart
-\refconst{PMIX_MAX_KEYLEN} should have a minimum value of 63 characters. Key arrays in \ac{PMIx} defined structures must reserve
+Key arrays in \ac{PMIx} defined structures must reserve
 a space of size \refconst{PMIX_MAX_KEYLEN}+1 to allow room for the \code{NULL} terminator
 \adviceimplend
 
@@ -87,10 +87,8 @@ A \ac{PMIx} implementation must define all of the return status constants define
 \adviceimplend
 
 \adviceuserstart
-Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the integer value of any \ac{PMIx} error constant is left to the \ac{PMIx} library implementer with the constraint that it be negative and greater magnitude (i.e. of larger absolute value) 
-than
-\refconst{PMIX_EXTERNAL_ERR_BASE}.
-Thus, users are advised to always refer to constants by name, and not by a specific implementation's integer value, for portability between implementations and compatibility across library versions.
+Other than \refconst{PMIX_SUCCESS} (which is required to be zero), the integer value of any \ac{PMIx} error constant are negative and of greater magnitude (i.e. of larger absolute value) than\refconst{PMIX_EXTERNAL_ERR_BASE}.
+For compatibility with future versions, users are advised to always refer to constants by name, and not by their integer value which may be specific to an \ac{ABI} version.
 \adviceuserend
 
 The presentation of each \ac{API} in this document includes a list of return status constants which are either specific to that \ac{API} or are expected to be returned by the \ac{API} in normal use.
@@ -473,7 +471,7 @@ The following macros are provided to support the \refstruct{pmix_proc_t} structu
 
 Provide a static initializer for the \refstruct{pmix_proc_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_PROC_STATIC_INIT
@@ -797,7 +795,7 @@ The following macros are provided to support the \refstruct{pmix_proc_info_t} st
 
 Provide a static initializer for the \refstruct{pmix_proc_info_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_PROC_INFO_STATIC_INIT
@@ -981,7 +979,7 @@ The following macros and \acp{API} are provided to support the \refstruct{pmix_v
 
 Provide a static initializer for the \refstruct{pmix_value_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_VALUE_STATIC_INIT
@@ -1061,6 +1059,34 @@ PMIX_VALUE_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
+\littleheader{Get size of data in a value structure}
+\declareapiProvisional{PMIx_Value_get_size}
+
+%%%%
+\summary
+
+Compute and return the size (in bytes) of the data payload in a \refstruct{pmix_value_t} structure.
+
+%%%%
+\format
+
+\versionMarker{5.1}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Value_get_size(const pmix_value_t *val,
+                    size_t *size);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{val}{The \refstruct{pmix_value_t} where the data is located (pointer to \refstruct{pmix_value_t})}
+\argout{size}{Pointer to variable where size will be returned}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%%%%%%%%
 \littleheader{Load a value structure}
 \declareapi{PMIx_Value_load}
 
@@ -1072,7 +1098,7 @@ Load data into a \refstruct{pmix_value_t} structure.
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1107,7 +1133,7 @@ Unload data from a \refstruct{pmix_value_t} structure.
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1146,7 +1172,7 @@ Transfer the data value between two \refstruct{pmix_value_t} structures.
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1211,7 +1237,7 @@ The following macros are provided to support the \refstruct{pmix_info_t} structu
 
 Provide a static initializer for the \refstruct{pmix_info_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_INFO_STATIC_INIT
@@ -1277,6 +1303,34 @@ PMIX_INFO_FREE(m, n)
 \end{arglist}
 
 %%%%%%%%%%%
+\littleheader{Get size of data in an info structure}
+\declareapiProvisional{PMIx_Info_get_size}
+
+%%%%
+\summary
+
+Compute and return the size (in bytes) of the data payload in an \refstruct{pmix_info_t} structure.
+
+%%%%
+\format
+
+\versionMarker{5.1}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Info_get_size(const pmix_info_t *info,
+                   size_t *size);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{info}{The \refstruct{pmix_info_t} where the data is located}
+\argout{size}{Pointer to variable where size will be returned}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%%%%%%%%
 \littleheader{Load key and value data into a info struct}
 \declareapi{PMIx_Info_load}
 
@@ -1288,7 +1342,7 @@ Load data into a \refstruct{pmix_info_t} structure.
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1325,7 +1379,7 @@ Copy all data between two \refstruct{pmix_info_t} structures.
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1383,7 +1437,7 @@ Initialize a list of \refstruct{pmix_info_t} structures. The actual list is opaq
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 void*
@@ -1408,7 +1462,7 @@ Add a \refstruct{pmix_info_t} structure containing the specified value to the pr
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1434,6 +1488,77 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 Copy the provided key and data into a \refstruct{pmix_info_t} on the list. The key and any data stored in the source value can be modified or free'd without affecting the copied data once the function has completed.
 
 %%%%%%%%%%%
+\littleheader{Retrieve next \refstruct{pmix_info_t} on a list}
+\declareapiProvisional{PMIx_Info_list_get_info}
+
+%%%%
+\summary
+
+Retrieve next \refstruct{pmix_info_t} on a list.
+
+%%%%
+\format
+
+\versionMarker{5.1}
+\cspecificstart
+\begin{codepar}
+pmix_info_t *
+PMIx_Info_list_get_info(void *ptr,
+                        void *curr,
+                        void **next);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
+\argin{curr}{Pointer to current list element}
+\argout{next}{Pointer to next list element}
+\end{arglist}
+
+
+%%%%
+\descr
+
+Retrieve the current pmix_info_t object from a list and sets the next pointer. Passing NULL to the curr parameter will return the first pmix_info_t on the list. If next is set to NULL, it indicates the end of the list.
+
+%%%%%%%%%%%
+\littleheader{Prepend a \refstruct{pmix_info_t} structure to a list}
+\declareapiProvisional{PMIx_Info_list_prepend}
+
+%%%%
+\summary
+
+Prepend a \refstruct{pmix_info_t} structure containing the specified value to the provided list.
+
+%%%%
+\format
+
+\versionMarker{5.1}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Info_list_prepend(void *ptr,
+                       const char *key,
+                       const void *value,
+                       pmix_data_type_t type);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
+\argin{key}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length}
+\argin{value}{Pointer to the data value to be loaded}
+\argin{type}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx error constant.
+
+%%%%
+\descr
+
+Copy the provided key and data into a \refstruct{pmix_info_t} at the head of list. The key and any data stored in the source value can be modified or free'd without affecting the copied data once the function has completed.
+
+%%%%%%%%%%%
 \littleheader{Transfer a \refstruct{pmix_info_t} structure to a list}
 \declareapi{PMIx_Info_list_xfer}
 
@@ -1445,7 +1570,7 @@ Transfer the information in a \refstruct{pmix_info_t} structure to a structure o
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1480,7 +1605,7 @@ Transfer the information in the provided \refstruct{pmix_info_t} list to a \refs
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
@@ -1515,7 +1640,7 @@ Release the provided \refstruct{pmix_info_t} list
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 void
@@ -1733,7 +1858,7 @@ The following macros are provided to support the \refstruct{pmix_envar_t} struct
 
 Provide a static initializer for the \refstruct{pmix_envar_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_ENVAR_STATIC_INIT
@@ -1837,7 +1962,7 @@ The following macros support the \refstruct{pmix_byte_object_t} structure.
 
 Provide a static initializer for the \refstruct{pmix_byte_object_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_BYTE_OBJECT_STATIC_INIT
@@ -1939,7 +2064,7 @@ The following macros support the \refstruct{pmix_data_array_t} structure.
 
 Provide a static initializer for the \refstruct{pmix_data_array_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_DATA_ARRAY_STATIC_INIT
@@ -2706,7 +2831,7 @@ String representation of a \ac{PMIx} attribute.
 
 \copySignature{PMIx_Get_attribute_string}{4.0}{
 const char* \\
-PMIx_Get_attribute_string(char *attributename);
+PMIx_Get_attribute_string(const char *attributename);
 }
 
 %%%%
@@ -2717,7 +2842,7 @@ Return the \ac{PMIx} attribute name corresponding to the given attribute string.
 
 \copySignature{PMIx_Get_attribute_name}{4.0}{
 const char* \\
-PMIx_Get_attribute_name(char *attributestring);
+PMIx_Get_attribute_name(const char *attributestring);
 }
 
 %%%%

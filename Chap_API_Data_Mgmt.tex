@@ -48,7 +48,7 @@ typedef struct pmix_data_buffer \{ \\
 
 Provide a static initializer for the \refstruct{pmix_data_buffer_t} fields.
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 PMIX_DATA_BUFFER_STATIC_INIT
@@ -334,13 +334,13 @@ Pretty-print a data value.
 
 \copySignature{PMIx_Data_print}{2.0}{
 pmix_status_t \\
-PMIx_Data_print(char **output, char *prefix, \\
+PMIx_Data_print(char **output, const char *prefix, \\
 \hspace*{16\sigspace}void *src, pmix_data_type_t type);
 }
 
 \begin{arglist}
 \argout{output}{The address of a pointer into which the address of the resulting output is to be stored. (\code{char**})}
-\argin{prefix}{String to be prepended to the resulting output (\code{char*})}
+\argin{prefix}{String to be prepended to the resulting output (\code{const char*}
 \argin{src}{A pointer to the memory location of the data value to be printed (handle)}
 \argin{type}{The type of the data value to be printed --- must be one of the PMIx defined data types. (\refstruct{pmix_data_type_t})}
 \end{arglist}
@@ -607,7 +607,7 @@ Embed a data payload into a buffer
 %%%%
 \format
 
-\versionMarker{4.2}
+\versionMarker{5.0}
 \cspecificstart
 \begin{codepar}
 pmix_status_t
