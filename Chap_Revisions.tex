@@ -1311,6 +1311,7 @@ The following errors were corrected in v4.2:
 
 \begin{compactitemize}
   \item Parameter type for the key argument in \refapi{PMIx_Get_nb} has been changed to the equivalent type \refstruct{pmix_key_t} so that it is uniform with the argument in \refapi{PMIx_Get}.
+  \item Parameter type for the payload argument in \refapi{pmix_iof_cbfunc_t} has been changed to a pointer to the type \refstruct{pmix_byte_object_t}.
 \end{compactitemize}
 
 \subsection{Deprecated constants}
