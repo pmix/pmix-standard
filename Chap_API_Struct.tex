@@ -1365,7 +1365,13 @@ Returns \refconst{PMIX_SUCCESS} or a negative value corresponding to a PMIx erro
 %%%%
 \descr
 
-Copy the provided data into the \refstruct{pmix_info_t}. Any data stored in the source parameters can be modified or free'd without affecting the copied data once the function has completed.
+Copy the provided data into the \refstruct{pmix_info_t}. Any data stored in the source parameters can be modified or free'd without affecting the copied data once the function has completed. Passing \code{NULL} as the \code{data} parameter with a \refconst{PMIX_BOOL} \code{type} will set the associated info to \code{true}. This is a shorthand for the following where \code{NULL} replaces an explicit variable \code{true_value}:
+\begin{codepar}
+  // A PMIX_BOOL with a NULL data is equivalent to an explicit true data
+  bool true_value = true;
+  PMIX_Info_load(&info1, PMIX_SESSION_INFO, &true_value, PMIX_BOOL);
+  PMIX_Info_load(&info2, PMIX_SESSION_INFO, NULL, PMIX_BOOL);
+\end{codepar}
 
 %%%%%%%%%%%
 \littleheader{Copy data between info structures}
