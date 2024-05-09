@@ -42,15 +42,15 @@ PMIx_Spawn(const pmix_info_t job_info[], size_t ninfo, \\
 
 \returnstart
 \begin{constantdesc}
-\item \refconst{PMIX_ERR_JOB_ALLOC_FAILED} The job request could not be executed due to failure to obtain the specified allocation
+\item \refconst{PMIX_ERR_JOB_ALLOC_FAILED} The job request could not be executed due to failure to obtain the specified allocation.
 \item \refconst{PMIX_ERR_JOB_APP_NOT_EXECUTABLE} The specified application executable either could not be found, or lacks execution privileges.
 \item \refconst{PMIX_ERR_JOB_NO_EXE_SPECIFIED} The job request did not specify an executable.
 \item \refconst{PMIX_ERR_JOB_FAILED_TO_MAP} The launcher was unable to map the processes for the specified job request.
-\item \refconst{PMIX_ERR_JOB_FAILED_TO_LAUNCH} One or more processes in the job request failed to launch
-\item \refconst{PMIX_ERR_JOB_EXE_NOT_FOUND} Specified executable not found
-\item \refconst{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES} Insufficient resources to spawn job
-\item \refconst{PMIX_ERR_JOB_SYS_OP_FAILED} System library operation failed
-\item \refconst{PMIX_ERR_JOB_WDIR_NOT_FOUND} Specified working directory not found
+\item \refconst{PMIX_ERR_JOB_FAILED_TO_LAUNCH} One or more processes in the job request failed to launch.
+\item \refconst{PMIX_ERR_JOB_EXE_NOT_FOUND} Specified executable not found.
+\item \refconst{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES} Insufficient resources to spawn job.
+\item \refconst{PMIX_ERR_JOB_SYS_OP_FAILED} System library operation failed.
+\item \refconst{PMIX_ERR_JOB_WDIR_NOT_FOUND} Specified working directory not found.
 \end{constantdesc}
 \returnend
 
@@ -142,12 +142,12 @@ By default, the spawned processes will be PMIx ``connected'' to the parent proce
 for details).  
 Both the parent process and members of the child job will receive notification of errors from processes in their combined assemblage.
 
-\adviceimplstart
-It is recommended that an implementation will cause the parent process to be given a copy of the new job's
+\advicermstart
+It is recommended that an implementation will cause the parent process to be given a copy of the new job's job-level
 information so it can query job-level info without incurring any communication penalties.  Similarly, the newly 
 spawned child processes should receive a copy of the parent processes' job-level info due to the high likelihood 
 that the child will make subsequent queries about its parent.
-\adviceimplend
+\advicermend
 
 \adviceuserstart
 Behavior of individual resource managers may differ, but it is expected that failure of any application process to start will result in termination/cleanup of all processes in the newly spawned job and return of an error code to the caller.
@@ -190,15 +190,15 @@ PMIx_Spawn_nb(const pmix_info_t job_info[], size_t ninfo, \\
 If executed, the status returned in the provided callback function will be one of the following constants:
 
 \begin{itemize}
-\item \refconst{PMIX_SUCCESS} All data was found and has been returned.
-\item \refconst{PMIX_ERR_JOB_ALLOC_FAILED} The job request could not be executed due to failure to obtain the specified allocation
+\item \refconst{PMIX_SUCCESS} The operation was successfully completed.
+\item \refconst{PMIX_ERR_JOB_ALLOC_FAILED} The job request could not be executed due to failure to obtain the specified allocation.
 \item \refconst{PMIX_ERR_JOB_APP_NOT_EXECUTABLE} The specified application executable either could not be found, or lacks execution privileges.
 \item \refconst{PMIX_ERR_JOB_NO_EXE_SPECIFIED} The job request did not specify an executable.
 \item \refconst{PMIX_ERR_JOB_FAILED_TO_MAP} The launcher was unable to map the processes for the specified job request.
-\item \refconst{PMIX_ERR_JOB_FAILED_TO_LAUNCH} One or more processes in the job request failed to launch
-\item \refconst{PMIX_ERR_JOB_EXE_NOT_FOUND} Specified executable not found
-\item \refconst{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES} Insufficient resources to spawn job
-\item \refconst{PMIX_ERR_JOB_SYS_OP_FAILED} System library operation failed
+\item \refconst{PMIX_ERR_JOB_FAILED_TO_LAUNCH} One or more processes in the job request failed to launch.
+\item \refconst{PMIX_ERR_JOB_EXE_NOT_FOUND} Specified executable not found.
+\item \refconst{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES} Insufficient resources to spawn job.
+\item \refconst{PMIX_ERR_JOB_SYS_OP_FAILED} System library operation failed.
 \item \refconst{PMIX_ERR_JOB_WDIR_NOT_FOUND} Specified working directory not found
 \item a non-zero \ac{PMIx} error constant indicating a reason for the request's failure.
 \end{itemize}
@@ -328,7 +328,7 @@ In addition to the generic error constants, the following spawn-specific error c
 \begin{constantdesc}
 %
 \declareconstitemvalue{PMIX_ERR_JOB_ALLOC_FAILED}{-188}
-The job request could not be executed due to failure to obtain the specified allocation
+The job request could not be executed due to failure to obtain the specified allocation.
 %
 \declareconstitemvalue{PMIX_ERR_JOB_APP_NOT_EXECUTABLE}{-177}
 The specified application executable either could not be found, or lacks execution privileges.
@@ -340,19 +340,19 @@ The job request did not specify an executable.
 The launcher was unable to map the processes for the specified job request.
 %
 \declareconstitemvalue{PMIX_ERR_JOB_FAILED_TO_LAUNCH}{-181}
-One or more processes in the job request failed to launch
+One or more processes in the job request failed to launch.
 %
 \declareconstitemProvisional{PMIX_ERR_JOB_EXE_NOT_FOUND}
-Specified executable not found
+Specified executable not found.
 %
 \declareconstitemProvisional{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}
-Insufficient resources to spawn job
+Insufficient resources to spawn job.
 %
 \declareconstitemProvisional{PMIX_ERR_JOB_SYS_OP_FAILED}
-System library operation failed
+System library operation failed.
 %
 \declareconstitemProvisional{PMIX_ERR_JOB_WDIR_NOT_FOUND}
-Specified working directory not found
+Specified working directory not found.
 %
 \end{constantdesc}
 
@@ -394,7 +394,7 @@ Working directory for spawned processes.
 }
 %
 \declareAttribute{PMIX_DISPLAY_MAP}{"pmix.dispmap"}{bool}{
-Provide process mapping upon spawn.  The format of the provided map is specific to the host environment providing it.
+Display process mapping upon spawn.  The format of the displayed map is specific to the host environment providing it.
 }
 %
 \declareAttribute{PMIX_PPR}{"pmix.ppr"}{char*}{
@@ -1355,7 +1355,6 @@ PMIx_Parse_cpuset_string(const char *cpuset_string, \\
 
 \begin{arglist}
 \argin{cpuset_string}{\refattr{PMIX_CPUSET} string associated with a \ac{PMIx} process}
-\argin{cpuset_string}{String returned by the \refapi{PMIx_server_generate_cpuset_string} \ac{API} (handle)}
 \arginout{cpuset}{Address of an object where the bitmap is to be stored (memory reference)}
 \end{arglist}
 
