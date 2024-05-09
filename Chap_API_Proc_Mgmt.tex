@@ -450,7 +450,7 @@ Direct output into files of form \code{"<directory>/\allowbreak <jobid>/\allowbr
 }
 %
 \declareAttribute{PMIX_INDEX_ARGV}{"pmix.indxargv"}{bool}{
-If set to true, will use the given name of the executable (\code{argv[0]}) as a base name and each rank will be invoked using the base name with the string "-<\emph{rank}>" appended to it, where \emph{rank} is the \ac{PMIx} rank of the process being invoked.
+If set to true, will use the given name of the executable (\code{argv[0]}) as a base name and each rank will be invoked with \code{argv[0]} set to the base name with the string "-<\emph{rank}>" appended to it, where \emph{rank} is the \ac{PMIx} rank of the process being invoked (e.g. a.out-0, a.out-1, etc.).  The executable invoked will remain the same for all processes, only the value of \code{argv[0]} will be different for each process.   
 }
 %
 \declareAttribute{PMIX_CPUS_PER_PROC}{"pmix.cpuperproc"}{uint32_t}{
