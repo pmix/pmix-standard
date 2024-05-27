@@ -1,7 +1,7 @@
 # Makefile for the PMIx Standard document in LaTex format.
 # For more information, see the master document, pmix-standard.tex.
 
-version=4.2
+version=4.3dev
 OPENPMIX_BRANCH ?= "v4.2"
 
 all: pmix-standard.pdf check

@@ -53,16 +53,16 @@
 \usepackage[us,24hr]{datetime}
 \usepackage{ifthen}
 \newboolean{is_unofficial_draft}
-\setboolean{is_unofficial_draft}{false}
+\setboolean{is_unofficial_draft}{true}
 
 % Text to appear in the footer on even-numbered pages:
 % Release candidates are marked as an Unofficial Draft
 \ifthenelse{\boolean{is_unofficial_draft}}
-  {\newcommand{\VER}{4.2dev1 (Draft)}
-   \newcommand{\VERDATE}{\emph{Created on \today}}
+  {\newcommand{\VER}{4.3dev0 (Draft)}
+   \newcommand{\VERDATE}{DRAFT \emph{Created on \today}}
   }
-  {\newcommand{\VER}{4.2}
-   \newcommand{\VERDATE}{May 2024}
+  {\newcommand{\VER}{4.3}
+   \newcommand{\VERDATE}{TBD}
   }
 \newcommand{\footerText}{PMIx Standard -- Version \VER{} -- \VERDATE}
 
