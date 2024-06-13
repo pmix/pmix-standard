@@ -1457,14 +1457,155 @@ Replaced by \refconst{PMIX_ERR_PARTIAL_SUCCESS}.
 \end{constantdesc}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% History: Version 4.2
+\section{Version 4.2: May 2024}
+
+The v4.2 update released after v5.0 to backport select features to the v4 line.
+The v4.2 update succeeds v4.1; changes made in v5.0 do not apply to v4.2
+except if listed again in this changelog section.
+
+The v4.2 update includes the following changes from the v4.1 document:
+
+\begin{compactitemize}
+  \item Release prepared using procedures defined in the PMIx
+    Governance v1.7 document\footnote{\url{https://github.com/pmix/governance/releases/tag/v1.7}}.
+  \item Revision history now contains a list of errata changes
+  \item Clarify when \refattr{PMIX_PARENT_ID} attribute is provided.
+  \item Clarify the value of \refattr{PMIX_CMD_LINE} attribute in spawn case.
+  \item Add a definition for \refterm{tool}
+  \item Add that using \refapi{PMIx_Info_load} with a \code{NULL} \refconst{PMIX_BOOL} data sets the value to true
+\end{compactitemize}
+
+\subsection{Errata}
+
+\begin{compactitemize}
+  \item Parameter type for the key argument in \refapi{PMIx_Get} has been changed from \refstruct{pmix_key_t} to \code{char []} so that it is uniform with the argument in \refapi{PMIx_Get_nb}.
+  \item Parameter type for the payload argument in \refapi{pmix_iof_cbfunc_t} has been changed to a pointer to the type \refstruct{pmix_byte_object_t}.
+\end{compactitemize}
+
+\subsection{Added Functions (Provisional)}
+
+\begin{compactitemize}
+  \item \refapi{PMIx_Data_embed}
+  \item \refapi{PMIx_Value_load}
+  \item \refapi{PMIx_Value_unload}
+  \item \refapi{PMIx_Value_xfer}
+  \item \refapi{PMIx_Info_list_start}
+  \item \refapi{PMIx_Info_list_add}
+  \item \refapi{PMIx_Info_list_xfer}
+  \item \refapi{PMIx_Info_list_convert}
+  \item \refapi{PMIx_Info_list_release}
+  \item \refapi{PMIx_Topology_destruct}
+\end{compactitemize}
+
+\subsection{Added Macros (Provisional)}
+
+\begin{compactitemize}
+  \item \refmacro{PMIX_APP_STATIC_INIT}
+  \item \refmacro{PMIX_BYTE_OBJECT_STATIC_INIT}
+  \item \refmacro{PMIX_COORD_STATIC_INIT}
+  \item \refmacro{PMIX_CPUSET_STATIC_INIT}
+  \item \refmacro{PMIX_DATA_ARRAY_STATIC_INIT}
+  \item \refmacro{PMIX_DATA_BUFFER_STATIC_INIT}
+  \item \refmacro{PMIX_DEVICE_DIST_STATIC_INIT}
+  \item \refmacro{PMIX_ENDPOINT_STATIC_INIT}
+  \item \refmacro{PMIX_ENVAR_STATIC_INIT}
+  \item \refmacro{PMIX_FABRIC_STATIC_INIT}
+  \item \refmacro{PMIX_GEOMETRY_STATIC_INIT}
+  \item \refmacro{PMIX_INFO_STATIC_INIT}
+  \item \refmacro{PMIX_LOOKUP_STATIC_INIT}
+  \item \refmacro{PMIX_PROC_INFO_STATIC_INIT}
+  \item \refmacro{PMIX_PROC_STATIC_INIT}
+  \item \refmacro{PMIX_QUERY_STATIC_INIT}
+  \item \refmacro{PMIX_REGATTR_STATIC_INIT}
+  \item \refmacro{PMIX_TOPOLOGY_STATIC_INIT}
+  \item \refmacro{PMIX_VALUE_STATIC_INIT}
+\end{compactitemize}
+
+\subsection{Added Constants (Provisional)}
+
+\littleheader{Spawn constants}
+
+\begin{compactitemize}
+  \item \refconst{PMIX_ERR_JOB_EXE_NOT_FOUND}
+  \item \refconst{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}
+  \item \refconst{PMIX_ERR_JOB_SYS_OP_FAILED}
+  \item \refconst{PMIX_ERR_JOB_WDIR_NOT_FOUND}
+\end{compactitemize}
+
+\subsection{Added Attributes (Provisional)}
+
+\littleheader{Spawn attributes}
+\pasteAttributeItem{PMIX_ENVARS_HARVESTED}
+\pasteAttributeItem{PMIX_JOB_TIMEOUT}
+\pasteAttributeItem{PMIX_LOCAL_COLLECTIVE_STATUS}
+\pasteAttributeItem{PMIX_NODE_OVERSUBSCRIBED}
+\pasteAttributeItem{PMIX_SINGLETON}
+\pasteAttributeItem{PMIX_SPAWN_TIMEOUT}
+
+\littleheader{Tool attributes}
+\pasteAttributeItem{PMIX_IOF_FILE_PATTERN}
+\pasteAttributeItem{PMIX_IOF_FILE_ONLY}
+\pasteAttributeItem{PMIX_IOF_LOCAL_OUTPUT}
+\pasteAttributeItem{PMIX_IOF_MERGE_STDERR_STDOUT}
+\pasteAttributeItem{PMIX_IOF_RANK_OUTPUT}
+\pasteAttributeItem{PMIX_IOF_OUTPUT_RAW}
+\pasteAttributeItem{PMIX_IOF_OUTPUT_TO_DIRECTORY}
+\pasteAttributeItem{PMIX_IOF_OUTPUT_TO_FILE}
+
+\subsection{Deprecated constants}
+
+The following constants were deprecated in v4.2:
+
+\begin{constantdesc}
+%
+\declareconstitemDEP{PMIX_DEBUG_WAITING_FOR_NOTIFY}
+Renamed to \refconst{PMIX_READY_FOR_DEBUG}
+%
+\end{constantdesc}
+
+\subsection{Deprecated attributes}
+
+The following attributes were deprecated in v4.2:
+
+%
+\declareAttributeDEP{PMIX_DEBUG_WAIT_FOR_NOTIFY}{"pmix.dbg.notify"}{bool}{
+Renamed to \refattr{PMIX_DEBUG_STOP_IN_APP}
+}
+
+\subsection{Deprecated macros}
+
+The following macros were deprecated in v4.2:
+
+\begin{compactitemize}
+  \item \declaremacroDEP{PMIX_VALUE_LOAD} Replaced by the \refapi{PMIx_Value_load} \ac{API}
+  \item \declaremacroDEP{PMIX_VALUE_UNLOAD} Replaced by the \refapi{PMIx_Value_unload} \ac{API}
+  \item \declaremacroDEP{PMIX_VALUE_XFER} Replaced by the \refapi{PMIx_Value_xfer} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LOAD} Replaced by the \refapi{PMIx_Info_load} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_XFER} Replaced by the \refapi{PMIx_Info_xfer} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_START} Replaced by the \refapi{PMIx_Info_list_start} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_ADD} Replaced by the \refapi{PMIx_Info_list_add} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_XFER} Replaced by the \refapi{PMIx_Info_list_xfer} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_CONVERT} Replaced by the \refapi{PMIx_Info_list_convert} \ac{API}
+  \item \declaremacroDEP{PMIX_INFO_LIST_RELEASE} Replaced by the \refapi{PMIx_Info_list_release} \ac{API}
+  \item \declaremacroDEP{PMIX_TOPOLOGY_DESTRUCT} Replaced by the \refapi{PMIx_Topology_destruct} \ac{API}
+  \item \declaremacroDEP{PMIX_TOPOLOGY_FREE} Not replaced.
+\end{compactitemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% History: Version 5.1
 \section{Version 5.1: TBD}
 
+The v5.1 update succeeds the v5.0 document.
+Some changes were first introduced in the v4.2 document, but were not present in v5.0 document;
+All such changes are part of the v5.1 update and are noted in the rest of this section.
 The v5.1 update includes the following changes from the v5.0 document:
 
 \begin{compactitemize}
-  \item Revision history now contains a list of errata changes
-  \item Add that using \refapi{PMIx_Info_load} with a \code{NULL} \refconst{PMIX_BOOL} data sets the value to true
+  \item Revision history now contains a list of errata changes.
+  \item Add that using \refapi{PMIx_Info_load} with a \code{NULL} \refconst{PMIX_BOOL} data sets the value to true.
+  \item Clarified behavior differences between using \refconst{PMIX_RANK_WILDCARD} and listing all individual \refstruct{pmix_proc_t} in \refapi{PMIx_Connect}, \refapi{PMIx_Group_construct}, and \refapi{PMIx_Fence}.
+  \item Clarified that \refattr{PMIX_NODE_SIZE} counts processes that have not called PMIx.
 \end{compactitemize}
 
 \subsection{Errata}
@@ -1472,7 +1613,10 @@ The v5.1 update includes the following changes from the v5.0 document:
 The following errors were corrected in v5.1:
 
 \begin{compactitemize}
-  \item Parameter type for the key argument in \refapi{PMIx_Get} has been changed from \refstruct{pmix_key_t} to \code{char []} so that it is uniform with the argument in \refapi{PMIx_Get_nb}. It was already correct in the ABI.
+  \item Parameter type for the key argument in \refapi{PMIx_Get} has been changed from \refstruct{pmix_key_t} to \code{char []} so that it is uniform with the argument in \refapi{PMIx_Get_nb}.
+  \item Parameter type for the payload argument in \refapi{pmix_iof_cbfunc_t} has been changed to a pointer to the type \refstruct{pmix_byte_object_t}.
+  \item String parameters that are not modified are now passed as \code{const} in \refapi{PMIx_Data_print}, \refapi{PMIx_Register_attributes}, \refapi{PMIx_server_delete_process_set}, \refapi{PMIx_Get_attribute_string}, and \refapi{PMIx_Get_attribute_name}.
+  \item Constants \refconst{PMIX_ERR_JOB_EXE_NOT_FOUND}, \refconst{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}, \refconst{PMIX_ERR_JOB_SYS_OP_FAILED}, and \refconst{PMIX_ERR_JOB_WDIR_NOT_FOUND} were missing a value.
   \item Type definition for \refstruct{pmix_device_type_t} changed from \code{uint16_t} to \code{uint64_t}. It was already correct in the ABI.
 \end{compactitemize}
 
