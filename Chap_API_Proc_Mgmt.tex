@@ -342,17 +342,17 @@ The launcher was unable to map the processes for the specified job request.
 \declareconstitemvalue{PMIX_ERR_JOB_FAILED_TO_LAUNCH}{-181}
 One or more processes in the job request failed to launch.
 %
-\declareconstitemProvisional{PMIX_ERR_JOB_EXE_NOT_FOUND}
-Specified executable not found.
+\declareconstitemvalueProvisional{PMIX_ERR_JOB_EXE_NOT_FOUND}{-190}
+Specified executable not found
 %
-\declareconstitemProvisional{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}
-Insufficient resources to spawn job.
+\declareconstitemvalueProvisional{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}{-234}
+Insufficient resources to spawn job
 %
-\declareconstitemProvisional{PMIX_ERR_JOB_SYS_OP_FAILED}
-System library operation failed.
+\declareconstitemvalueProvisional{PMIX_ERR_JOB_SYS_OP_FAILED}{-235}
+System library operation failed
 %
-\declareconstitemProvisional{PMIX_ERR_JOB_WDIR_NOT_FOUND}
-Specified working directory not found.
+\declareconstitemvalueProvisional{PMIX_ERR_JOB_WDIR_NOT_FOUND}{-233}
+Specified working directory not found
 %
 \end{constantdesc}
 
@@ -870,9 +870,12 @@ However, a process can be simultaneously engaged in multiple connect operations,
 
 As in the case of the \refapi{PMIx_Fence} operation, the \refarg{info} array can be used to pass user-level directives regarding timeout constraints and other options available from the host \ac{RM}.
 
-\adviceuserstart
-All processes engaged in a given \refapi{PMIx_Connect} operation must provide the identical \refarg{procs} array as ordering of entries in the array and the method by which those processes are identified (e.g., use of \refconst{PMIX_RANK_WILDCARD} versus listing the individual processes) \textit{may} impact the host environment's algorithm for uniquely identifying an operation.
-\adviceuserend
+Each provided \refstruct{pmix_proc_t} struct can pass \refconst{PMIX_RANK_WILDCARD} to indicate that all processes in the given namespace are participating.
+The ordering of the entries in the \refarg{procs} has no significance.  However, all processes engaged in a given
+\refapi{PMIx_Connect}
+operation must use the same method to identify processes.  Callers which describe
+the target set of processes using PMIX_RANK_WILDCARD will not be matched with
+callers which list the individual processes of a namespace explicitly.
 
 \adviceimplstart
 \refapi{PMIx_Connect} and its non-blocking form are both \emph{collective} operations. Accordingly, the \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.
@@ -939,7 +942,7 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Nonblocking version of \refapi{PMIx_Connect}. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Connect} or its non-blocking version, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes. See the advice provided in the description for \refapi{PMIx_Connect} for more information.
+Nonblocking version of \refapi{PMIx_Connect}. The callback function is called once all processes identified in \refarg{procs} have called either \refapi{PMIx_Connect} or its non-blocking version, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes. See the description of \refapi{PMIx_Connect} for more information.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1000,9 +1003,12 @@ However, a process can be simultaneously engaged in multiple disconnect operatio
 
 As in the case of the \refapi{PMIx_Fence} operation, the \refarg{info} array can be used to pass user-level directives regarding timeout constraints, and other options available from the host \ac{RM}.
 
-\adviceuserstart
-All processes engaged in a given \refapi{PMIx_Disconnect} operation must provide the identical \refarg{procs} array as ordering of entries in the array and the method by which those processes are identified (e.g., use of \refconst{PMIX_RANK_WILDCARD} versus listing the individual processes) \textit{may} impact the host environment's algorithm for uniquely identifying an operation.
-\adviceuserend
+Each provided \refstruct{pmix_proc_t} struct can pass \refconst{PMIX_RANK_WILDCARD} to indicate that all processes in the given namespace are participating.
+The ordering of the entries in the \refarg{procs} has no significance.  However, all processes engaged in a given
+\refapi{PMIx_Disconnect}
+operation must use the same method to identify processes.  Callers which describe
+the target set of processes using PMIX_RANK_WILDCARD will not be matched with
+callers which list the individual processes of a namespace explicitly.
 
 \adviceimplstart
 \refapi{PMIx_Disconnect} and its non-blocking form are both \emph{collective} operations. Accordingly, the \ac{PMIx} server library is required to aggregate participation by local clients, passing the request to the host environment once all local participants have executed the \ac{API}.

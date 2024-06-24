@@ -486,14 +486,6 @@ Retrieve information for the specified \refarg{key} associated with the process 
     \item If \refattr{PMIX_GET_STATIC_VALUES} is given, then the function shall return the information in the provided \refstruct{pmix_value_t} pointer. In this case, the caller must provide storage for the structure and pass the pointer to that storage in the \refarg{val} parameter.  If the implementation cannot return a static value, then the call to \refapi{PMIx_Get} must return the \refconst{PMIX_ERR_NOT_SUPPORTED} status.
 \end{itemize}
 
-Retrieve information for the specified \refarg{key} associated with the process identified in the given \refstruct{pmix_proc_t}. See Chapters \ref{chap:api_rsvd_keys} and \ref{chap:data_sharing:non_rsvd_keys} for details on rules governing retrieval of information. Information will be returned according to provided directives:
-
-\begin{itemize}
-    \item In the absence of any directive, the returned \refstruct{pmix_value_t} shall be an allocated memory object. The caller is responsible for releasing the object when done.
-    \item If \refattr{PMIX_GET_POINTER_VALUES} is given, then the function shall return a pointer to a \refstruct{pmix_value_t} in the \ac{PMIx} library's memory that contains the requested information.
-    \item If \refattr{PMIX_GET_STATIC_VALUES} is given, then the function shall return the information in the provided \refstruct{pmix_value_t} pointer. In this case, the caller must provide storage for the structure and pass the pointer to that storage in the \refarg{val} parameter.
-\end{itemize}
-
 This is a blocking operation - the caller will block until the retrieval rules of Section \ref{chap:api_rsvd_keys:retrules} or \ref{chap:data_sharing:retrules} are met.
 
 The \refarg{info} array is used to pass user directives regarding the get operation.
