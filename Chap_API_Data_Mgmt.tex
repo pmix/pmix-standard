@@ -4,7 +4,7 @@
 \chapter{Data Packing and Unpacking}
 \label{chap:api_data_mgmt}
 
-\ac{PMIx} intentionally does not include support for internode communications in the standard, instead relying on its host \ac{SMS} environment to transfer any needed data and/or requests between nodes.  However, to support \ac{SMS} environments which must frequently transfer \ac{PMIx} data structures between nodes and client applications that need to store or transfer \ac{PMIx} data structures, \ac{PMIx} provides the \acs{API} presented in this chapter. These operations frequently involve PMIx-defined data structures that include data that may have different binary representations on different hosts. Many \ac{HPC} clusters are homogeneous, and so transferring the structures can be done rather simply. However, greater effort is required in heterogeneous environments to ensure binary data is correctly transferred. \ac{PMIx} buffer manipulation functions are provided for this purpose via standardized interfaces to ease adoption.
+\ac{PMIx} intentionally does not include support for internode communications in the standard, instead relying on its host \ac{SMS} environment to transfer any needed data and/or requests between nodes.  However, to support \ac{SMS} environments which must frequently transfer \ac{PMIx} data structures between nodes, \ac{PMIx} provides the \acs{API} presented in this chapter. These operations frequently involve PMIx-defined data structures that include data that may have different binary representations on different hosts. Many \ac{HPC} clusters are homogeneous, and so transferring the structures can be done rather simply. However, greater effort is required in heterogeneous environments to ensure binary data is correctly transferred. \ac{PMIx} buffer manipulation functions are provided for this purpose via standardized interfaces to ease adoption.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Buffer Type}
@@ -199,16 +199,16 @@ PMIx_Data_pack(const pmix_proc_t *target, \\
 
 The pack function packs one or more values of a specified type into the specified buffer.  The buffer must have already been
 initialized via the \refmacro{PMIX_DATA_BUFFER_CREATE} or \refmacro{PMIX_DATA_BUFFER_CONSTRUCT}
-macros --- otherwise, \refapi{PMIx_Data_pack} will return an error.  
-The buffer may have already contain packed data, in which case the new data is appended to the buffer.
+macros.
+The buffer may already contain packed data, in which case the new data is appended to the buffer.
 Providing an unsupported type flag will likewise be reported as an error.
 
 Note that packing data using a type that 
-does not explicitly specifies its size may
+does not explicitly specifiy its size
 may lose precision when unpacked
 by a non-homogeneous recipient.  The \refapi{PMIx_Data_pack} function will do its best to deal
 with heterogeneity issues between the packer and unpacker in such
-cases. Sending a value larger than can be handled by the recipient
+cases. Sending a value outside the range of values that can be handled by the recipient
 will return an error code (generated upon unpacking) ---
 the error cannot be detected during packing.
 
@@ -245,8 +245,8 @@ PMIx_Data_unpack(const pmix_proc_t *source, \\
 
 
 \begin{arglist}
-\argin{source}{Pointer to a \refstruct{pmix_proc_t} structure containing the description of the process that packed the provided buffer. A NULL value may be used to indicate that the source is based on the same \ac{PMIx} version as the caller. 
-i. The rank may be set to \refconst{PMIX_RANK_WILDCARD} as only the namespace is used to determine the packing version as all processes in a namespace are required to use the same \ac{PMIx} version.  (handle)}
+\argin{source}{Pointer to a \refstruct{pmix_proc_t} structure of the process that packed the provided buffer. A NULL value may be used to indicate that the source is based on the same \ac{PMIx} version as the caller. 
+i. Only the namespace is used to determine the packing version as all processes in a namespace are required to use the same \ac{PMIx} version.  (handle)}
 \argin{buffer}{A pointer to the buffer from which the value will be extracted. (handle)}
 \arginout{dest}{A pointer to the memory location into which the data is to be stored. Note that these values will be stored contiguously in memory. For strings, this pointer must be to (char**) to provide a means of supporting multiple string operations. The unpack function will allocate memory for each string in the array, but the caller must provide adequate memory for the array of pointers. (\code{void*})}
 \arginout{max_num_values}{The number of values to be unpacked.  Upon completion, the parameter will be set to the actual number of values unpacked. In most cases, this should match the maximum number provided in the parameters, but in no case will it exceed the value of this parameter.  Note that unpacking fewer values than are actually available will leave the buffer in an unpackable state and the function will return an error code to warn of this condition.(\code{int32_t})}
@@ -264,22 +264,22 @@ i. The rank may be set to \refconst{PMIX_RANK_WILDCARD} as only the namespace is
 %%%%
 \descr
 
-The unpack function unpacks the next value (or values) from the given buffer. Providing an unsupported type flag 
-or specifying a data type that \textit{does not} match the type of the next item in the buffer will be reported as an error. 
-An attempt to read an uninitialized buffer or read beyond the end of the stored data held in the buffer will also return an error.
+The unpack function unpacks the next value (or values) from the given buffer. 
+An attempt to read an uninitialized buffer or read beyond the end of the stored data held in the buffer will return an error.
 
 Unpacking values is a "nondestructive" process --- i.e., the values are not removed from the buffer. It is therefore possible for the caller to re-unpack a value from the same buffer by resetting the unpack_ptr.
 
 Warning: The caller is responsible for providing adequate memory storage for the requested data. The user must provide a parameter indicating the maximum number of values that can be unpacked into the allocated memory. If more values exist in the buffer than can fit into the memory storage, then the function will unpack what it can fit into that location and return an error code indicating that the buffer was only partially unpacked.
 
-Note that any data that is packed using a type that does not explicitly specifies its size may lose precision when unpacked by a non-homogeneous recipient. \ac{PMIx} will do its best to deal with heterogeneity issues between the packer and unpacker in such cases. Sending a number larger than can be handled by the recipient will return an error code generated upon unpacking --- these errors cannot be detected during packing.
+Note that any data that is packed using a type that does not explicitly specify its size may lose precision when unpacked by a non-homogeneous recipient. \ac{PMIx} will do its best to deal with heterogeneity issues between the packer and unpacker in such cases. Sending a value outside the range of values that can be handled by the recipient will return an error code generated upon unpacking --- these errors cannot be detected during packing.
 
 The namespace of the process that packed the buffer is used solely to resolve any data type
 differences between \ac{PMIx} versions. The packer must, therefore, be
 known to the caller prior to calling the unpack function so that the
 \ac{PMIx} library is aware of the version the packer used. Note that
 all processes in a given namespace are \textit{required} to use the same \ac{PMIx}
-version --- thus the target rank may be set to \refconst{PMIX_RANK_WILDCARD}.  
+version --- thus, the caller must only know at least one process from the
+packer's namespace
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -354,7 +354,7 @@ PMIx_Data_print(char **output, const char *prefix, \\
 %%%%
 \descr
 
-Since registered data types can be complex structures, the \ac{PMIx} provides \refapi{PMIx_Data_print} to print them (i.e., convert them to a string representation). Primarily for debug purposes.  Note that the format of the resulting string may vary from one implementation to another.
+Since registered data types can be complex structures, \ac{PMIx} provides \refapi{PMIx_Data_print} to print them (i.e., convert them to a string representation). Primarily for debug purposes.  Note that the format of the resulting string may vary from one implementation to another.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -566,9 +566,9 @@ PMIx_Data_decompress(const uint8_t *inbytes, size_t size,
 
 \begin{arglist}
 \argin{inbytes}{Pointer to the source data (handle)}
-\argout{nbytes}{Address where the number of bytes in the decompressed data region is to be returned (handle)}
-\argout{outbytes}{Address where the pointer to the decompressed data region is to be returned (handle)}
 \argin{size}{Number of bytes in the source data region (\code{size_t})}
+\argout{outbytes}{Address where the pointer to the decompressed data region is to be returned (handle)}
+\argout{nbytes}{Address where the number of bytes in the decompressed data region is to be returned (handle)}
 \end{arglist}
 
 Returns one of the following:
