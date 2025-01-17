@@ -4,7 +4,7 @@
 \chapter{Data Packing and Unpacking}
 \label{chap:api_data_mgmt}
 
-\ac{PMIx} intentionally does not include support for internode communications in the standard, instead relying on its host \ac{SMS} environment to transfer any needed data and/or requests between nodes. These operations frequently involve PMIx-defined public data structures that include binary data. Many \ac{HPC} clusters are homogeneous, and so transferring the structures can be done rather simply. However, greater effort is required in heterogeneous environments to ensure binary data is correctly transferred. \ac{PMIx} buffer manipulation functions are provided for this purpose via standardized interfaces to ease adoption.
+\ac{PMIx} intentionally does not include support for internode communications in the standard, instead relying on its host \ac{SMS} environment to transfer any needed data and/or requests between nodes.  However, to support \ac{SMS} environments which must frequently transfer \ac{PMIx} data structures between nodes, \ac{PMIx} provides the \acs{API} presented in this chapter. These operations frequently involve PMIx-defined data structures that include data that may have different binary representations on different hosts. Many \ac{HPC} clusters are homogeneous, and so transferring the structures can be done rather simply. However, greater effort is required in heterogeneous environments to ensure binary data is correctly transferred. \ac{PMIx} buffer manipulation functions are provided for this purpose via standardized interfaces to ease adoption.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data Buffer Type}
@@ -91,7 +91,7 @@ PMIX_DATA_BUFFER_RELEASE(buffer);
 \littleheader{\code{PMIX_DATA_BUFFER_CONSTRUCT}}
 \declaremacro{PMIX_DATA_BUFFER_CONSTRUCT}
 
-Initialize a statically declared \refstruct{pmix_data_buffer_t} object.
+Initialize the fields of a previously allocated \refstruct{pmix_data_buffer_t} object.
 
 \copySignature{PMIX_DATA_BUFFER_CONSTRUCT}{2.0}{
 PMIX_DATA_BUFFER_CONSTRUCT(buffer);
@@ -199,14 +199,16 @@ PMIx_Data_pack(const pmix_proc_t *target, \\
 
 The pack function packs one or more values of a specified type into the specified buffer.  The buffer must have already been
 initialized via the \refmacro{PMIX_DATA_BUFFER_CREATE} or \refmacro{PMIX_DATA_BUFFER_CONSTRUCT}
-macros --- otherwise, \refapi{PMIx_Data_pack} will return an error.
+macros.
+The buffer may already contain packed data, in which case the new data is appended to the buffer.
 Providing an unsupported type flag will likewise be reported as an error.
 
-Note that any data to be packed that is not hard type cast (i.e.,
-not type cast to a specific size) may lose precision when unpacked
+Note that packing data using a type that 
+does not explicitly specifiy its size
+may lose precision when unpacked
 by a non-homogeneous recipient.  The \refapi{PMIx_Data_pack} function will do its best to deal
 with heterogeneity issues between the packer and unpacker in such
-cases. Sending a number larger than can be handled by the recipient
+cases. Sending a value outside the range of values that can be handled by the recipient
 will return an error code (generated upon unpacking) ---
 the error cannot be detected during packing.
 
@@ -243,11 +245,12 @@ PMIx_Data_unpack(const pmix_proc_t *source, \\
 
 
 \begin{arglist}
-\argin{source}{Pointer to a \refstruct{pmix_proc_t} structure containing the nspace/rank of the process that packed the provided buffer. A NULL value may be used to indicate that the source is based on the same \ac{PMIx} version as the caller. Note that only the source's nspace is relevant. (handle)}
+\argin{source}{Pointer to a \refstruct{pmix_proc_t} structure of the process that packed the provided buffer. A NULL value may be used to indicate that the source is based on the same \ac{PMIx} version as the caller. 
+Only the namespace is used to determine the packing version as all processes in a namespace are required to use the same \ac{PMIx} version.  (handle)}
 \argin{buffer}{A pointer to the buffer from which the value will be extracted. (handle)}
-\arginout{dest}{A pointer to the memory location into which the data is to be stored. Note that these values will be stored contiguously in memory. For strings, this pointer must be to (char**) to provide a means of supporting multiple string operations. The unpack function will allocate memory for each string in the array - the caller must only provide adequate memory for the array of pointers. (\code{void*})}
-\arginout{max_num_values}{The number of values to be unpacked --- upon completion, the parameter will be set to the actual number of values unpacked. In most cases, this should match the maximum number provided in the parameters --- but in no case will it exceed the value of this parameter.  Note that unpacking fewer values than are actually available will leave the buffer in an unpackable state --- the function will return an error code to warn of this condition.(\code{int32_t})}
-\argin{type}{The type of the data to be unpacked --- must be one of the \ac{PMIx} defined data types (\refstruct{pmix_data_type_t})}
+\arginout{dest}{A pointer to the memory location into which the data is to be stored. Note that these values will be stored contiguously in memory. For strings, this pointer must be to (char**) to provide a means of supporting multiple string operations. The unpack function will allocate memory for each string in the array, but the caller must provide adequate memory for the array of pointers. (\code{void*})}
+\arginout{max_num_values}{The number of values to be unpacked.  Upon completion, the parameter will be set to the actual number of values unpacked. In most cases, this should match the maximum number provided in the parameters, but in no case will it exceed the value of this parameter.  Note that unpacking fewer values than are actually available will leave the buffer in an unpackable state and the function will return an error code to warn of this condition.(\code{int32_t})}
+\argin{type}{The type of the data to be unpacked.  Must be one of the \ac{PMIx} defined data types (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
 \returnstart
@@ -261,20 +264,19 @@ PMIx_Data_unpack(const pmix_proc_t *source, \\
 %%%%
 \descr
 
-The unpack function unpacks the next value (or values) of a specified type from the given buffer. The buffer must have already been initialized via an \refmacro{PMIX_DATA_BUFFER_CREATE} or \refmacro{PMIX_DATA_BUFFER_CONSTRUCT} call (and assumedly filled with some data) --- otherwise, the unpack_value function will return an error. Providing an unsupported type flag will likewise be reported as an error, as will specifying a data type that \textit{does not} match the type of the next item in the buffer. An attempt to read beyond the end of the stored data held in the buffer will also return an error.
-
-Note that it is possible for the buffer to be corrupted and that \ac{PMIx} will \textit{think} there is a proper variable type at the beginning of an unpack region --- but that the value is bogus (e.g., just a byte field in a string array that so happens to have a value that matches the specified data type flag). Therefore, the data type error check is \textit{not} completely safe.
+The unpack function unpacks the next value (or values) from the given buffer. 
+An attempt to read an uninitialized buffer or read beyond the end of the stored data held in the buffer will return an error.
 
 Unpacking values is a "nondestructive" process --- i.e., the values are not removed from the buffer. It is therefore possible for the caller to re-unpack a value from the same buffer by resetting the unpack_ptr.
 
 Warning: The caller is responsible for providing adequate memory storage for the requested data. The user must provide a parameter indicating the maximum number of values that can be unpacked into the allocated memory. If more values exist in the buffer than can fit into the memory storage, then the function will unpack what it can fit into that location and return an error code indicating that the buffer was only partially unpacked.
 
-Note that any data that was not hard type cast (i.e., not type cast to a specific size) when packed may lose precision when unpacked by a non-homogeneous recipient. \ac{PMIx} will do its best to deal with heterogeneity issues between the packer and unpacker in such cases. Sending a number larger than can be handled by the recipient will return an error code generated upon unpacking --- these errors cannot be detected during packing.
+Note that any data that is packed using a type that does not explicitly specify its size may lose precision when unpacked by a non-homogeneous recipient. \ac{PMIx} will do its best to deal with heterogeneity issues between the packer and unpacker in such cases. Sending a value outside the range of values that can be handled by the recipient will return an error code generated upon unpacking --- these errors cannot be detected during packing.
 
 The namespace of the process that packed the buffer is used solely to resolve any data type
 differences between \ac{PMIx} versions. The packer must, therefore, be
-known to the user prior to calling the pack function so that the
-\ac{PMIx} library is aware of the version the packer is using. Note that
+known to the caller prior to calling the unpack function so that the
+\ac{PMIx} library is aware of the version the packer used. Note that
 all processes in a given namespace are \textit{required} to use the same \ac{PMIx}
 version --- thus, the caller must only know at least one process from the
 packer's namespace.
@@ -315,7 +317,7 @@ PMIx_Data_copy(void **dest, void *src, \\
 %%%%
 \descr
 
-Since registered data types can be complex structures, the system needs some way to know how to copy the data from one location to another (e.g., for storage in the registry). This function, which can call other copy functions to build up complex data types, defines the method for making a copy of the specified data type.
+\ac{PMIx} provides \refapi{PMIx_Data_copy} to copy \ac{PMIx} data types.  If the specified \refarg{type} is composed of multilpe \ac{PMIx} data types, the function will ensure that each of these internal portions are also copied correctly as part of the operation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -337,7 +339,7 @@ PMIx_Data_print(char **output, const char *prefix, \\
 }
 
 \begin{arglist}
-\argin{output}{The address of a pointer into which the address of the resulting output is to be stored. (\code{char**})}
+\argout{output}{The address of a pointer into which the address of the resulting output is to be stored. (\code{char**})}
 \argin{prefix}{String to be prepended to the resulting output (\code{const char*})}
 \argin{src}{A pointer to the memory location of the data value to be printed (handle)}
 \argin{type}{The type of the data value to be printed --- must be one of the PMIx defined data types. (\refstruct{pmix_data_type_t})}
@@ -352,7 +354,7 @@ PMIx_Data_print(char **output, const char *prefix, \\
 %%%%
 \descr
 
-Since registered data types can be complex structures, the system needs some way to know how to print them (i.e., convert them to a string representation). Primarily for debug purposes.
+Since registered data types can be complex structures, \ac{PMIx} provides \refapi{PMIx_Data_print} to print them (i.e., convert them to a string representation). Primarily for debug purposes.  Note that the format of the resulting string may vary from one implementation to another.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -389,6 +391,56 @@ Returns one of the following:
 \descr
 
 This function will append a copy of the payload in one buffer into another buffer. Note that this is \textit{not} a destructive procedure --- the source buffer's payload will remain intact, as will any pre-existing payload in the destination's buffer. Only the unpacked portion of the source payload will be copied.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{PMIx_Data_unload}}
+\declareapi{PMIx_Data_unload}
+
+%%%%
+\summary
+
+Unload a buffer into a byte object
+
+%%%%
+\format
+
+\versionMarkerProvisional{4.1}
+\cspecificstart
+\begin{codepar}
+pmix_status_t
+PMIx_Data_unload(pmix_data_buffer_t *src,
+                 pmix_byte_object_t *dest);
+\end{codepar}
+\cspecificend
+
+\begin{arglist}
+\argin{src}{Pointer to the source \refstruct{pmix_data_buffer_t} (handle)}
+\argin{dest}{Pointer to the destination \refstruct{pmix_byte_object_t} (handle)}
+\end{arglist}
+
+\returnstart
+\begin{constantdesc}
+\item \refconst{PMIX_ERR_BAD_PARAM} The destination and/or source pointer is \code{NULL}
+\end{constantdesc}
+\returnend
+
+%%%%
+\descr
+
+The unload function provides the caller with a pointer to the
+portion of the data payload within the buffer that has not yet been
+unpacked, along with the size of that region. Any portion of
+the payload that was previously unpacked using the \refapi{PMIx_Data_unpack}
+routine will not be included in the unload operation. This operation allows the user to directly access the payload of a \refstruct{pmix_data_buffer_t}.
+
+\adviceuserstart
+This is a destructive operation. While the payload returned in the
+destination \refstruct{pmix_byte_object_t} is
+undisturbed, the function will clear the \refarg{src}'s pointers to the
+payload. Thus, the \refarg{src} and the payload are completely separated,
+leaving the caller able to free or destruct the \refarg{src}.
+\adviceuserend
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -443,56 +495,6 @@ any data contained in the provided payload.
 \adviceuserend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{\code{PMIx_Data_unload}}
-\declareapi{PMIx_Data_unload}
-
-%%%%
-\summary
-
-Unload a buffer into a byte object
-
-%%%%
-\format
-
-\versionMarkerProvisional{4.1}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Data_unload(pmix_data_buffer_t *src,
-                 pmix_byte_object_t *dest);
-\end{codepar}
-\cspecificend
-
-\begin{arglist}
-\argin{src}{Pointer to the source \refstruct{pmix_data_buffer_t} (handle)}
-\argin{dest}{Pointer to the destination \refstruct{pmix_byte_object_t} (handle)}
-\end{arglist}
-
-\returnstart
-\begin{constantdesc}
-\item \refconst{PMIX_ERR_BAD_PARAM} The destination and/or source pointer is \code{NULL}
-\end{constantdesc}
-\returnend
-
-%%%%
-\descr
-
-The unload function provides the caller with a pointer to the
-portion of the data payload within the buffer that has not yet been
-unpacked, along with the size of that region. Any portion of
-the payload that was previously unpacked using the \refapi{PMIx_Data_unpack}
-routine will be ignored. This allows the user to directly access the payload.
-
-\adviceuserstart
-This is a destructive operation. While the payload returned in the
-destination \refstruct{pmix_byte_object_t} is
-undisturbed, the function will clear the \refarg{src}'s pointers to the
-payload. Thus, the \refarg{src} and the payload are completely separated,
-leaving the caller able to free or destruct the \refarg{src}.
-\adviceuserend
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{\code{PMIx_Data_compress}}
 \declareapi{PMIx_Data_compress}
@@ -533,7 +535,8 @@ Returns one of the following:
 Compress the provided data block. Destination memory
 will be allocated if operation is successfully concluded. Caller
 is responsible for release of the allocated region. The input
-data block will remain unaltered.
+data block will remain unaltered.  
+The method of compressing and uncompressing data is implementation dependent. 
 
 Note: the compress function will return \code{False} if the operation
 would not result in a smaller data block.
@@ -562,10 +565,10 @@ PMIx_Data_decompress(const uint8_t *inbytes, size_t size,
 \cspecificend
 
 \begin{arglist}
-\argout{outbytes}{Address where the pointer to the decompressed data region is to be returned (handle)}
-\argout{nbytes}{Address where the number of bytes in the decompressed data region is to be returned (handle)}
 \argin{inbytes}{Pointer to the source data (handle)}
 \argin{size}{Number of bytes in the source data region (\code{size_t})}
+\argout{outbytes}{Address where the pointer to the decompressed data region is to be returned (handle)}
+\argout{nbytes}{Address where the number of bytes in the decompressed data region is to be returned (handle)}
 \end{arglist}
 
 Returns one of the following:
@@ -581,11 +584,12 @@ Decompress the provided data block. Destination memory
 will be allocated if operation is successfully concluded. Caller
 is responsible for release of the allocated region. The input
 data block will remain unaltered.
+The method of compressing and uncompressing data is implementation dependent. 
 
 Only data compressed by the \refapi{PMIx_Data_compress} \ac{API}
 can be decompressed by this function. Passing data that has not
 been compressed by \refapi{PMIx_Data_compress} will lead to
-unexpected and potentially catastrophic results.
+undefined behavior.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -625,6 +629,6 @@ Returns one of the following:
 \descr
 
 The embed function is identical in operation to \refapi{PMIx_Data_load}
-except that it does \emph{not} clear the payload object upon completion.
+except that it does \emph{not} clear the payload object upon completion.  The data is copied from the payload to the buffer and remains in the payload. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
