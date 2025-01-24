@@ -176,7 +176,7 @@ if __name__ == "__main__":
         # Result set was too big for Python to handle, so use an intermediate file
         output_file = "pmix-standard.idx-grep"
         with open(output_file, 'w') as logfile:
-            ret = subprocess.call(['grep', '\|hyperpage', fname],
+            ret = subprocess.call(['grep', r'\|hyperpage', fname],
                                 stdout=logfile, stderr=logfile, shell=False)
             if ret != 0:
                 print("Error: Failed to verify declared attribute \""+attr+"\". grep error code "+str(ret)+")");
@@ -214,7 +214,7 @@ if __name__ == "__main__":
         elif attr in deprecated_attr or attr in removed_attr:
             # Allow references within the Chap_Revisions.tex - count them
             num_in_chap_revisions = 0
-            p = subprocess.Popen("grep \"refattr{"+attr+"}\" Chap_Revisions.tex | wc -l",
+            p = subprocess.Popen("grep -e \"declareAttributeDEP{"+attr+"}\" -e \"refattr{"+attr+"}\" Chap_Revisions.tex | wc -l",
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
             sout = p.communicate()[0].decode("utf-8").splitlines()
             if p.returncode != 0:
@@ -231,7 +231,7 @@ if __name__ == "__main__":
             # If there are other references outside of the Revisions chapter then error out
             if attr_declared[attr] - num_in_chap_revisions > 0:
                 if attr in deprecated_attr:
-                    print("Deprecated Attribute: "+attr+" (Referenced "+str(attr_declared[attr]-num_in_chap_revisions)+" times)")
+                    print("Deprecated Attribute: "+attr+" (Referenced "+str(attr_declared[attr]-num_in_chap_revisions)+" times)"+str(num_in_chap_revisions))
                     count_dep_refs += 1
                 elif attr in removed_attr:
                     print("Removed    Attribute: "+attr+" (Referenced "+str(attr_declared[attr]-num_in_chap_revisions)+" times)")
