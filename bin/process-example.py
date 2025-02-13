@@ -19,7 +19,7 @@ import shutil
 
 EG_BEGIN_STR="EG BEGIN ID="
 EG_END_STR="EG END ID="
-EG_ID_PATTERN="[A-Za-z0-9_\.\"]"
+EG_ID_PATTERN=r"[A-Za-z0-9_.\"]"
 
 
 class Example:
