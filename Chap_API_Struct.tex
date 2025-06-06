@@ -76,7 +76,7 @@ A value to indicate that the user wants the data for the given key from every ap
 The \refstruct{pmix_status_t} type is an \code{int} compatible value for return status values.
 \ac{PMIx} return values other than \refconst{PMIX_SUCCESS} are required to always be negative.  The return status value for a successful operation is
 \refconst{PMIX_SUCCESS}, which must have an integer value of 0:
- 
+
 \begin{constantdesc}
 \declareconstitemvalue{PMIX_SUCCESS}{0}
 Success.
@@ -93,7 +93,7 @@ For compatibility with future versions, users are advised to always refer to con
 
 The presentation of each \ac{API} in this document includes a list of return status constants which are either specific to that \ac{API} or are expected to be returned by the \ac{API} in normal use.
 
-In addition, the following are general constants covering a variety of possible reasons an implementation of an \ac{API} may return a constant other than one of the constants presented with the \ac{API}.  Although implementations can define and return additional error constants, implementations are encouraged to return one of the return constants listed with the \ac{API} or in the list presented here to encourage portability across implementations. 
+In addition, the following are general constants covering a variety of possible reasons an implementation of an \ac{API} may return a constant other than one of the constants presented with the \ac{API}.  Although implementations can define and return additional error constants, implementations are encouraged to return one of the return constants listed with the \ac{API} or in the list presented here to encourage portability across implementations.
 
 \begin{constantdesc}
 %
@@ -2137,6 +2137,7 @@ PMIX_DATA_ARRAY_FREE(m)
 \argin{m}{Pointer to the structure to be released (pointer to \refstruct{pmix_data_array_t})}
 \end{arglist}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Argument Array Macros}
 
@@ -2546,6 +2547,9 @@ Bitmask specifying different levels of persistence for a particular storage syst
 %
 \declareconstitemvalue{PMIX_STOR_ACCESS_TYPE}{69}
 Bitmask specifying different storage system access types. (\refstruct{pmix_storage_access_type_t}).
+%
+\declareconstitemvalueProvisional{PMIX_NODE_PID}{70}
+Structure containing the hostname and pid of a process
 %
 \declareconstitemvalue{PMIX_DATA_TYPE_MAX}{500}
 A starting point for implementer-specific data types.
