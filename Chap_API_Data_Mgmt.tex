@@ -210,7 +210,7 @@ by a non-homogeneous recipient.  The \refapi{PMIx_Data_pack} function will do it
 with heterogeneity issues between the packer and unpacker in such
 cases. Sending a value outside the range of values that can be handled by the recipient
 will return an error code (generated upon unpacking) ---
-the error cannot be detected during packing.
+the error may not be detected during packing.
 
 The namespace of the intended recipient of the packed buffer (i.e., the
 process that will be unpacking it) is used solely to resolve any data type
@@ -271,7 +271,7 @@ Unpacking values is a "nondestructive" process --- i.e., the values are not remo
 
 Warning: The caller is responsible for providing adequate memory storage for the requested data. The user must provide a parameter indicating the maximum number of values that can be unpacked into the allocated memory. If more values exist in the buffer than can fit into the memory storage, then the function will unpack what it can fit into that location and return an error code indicating that the buffer was only partially unpacked.
 
-Note that any data that is packed using a type that does not explicitly specify its size may lose precision when unpacked by a non-homogeneous recipient. \ac{PMIx} will do its best to deal with heterogeneity issues between the packer and unpacker in such cases. Sending a value outside the range of values that can be handled by the recipient will return an error code generated upon unpacking --- these errors cannot be detected during packing.
+Note that any data that is packed using a type that does not explicitly specify its size may lose precision when unpacked by a non-homogeneous recipient. \ac{PMIx} will do its best to deal with heterogeneity issues between the packer and unpacker in such cases. Sending a value outside the range of values that can be handled by the recipient will return an error code generated upon unpacking --- these errors may not be detected during packing.
 
 The namespace of the process that packed the buffer is used solely to resolve any data type
 differences between \ac{PMIx} versions. The packer must, therefore, be
