@@ -1613,7 +1613,7 @@ The v5.1 update includes the following changes from the v5.0 document:
 The following errors were corrected in v5.1:
 
 \begin{compactitemize}
-  \item Parameter type for the key argument in \refapi{PMIx_Get} has been changed from \refstruct{pmix_key_t} to \code{char []} so that it is uniform with the argument in \refapi{PMIx_Get_nb} (first in v4.2). 
+  \item Parameter type for the key argument in \refapi{PMIx_Get} has been changed from \refstruct{pmix_key_t} to \code{char []} so that it is uniform with the argument in \refapi{PMIx_Get_nb} (first in v4.2).
   \item Parameter type for the payload argument in \refapi{pmix_iof_cbfunc_t} has been changed to a pointer to the type \refstruct{pmix_byte_object_t} (first in v4.2).
   \item String parameters that are not modified are now passed as \code{const} in \refapi{PMIx_Data_print}, \refapi{PMIx_Register_attributes}, \refapi{PMIx_server_delete_process_set}, \refapi{PMIx_Get_attribute_string}, and \refapi{PMIx_Get_attribute_name}.
   \item Constants \refconst{PMIX_ERR_JOB_EXE_NOT_FOUND}, \refconst{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}, \refconst{PMIX_ERR_JOB_SYS_OP_FAILED}, and \refconst{PMIX_ERR_JOB_WDIR_NOT_FOUND} were missing a value.
@@ -1657,3 +1657,317 @@ The following constants were removed:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%% History: Version 6.0
+\section{Version 6.0: TBD}
+
+\subsection{Errata}
+
+The following errors were corrected in v6.0:
+
+%\begin{compactitemize}
+%\end{compactitemize}
+
+\subsection{Added Functions (Provisional)}
+
+The following functions were provisionally added to the Standard as
+part of the effort to transition previously-defined macros to
+functions. This permits the resulting function to be added to the
+official ABI and allows debuggers to step through them.
+
+\begin{compactitemize}
+  \item \refapi{PMIx_Check_key}
+  \item \refapi{PMIx_Check_reserved_key}
+  \item \refapi{PMIx_Load_key}
+  \item \refapi{PMIx_Check_nspace}
+  \item \refapi{PMIx_Nspace_invalid}
+  \item \refapi{PMIx_Load_nspace}
+  \item \refapi{PMIx_Check_rank}
+  \item \refapi{PMIx_Rank_valid}
+  \item \refapi{PMIx_Proc_construct}
+  \item \refapi{PMIx_Proc_destruct}
+  \item \refapi{PMIx_Proc_create}
+  \item \refapi{PMIx_Proc_free}
+  \item \refapi{PMIx_Check_procid}
+  \item \refapi{PMIx_Procid_invalid}
+  \item \refapi{PMIx_Load_procid}
+  \item \refapi{PMIx_Xfer_procid}
+  \item \refapi{PMIx_Multicluster_nspace_construct}
+  \item \refapi{PMIx_Multicluster_nspace_parse}
+  \item \refapi{PMIx_Proc_info_construct}
+  \item \refapi{PMIx_Proc_info_destruct}
+  \item \refapi{PMIx_Proc_info_create}
+  \item \refapi{PMIx_Proc_info_free}
+  \item \refapi{PMIx_Value_construct}
+  \item \refapi{PMIx_Value_destruct}
+  \item \refapi{PMIx_Value_create}
+  \item \refapi{PMIx_Value_free}
+  \item \refapi{PMIx_Info_construct}
+  \item \refapi{PMIx_Info_destruct}
+  \item \refapi{PMIx_Info_create}
+  \item \refapi{PMIx_Info_free}
+  \item \refapi{PMIx_Info_true}
+  \item \refapi{PMIx_Info_required}
+  \item \refapi{PMIx_Info_is_required}
+  \item \refapi{PMIx_Info_is_optional}
+  \item \refapi{PMIx_Info_processed}
+  \item \refapi{PMIx_Info_was_processed}
+  \item \refapi{PMIx_Info_is_end}
+  \item \refapi{PMIx_Info_qualifier}
+  \item \refapi{PMIx_Info_is_qualifier}
+  \item \refapi{PMIx_Info_persistent}
+  \item \refapi{PMIx_Info_is_persistent}
+  \item \refapi{PMIx_Envar_construct}
+  \item \refapi{PMIx_Envar_destruct}
+  \item \refapi{PMIx_Envar_create}
+  \item \refapi{PMIx_Envar_free}
+  \item \refapi{PMIx_Envar_load}
+  \item \refapi{PMIx_Byte_object_construct}
+  \item \refapi{PMIx_Byte_object_destruct}
+  \item \refapi{PMIx_Byte_object_create}
+  \item \refapi{PMIx_Byte_object_free}
+  \item \refapi{PMIx_Byte_object_load}
+  \item \refapi{PMIx_Data_array_init}
+  \item \refapi{PMIx_Data_array_construct}
+  \item \refapi{PMIx_Data_array_destruct}
+  \item \refapi{PMIx_Data_array_create}
+  \item \refapi{PMIx_Data_array_free}
+  \item \refapi{PMIx_Argv_append_nosize}
+  \item \refapi{PMIx_Argv_prepend_nosize}
+  \item \refapi{PMIx_Argv_append_unique_nosize}
+  \item \refapi{PMIx_Argv_free}
+  \item \refapi{PMIx_Argv_split}
+  \item \refapi{PMIx_Argv_split_with_empty}
+  \item \refapi{PMIx_Argv_join}
+  \item \refapi{PMIx_Argv_count}
+  \item \refapi{PMIx_Argv_copy}
+  \item \refapi{PMIx_Setenv}
+  \item \refapi{PMIx_Regattr_construct}
+  \item \refapi{PMIx_Regattr_destruct}
+  \item \refapi{PMIx_Regattr_create}
+  \item \refapi{PMIx_Regattr_load}
+  \item \refapi{PMIx_Regattr_xfer}
+  \item \refapi{PMIx_Cpuset_construct}
+  \item \refapi{PMIx_Cpuset_destruct}
+  \item \refapi{PMIx_Cpuset_create}
+  \item \refapi{PMIx_Cpuset_free}
+  \item \refapi{PMIx_Query_construct}
+  \item \refapi{PMIx_Query_destruct}
+  \item \refapi{PMIx_Query_create}
+  \item \refapi{PMIx_Query_release}
+  \item \refapi{PMIx_Query_free}
+  \item \refapi{PMIx_Query_qualifiers_create}
+  \item \refapi{PMIx_Heartbeat}
+  \item \refapi{PMIx_Pdata_construct}
+  \item \refapi{PMIx_Pdata_destruct}
+  \item \refapi{PMIx_Pdata_create}
+  \item \refapi{PMIx_Pdata_free}
+  \item \refapi{PMIx_Pdata_load}
+  \item \refapi{PMIx_Pdata_xfer}
+  \item \refapi{PMIx_Data_buffer_construct}
+  \item \refapi{PMIx_Data_buffer_destruct}
+  \item \refapi{PMIx_Data_buffer_create}
+  \item \refapi{PMIx_Data_buffer_release}
+  \item \refapi{PMIx_Data_buffer_load}
+  \item \refapi{PMIx_Data_buffer_unload}
+  \item \refapi{PMIx_Endpoint_construct}
+  \item \refapi{PMIx_Endpoint_destruct}
+  \item \refapi{PMIx_Endpoint_create}
+  \item \refapi{PMIx_Endpoint_free}
+  \item \refapi{PMIx_Coord_construct}
+  \item \refapi{PMIx_Coord_destruct}
+  \item \refapi{PMIx_Coord_create}
+  \item \refapi{PMIx_Coord_free}
+  \item \refapi{PMIx_Geometry_construct}
+  \item \refapi{PMIx_Geometry_destruct}
+  \item \refapi{PMIx_Geometry_create}
+  \item \refapi{PMIx_Geometry_free}
+  \item \refapi{PMIx_Fabric_construct}
+  \item \refapi{PMIx_App_construct}
+  \item \refapi{PMIx_App_destruct}
+  \item \refapi{PMIx_App_create}
+  \item \refapi{PMIx_App_free}
+  \item \refapi{PMIx_App_info_create}
+  \item \refapi{PMIx_Topology_construct}
+  \item \refapi{PMIx_Topology_create}
+  \item \refapi{PMIx_Topology_free}
+  \item \refapi{PMIx_System_event}
+\end{compactitemize}
+
+\subsection{Added Macros (Provisional)}
+
+%\begin{compactitemize}
+%\end{compactitemize}
+
+\subsection{Added Constants (Provisional)}
+
+%\begin{compactitemize}
+%\end{compactitemize}
+
+\subsection{Added Attributes}
+
+\subsection{Added Attributes (Provisional)}
+
+\subsection{Deprecated constants}
+
+The following constants were deprecated in v5.1:
+
+\subsection{Deprecated attributes}
+
+The following attributes were deprecated in v5.1:
+
+\subsection{Deprecated macros}
+
+The following macros were deprecated in v5.1:
+
+\subsection{Removed attributes}
+
+The following attributes were removed in v6.0 as they were previously
+deprecated:
+
+\begin{compactitemize}
+\item \pasteAttributeRM{PMIX_TOPOLOGY}
+\item \pasteAttributeRM{PMIX_DEBUG_JOB}
+\item \pasteAttributeRM{PMIX_RECONNECT_SERVER}
+\item \pasteAttributeRM{PMIX_ALLOC_NETWORK}
+\item \pasteAttributeRM{PMIX_ALLOC_NETWORK_ID}
+\item \pasteAttributeRM{PMIX_ALLOC_NETWORK_QOS}
+\item \pasteAttributeRM{PMIX_ALLOC_NETWORK_TYPE}
+\item \pasteAttributeRM{PMIX_ALLOC_NETWORK_PLANE}
+\item \pasteAttributeRM{PMIX_ALLOC_NETWORK_ENDPTS}
+\item \pasteAttributeRM{PMIX_ALLOC_NETWORK_ENDPTS_NODE}
+\item \pasteAttributeRM{PMIX_ALLOC_NETWORK_SEC_KEY}
+\item \pasteAttributeRM{PMIX_PROC_DATA}
+\item \pasteAttributeRM{PMIX_LOCALITY}
+\end{compactitemize}
+
+\subsection{Removed macros}
+
+The following macros were removed in v6.0:
+
+\adviceuserstart
+Macros removed from the Standard remain defined in the OpenPMIx reference
+library for backward compatibility.
+\adviceuserend
+
+\begin{compactitemize}
+    \item \declaremacroRM{PMIX_CHECK_KEY} - replaced by \refapi{PMIx_Check_key}
+    \item \declaremacroRM{PMIX_CHECK_RESERVED_KEY} - replaced by \refapi{PMIx_Check_reserved_key}
+    \item \declaremacroRM{PMIX_LOAD_KEY} - replaced by \refapi{PMIx_Load_key}
+    \item \declaremacroRM{PMIX_CHECK_NSPACE} - replaced by \refapi{PMIx_Check_nspace}
+    \item \declaremacroRM{PMIX_NSPACE_INVALID} - replaced by \refapi{PMIx_Nspace_invalid}
+    \item \declaremacroRM{PMIX_LOAD_NSPACE} - replaced by \refapi{PMIx_Load_nspace}
+    \item \declaremacroRM{PMIX_CHECK_RANK} - replaced by \refapi{PMIx_Check_rank}
+    \item \declaremacroRM{PMIX_RANK_IS_VALID} - replaced by \refapi{PMIx_Rank_valid}
+    \item \declaremacroRM{PMIX_PROC_CONSTRUCT} - replaced by \refapi{PMIx_Proc_construct}
+    \item \declaremacroRM{PMIX_PROC_DESTRUCT} - replaced by \refapi{PMIx_Proc_destruct}
+    \item \declaremacroRM{PMIX_PROC_CREATE} - replaced by \refapi{PMIx_Proc_create}
+    \item \declaremacroRM{PMIX_PROC_RELEASE} - replaced by \refapi{PMIx_Proc_free} with a size of one
+    \item \declaremacroRM{PMIX_PROC_FREE} - replaced by \refapi{PMIx_Proc_free}
+    \item \declaremacroRM{PMIX_PROC_LOAD} - replaced by \refapi{PMIx_Load_procid}
+    \item \declaremacroRM{PMIX_CHECK_PROCID} - replaced by \refapi{PMIx_Check_procid}
+    \item \declaremacroRM{PMIX_PROCID_INVALID} - replaced by \refapi{PMIx_Procid_invalid}
+    \item \declaremacroRM{PMIX_LOAD_PROCID} - replaced by \refapi{PMIx_Load_procid}
+    \item \declaremacroRM{PMIX_PROCID_XFER} - replaced by \refapi{PMIx_Xfer_procid}
+    \item \declaremacroRM{PMIX_MULTICLUSTER_NSPACE_CONSTRUCT} - replaced by \refapi{PMIx_Multicluster_nspace_construct}
+    \item \declaremacroRM{PMIX_MULTICLUSTER_NSPACE_PARSE} - replaced by \refapi{PMIx_Multicluster_nspace_parse}
+    \item \declaremacroRM{PMIX_PROC_INFO_CONSTRUCT} - replaced by \refapi{PMIx_Proc_info_construct}
+    \item \declaremacroRM{PMIX_PROC_INFO_DESTRUCT} - replaced by \refapi{PMIx_Proc_info_destruct}
+    \item \declaremacroRM{PMIX_PROC_INFO_CREATE} - replaced by \refapi{PMIx_Proc_info_create}
+    \item \declaremacroRM{PMIX_PROC_INFO_RELEASE} - replaced by \refapi{PMIx_Proc_info_free} with a size of one
+    \item \declaremacroRM{PMIX_PROC_INFO_FREE} - replaced by \refapi{PMIx_Proc_info_free}
+    \item \declaremacroRM{PMIX_VALUE_CONSTRUCT} - replaced by \refapi{PMIx_Value_construct}
+    \item \declaremacroRM{PMIX_VALUE_DESTRUCT} - replaced by \refapi{PMIx_Value_destruct}
+    \item \declaremacroRM{PMIX_VALUE_CREATE} - replaced by \refapi{PMIx_Value_create}
+    \item \declaremacroRM{PMIX_VALUE_RELEASE} - replaced by \refapi{PMIx_Value_free} with a size of one
+    \item \declaremacroRM{PMIX_VALUE_FREE} - replaced by \refapi{PMIx_Value_free}
+    \item \declaremacroRM{PMIX_INFO_CONSTRUCT} - replaced by \refapi{PMIx_Info_construct}
+    \item \declaremacroRM{PMIX_INFO_DESTRUCT} - replaced by \refapi{PMIx_Info_destruct}
+    \item \declaremacroRM{PMIX_INFO_CREATE} - replaced by \refapi{PMIx_Info_create}
+    \item \declaremacroRM{PMIX_INFO_FREE} - replaced by \refapi{PMIx_Info_free}
+    \item \declaremacroRM{PMIX_INFO_TRUE} - replaced by \refapi{PMIx_Info_true}
+    \item \declaremacroRM{PMIX_INFO_REQUIRED} - replaced by \refapi{PMIx_Info_required}
+    \item \declaremacroRM{PMIX_INFO_IS_REQUIRED} - replaced by \refapi{PMIx_Info_is_required}
+    \item \declaremacroRM{PMIX_INFO_IS_OPTIONAL} - replaced by \refapi{PMIx_Info_is_optional}
+    \item \declaremacroRM{PMIX_INFO_PROCESSED} - replaced by \refapi{PMIx_Info_processed}
+    \item \declaremacroRM{PMIX_INFO_WAS_PROCESSED} - replaced by \refapi{PMIx_Info_was_processed}
+    \item \declaremacroRM{PMIX_INFO_IS_END} - replaced by \refapi{PMIx_Info_is_end}
+    \item \declaremacroRM{PMIX_ENVAR_CONSTRUCT} - replaced by \refapi{PMIx_Envar_construct}
+    \item \declaremacroRM{PMIX_ENVAR_DESTRUCT} - replaced by \refapi{PMIx_Envar_destruct}
+    \item \declaremacroRM{PMIX_ENVAR_CREATE} - replaced by \refapi{PMIx_Envar_create}
+    \item \declaremacroRM{PMIX_ENVAR_FREE} - replaced by \refapi{PMIx_Envar_free}
+    \item \declaremacroRM{PMIX_ENVAR_LOAD} - replaced by \refapi{PMIx_Envar_load}
+    \item \declaremacroRM{PMIX_BYTE_OBJECT_CONSTRUCT} - replaced by \refapi{PMIx_Byte_object_construct}
+    \item \declaremacroRM{PMIX_BYTE_OBJECT_DESTRUCT} - replaced by \refapi{PMIx_Byte_object_destruct}
+    \item \declaremacroRM{PMIX_BYTE_OBJECT_CREATE} - replaced by \refapi{PMIx_Byte_object_create}
+    \item \declaremacroRM{PMIX_BYTE_OBJECT_FREE} - replaced by \refapi{PMIx_Byte_object_free}
+    \item \declaremacroRM{PMIX_BYTE_OBJECT_LOAD} - replaced by \refapi{PMIx_Byte_object_load}
+    \item \declaremacroRM{PMIX_DATA_ARRAY_CONSTRUCT} - replaced by \refapi{PMIx_Data_array_construct}
+    \item \declaremacroRM{PMIX_DATA_ARRAY_DESTRUCT} - replaced by \refapi{PMIx_Data_array_destruct}
+    \item \declaremacroRM{PMIX_DATA_ARRAY_CREATE} - replaced by \refapi{PMIx_Data_array_create}
+    \item \declaremacroRM{PMIX_DATA_ARRAY_FREE} - replaced by \refapi{PMIx_Data_array_free}
+    \item \declaremacroRM{PMIX_ARGV_APPEND} - replaced by \refapi{PMIx_Argv_append_nosize}
+    \item \declaremacroRM{PMIX_ARGV_PREPEND} - replaced by \refapi{PMIx_Argv_prepend_nosize}
+    \item \declaremacroRM{PMIX_ARGV_APPEND_UNIQUE} - replaced by \refapi{PMIx_Argv_append_unique_nosize}
+    \item \declaremacroRM{PMIX_ARGV_FREE} - replaced by \refapi{PMIx_Argv_free}
+    \item \declaremacroRM{PMIX_ARGV_SPLIT} - replaced by \refapi{PMIx_Argv_split}
+    \item \declaremacroRM{PMIX_ARGV_JOIN} - replaced by \refapi{PMIx_Argv_join}
+    \item \declaremacroRM{PMIX_ARGV_COUNT} - replaced by \refapi{PMIx_Argv_count}
+    \item \declaremacroRM{PMIX_ARGV_COPY} - replaced by \refapi{PMIx_Argv_copy}
+    \item \declaremacroRM{PMIX_SETENV} - replaced by \refapi{PMIx_Setenv}
+    \item \declaremacroRM{PMIX_REGATTR_CONSTRUCT} - replaced by \refapi{PMIx_Regattr_construct}
+    \item \declaremacroRM{PMIX_REGATTR_DESTRUCT} - replaced by \refapi{PMIx_Regattr_destruct}
+    \item \declaremacroRM{PMIX_REGATTR_CREATE} - replaced by \refapi{PMIx_Regattr_create}
+    \item \declaremacroRM{PMIX_REGATTR_LOAD} - replaced by \refapi{PMIx_Regattr_load}
+    \item \declaremacroRM{PMIX_REGATTR_XFER} - replaced by \refapi{PMIx_Regattr_xfer}
+    \item \declaremacroRM{PMIX_CPUSET_CONSTRUCT} - replaced by \refapi{PMIx_Cpuset_construct}
+    \item \declaremacroRM{PMIX_CPUSET_DESTRUCT} - replaced by \refapi{PMIx_Cpuset_destruct}
+    \item \declaremacroRM{PMIX_CPUSET_CREATE} - replaced by \refapi{PMIx_Cpuset_create}
+    \item \declaremacroRM{PMIX_CPUSET_FREE} - replaced by \refapi{PMIx_Cpuset_free}
+    \item \declaremacroRM{PMIX_QUERY_CONSTRUCT} - replaced by \refapi{PMIx_Query_construct}
+    \item \declaremacroRM{PMIX_QUERY_DESTRUCT} - replaced by \refapi{PMIx_Query_destruct}
+    \item \declaremacroRM{PMIX_QUERY_CREATE} - replaced by \refapi{PMIx_Query_create}
+    \item \declaremacroRM{PMIX_QUERY_RELEASE} - replaced by \refapi{PMIx_Query_release}
+    \item \declaremacroRM{PMIX_QUERY_FREE} - replaced by \refapi{PMIx_Query_free}
+    \item \declaremacroRM{PMIX_QUERY_QUALIFIERS_CREATE} - replaced by \refapi{PMIx_Query_qualifiers_create}
+    \item \declaremacroRM{PMIx_Heartbeat} - replaced by \refapi{PMIx_Heartbeat} function
+    \item \declaremacroRM{PMIX_PDATA_CONSTRUCT} - replaced by \refapi{PMIx_Pdata_construct}
+    \item \declaremacroRM{PMIX_PDATA_DESTRUCT} - replaced by \refapi{PMIx_Pdata_destruct}
+    \item \declaremacroRM{PMIX_PDATA_CREATE} - replaced by \refapi{PMIx_Pdata_create}
+    \item \declaremacroRM{PMIX_PDATA_RELEASE} - replaced by \refapi{PMIx_Pdata_free} with a size of one
+    \item \declaremacroRM{PMIX_PDATA_FREE} - replaced by \refapi{PMIx_Pdata_free}
+    \item \declaremacroRM{PMIX_PDATA_LOAD} - replaced by \refapi{PMIx_Pdata_load}
+    \item \declaremacroRM{PMIX_PDATA_XFER} - replaced by \refapi{PMIx_Pdata_xfer}
+    \item \declaremacroRM{PMIX_DATA_BUFFER_CONSTRUCT} - replaced by \refapi{PMIx_Data_buffer_construct}
+    \item \declaremacroRM{PMIX_DATA_BUFFER_DESTRUCT} - replaced by \refapi{PMIx_Data_buffer_destruct}
+    \item \declaremacroRM{PMIX_DATA_BUFFER_CREATE} - replaced by \refapi{PMIx_Data_buffer_create}
+    \item \declaremacroRM{PMIX_DATA_BUFFER_RELEASE} - replaced by \refapi{PMIx_Data_buffer_release}
+    \item \declaremacroRM{PMIX_DATA_BUFFER_LOAD} - replaced by \refapi{PMIx_Data_buffer_load}
+    \item \declaremacroRM{PMIX_DATA_BUFFER_UNLOAD} - replaced by \refapi{PMIx_Data_buffer_unload}
+    \item \declaremacroRM{PMIX_ENDPOINT_CONSTRUCT} - replaced by \refapi{PMIx_Endpoint_construct}
+    \item \declaremacroRM{PMIX_ENDPOINT_DESTRUCT} - replaced by \refapi{PMIx_Endpoint_destruct}
+    \item \declaremacroRM{PMIX_ENDPOINT_CREATE} - replaced by \refapi{PMIx_Endpoint_create}
+    \item \declaremacroRM{PMIX_ENDPOINT_FREE} - replaced by \refapi{PMIx_Endpoint_free}
+    \item \declaremacroRM{PMIX_COORD_CONSTRUCT} - replaced by \refapi{PMIx_Coord_construct}
+    \item \declaremacroRM{PMIX_COORD_DESTRUCT} - replaced by \refapi{PMIx_Coord_destruct}
+    \item \declaremacroRM{PMIX_COORD_CREATE} - replaced by \refapi{PMIx_Coord_create}
+    \item \declaremacroRM{PMIX_COORD_FREE} - replaced by \refapi{PMIx_Coord_free}
+    \item \declaremacroRM{PMIX_GEOMETRY_CONSTRUCT} - replaced by \refapi{PMIx_Geometry_construct}
+    \item \declaremacroRM{PMIX_GEOMETRY_DESTRUCT} - replaced by \refapi{PMIx_Geometry_destruct}
+    \item \declaremacroRM{PMIX_GEOMETRY_CREATE} - replaced by \refapi{PMIx_Geometry_create}
+    \item \declaremacroRM{PMIX_GEOMETRY_FREE} - replaced by \refapi{PMIx_Geometry_free}
+    \item \declaremacroRM{PMIX_FABRIC_CONSTRUCT} - replaced by \refapi{PMIx_Fabric_construct}
+    \item \declaremacroRM{PMIX_APP_CONSTRUCT} - replaced by \refapi{PMIx_App_construct}
+    \item \declaremacroRM{PMIX_APP_DESTRUCT} - replaced by \refapi{PMIx_App_destruct}
+    \item \declaremacroRM{PMIX_APP_CREATE} - replaced by \refapi{PMIx_App_create}
+    \item \declaremacroRM{PMIX_APP_FREE} - replaced by \refapi{PMIx_App_free}
+    \item \declaremacroRM{PMIX_APP_INFO_CREATE} - replaced by \refapi{PMIx_App_info_create}
+    \item \declaremacroRM{PMIX_TOPOLOGY_CONSTRUCT} - replaced by \refapi{PMIx_Topology_construct}
+    \item \declaremacroRM{PMIX_TOPOLOGY_CREATE} - replaced by \refapi{PMIx_Topology_create}
+    \item \declaremacroRM{PMIX_SYSTEM_EVENT} - replaced by \refapi{PMIx_System_event}
+\end{compactitemize}
+
+\subsection{Removed Constants}
+
+The following constants were removed:
+

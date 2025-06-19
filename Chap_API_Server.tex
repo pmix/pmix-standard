@@ -230,7 +230,7 @@ The host shall progress the \ac{PMIx} library via calls to \refapi{PMIx_Progress
 The nodes comprising the session are homogeneous - i.e., they each contain the same number of identical packages, fabric interfaces, \acp{GPU}, and other devices.
 }
 %
-\declareAttributeProvisional{PMIX_SINGLETON}{"pmix.singleton"}{char*}{
+\declareAttribute{PMIX_SINGLETON}{"pmix.singleton"}{char*}{
 String representation (nspace.rank) of proc ID for the singleton the server was started to support
 }
 
@@ -955,7 +955,7 @@ As information not related to namespaces is considered \emph{static}, there is n
 
 A \code{NULL} \refarg{cbfunc} reference indicates that the function is to be executed as a blocking operation.
 % TODO: If this is one of those functions that can be blocking or non-blocking, then
-% it needs a full return code explanation, not the returnsimple 
+% it needs a full return code explanation, not the returnsimple
 
 \advicermend
 
@@ -1413,7 +1413,7 @@ The following macros are provided to support the \refstruct{pmix_regattr_t} stru
 
 %%%%
 \littleheader{Static initializer for the regattr structure}
-\declaremacroProvisional{PMIX_REGATTR_STATIC_INIT}
+\declaremacro{PMIX_REGATTR_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_regattr_t} fields.
 
@@ -1425,72 +1425,88 @@ PMIX_REGATTR_STATIC_INIT
 \cspecificend
 
 
+\subsubsection{Attribute registration structure support functions}
+
+The following functions are provided to support the \refstruct{pmix_regattr_t} structure.
+
 %%%%%%%%%%%
 \littleheader{Initialize the regattr structure}
-\declaremacro{PMIX_REGATTR_CONSTRUCT}
+\declareapiProvisional{PMIx_Regattr_construct}
 
 Initialize the \refstruct{pmix_regattr_t} fields
 
-\copySignature{PMIX_REGATTR_CONSTRUCT}{4.0}{
-PMIX_REGATTR_CONSTRUCT(m)
+\copySignature{PMIx_Regattr_construct}{6.0}{
+void \\
+PMIx_Regattr_construct(pmix_regattr_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_regattr_t})}
+\argin{p}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_regattr_t})}
 \end{arglist}
 
 %%%%%%%%%%%
 \littleheader{Destruct the regattr structure}
-\declaremacro{PMIX_REGATTR_DESTRUCT}
+\declareapiProvisional{PMIx_Regattr_destruct}
+
+
+\copySignature{PMIx_Regattr_destruct}{6.0}{
+void \\
+PMIx_Regattr_destruct(pmix_regattr_t *p);
+}
 
 Destruct the \refstruct{pmix_regattr_t} fields, releasing all strings.
 
-\copySignature{PMIX_REGATTR_DESTRUCT}{4.0}{
-PMIX_REGATTR_DESTRUCT(m)
-}
-
 \begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_regattr_t})}
+\argin{p}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_regattr_t})}
 \end{arglist}
 
 %%%%%%%%%%%
 \littleheader{Create a regattr array}
-\declaremacro{PMIX_REGATTR_CREATE}
+\declareapiProvisional{PMIx_Regattr_create}
 
 Allocate and initialize an array of \refstruct{pmix_regattr_t} structures.
 
-\copySignature{PMIX_REGATTR_CREATE}{4.0}{
-PMIX_REGATTR_CREATE(m, n)
+\copySignature{PMIx_Regattr_create}{6.0}{
+pmix_regattr_t* \\
+PMIx_Regattr_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_regattr_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
+Returns pointer to the array of \refstruct{pmix_regattr_t} structures (handle)
+
 %%%%%%%%%%%
 \littleheader{Free a regattr array}
-\declaremacro{PMIX_REGATTR_FREE}
+\declareapiProvisional{PMIx_Regattr_free}
 
 Release an array of \refstruct{pmix_regattr_t} structures.
 
-\copySignature{PMIX_REGATTR_FREE}{4.0}{
-PMIX_REGATTR_FREE(m, n)
+\copySignature{PMIx_Regattr_free}{6.0}{
+void \\
+PMIx_Regattr_free(pmix_regattr_t *p, \\
+\hspace*{24\sigspace}size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Pointer to the array of \refstruct{pmix_regattr_t} structures (handle)}
+\arginout{p}{Pointer to the array of \refstruct{pmix_regattr_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
 %%%%%%%%%%%
 \littleheader{Load a regattr structure}
-\declaremacro{PMIX_REGATTR_LOAD}
+\declareapiProvisional{PMIx_Regattr_load}
 
-Load values into a \refstruct{pmix_regattr_t} structure. The macro can be called multiple times to add as many strings as desired to the same structure by passing the same address and a \code{NULL} key to the macro. Note that the \refarg{t} type value must be given each time.
+Load values into a \refstruct{pmix_regattr_t} structure. The function can be called multiple times to add as many strings as desired to the same structure by passing the same address and a \code{NULL} key to the function. Note that the \refarg{t} type value must be given each time.
 
-\copySignature{PMIX_REGATTR_LOAD}{4.0}{
-PMIX_REGATTR_LOAD(a, n, k, t, ni, v)
+\copySignature{PMIx_Regattr_load}{6.0}{
+void \\
+PMIx_Regattr_load(pmix_regattr_t *p, \\
+\hspace*{24\sigspace}const char *n, \\
+\hspace*{24\sigspace}const char *k, \\
+\hspace*{24\sigspace}pmix_data_type_t t, \\
+\hspace*{24\sigspace}const char *v);
 }
 
 \begin{arglist}
@@ -1498,23 +1514,24 @@ PMIX_REGATTR_LOAD(a, n, k, t, ni, v)
 \argin{n}{String name of the attribute (string)}
 \argin{k}{Key value to be loaded (\refstruct{pmix_key_t})}
 \argin{t}{Type of data associated with the provided key (\refstruct{pmix_data_type_t})}
-\argin{ni}{Number of \refstruct{pmix_info_t} elements to be allocated in \refarg{info} (\code{size_t})}
 \argin{v}{One-line description to be loaded (more can be added separately) (string)}
 \end{arglist}
 
 %%%%%%%%%%%
 \littleheader{Transfer a regattr to another regattr}
-\declaremacro{PMIX_REGATTR_XFER}
+\declareapiProvisional{PMIx_Regattr_xfer}
 
 Non-destructively transfer the contents of a \refstruct{pmix_regattr_t} structure to another one.
 
-\copySignature{PMIX_REGATTR_XFER}{4.0}{
-PMIX_REGATTR_XFER(m, n)
+\copySignature{PMIx_Regattr_xfer}{6.0}{
+void \\
+PMIx_Regattr_xfer(pmix_regattr_t *p, \\
+\hspace*{24\sigspace}const pmix_regattr_t *s);
 }
 
 \begin{arglist}
-\arginout{m}{Pointer to the destination \refstruct{pmix_regattr_t} structure (handle)}
-\argin{m}{Pointer to the source \refstruct{pmix_regattr_t} structure (handle)}
+\arginout{p}{Pointer to the destination \refstruct{pmix_regattr_t} structure (handle)}
+\argin{s}{Pointer to the source \refstruct{pmix_regattr_t} structure (handle)}
 \end{arglist}
 
 
@@ -1781,7 +1798,7 @@ The following macros support the \refstruct{pmix_cpuset_t} structure.
 
 %%%%
 \littleheader{Static initializer for the cpuset structure}
-\declaremacroProvisional{PMIX_CPUSET_STATIC_INIT}
+\declaremacro{PMIX_CPUSET_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_cpuset_t} fields.
 
@@ -1793,13 +1810,19 @@ PMIX_CPUSET_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Cpuset support functions}
+The following functions support the \refstruct{pmix_cpuset_t} structure.
+
+
 \littleheader{Initialize the cpuset structure}
-\declaremacro{PMIX_CPUSET_CONSTRUCT}
+\declareapiProvisional{PMIx_Cpuset_construct}
 
 Initialize the \refstruct{pmix_cpuset_t} fields.
 
-\copySignature{PMIX_CPUSET_CONSTRUCT}{4.0}{
-PMIX_CPUSET_CONSTRUCT(m)
+\copySignature{PMIx_Cpuset_construct}{6.0}{
+void \\
+PMIx_Cpuset_construct(pmix_cpuset_t *m);
 }
 
 \begin{arglist}
@@ -1807,12 +1830,13 @@ PMIX_CPUSET_CONSTRUCT(m)
 \end{arglist}
 
 \littleheader{Destruct the cpuset structure}
-\declaremacro{PMIX_CPUSET_DESTRUCT}
+\declareapiProvisional{PMIx_Cpuset_destruct}
 
 Destruct the \refstruct{pmix_cpuset_t} fields.
 
-\copySignature{PMIX_CPUSET_DESTRUCT}{4.0}{
-PMIX_CPUSET_DESTRUCT(m)
+\copySignature{PMIx_Cpuset_destruct}{6.0}{
+void \\
+PMIx_Cpuset_destruct(pmix_cpuset_t *m);
 }
 
 \begin{arglist}
@@ -1822,30 +1846,34 @@ PMIX_CPUSET_DESTRUCT(m)
 
 
 \littleheader{Create a cpuset array}
-\declaremacro{PMIX_CPUSET_CREATE}
+\declareapiProvisional{PMIx_Cpuset_create}
 
 Allocate and initialize a \refstruct{pmix_cpuset_t} array.
 
-\copySignature{PMIX_CPUSET_CREATE}{4.0}{
-PMIX_CPUSET_CREATE(m, n)
+\copySignature{PMIx_Cpuset_create}{6.0}{
+pmix_cpuset_t* \\
+PMIx_Cpuset_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_cpuset_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (size_t)}
 \end{arglist}
 
+Returns pointer to the array of \refstruct{pmix_cpuset_t} structures (handle)
+
 \littleheader{Release a cpuset array}
-\declaremacro{PMIX_CPUSET_FREE}
+\declareapiProvisional{PMIx_Cpuset_free}
 
 Deconstruct and free a \refstruct{pmix_cpuset_t} array.
 
-\copySignature{PMIX_CPUSET_FREE}{4.0}{
-PMIX_CPUSET_FREE(m, n)
+\copySignature{PMIx_Cpuset_free}{6.0}{
+void \\
+PMIx_Cpuset_free(pmix_cpuset_t *m, \\
+\hspace*{24\sigspace}size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address the array of \refstruct{pmix_cpuset_t} structures to be released (handle)}
+\arginout{m}{Address of the array of \refstruct{pmix_cpuset_t} structures to be released (handle)}
 \argin{n}{Number of structures in the array (size_t)}
 \end{arglist}
 

@@ -6,18 +6,18 @@
 
 This chapter presents mechanisms for generalized queries that
 access information about the host environment and the system in general.
-The chapter presents the concept of a query followed by a detailed explanation 
+The chapter presents the concept of a query followed by a detailed explanation
 of the query \acp{API} provided.  The chapter compares the use of these \acp{API} with \refapi{PMIx_Get}.  The chapter concludes with detailed information about how to use
 the query interface to access information about what \ac{PMIx} \acp{API} an implementation supports as well as what attributes each supported \ac{API} supports.
 
 \section{PMIx_Query_info}
 As the level of interaction between applications and the host \ac{SMS} grows, so too does the need for the application to query the \ac{SMS} regarding its capabilities and state information. \ac{PMIx} provides a generalized query interface for this purpose, along with a set of standardized attribute keys to support a range of requests. This includes requests to determine the status of scheduling queues and active allocations, the scope of \ac{API} and attribute support offered by the \ac{SMS}, namespaces of active jobs, location and information about a job's processes, and information regarding available resources.
 
-An example use-case for the \refapi{PMIx_Query_info_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully (e.g., to write a checkpoint before termination) it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.  
-\ac{PMIx} supports this use-case by defining an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_info_nb} interface to obtain the number of seconds remaining in the current job allocation. 
+An example use-case for the \refapi{PMIx_Query_info_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully (e.g., to write a checkpoint before termination) it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
+\ac{PMIx} supports this use-case by defining an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_info_nb} interface to obtain the number of seconds remaining in the current job allocation.
 
-\ac{PMIx} sometimes provides multiple methods by which an application can obtain information or services.  For this example, 
-note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time. 
+\ac{PMIx} sometimes provides multiple methods by which an application can obtain information or services.  For this example,
+note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Query Structure}
@@ -105,7 +105,7 @@ A call to this \ac{API} can specify multiple queries.  Each query is composed of
 \pasteAttributeItem{PMIX_HOST_ATTRIBUTES}
 \pasteAttributeItem{PMIX_TOOL_ATTRIBUTES}
 
-Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.  Directives which are not applicable to a key are ignored. 
+Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.  Directives which are not applicable to a key are ignored.
 
 % Use of pmix_server_query_fn is covered in server interfaces chapter
 \reqattrend
@@ -228,7 +228,7 @@ The \refarg{info} array shall contain an element for each query key that returne
 \pasteAttributeItem{PMIX_HOST_ATTRIBUTES}
 \pasteAttributeItem{PMIX_TOOL_ATTRIBUTES}
 
-Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.  Directives which are not applicable to a key are ignored. 
+Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.  Directives which are not applicable to a key are ignored.
 
 % Use of pmix_server_query_fn is covered in server interfaces chapter
 \reqattrend
@@ -267,7 +267,7 @@ Non-blocking form of the \refapi{PMIx_Query_info} \ac{API}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% NOTE: This is not used anywhere.  If this is supposed to be returned by
-%% the query API's, it was never indicated.  They currently return 
+%% the query API's, it was never indicated.  They currently return
 %% PMIX_ERR_PARTIAL_SUCCESS
 %%\subsection{Query-specific constants}
 %%\label{api:struct:constants:query}
@@ -384,7 +384,7 @@ Average Megabytes of memory used by client processes on node. OPTIONAL QUALIFERS
 \subsection{Query attributes}
 \label{api:struct:attributes:query}
 
-Attributes used to direct behavior of the 
+Attributes used to direct behavior of the
 \refapi{PMIx_Query_info} and \refapi{PMIx_Query_info_nb} \acp{API}:
 
 \declareAttribute{PMIX_QUERY_RESULTS}{"pmix.qry.res"}{pmix_data_array_t}{
@@ -459,7 +459,7 @@ The following macros are provided to support the \refstruct{pmix_query_t} struct
 
 %%%%
 \littleheader{Static initializer for the query structure}
-\declaremacroProvisional{PMIX_QUERY_STATIC_INIT}
+\declaremacro{PMIX_QUERY_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_query_t} fields.
 
@@ -470,26 +470,32 @@ PMIX_QUERY_STATIC_INIT
 \end{codepar}
 \cspecificend
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Query structure support functions}
+The following functions are provided to support the \refstruct{pmix_query_t} structure.
+
 \littleheader{Initialize the query structure}
-\declaremacro{PMIX_QUERY_CONSTRUCT}
+\declareapiProvisional{PMIx_Query_construct}
 
 Initialize the \refstruct{pmix_query_t} fields
 
-\copySignature{PMIX_QUERY_CONSTRUCT}{2.0}{
-PMIX_QUERY_CONSTRUCT(m)
+\copySignature{PMIx_Query_construct}{6.0}{
+void \\
+PMIx_Query_construct(pmix_query_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_query_t})}
+\argin{p}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_query_t})}
 \end{arglist}
 
 \littleheader{Destruct the query structure}
-\declaremacro{PMIX_QUERY_DESTRUCT}
+\declareapiProvisional{PMIx_Query_destruct}
 
 Destruct the \refstruct{pmix_query_t} fields
 
-\copySignature{PMIX_QUERY_DESTRUCT}{2.0}{
-PMIX_QUERY_DESTRUCT(m)
+\copySignature{PMIx_Query_destruct}{6.0}{
+void \\
+PMIx_Query_destruct(pmix_query_t *p);
 }
 
 \begin{arglist}
@@ -498,28 +504,30 @@ PMIX_QUERY_DESTRUCT(m)
 
 %%%%%%%%%%%
 \littleheader{Create a query array}
-\declaremacro{PMIX_QUERY_CREATE}
+\declareapiProvisional{PMIx_Query_create}
 
 Allocate and initialize an array of \refstruct{pmix_query_t} structures
 
-\copySignature{PMIX_QUERY_CREATE}{2.0}{
-PMIX_QUERY_CREATE(m, n)
+\copySignature{PMIx_Query_create}{6.0}{
+pmix_query_t* \\
+PMIx_Query_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_query_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
+Returns pointer to the array of \refstruct{pmix_query_t} structures (handle)
 
 %%%%%%%%%%%
 \littleheader{Free a query structure}
-\declaremacro{PMIX_QUERY_RELEASE}
+\declareapiProvisional{PMIx_Query_release}
 
 Release a \refstruct{pmix_query_t} structure
 
-\copySignature{PMIX_QUERY_RELEASE}{4.0}{
-PMIX_QUERY_RELEASE(m)
+\copySignature{PMIx_Query_release}{6.0}{
+void \\
+PMIx_Query_release(pmix_query_t *p);
 }
 
 \begin{arglist}
@@ -528,33 +536,37 @@ PMIX_QUERY_RELEASE(m)
 
 %%%%%%%%%%%
 \littleheader{Free a query array}
-\declaremacro{PMIX_QUERY_FREE}
+\declareapiProvisional{PMIx_Query_free}
 
 Release an array of \refstruct{pmix_query_t} structures
 
-\copySignature{PMIX_QUERY_FREE}{2.0}{
-PMIX_QUERY_FREE(m, n)
+\copySignature{PMIx_Query_free}{6.0}{
+void \\
+PMIx_Query_free(pmix_query_t *p,
+\hspace*{24\sigspace}size_t n);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_query_t} structures (handle)}
+\argin{p}{Pointer to the array of \refstruct{pmix_query_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
 %%%%%%%%%%%
 \littleheader{Create the info array of query qualifiers}
-\declaremacro{PMIX_QUERY_QUALIFIERS_CREATE}
+\declareapiProvisional{PMIx_Query_qualifiers_create}
 
 Create an array of \refstruct{pmix_info_t} structures for passing query qualifiers, updating the \refarg{nqual} field of the \refstruct{pmix_query_t} structure.
 
-\copySignature{PMIX_QUERY_QUALIFIERS_CREATE}{2.2}{
-PMIX_QUERY_QUALIFIERS_CREATE(m, n)
+\copySignature{PMIx_Query_qualifiers_create}{6.0}{
+pmix_info_t* \\
+PMIx_Query_qualifiers_create(size_t n);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the \refstruct{pmix_query_t} structure (handle)}
 \argin{n}{Number of qualifiers to be allocated (\code{size_t})}
 \end{arglist}
+
+Returns pointer to the \refstruct{pmix_info_t} structure (handle)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{\code{PMIx_Resolve_peers}}

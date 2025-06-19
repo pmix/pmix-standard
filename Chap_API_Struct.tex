@@ -76,7 +76,7 @@ A value to indicate that the user wants the data for the given key from every ap
 The \refstruct{pmix_status_t} type is an \code{int} compatible value for return status values.
 \ac{PMIx} return values other than \refconst{PMIX_SUCCESS} are required to always be negative.  The return status value for a successful operation is
 \refconst{PMIX_SUCCESS}, which must have an integer value of 0:
- 
+
 \begin{constantdesc}
 \declareconstitemvalue{PMIX_SUCCESS}{0}
 Success.
@@ -93,7 +93,7 @@ For compatibility with future versions, users are advised to always refer to con
 
 The presentation of each \ac{API} in this document includes a list of return status constants which are either specific to that \ac{API} or are expected to be returned by the \ac{API} in normal use.
 
-In addition, the following are general constants covering a variety of possible reasons an implementation of an \ac{API} may return a constant other than one of the constants presented with the \ac{API}.  Although implementations can define and return additional error constants, implementations are encouraged to return one of the return constants listed with the \ac{API} or in the list presented here to encourage portability across implementations. 
+In addition, the following are general constants covering a variety of possible reasons an implementation of an \ac{API} may return a constant other than one of the constants presented with the \ac{API}.  Although implementations can define and return additional error constants, implementations are encouraged to return one of the return constants listed with the \ac{API} or in the list presented here to encourage portability across implementations.
 
 \begin{constantdesc}
 %
@@ -243,53 +243,58 @@ Passing a \refstruct{pmix_key_t} value to the standard \textit{sizeof} utility c
 \adviceuserend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Key support macros}
+\subsubsection{Key support functions}
 
-The following macros are provided for convenience when working with \ac{PMIx} keys.
+The following functions are provided for convenience when working with \ac{PMIx} keys.
 
-\littleheader{Check key macro}
-\declaremacro{PMIX_CHECK_KEY}
+\littleheader{Check key}
+\declareapiProvisional{PMIx_Check_key}
 
 Compare the key in a \refstruct{pmix_info_t} to a given value.
 
-\copySignature{PMIX_CHECK_KEY}{3.0}{
-PMIX_CHECK_KEY(a, b)
+\copySignature{PMIx_Check_key}{6.0}{
+bool \\
+PMIx_Check_key(const char *key, \\
+\hspace*{24\sigspace}const char *str);
 }
 
 \begin{arglist}
-\argin{a}{Pointer to the structure whose key is to be checked (pointer to \refstruct{pmix_info_t})}
-\argin{b}{String value to be compared against (\code{char*})}
+\argin{key}{String key to be checked (\code{char*})}
+\argin{str}{String value to be compared against (\code{char*})}
 \end{arglist}
 
 Returns \code{true} if the key matches the given value
 
-\littleheader{Check reserved key macro}
-\declaremacro{PMIX_CHECK_RESERVED_KEY}
+\littleheader{Check reserved key}
+\declareapiProvisional{PMIx_Check_reserved_key}
 
 Check if the given key is a \ac{PMIx} \emph{reserved} key as described in Chapter \ref{chap:api_rsvd_keys}.
 
-\copySignature{PMIX_CHECK_RESERVED_KEY}{4.0}{
-PMIX_CHECK_RESERVED_KEY(a)
+\copySignature{PMIx_Check_reserved_key}{6.0}{
+bool \\
+PMIx_Check_reserved_key(const char *key);
 }
 
 \begin{arglist}
-\argin{a}{String value to be checked (\code{char*})}
+\argin{key}{String value to be checked (\code{char*})}
 \end{arglist}
 
 Returns \code{true} if the key is reserved by the Standard.
 
-\littleheader{Load key macro}
-\declaremacro{PMIX_LOAD_KEY}
+\littleheader{Load key}
+\declareapiProvisional{PMIx_Load_key}
 
 Load a key into a \refstruct{pmix_info_t}.
 
-\copySignature{PMIX_LOAD_KEY}{4.0}{
-PMIX_LOAD_KEY(a, b)
+\copySignature{PMIx_Load_key}{6.0}{
+void \\
+PMIx_Load_key(pmix_key_t key, \\
+\hspace*{24\sigspace}const char *src);
 }
 
 \begin{arglist}
-\argin{a}{Pointer to the structure whose key is to be loaded (pointer to \refstruct{pmix_info_t})}
-\argin{b}{String value to be loaded (\code{char*})}
+\argin{key}{Structure whose key is to be loaded (\refstruct{pmix_key_t})}
+\argin{src}{String value to be loaded (\code{char*})}
 \end{arglist}
 
 No return value.
@@ -313,56 +318,63 @@ Passing a \refstruct{pmix_nspace_t} value to the standard \textit{sizeof} utilit
 \adviceuserend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Namespace support macros}
+\subsubsection{Namespace support functions}
 
-The following macros are provided for convenience when working with \ac{PMIx} namespace structures.
+The following functions are provided for convenience when working with \ac{PMIx} namespace structures.
 
-\littleheader{Check namespace macro}
-\declaremacro{PMIX_CHECK_NSPACE}
+\littleheader{Check nspace string}
+\declareapiProvisional{PMIx_Check_nspace}
+
+%%%%
+\summary
 
 Compare the string in a \refstruct{pmix_nspace_t} to a given value.
 
-\copySignature{PMIX_CHECK_NSPACE}{3.0}{
-PMIX_CHECK_NSPACE(a, b)
+%%%%
+\format
+
+\copySignature{PMIx_Check_nspace}{6.0}{
+bool \\
+PMIx_Check_nspace(const char *a, const char *b);
 }
 
 \begin{arglist}
-\argin{a}{Pointer to the structure whose value is to be checked (pointer to \refstruct{pmix_nspace_t})}
+\argin{a}{Pointer to the string whose value is to be checked (\code{char*})}
 \argin{b}{String value to be compared against (\code{char*})}
 \end{arglist}
 
 Returns \code{true} if the namespace matches the given value
 
-\littleheader{Check invalid namespace macro}
-\declaremacro{PMIX_NSPACE_INVALID}
+\littleheader{Check invalid namespace}
+\declareapiProvisional{PMIx_Nspace_invalid}
 
-Check if the provided \refstruct{pmix_nspace_t} is invalid.
+Check if the provided namspace string is invalid.
 
-\versionMarkerProvisional{4.1}
-\cspecificstart
-\begin{codepar}
-PMIX_NSPACE_INVALID(a)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Nspace_invalid}{6.0}{
+bool \\
+PMIx_Nspace_invalid(const char *nspace);
+}
 
 \begin{arglist}
-\argin{a}{Pointer to the structure whose value is to be checked (pointer to \refstruct{pmix_nspace_t})}
+\argin{nspace}{Pointer to string whose value is to be checked (\code{char*})}
 \end{arglist}
 
 Returns \code{true} if the namespace is invalid (i.e., starts with a \code{NULL} resulting in a zero-length string value)
 
-\littleheader{Load namespace macro}
-\declaremacro{PMIX_LOAD_NSPACE}
+\littleheader{Load namespace}
+\declareapiProvisional{PMIx_Load_nspace}
 
 Load a namespace into a \refstruct{pmix_nspace_t}.
 
-\copySignature{PMIX_LOAD_NSPACE}{4.0}{
-PMIX_LOAD_NSPACE(a, b)
+\copySignature{PMIx_Load_nspace}{6.0}{
+void \\
+PMIx_Load_nspace(pmix_nspace_t nspace, \\
+\hspace*{24\sigspace}const char *str);
 }
 
 \begin{arglist}
-\argin{a}{Pointer to the target structure (pointer to \refstruct{pmix_nspace_t})}
-\argin{b}{String value to be loaded - if \code{NULL} is given, then the target structure will be initialized to zero's (\code{char*})}
+\argin{nspace}{Target structure (\refstruct{pmix_nspace_t})}
+\argin{str}{String value to be loaded - if \code{NULL} is given, then the target structure will be initialized to zero's (\code{char*})}
 \end{arglist}
 
 No return value.
@@ -406,21 +418,20 @@ Define an upper boundary for valid rank values.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Rank support macros}
+\subsubsection{Rank support functions}
 
-The following macros are provided for convenience when working with \ac{PMIx} ranks.
+The following functions are provided for convenience when working with \ac{PMIx} ranks.
 
-\littleheader{Check rank macro}
-\declaremacro{PMIX_CHECK_RANK}
+\littleheader{Check rank}
+\declareapiProvisional{PMIx_Check_rank}
 
 Check two ranks for equality, taking into account wildcard values
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_CHECK_RANK(a, b)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Check_rank}{6.0}{
+bool \\
+PMIx_Check_rank(pmix_rank_t a, \\
+\hspace*{24\sigspace}pmix_rank_t b);
+}
 
 \begin{arglist}
 \argin{a}{Rank to be checked (\refstruct{pmix_rank_t})}
@@ -429,17 +440,15 @@ PMIX_CHECK_RANK(a, b)
 
 Returns \code{true} if the ranks are equal, or at least one of the ranks is \refconst{PMIX_RANK_WILDCARD}
 
-\littleheader{Check rank is valid macro}
-\declaremacro{PMIX_RANK_IS_VALID}
+\littleheader{Check if rank is valid}
+\declareapiProvisional{PMIx_Rank_valid}
 
 Check if the given rank is a valid value
 
-\versionMarkerProvisional{4.1}
-\cspecificstart
-\begin{codepar}
-PMIX_RANK_IS_VALID(a)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Rank_valid}{6.0}{
+bool \\
+PMIx_Rank_valid(pmix_rank_t a);
+}
 
 \begin{arglist}
 \argin{a}{Rank to be checked (\refstruct{pmix_rank_t})}
@@ -467,7 +476,7 @@ The following macros are provided to support the \refstruct{pmix_proc_t} structu
 
 %%%%
 \littleheader{Static initializer for the proc structure}
-\declaremacroProvisional{PMIX_PROC_STATIC_INIT}
+\declaremacro{PMIX_PROC_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_proc_t} fields.
 
@@ -478,86 +487,89 @@ PMIX_PROC_STATIC_INIT
 \end{codepar}
 \cspecificend
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Process structure support functions}
+
+The following functions are provided for convenience when working with the \refstruct{pmix_proc_t} structure.
 
 \littleheader{Initialize the proc structure}
-\declaremacro{PMIX_PROC_CONSTRUCT}
+\declareapiProvisional{PMIx_Proc_construct}
 
 Initialize the \refstruct{pmix_proc_t} fields.
 
-\copySignature{PMIX_PROC_CONSTRUCT}{1.0}{
-PMIX_PROC_CONSTRUCT(m)
+\copySignature{PMIx_Proc_construct}{6.0}{
+void \\
+PMIx_Proc_construct(pmix_proc_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_proc_t})}
+\argin{p}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_proc_t})}
 \end{arglist}
 
+\descr
+
+Initialize the fields to zero
+
 \littleheader{Destruct the proc structure}
-\declaremacro{PMIX_PROC_DESTRUCT}
+\declareapiProvisional{PMIx_Proc_destruct}
 
 Destruct the \refstruct{pmix_proc_t} fields.
 
-\cspecificstart
-\begin{codepar}
-PMIX_PROC_DESTRUCT(m)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Proc_destruct}{6.0}{
+void \\
+PMIx_Proc_destruct(pmix_proc_t *p);
+}
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_proc_t})}
+\argin{p}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_proc_t})}
 \end{arglist}
 
-There is nothing to release here as the fields in \refstruct{pmix_proc_t} are either a statically-declared array (the namespace) or a single value (the rank). However, the macro is provided for symmetry in the code and for future-proofing should some allocated field be included some day.
+There is nothing to release here as the fields in \refstruct{pmix_proc_t} are either a statically-declared array (the namespace) or a single value (the rank). However, the function is provided for symmetry in the code and for future-proofing should some allocated field be included some day.
 
 \littleheader{Create a proc array}
-\declaremacro{PMIX_PROC_CREATE}
+\declareapiProvisional{PMIx_Proc_create}
 
 Allocate and initialize an array of \refstruct{pmix_proc_t} structures.
 
-\copySignature{PMIX_PROC_CREATE}{1.0}{
-PMIX_PROC_CREATE(m, n)
+\copySignature{PMIx_Proc_create}{6.0}{
+pmix_proc_t* \\
+PMIx_Proc_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_proc_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
+\descr
 
-\littleheader{Free a proc structure}
-\declaremacro{PMIX_PROC_RELEASE}
-
-Release a \refstruct{pmix_proc_t} structure.
-
-\copySignature{PMIX_PROC_RELEASE}{4.0}{
-PMIX_PROC_RELEASE(m)
-}
-
-\begin{arglist}
-\argin{m}{Pointer to a \refstruct{pmix_proc_t} structure (handle)}
-\end{arglist}
+Allocate and initialize an array of \refstruct{pmix_proc_t} structures
 
 \littleheader{Free a proc array}
-\declaremacro{PMIX_PROC_FREE}
+\declareapiProvisional{PMIx_Proc_free}
 
 Release an array of \refstruct{pmix_proc_t} structures.
 
-\copySignature{PMIX_PROC_FREE}{1.0}{
-PMIX_PROC_FREE(m, n)
+\copySignature{PMIx_Proc_free}{6.0}{
+void \\
+PMIx_Proc_free(pmix_proc_t *p, \\
+\hspace*{4\sigspace}size_t n);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_proc_t} structures (handle)}
+\argin{p}{Pointer to the array of \refstruct{pmix_proc_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
 \littleheader{Load a proc structure}
-\declaremacro{PMIX_PROC_LOAD}
+\declareapiProvisional{PMIx_Load_procid}
 
 Load values into a \refstruct{pmix_proc_t}.
 
-\copySignature{PMIX_PROC_LOAD}{2.0}{
-PMIX_PROC_LOAD(m, n, r)
+\copySignature{PMIx_Load_procid}{6.0}{
+void \\
+PMIx_Load_procid(pmix_proc_t *p, \\
+\hspace*{4\sigspace}const char *nspace, \\
+\hspace*{4\sigspace}pmix_rank_t rank);
 }
 
 \begin{arglist}
@@ -569,12 +581,14 @@ PMIX_PROC_LOAD(m, n, r)
 No return value. Deprecated in favor of \refmacro{PMIX_LOAD_PROCID}
 
 \littleheader{Compare identifiers}
-\declaremacro{PMIX_CHECK_PROCID}
+\declareapiProvisional{PMIx_Check_procid}
 
 Compare two \refstruct{pmix_proc_t} identifiers.
 
-\copySignature{PMIX_CHECK_PROCID}{3.0}{
-PMIX_CHECK_PROCID(a, b)
+\copySignature{PMIx_Check_procid}{6.0}{
+bool \\
+PMIx_Check_procid(const pmix_proc_t *a, \\
+\hspace*{4\sigspace}const pmix_proc_t *b);
 }
 
 \begin{arglist}
@@ -585,90 +599,78 @@ PMIX_CHECK_PROCID(a, b)
 Returns \code{true} if the two structures contain matching namespaces and:
 
 \begin{itemize}
-    \item the ranks are the same value
+    \item the ranks are the same value; or
     \item one of the ranks is \refconst{PMIX_RANK_WILDCARD}
 \end{itemize}
 
 \littleheader{Check if a process identifier is valid}
-\declaremacro{PMIX_PROCID_INVALID}
+\declareapiProvisional{PMIx_Procid_invalid}
 
 Check for invalid namespace or rank value
 
-\versionMarkerProvisional{4.1}
-\cspecificstart
-\begin{codepar}
-PMIX_PROCID_INVALID(a)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Procid_invalid}{6.0}{
+bool \\
+PMIx_Procid_invalid(const pmix_proc_t *p);
+}
 
 \begin{arglist}
-\argin{a}{Pointer to a structure whose ID is to be checked (pointer to \refstruct{pmix_proc_t})}
+\argin{p}{Pointer to a structure whose ID is to be checked (pointer to \refstruct{pmix_proc_t})}
 \end{arglist}
 
 Returns \code{true} if the process identifier contains either an empty (i.e., invalid) \refarg{nspace} field or a \refarg{rank} field of \refconst{PMIX_RANK_INVALID}
 
-\littleheader{Load a procID structure}
-\declaremacro{PMIX_LOAD_PROCID}
-
-Load values into a \refstruct{pmix_proc_t}.
-
-\copySignature{PMIX_LOAD_PROCID}{4.0}{
-PMIX_LOAD_PROCID(m, n, r)
-}
-
-\begin{arglist}
-\argin{m}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_proc_t})}
-\argin{n}{Namespace to be loaded (\refstruct{pmix_nspace_t})}
-\argin{r}{Rank to be assigned (\refstruct{pmix_rank_t})}
-\end{arglist}
-
 \littleheader{Transfer a procID structure}
-\declaremacro{PMIX_PROCID_XFER}
+\declareapiProvisional{PMIx_Xfer_procid}
 
 Transfer contents of one \refstruct{pmix_proc_t} value to another \refstruct{pmix_proc_t}.
 
-\versionMarkerProvisional{4.1}
-\cspecificstart
-\begin{codepar}
-PMIX_PROCID_XFER(d, s)
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Xfer_procid}{6.0}{
+void \\
+PMIx_Xfer_procid(pmix_proc_t *a, \\
+\hspace*{4\sigspace}const pmix_proc_t *b);
+}
 
 \begin{arglist}
-\argin{d}{Pointer to the target structure (pointer to \refstruct{pmix_proc_t})}
-\argin{s}{Pointer to the source structure (pointer to \refstruct{pmix_proc_t})}
+\argin{a}{Pointer to the target structure (pointer to \refstruct{pmix_proc_t})}
+\argin{b}{Pointer to the source structure (pointer to \refstruct{pmix_proc_t})}
 \end{arglist}
 
 \littleheader{Construct a multi-cluster namespace}
-\declaremacro{PMIX_MULTICLUSTER_NSPACE_CONSTRUCT}
+\declareapiProvisional{PMIx_Multicluster_nspace_construct}
 
 Construct a multi-cluster identifier containing a cluster ID and a namespace.
 
-\copySignature{PMIX_MULTICLUSTER_NSPACE_CONSTRUCT}{4.0}{
-PMIX_MULTICLUSTER_NSPACE_CONSTRUCT(m, n, r)
+\copySignature{PMIx_Multicluster_nspace_construct}{6.0}{
+void \\
+PMIx_Multicluster_nspace_construct(pmix_nspace_t m, \\
+\hspace*{4\sigspace}pmix_nspace_t a, \\
+\hspace*{4\sigspace}pmix_nspace_t b);
 }
 
 \begin{arglist}
 \argin{m}{\refstruct{pmix_nspace_t} structure that will contain the multi-cluster identifier (\refstruct{pmix_nspace_t})}
-\argin{n}{Cluster identifier (\code{char*})}
-\argin{n}{Namespace to be loaded (\refstruct{pmix_nspace_t})}
+\argin{a}{Cluster identifier (\code{char*})}
+\argin{b}{Namespace to be loaded (\refstruct{pmix_nspace_t})}
 \end{arglist}
 
 Combined length of the cluster identifier and namespace must be less than \refconst{PMIX_MAX_NSLEN}-2.
 
 \littleheader{Parse a multi-cluster namespace}
-\declaremacro{PMIX_MULTICLUSTER_NSPACE_PARSE}
+\declareapiProvisional{PMIx_Multicluster_nspace_parse}
 
 Parse a multi-cluster identifier into its cluster ID and namespace parts.
 
-\copySignature{PMIX_MULTICLUSTER_NSPACE_PARSE}{4.0}{
-PMIX_MULTICLUSTER_NSPACE_PARSE(m, n, r)
+\copySignature{PMIx_Multicluster_nspace_parse}{6.0}{
+void \\
+PMIx_Multicluster_nspace_parse(pmix_nspace_t m, \\
+\hspace*{4\sigspace}pmix_nspace_t a, \\
+\hspace*{4\sigspace}pmix_nspace_t b);
 }
 
 \begin{arglist}
 \argin{m}{\refstruct{pmix_nspace_t} structure containing the multi-cluster identifier (pointer to \refstruct{pmix_nspace_t})}
-\argin{n}{Location where the cluster ID is to be stored (\refstruct{pmix_nspace_t})}
-\argin{n}{Location where the namespace is to be stored (\refstruct{pmix_nspace_t})}
+\argin{a}{Location where the cluster ID is to be stored (\refstruct{pmix_nspace_t})}
+\argin{b}{Location where the namespace is to be stored (\refstruct{pmix_nspace_t})}
 \end{arglist}
 
 
@@ -791,7 +793,7 @@ The following macros are provided to support the \refstruct{pmix_proc_info_t} st
 
 %%%%
 \littleheader{Static initializer for the proc info structure}
-\declaremacroProvisional{PMIX_PROC_INFO_STATIC_INIT}
+\declaremacro{PMIX_PROC_INFO_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_proc_info_t} fields.
 
@@ -805,73 +807,65 @@ PMIX_PROC_INFO_STATIC_INIT
 
 %%%%
 \littleheader{Initialize the process information structure}
-\declaremacro{PMIX_PROC_INFO_CONSTRUCT}
+\declareapiProvisional{PMIx_Proc_info_construct}
 
 Initialize the \refstruct{pmix_proc_info_t} fields.
 
-\copySignature{PMIX_PROC_INFO_CONSTRUCT}{2.0}{
-PMIX_PROC_INFO_CONSTRUCT(m)
+\copySignature{PMIx_Proc_info_construct}{6.0}{
+void \\
+PMIx_Proc_info_construct(pmix_proc_info_t *a);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_proc_info_t})}
+\argin{a}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_proc_info_t})}
 \end{arglist}
 
 %%%%
 \littleheader{Destruct the process information structure}
-\declaremacro{PMIX_PROC_INFO_DESTRUCT}
+\declareapiProvisional{PMIx_Proc_info_destruct}
 
 Destruct the \refstruct{pmix_proc_info_t} fields.
 
-\copySignature{PMIX_PROC_INFO_DESTRUCT}{2.0}{
-PMIX_PROC_INFO_DESTRUCT(m)
+\copySignature{PMIx_Proc_info_destruct}{6.0}{
+void \\
+PMIx_Proc_info_destruct(pmix_proc_info_t *a);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_proc_info_t})}
+\argin{a}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_proc_info_t})}
 \end{arglist}
 
 %%%%
 \littleheader{Create a process information array}
-\declaremacro{PMIX_PROC_INFO_CREATE}
+\declareapiProvisional{PMIx_Proc_info_create}
 
 Allocate and initialize a \refstruct{pmix_proc_info_t} array.
 
-\copySignature{PMIX_PROC_INFO_CREATE}{2.0}{
-PMIX_PROC_INFO_CREATE(m, n)
+\copySignature{PMIx_Proc_info_create}{6.0}{
+pmix_proc_info_t* \\
+PMIx_Proc_info_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_proc_info_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
-%%%%
-\littleheader{Free a process information structure}
-\declaremacro{PMIX_PROC_INFO_RELEASE}
-
-Release a \refstruct{pmix_proc_info_t} structure.
-
-\copySignature{PMIX_PROC_INFO_RELEASE}{2.0}{
-PMIX_PROC_INFO_RELEASE(m)
-}
-
-\begin{arglist}
-\argin{m}{Pointer to a \refstruct{pmix_proc_info_t} structure (handle)}
-\end{arglist}
+Returns pointer to the array of \refstruct{pmix_proc_info_t} structures
 
 %%%%
 \littleheader{Free a process information array}
-\declaremacro{PMIX_PROC_INFO_FREE}
+\declareapiProvisional{PMIx_Proc_info_free}
 
 Release an array of \refstruct{pmix_proc_info_t} structures.
 
-\copySignature{PMIX_PROC_INFO_FREE}{2.0}{
-PMIX_PROC_INFO_FREE(m, n)
+\copySignature{PMIx_Proc_info_free}{6.0}{
+void \\
+PMIx_Proc_info_free(pmix_proc_t *p,
+\hspace*{4\sigspace}size_t n);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_proc_info_t} structures (handle)}
+\argin{p}{Pointer to the array of \refstruct{pmix_proc_info_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
@@ -975,7 +969,7 @@ The following macros and \acp{API} are provided to support the \refstruct{pmix_v
 
 %%%%
 \littleheader{Static initializer for the value structure}
-\declaremacroProvisional{PMIX_VALUE_STATIC_INIT}
+\declaremacro{PMIX_VALUE_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_value_t} fields.
 
@@ -988,79 +982,70 @@ PMIX_VALUE_STATIC_INIT
 
 
 \littleheader{Initialize the value structure}
-\declaremacro{PMIX_VALUE_CONSTRUCT}
+\declareapiProvisional{PMIx_Value_construct}
 
 Initialize the \refstruct{pmix_value_t} fields.
 
-\copySignature{PMIX_VALUE_CONSTRUCT}{1.0}{
-PMIX_VALUE_CONSTRUCT(m)
+\copySignature{PMIx_Value_construct}{6.0}{
+void \\
+PMIx_Value_construct(pmix_value_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_value_t})}
+\argin{p}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_value_t})}
 \end{arglist}
 
 \littleheader{Destruct the value structure}
-\declaremacro{PMIX_VALUE_DESTRUCT}
+\declareapiProvisional{PMIx_Value_destruct}
 
 Destruct the \refstruct{pmix_value_t} fields.
 
-\copySignature{PMIX_VALUE_DESTRUCT}{1.0}{
-PMIX_VALUE_DESTRUCT(m)
+\copySignature{PMIx_Value_destruct}{6.0}{
+void \\
+PMIx_Value_destruct(pmix_value_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_value_t})}
+\argin{p}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_value_t})}
 \end{arglist}
 
 %%%%%%%%%%%
 \littleheader{Create a value array}
-\declaremacro{PMIX_VALUE_CREATE}
+\declareapiProvisional{PMIx_Value_create}
 
 Allocate and initialize an array of \refstruct{pmix_value_t} structures.
 
-\copySignature{PMIX_VALUE_CREATE}{1.0}{
-PMIX_VALUE_CREATE(m, n)
+\copySignature{PMIx_Value_create}{6.0}{
+pmix_value_t* \\
+PMIx_Value_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_value_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
-
-%%%%%%%%%%%
-\littleheader{Free a value structure}
-\declaremacro{PMIX_VALUE_RELEASE}
-
-Release a \refstruct{pmix_value_t} structure.
-
-\copySignature{PMIX_VALUE_RELEASE}{4.0}{
-PMIX_VALUE_RELEASE(m)
-}
-
-\begin{arglist}
-\argin{m}{Pointer to a \refstruct{pmix_value_t} structure (handle)}
-\end{arglist}
+Returns pointer to the array of \refstruct{pmix_value_t} structures
 
 %%%%%%%%%%%
 \littleheader{Free a value array}
-\declaremacro{PMIX_VALUE_FREE}
+\declareapiProvisional{PMIx_Value_free}
 
 Release an array of \refstruct{pmix_value_t} structures.
 
-\copySignature{PMIX_VALUE_FREE}{1.0}{
-PMIX_VALUE_FREE(m, n)
+\copySignature{PMIx_Value_free}{6.0}{
+void \\
+PMIx_Value_free(pmix_value_t *p, \\
+\hspace*{4\sigspace}size_t n);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_value_t} structures (handle)}
+\argin{p}{Pointer to the array of \refstruct{pmix_value_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
 %%%%%%%%%%%
 \littleheader{Get size of data in a value structure}
-\declareapiProvisional{PMIx_Value_get_size}
+\declareapi{PMIx_Value_get_size}
 
 %%%%
 \summary
@@ -1070,14 +1055,11 @@ Compute and return the size (in bytes) of the data payload in a \refstruct{pmix_
 %%%%
 \format
 
-\versionMarker{5.1}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Value_get_size(const pmix_value_t *val,
-                    size_t *size);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Value_get_size}{5.1}{
+pmix_status_t \\
+PMIx_Value_get_size(const pmix_value_t *val, \\
+\hspace*{4\sigspace}size_t *size);
+}
 
 \begin{arglist}
 \argin{val}{The \refstruct{pmix_value_t} where the data is located (pointer to \refstruct{pmix_value_t})}
@@ -1098,15 +1080,12 @@ Load data into a \refstruct{pmix_value_t} structure.
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Value_load(pmix_value_t *val,
-                const void *data,
-                pmix_data_type_t type);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Value_load}{5.0}{
+pmix_status_t \\
+PMIx_Value_load(pmix_value_t *val, \\
+\hspace*{4\sigspace}const void *data, \\
+\hspace*{4\sigspace}pmix_data_type_t type);
+}
 
 \begin{arglist}
 \argin{val}{The \refstruct{pmix_value_t} into which the data is to be loaded (pointer to \refstruct{pmix_value_t})}
@@ -1133,15 +1112,12 @@ Unload data from a \refstruct{pmix_value_t} structure.
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Value_unload(pmix_value_t *val,
-                  void **data,
-                  size_t *sz);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Value_load}{5.0}{
+pmix_status_t \\
+PMIx_Value_unload(pmix_value_t *val, \\
+\hspace*{4\sigspace}void **data, \\
+\hspace*{4\sigspace}size_t *sz);
+}
 
 \begin{arglist}
 \argin{val}{The \refstruct{pmix_value_t} from which the data is to be unloaded (pointer to \refstruct{pmix_value_t})}
@@ -1172,14 +1148,11 @@ Transfer the data value between two \refstruct{pmix_value_t} structures.
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Value_xfer(pmix_value_t *dest,
-                const pmix_value_t *src);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Value_xfer}{5.0}{
+pmix_status_t \\
+PMIx_Value_xfer(pmix_value_t *dest, \\
+\hspace*{4\sigspace}const pmix_value_t *src);
+}
 
 \begin{arglist}
 \argin{dest}{Pointer to the \refstruct{pmix_value_t} destination (handle)}
@@ -1206,11 +1179,15 @@ PMIX_VALUE_GET_NUMBER(s, m, n, t)
 \begin{arglist}
 \argout{s}{Status code for the request (\refstruct{pmix_status_t})}
 \argin{m}{Pointer to the\refstruct{pmix_value_t} structure (handle)}
-\argout{n}{Variable to be set to the value (match expected type)}
-\argin{t}{Type of number expected in \refarg{m} (\refstruct{pmix_data_type_t})}
+\argout{n}{Variable to be set to the value}
+\argin{t}{Type of number to be returned in \refarg{m} (\code{C data type})}
 \end{arglist}
 
-Sets the provided variable equal to the numerical value contained in the given \refstruct{pmix_value_t}, returning success if the data type of the value matches the expected type and \refconst{PMIX_ERR_BAD_PARAM} if it doesn't
+Sets the provided variable equal to the numerical value contained in the given \refstruct{pmix_value_t}, returning success if the data type of the value is a recognized numerical type - the \refconst{PMIX_ERR_BAD_PARAM} error is
+returned if the value contains a non-numerical type. The returned value is type cast to the
+provided C-language data type. It is therefore possible to lose precision - e.g., if the \refstruct{pmix_value_t}
+contains a \refconst{PMIX_FLOAT} and the macro invocation requests that the returned value be type cast to an
+\code{int}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Info Structure}
@@ -1233,7 +1210,7 @@ The following macros are provided to support the \refstruct{pmix_info_t} structu
 
 %%%%
 \littleheader{Static initializer for the info structure}
-\declaremacroProvisional{PMIX_INFO_STATIC_INIT}
+\declaremacro{PMIX_INFO_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_info_t} fields.
 
@@ -1245,66 +1222,75 @@ PMIX_INFO_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%
+\subsubsection{Info structure support functions}
+The following functions are provided to support the \refstruct{pmix_info_t} structure.
+
 \littleheader{Initialize the info structure}
-\declaremacro{PMIX_INFO_CONSTRUCT}
+\declareapiProvisional{PMIx_Info_construct}
 
 Initialize the \refstruct{pmix_info_t} fields.
 
-\copySignature{PMIX_INFO_CONSTRUCT}{1.0}{
-PMIX_INFO_CONSTRUCT(m)
+\copySignature{PMIx_Info_construct}{6.0}{
+void \\
+PMIx_Info_construct(pmix_info_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_info_t})}
+\argin{p}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
 \littleheader{Destruct the info structure}
-\declaremacro{PMIX_INFO_DESTRUCT}
+\declareapiProvisional{PMIx_Info_destruct}
 
 Destruct the \refstruct{pmix_info_t} fields.
 
-\copySignature{PMIX_INFO_DESTRUCT}{1.0}{
-PMIX_INFO_DESTRUCT(m)
+\copySignature{PMIx_Info_destruct}{6.0}{
+void \\
+PMIx_Info_destruct(pmix_info_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_info_t})}
+\argin{p}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
 %%%%%%%%%%%
 \littleheader{Create an info array}
-\declaremacro{PMIX_INFO_CREATE}
+\declareapiProvisional{PMIx_Info_create}
 
 Allocate and initialize an array of info structures.
 
-\copySignature{PMIX_INFO_CREATE}{1.0}{
-PMIX_INFO_CREATE(m, n)
+\copySignature{PMIx_Info_create}{6.0}{
+pmix_info_t* \\
+PMIx_Info_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_info_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
+Returns pointer to the array of \refstruct{pmix_info_t} structures
 
 %%%%%%%%%%%
 \littleheader{Free an info array}
-\declaremacro{PMIX_INFO_FREE}
+\declareapiProvisional{PMIx_Info_free}
 
 Release an array of \refstruct{pmix_info_t} structures.
 
-\copySignature{PMIX_INFO_FREE}{1.0}{
-PMIX_INFO_FREE(m, n)
+\copySignature{PMIx_Info_free}{6.0}{
+void \\
+PMIx_Info_free(pmix_info_t *p, \\
+\hspace*{4\sigspace}size_t n);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_info_t} structures (handle)}
+\argin{p}{Pointer to the array of \refstruct{pmix_info_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
 %%%%%%%%%%%
 \littleheader{Get size of data in an info structure}
-\declareapiProvisional{PMIx_Info_get_size}
+\declareapi{PMIx_Info_get_size}
 
 %%%%
 \summary
@@ -1314,14 +1300,11 @@ Compute and return the size (in bytes) of the data payload in an \refstruct{pmix
 %%%%
 \format
 
-\versionMarker{5.1}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Info_get_size(const pmix_info_t *info,
-                   size_t *size);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Info_get_size}{5.1}{
+pmix_status_t \\
+PMIx_Info_get_size(const pmix_info_t *info, \\
+\hspace*{4\sigspace}size_t *size);
+}
 
 \begin{arglist}
 \argin{info}{The \refstruct{pmix_info_t} where the data is located}
@@ -1342,16 +1325,13 @@ Load data into a \refstruct{pmix_info_t} structure.
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Info_load(pmix_info_t *info,
-               const char* key,
-               const void *data,
-               pmix_data_type_t type);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Info_load}{5.0}{
+pmix_status_t \\
+PMIx_Info_load(pmix_info_t *info, \\
+\hspace*{4\sigspace}const char* key, \\
+\hspace*{4\sigspace}const void *data, \\
+\hspace*{4\sigspace}pmix_data_type_t type);
+}
 
 \begin{arglist}
 \argin{info}{The \refstruct{pmix_info_t} into which the data is to be loaded (handle)}
@@ -1385,14 +1365,11 @@ Copy all data between two \refstruct{pmix_info_t} structures.
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Info_xfer(pmix_info_t *dest,
+\copySignature{PMIx_Info_xfer}{5.0}{
+pmix_status_t \\
+PMIx_Info_xfer(pmix_info_t *dest, \\
                pmix_info_t *src);
-\end{codepar}
-\cspecificend
+}
 
 \begin{arglist}
 \argin{dest}{The \refstruct{pmix_info_t} into which the data is to be copied (handle)}
@@ -1408,16 +1385,17 @@ Copy the data in the source \refstruct{pmix_info_t} into the destination. Any da
 
 %%%%%%%%%%%
 \littleheader{Test a boolean info struct}
-\declaremacro{PMIX_INFO_TRUE}
+\declareapiProvisional{PMIx_Info_true}
 
 A special macro for checking if a boolean \refstruct{pmix_info_t} is \code{true}.
 
-\copySignature{PMIX_INFO_TRUE}{2.0}{
-PMIX_INFO_TRUE(m)
+\copySignature{PMIx_Info_true}{6.0}{
+bool \\
+PMIx_Info_true(pmix_info_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to a \refstruct{pmix_info_t} structure (handle)}
+\argin{p}{Pointer to a \refstruct{pmix_info_t} structure (handle)}
 \end{arglist}
 
 A \refstruct{pmix_info_t} structure is considered to be of type \refconst{PMIX_BOOL} and value \code{true} if:
@@ -1443,13 +1421,10 @@ Initialize a list of \refstruct{pmix_info_t} structures. The actual list is opaq
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-void*
+\copySignature{PMIx_Info_list_start}{5.0}{
+void* \\
 PMIx_Info_list_start(void);
-\end{codepar}
-\cspecificend
+}
 
 %%%%
 \descr
@@ -1468,16 +1443,13 @@ Add a \refstruct{pmix_info_t} structure containing the specified value to the pr
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Info_list_add(void *ptr,
-                   const char *key,
-                   const void *value,
-                   pmix_data_type_t type);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Info_list_add}{5.0}{
+pmix_status_t \\
+PMIx_Info_list_add(void *ptr, \\
+\hspace*{4\sigspace}const char *key, \\
+\hspace*{4\sigspace}const void *value, \\
+\hspace*{4\sigspace}pmix_data_type_t type);
+}
 
 \begin{arglist}
 \argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
@@ -1495,7 +1467,7 @@ Copy the provided key and data into a \refstruct{pmix_info_t} on the list. The k
 
 %%%%%%%%%%%
 \littleheader{Retrieve next \refstruct{pmix_info_t} on a list}
-\declareapiProvisional{PMIx_Info_list_get_info}
+\declareapi{PMIx_Info_list_get_info}
 
 %%%%
 \summary
@@ -1505,15 +1477,12 @@ Retrieve next \refstruct{pmix_info_t} on a list.
 %%%%
 \format
 
-\versionMarker{5.1}
-\cspecificstart
-\begin{codepar}
-pmix_info_t *
-PMIx_Info_list_get_info(void *ptr,
-                        void *curr,
-                        void **next);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Info_list_get_info}{5.1}{
+pmix_info_t* \\
+PMIx_Info_list_get_info(void *ptr, \\
+\hspace*{4\sigspace}void *curr, \\
+\hspace*{4\sigspace}void **next);
+}
 
 \begin{arglist}
 \argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
@@ -1529,7 +1498,7 @@ Retrieve the current pmix_info_t object from a list and sets the next pointer. P
 
 %%%%%%%%%%%
 \littleheader{Prepend a \refstruct{pmix_info_t} structure to a list}
-\declareapiProvisional{PMIx_Info_list_prepend}
+\declareapi{PMIx_Info_list_prepend}
 
 %%%%
 \summary
@@ -1539,16 +1508,13 @@ Prepend a \refstruct{pmix_info_t} structure containing the specified value to th
 %%%%
 \format
 
-\versionMarker{5.1}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Info_list_prepend(void *ptr,
-                       const char *key,
-                       const void *value,
-                       pmix_data_type_t type);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Info_list_prepend}{5.1}{
+pmix_status_t \\
+PMIx_Info_list_prepend(void *ptr, \\
+\hspace*{4\sigspace}const char *key, \\
+\hspace*{4\sigspace}const void *value, \\
+\hspace*{4\sigspace}pmix_data_type_t type);
+}
 
 \begin{arglist}
 \argin{ptr}{A \code{void*} pointer initialized via \refapi{PMIx_Info_list_start} (handle)}
@@ -1576,14 +1542,11 @@ Transfer the information in a \refstruct{pmix_info_t} structure to a structure o
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Info_list_xfer(void *ptr,
-                    const pmix_info_t *src);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Info_list_xfer}{5.0}{
+pmix_status_t \\
+PMIx_Info_list_xfer(void *ptr, \\
+\hspace*{4\sigspace}const pmix_info_t *src);
+}
 
 
 \begin{arglist}
@@ -1611,14 +1574,11 @@ Transfer the information in the provided \refstruct{pmix_info_t} list to a \refs
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Info_list_convert(void *ptr,
-                       pmix_data_array_t *par);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Info_list_convert}{5.0}{
+pmix_status_t \\
+PMIx_Info_list_convert(void *ptr, \\
+\hspace*{4\sigspace}pmix_data_array_t *par);
+}
 
 
 \begin{arglist}
@@ -1646,13 +1606,10 @@ Release the provided \refstruct{pmix_info_t} list
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-void
+\copySignature{PMIx_Info_list_release}{5.0}{
+void \\
 PMIx_Info_list_release(void *ptr);
-\end{codepar}
-\cspecificend
+}
 
 
 \begin{arglist}
@@ -1701,6 +1658,13 @@ Mark that this \refstruct{pmix_info_t} struct is at the end of an array created 
 \declareconstitemvalue{PMIX_INFO_DIR_RESERVED}{0xffff0000}
 A bit-mask identifying the bits reserved for internal use by implementers - these currently are set as \code{0xffff0000}.
 %
+\declareconstitemProvisional{PMIX_INFO_QUALIFIER }{0x00000008}
+Mark that this attribute is a qualifier to its
+associated value.
+%
+\declareconstitemProvisional{PMIX_INFO_PERSISTENT }{0x00000010}
+Mark that included value in this \refstruct{pmix_info_t} must not be released
+%
 \end{constantdesc}
 
 \advicermstart
@@ -1708,66 +1672,70 @@ Host environments are advised to use the provided \refmacro{PMIX_INFO_IS_REQUIRE
 \advicermend
 
 
-\subsubsection{Info Directive support macros}
+\subsubsection{Info Directive support functions}
 
-The following macros are provided to support the setting and testing of \refstruct{pmix_info_t} directives.
+The following functions are provided to support the setting and testing of \refstruct{pmix_info_t} directives.
 
 %%%%
 \littleheader{Mark an info structure as required}
-\declaremacro{PMIX_INFO_REQUIRED}
+\declareapiProvisional{PMIx_Info_required}
 
 Set the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure.
 
-\copySignature{PMIX_INFO_REQUIRED}{2.0}{
-PMIX_INFO_REQUIRED(info);
+\copySignature{PMIx_Info_required}{6.0}{
+void \\
+PMIx_Info_required(pmix_info_t *info);
 }
 
 \begin{arglist}
 \argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-This macro simplifies the setting of the \refconst{PMIX_INFO_REQD} flag in \refstruct{pmix_info_t} structures.
+This function simplifies the setting of the \refconst{PMIX_INFO_REQD} flag in \refstruct{pmix_info_t} structures.
 
 %%%%
 \littleheader{Mark an info structure as optional}
-\declaremacro{PMIX_INFO_OPTIONAL}
+\declareapiProvisional{PMIx_Info_optional}
 
 Unsets the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure.
 
-\copySignature{PMIX_INFO_OPTIONAL}{2.0}{
-PMIX_INFO_OPTIONAL(info);
+\copySignature{PMIx_Info_optional}{6.0}{
+void \\
+PMIx_Info_optional(pmix_info_t *info);
 }
 
 \begin{arglist}
 \argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-This macro simplifies marking a \refstruct{pmix_info_t} structure as \textit{optional}.
+This function simplifies marking a \refstruct{pmix_info_t} structure as \textit{optional}.
 
 %%%%%%%%%%%
 \littleheader{Test an info structure for \textit{required} directive}
-\declaremacro{PMIX_INFO_IS_REQUIRED}
+\declareapiProvisional{PMIx_Info_is_required}
 
 Test the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure, returning \code{true} if the flag is set.
 
-\copySignature{PMIX_INFO_IS_REQUIRED}{2.0}{
-PMIX_INFO_IS_REQUIRED(info);
+copySignature{PMIx_Info_is_required}{6.0}{
+bool \\
+PMIx_Info_is_required(pmix_info_t *info);
 }
 
 \begin{arglist}
 \argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-This macro simplifies the testing of the required flag in \refstruct{pmix_info_t} structures.
+This function simplifies the testing of the required flag in \refstruct{pmix_info_t} structures.
 
 %%%%%%%%%%%
 \littleheader{Test an info structure for \textit{optional} directive}
-\declaremacro{PMIX_INFO_IS_OPTIONAL}
+\declareapiProvisional{PMIx_Info_is_optional}
 
 Test a \refstruct{pmix_info_t} structure, returning \code{true} if the structure is \textit{optional}.
 
-\copySignature{PMIX_INFO_IS_OPTIONAL}{2.0}{
-PMIX_INFO_IS_OPTIONAL(info);
+\copySignature{PMIx_Info_is_optional}{6.0}{
+bool \\
+PMIx_Info_is_optional(pmix_info_t *info);
 }
 
 \begin{arglist}
@@ -1778,16 +1746,14 @@ Test the \refconst{PMIX_INFO_REQD} flag in a \refstruct{pmix_info_t} structure, 
 
 %%%%%%%%%%%
 \littleheader{Mark a required attribute as processed}
-\declaremacro{PMIX_INFO_PROCESSED}
+\declareapiProvisional{PMIx_Info_processed}
 
 Mark that a required \refstruct{pmix_info_t} structure has been processed.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_INFO_PROCESSED(info);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Info_processed}{6.0}{
+void \\
+PMIx_Info_processed(pmix_info_t *info);
+}
 
 \begin{arglist}
 \argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
@@ -1797,16 +1763,14 @@ Set the \refconst{PMIX_INFO_REQD_PROCESSED} flag in a \refstruct{pmix_info_t} st
 
 %%%%%%%%%%%
 \littleheader{Test if a required attribute has been processed}
-\declaremacro{PMIX_INFO_WAS_PROCESSED}
+\declareapiProvisional{PMIx_Info_was_processed}
 
 Test that a required \refstruct{pmix_info_t} structure has been processed.
 
-\versionMarker{4.0}
-\cspecificstart
-\begin{codepar}
-PMIX_INFO_WAS_PROCESSED(info);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Info_was_processed}{6.0}{
+bool \\
+PMIx_Info_was_processed(pmix_info_t *info);
+}
 
 \begin{arglist}
 \argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
@@ -1816,19 +1780,94 @@ Test the \refconst{PMIX_INFO_REQD_PROCESSED} flag in a \refstruct{pmix_info_t} s
 
 %%%%%%%%%%%
 \littleheader{Test an info structure for \textit{end of array} directive}
-\declaremacro{PMIX_INFO_IS_END}
+\declareapiProvisional{PMIx_Info_is_end}
 
 Test a \refstruct{pmix_info_t} structure, returning \code{true} if the structure is at the end of an array created by the \refmacro{PMIX_INFO_CREATE} macro.
 
-\copySignature{PMIX_INFO_IS_END}{2.2}{
-PMIX_INFO_IS_END(info);
+\copySignature{PMIx_Info_is_end}{6.0}{
+bool \\
+PMIx_Info_is_end(pmix_info_t *info);
 }
 
 \begin{arglist}
 \argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
 \end{arglist}
 
-This macro simplifies the testing of the end-of-array flag in \refstruct{pmix_info_t} structures.
+This function simplifies the testing of the end-of-array flag in \refstruct{pmix_info_t} structures.
+
+%%%%%%%%%%%
+\littleheader{Mark an info structure as qualifier}
+\declareapiProvisional{PMIx_Info_qualifier}
+
+Mark a \refstruct{pmix_info_t} structure as being a
+\textit{qualifier} for another \refstruct{pmix_info_t} value.
+
+\copySignature{PMIx_Info_qualifier}{6.0}{
+void \\
+PMIx_Info_qualifier(pmix_info_t *info);
+}
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This function simplifies the setting of the \textit{qualifier} flag in \refstruct{pmix_info_t} structures.
+
+
+%%%%%%%%%%%
+\littleheader{Test an info structure for \textit{qualifier} directive}
+\declareapiProvisional{PMIx_Info_is_qualifier}
+
+Test a \refstruct{pmix_info_t} structure as being a
+qualifier for another \refstruct{pmix_info_t} value.
+
+\copySignature{PMIx_Info_is_qualifier}{6.0}{
+bool \\
+PMIx_Info_is_qualifier(pmix_info_t *info);
+}
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This function simplifies the testing of the \textit{qualifier} flag in \refstruct{pmix_info_t} structures.
+
+
+%%%%%%%%%%%
+\littleheader{Mark an info structure as persistent}
+\declareapiProvisional{PMIx_Info_persistent}
+
+Mark a \refstruct{pmix_info_t} structure as containing a \textit{persistent} value.
+
+\copySignature{PMIx_Info_persistent}{6.0}{
+void \\
+PMIx_Info_persistent(pmix_info_t *info);
+}
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This function simplifies the setting of the \textit{persistent} flag in \refstruct{pmix_info_t} structures.
+
+
+%%%%%%%%%%%
+\littleheader{Test an info structure for \textit{persistent} directive}
+\declareapiProvisional{PMIx_Info_is_persistent}
+
+Test a \refstruct{pmix_info_t} structure for containing a \textit{persistent} \refstruct{pmix_info_t} value.
+
+\copySignature{PMIx_Info_is_persistent}{6.0}{
+bool \\
+PMIx_Info_is_persistent(pmix_info_t *info);
+}
+
+\begin{arglist}
+\argin{info}{Pointer to the \refstruct{pmix_info_t} (pointer to \refstruct{pmix_info_t})}
+\end{arglist}
+
+This function simplifies the testing of the \textit{persistent} flag in \refstruct{pmix_info_t} structures.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Environmental Variable Structure}
@@ -1860,7 +1899,7 @@ The following macros are provided to support the \refstruct{pmix_envar_t} struct
 
 %%%%
 \littleheader{Static initializer for the envar structure}
-\declaremacroProvisional{PMIX_ENVAR_STATIC_INIT}
+\declaremacro{PMIX_ENVAR_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_envar_t} fields.
 
@@ -1872,13 +1911,18 @@ PMIX_ENVAR_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%
+\subsubsection{Environmental variable support functions}
+The following functions are provided to support the \refstruct{pmix_envar_t} structure.
+
 \littleheader{Initialize the envar structure}
-\declaremacro{PMIX_ENVAR_CONSTRUCT}
+\declareapiProvisional{PMIx_Envar_construct}
 
 Initialize the \refstruct{pmix_envar_t} fields.
 
-\copySignature{PMIX_ENVAR_CONSTRUCT}{3.0}{
-PMIX_ENVAR_CONSTRUCT(m)
+\copySignature{PMIx_Envar_construct}{6.0}{
+void \\
+PMIx_Envar_construct(pmix_envar_t *p);
 }
 
 \begin{arglist}
@@ -1886,12 +1930,13 @@ PMIX_ENVAR_CONSTRUCT(m)
 \end{arglist}
 
 \littleheader{Destruct the envar structure}
-\declaremacro{PMIX_ENVAR_DESTRUCT}
+\declareapiProvisional{PMIx_Envar_destruct}
 
 Clear the \refstruct{pmix_envar_t} fields.
 
-\copySignature{PMIX_ENVAR_DESTRUCT}{3.0}{
-PMIX_ENVAR_DESTRUCT(m)
+\copySignature{PMIx_Envar_destruct}{6.0}{
+void \\
+PMIx_Envar_destruct(pmix_envar_t *p);
 }
 
 \begin{arglist}
@@ -1900,27 +1945,30 @@ PMIX_ENVAR_DESTRUCT(m)
 
 
 \littleheader{Create an envar array}
-\declaremacro{PMIX_ENVAR_CREATE}
+\declareapiProvisional{PMIx_Envar_create}
 
 Allocate and initialize an array of \refstruct{pmix_envar_t} structures.
 
-\copySignature{PMIX_ENVAR_CREATE}{3.0}{
-PMIX_ENVAR_CREATE(m, n)
+\copySignature{PMIx_Envar_create}{6.0}{
+pmix_envar_t* \\
+PMIx_Envar_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_envar_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
+Returns pointer to the array of \refstruct{pmix_envar_t} structures
 
 \littleheader{Free an envar array}
-\declaremacro{PMIX_ENVAR_FREE}
+\declareapiProvisional{PMIx_Envar_free}
 
 Release an array of \refstruct{pmix_envar_t} structures.
 
-\copySignature{PMIX_ENVAR_FREE}{3.0}{
-PMIX_ENVAR_FREE(m, n)
+\copySignature{PMIx_Envar_free}{6.0}{
+void \\
+PMIx_Envar_free(pmix_envar_t *p, \\
+\hspace*{4\sigspace}size_t n);
 }
 
 \begin{arglist}
@@ -1929,19 +1977,23 @@ PMIX_ENVAR_FREE(m, n)
 \end{arglist}
 
 \littleheader{Load an envar structure}
-\declaremacro{PMIX_ENVAR_LOAD}
+\declareapiProvisional{PMIx_Envar_load}
 
 Load values into a \refstruct{pmix_envar_t}.
 
-\copySignature{PMIX_ENVAR_LOAD}{2.0}{
-PMIX_ENVAR_LOAD(m, e, v, s)
+\copySignature{PMIx_Envar_load}{6.0}{
+void \\
+PMIx_Envar_load(pmix_envar_t *e, \\
+\hspace*{4\sigspace}char *var,
+\hspace*{4\sigspace}char *value,
+\hspace*{4\sigspace}char separator);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_envar_t})}
-\argin{e}{Environmental variable name (\code{char*})}
-\argin{v}{Value of variable (\code{char*})}
-\argin{v}{Separator character (\code{char})}
+\argin{e}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_envar_t})}
+\argin{var}{Environmental variable name (\code{char*})}
+\argin{value}{Value of variable (\code{char*})}
+\argin{separator}{Separator character (\code{char})}
 \end{arglist}
 
 
@@ -1964,7 +2016,7 @@ The following macros support the \refstruct{pmix_byte_object_t} structure.
 
 %%%%
 \littleheader{Static initializer for the byte object structure}
-\declaremacroProvisional{PMIX_BYTE_OBJECT_STATIC_INIT}
+\declaremacro{PMIX_BYTE_OBJECT_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_byte_object_t} fields.
 
@@ -1975,74 +2027,87 @@ PMIX_BYTE_OBJECT_STATIC_INIT
 \end{codepar}
 \cspecificend
 
+%%%%%%%%%%%
+\subsubsection{Byte object support functions}
+The following functions are provided to support the \refstruct{pmix_byte_object_t} structure.
+
 
 \littleheader{Initialize the byte object structure}
-\declaremacro{PMIX_BYTE_OBJECT_CONSTRUCT}
+\declareapiProvisional{PMIx_Byte_object_construct}
 
 Initialize the \refstruct{pmix_byte_object_t} fields.
 
-\copySignature{PMIX_BYTE_OBJECT_CONSTRUCT}{2.0}{
-PMIX_BYTE_OBJECT_CONSTRUCT(m)
+\copySignature{PMIx_Byte_object_construct}{6.0}{
+void \\
+PMIx_Byte_object_construct(pmix_byte_object_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_byte_object_t})}
+\argin{p}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_byte_object_t})}
 \end{arglist}
 
 \littleheader{Destruct the byte object structure}
-\declaremacro{PMIX_BYTE_OBJECT_DESTRUCT}
+\declareapiProvisional{PMIx_Byte_object_destruct}
 
 Clear the \refstruct{pmix_byte_object_t} fields.
 
-\copySignature{PMIX_BYTE_OBJECT_DESTRUCT}{2.0}{
-PMIX_BYTE_OBJECT_DESTRUCT(m)
+\copySignature{PMIx_Byte_object_destruct}{6.0}{
+void \\
+PMIx_Byte_object_destruct(pmix_byte_object_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_byte_object_t})}
+\argin{p}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_byte_object_t})}
 \end{arglist}
 
-\littleheader{Create a byte object structure}
-\declaremacro{PMIX_BYTE_OBJECT_CREATE}
+\littleheader{Create an array of byte object structures}
+\declareapiProvisional{PMIx_Byte_object_create}
 
 Allocate and intitialize an array of \refstruct{pmix_byte_object_t} structures.
 
-\copySignature{PMIX_BYTE_OBJECT_CREATE}{2.0}{
-PMIX_BYTE_OBJECT_CREATE(m, n)
+\copySignature{PMIx_Byte_object_create}{6.0}{
+pmix_byte_object_t* \\
+PMIx_Byte_object_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_byte_object_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
+Returns pointer to the array of \refstruct{pmix_byte_object_t} structures
+
 \littleheader{Free a byte object array}
-\declaremacro{PMIX_BYTE_OBJECT_FREE}
+\declareapiProvisional{PMIx_Byte_object_free}
 
 Release an array of \refstruct{pmix_byte_object_t} structures.
 
-\copySignature{PMIX_BYTE_OBJECT_FREE}{2.0}{
-PMIX_BYTE_OBJECT_FREE(m, n)
+\copySignature{PMIx_Byte_object_free}{6.0}{
+void \\
+PMIx_Byte_object_free(pmix_byte_object_t *p, \\
+\hspace*{4\sigspace}size_t n);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the array of \refstruct{pmix_byte_object_t} structures (handle)}
+\argin{p}{Pointer to the array of \refstruct{pmix_byte_object_t} structures (handle)}
 \argin{n}{Number of structures in the array (\code{size_t})}
 \end{arglist}
 
 \littleheader{Load a byte object structure}
-\declaremacro{PMIX_BYTE_OBJECT_LOAD}
+\declareapiProvisional{PMIx_Byte_object_load}
 
 Load values into a \refstruct{pmix_byte_object_t}.
 
-\copySignature{PMIX_BYTE_OBJECT_LOAD}{2.0}{
-PMIX_BYTE_OBJECT_LOAD(b, d, s)
+\copySignature{PMIx_Byte_object_load}{6.0}{
+void \\
+PMIx_Byte_object_load(pmix_byte_object_t *p, \\
+\hspace*{4\sigspace}char *d, \\
+\hspace*{4\sigspace}size_t n);
 }
 
 \begin{arglist}
-\argin{b}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_byte_object_t})}
+\argin{p}{Pointer to the structure to be loaded (pointer to \refstruct{pmix_byte_object_t})}
 \argin{d}{Pointer to the data to be loaded (\code{char*})}
-\argin{s}{Number of bytes in the data array (\code{size_t})}
+\argin{n}{Number of bytes in the data array (\code{size_t})}
 \end{arglist}
 
 
@@ -2066,7 +2131,7 @@ The following macros support the \refstruct{pmix_data_array_t} structure.
 
 %%%%
 \littleheader{Static initializer for the data array structure}
-\declaremacroProvisional{PMIX_DATA_ARRAY_STATIC_INIT}
+\declaremacro{PMIX_DATA_ARRAY_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_data_array_t} fields.
 
@@ -2077,179 +2142,215 @@ PMIX_DATA_ARRAY_STATIC_INIT
 \end{codepar}
 \cspecificend
 
+%%%%%%%%%%%
+\subsubsection{Data array support functions}
+The following functions are provided to support the \refstruct{pmix_data_array_t} structure.
+
 
 \littleheader{Initialize a data array structure}
-\declaremacro{PMIX_DATA_ARRAY_CONSTRUCT}
+\declareapiProvisional{PMIx_Data_array_init}
 
-Initialize the \refstruct{pmix_data_array_t} fields, allocating memory for the array of the indicated type.
+Initialize the \refstruct{pmix_data_array_t} fields, setting the type but not allocating any array elements.
 
-\copySignature{PMIX_DATA_ARRAY_CONSTRUCT}{2.2}{
-PMIX_DATA_ARRAY_CONSTRUCT(m, n, t)
+\copySignature{PMIx_Data_array_init}{6.0}{
+void \\
+PMIx_Data_array_init(pmix_data_array_t *p, \\
+\hspace*{4\sigspace}pmix_data_type_t t);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_data_array_t})}
+\argin{p}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_data_array_t})}
+\argin{t}{\ac{PMIx} data type of the array elements (\refstruct{pmix_data_type_t})}
+\end{arglist}
+
+
+\littleheader{Construct a data array structure}
+\declareapiProvisional{PMIx_Data_array_construct}
+
+Initialize the \refstruct{pmix_data_array_t} fields, allocating memory for the array of the indicated type.
+
+\copySignature{PMIx_Data_array_construct}{6.0}{
+void \\
+PMIx_Data_array_construct(pmix_data_array_t *p, \\
+\hspace*{4\sigspace}size_t n, \\
+\hspace*{4\sigspace}pmix_data_type_t t);
+}
+
+\begin{arglist}
+\argin{p}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_data_array_t})}
 \argin{n}{Number of elements in the array (\code{size_t})}
 \argin{t}{\ac{PMIx} data type of the array elements (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
 
 \littleheader{Destruct a data array structure}
-\declaremacro{PMIX_DATA_ARRAY_DESTRUCT}
+\declareapiProvisional{PMIx_Data_array_destruct}
 
 Destruct the \refstruct{pmix_data_array_t}, releasing the memory in the array.
 
-\copySignature{PMIX_DATA_ARRAY_DESTRUCT}{2.2}{
-PMIX_DATA_ARRAY_DESTRUCT(m)
+\copySignature{PMIx_Data_array_destruct}{6.0}{
+void \\
+PMIx_Data_array_destruct(pmix_data_array_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_data_array_t})}
+\argin{p}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_data_array_t})}
 \end{arglist}
 
 
 \littleheader{Create a data array structure}
-\declaremacro{PMIX_DATA_ARRAY_CREATE}
+\declareapiProvisional{PMIx_Data_array_create}
 
 Allocate memory for the \refstruct{pmix_data_array_t} object itself, and then allocate memory for the array of the indicated type.
 
-\copySignature{PMIX_DATA_ARRAY_CREATE}{2.2}{
-PMIX_DATA_ARRAY_CREATE(m, n, t)
+\copySignature{PMIx_Data_array_create}{6.0}{
+pmix_data_array_t* \\
+PMIx_Data_array_create(size_t n, \\
+\hspace*{4\sigspace}pmix_data_type_t t);
 }
 
 \begin{arglist}
-\arginout{m}{Variable to be set to the address of the structure (pointer to \refstruct{pmix_data_array_t})}
 \argin{n}{Number of elements in the array (\code{size_t})}
 \argin{t}{\ac{PMIx} data type of the array elements (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
+Returns the address of the allocated structure (pointer to \refstruct{pmix_data_array_t})
 
 \littleheader{Free a data array structure}
-\declaremacro{PMIX_DATA_ARRAY_FREE}
+\declareapiProvisional{PMIx_Data_array_free}
 
 Release the memory in the array, and then release the \refstruct{pmix_data_array_t} object itself.
 
-\copySignature{PMIX_DATA_ARRAY_FREE}{2.2}{
-PMIX_DATA_ARRAY_FREE(m)
+\copySignature{PMIx_Data_array_free}{6.0}{
+void \\
+PMIx_Data_array_free(pmix_data_array_t *p);
 }
 
 \begin{arglist}
 \argin{m}{Pointer to the structure to be released (pointer to \refstruct{pmix_data_array_t})}
 \end{arglist}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Argument Array Macros}
 
-The following macros support the construction and release of \code{NULL}-terminated argv arrays of strings.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Argument Array Functions}
+
+The following functions support the construction and release of \code{NULL}-terminated argv arrays of strings.
 
 %%%%
 \littleheader{Argument array extension}
-\declaremacro{PMIX_ARGV_APPEND}
+\declareapiProvisional{PMIx_Argv_append_nosize}
 
 Append a string to a NULL-terminated, argv-style array of strings.
 
-\cspecificstart
-\begin{codepar}
-PMIX_ARGV_APPEND(r, a, b);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Argv_append_nosize}{6.0}{
+pmix_status_t \\
+PMIx_Argv_append_nosize(char ***argv, \\
+\hspace*{4\sigspace}const char *arg);
+}
 
 \begin{arglist}
-\argout{r}{Status code indicating success or failure of the operation (\refstruct{pmix_status_t})}
-\arginout{a}{Argument list (pointer to NULL-terminated array of strings)}
-\argin{b}{Argument to append to the list (string)}
+\arginout{argv}{Argument list (pointer to NULL-terminated array of strings)}
+\argin{arg}{Argument to append to the list (string)}
 \end{arglist}
+
+Returns status code indicating success or failure of the operation (\refstruct{pmix_status_t})
 
 This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required.
 
 \adviceuserstart
-The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the macro has completed.
+The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the function has completed.
 \adviceuserend
 
 %%%%
 \littleheader{Argument array prepend}
-\declaremacro{PMIX_ARGV_PREPEND}
+\declareapiProvisional{PMIx_Argv_prepend_nosize}
 
 Prepend a string to a NULL-terminated, argv-style array of strings.
 
-\cspecificstart
-\begin{codepar}
-PMIX_ARGV_PREPEND(r, a, b);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Argv_prepend_nosize}{6.0}{
+pmix_status_t \\
+PMIx_Argv_prepend_nosize(char ***argv, \\
+\hspace*{4\sigspace}const char *arg);
+}
 
 \begin{arglist}
-\argout{r}{Status code indicating success or failure of the operation (\refstruct{pmix_status_t})}
-\arginout{a}{Argument list (pointer to NULL-terminated array of strings)}
-\argin{b}{Argument to append to the list (string)}
+\arginout{argv}{Argument list (pointer to NULL-terminated array of strings)}
+\argin{arg}{Argument to prepend to the list (string)}
 \end{arglist}
 
+Returns status code indicating success or failure of the operation (\refstruct{pmix_status_t})
+
+\descr
 This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required.
 
 \adviceuserstart
-The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the macro has completed.
+The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the function has completed.
 \adviceuserend
 
 %%%%%%%%%%%
 \littleheader{Argument array extension - unique}
-\declaremacro{PMIX_ARGV_APPEND_UNIQUE}
+\declareapiProvisional{PMIx_Argv_append_unique_nosize}
 
 Append a string to a NULL-terminated, argv-style array of strings, but only if the provided argument doesn't already exist somewhere in the array.
 
-\cspecificstart
-\begin{codepar}
-PMIX_ARGV_APPEND_UNIQUE(r, a, b);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Argv_append_unique_nosize}{6.0}{
+pmix_status_t \\
+PMIx_Argv_append_unique_nosize(char ***argv, \\
+\hspace*{4\sigspace}const char *arg);
+}
 
 \begin{arglist}
-\argout{r}{Status code indicating success or failure of the operation (\refstruct{pmix_status_t})}
-\arginout{a}{Argument list (pointer to NULL-terminated array of strings)}
-\argin{b}{Argument to append to the list (string)}
+\arginout{argv}{Argument list (pointer to NULL-terminated array of strings)}
+\argin{arg}{Argument to append to the list (string)}
 \end{arglist}
+
+Returns status code indicating success or failure of the operation (\refstruct{pmix_status_t})
+
+\descr
 
 This function helps the caller build the \code{argv} portion of \refstruct{pmix_app_t} structure, arrays of keys for querying, or other places where argv-style string arrays are required.
 
 \adviceuserstart
-The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the macro has completed.
+The provided argument is copied into the destination array - thus, the source string can be free'd without affecting the array once the function has completed.
 \adviceuserend
 
 %%%%%%%%%%%
 \littleheader{Argument array release}
-\declaremacro{PMIX_ARGV_FREE}
+\declareapiProvisional{PMIx_Argv_free}
 
 Free an argv-style array and all of the strings that it contains.
 
-\cspecificstart
-\begin{codepar}
-PMIX_ARGV_FREE(a);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Argv_free}{6.0}{
+void \\
+PMIx_Argv_free(char **argv);
+}
 
 \begin{arglist}
-\argin{a}{Argument list (pointer to NULL-terminated array of strings)}
+\argin{argv}{Argument list (pointer to NULL-terminated array of strings)}
 \end{arglist}
 
 This function releases the array and all of the strings it contains.
 
 %%%%%%%%%%%
 \littleheader{Argument array split}
-\declaremacro{PMIX_ARGV_SPLIT}
+\declareapiProvisional{PMIx_Argv_split}
 
-Split a string into a NULL-terminated argv array.
+Split a string into a NULL-terminated argv array
 
-\cspecificstart
-\begin{codepar}
-PMIX_ARGV_SPLIT(a, b, c);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Argv_split}{6.0}{
+char** \\
+PMIx_Argv_split(const char *src_string, \\
+\hspace*{4\sigspace}int delimiter);
+}
 
 \begin{arglist}
-\argout{a}{Resulting argv-style array (\code{char**})}
-\argin{b}{String to be split (\code{char*})}
-\argin{c}{Delimiter character (\code{char})}
+\argin{src_string}{String to be split (\code{char*})}
+\argin{delimiter}{Delimiter character (\code{char})}
 \end{arglist}
 
+Returns an argv-style array (\code{char**})
+
+\descr
 Split an input string into a NULL-terminated argv array. Do not include empty strings in the resulting array.
 
 \adviceuserstart
@@ -2257,86 +2358,119 @@ All strings are inserted into the argv array by value; the newly-allocated array
 \adviceuserend
 
 %%%%%%%%%%%
+\littleheader{Argument array split with empty}
+\declareapiProvisional{PMIx_Argv_split_with_empty}
+
+Split a string into a NULL-terminated argv array.
+
+\copySignature{PMIx_Argv_split_with_empty}{6.0}{
+char** \\
+PMIx_Argv_split_with_empty(const char *src_string, \\
+\hspace*{4\sigspace}int delimiter);
+}
+
+\begin{arglist}
+\argin{src_string}{String to be split (\code{char*})}
+\argin{delimiter}{Delimiter character (\code{char})}
+\end{arglist}
+
+Returns an argv-style array (\code{char**})
+
+\descr
+Split an input string into a NULL-terminated argv array. Include empty strings in the resulting array.
+
+\adviceuserstart
+All strings are inserted into the argv array by value; the newly-allocated array makes no references to the src_string argument (i.e., it can be freed after calling this function without invalidating the output argv array)
+\adviceuserend
+
+%%%%%%%%%%%
 \littleheader{Argument array join}
-\declaremacro{PMIX_ARGV_JOIN}
+\declareapiProvisional{PMIx_Argv_join}
 
 Join all the elements of an argv array into a single newly-allocated string.
 
-\cspecificstart
-\begin{codepar}
-PMIX_ARGV_JOIN(a, b, c);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Argv_join}{6.0}{
+char* \\
+PMIx_Argv_join(char **argv, \\
+\hspace*{4\sigspace}int delimiter);
+}
 
 \begin{arglist}
-\argout{a}{Resulting string (\code{char*})}
-\argin{b}{Argv-style array to be joined (\code{char**})}
-\argin{c}{Delimiter character (\code{char})}
+\argin{argv}{Argv-style array to be joined (\code{char**})}
+\argin{delimiter}{Delimiter character (\code{char})}
 \end{arglist}
 
+Returns a newly allocated string.
+
+\descr
 Join all the elements of an argv array into a single newly-allocated string.
 
 %%%%%%%%%%%
 \littleheader{Argument array count}
-\declaremacro{PMIX_ARGV_COUNT}
+\declareapiProvisional{PMIx_Argv_count}
 
 Return the length of a NULL-terminated argv array.
 
-\cspecificstart
-\begin{codepar}
-PMIX_ARGV_COUNT(r, a);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Argv_join}{6.0}{
+int \\
+PMIx_Argv_count(char **argv);
+}
 
 \begin{arglist}
-\argout{r}{Number of strings in the array (integer)}
-\argin{a}{Argv-style array (\code{char**})}
+\argin{argv}{Argv-style array (\code{char**})}
 \end{arglist}
 
+Returns the number of strings in the array (integer)
+
+\descr
 Count the number of elements in an argv array
 
 %%%%%%%%%%%
 \littleheader{Argument array copy}
-\declaremacro{PMIX_ARGV_COPY}
+\declareapiProvisional{PMIx_Argv_copy}
 
 Copy an argv array, including copying all of its strings.
 
-\cspecificstart
-\begin{codepar}
-PMIX_ARGV_COPY(a, b);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Argv_copy}{6.0}{
+char ** \\
+PMIx_Argv_copy(char **argv);
+}
 
 \begin{arglist}
-\argout{a}{New argv-style array (\code{char**})}
-\argin{b}{Argv-style array (\code{char**})}
+\argin{argv}{Argv-style array (\code{char**})}
 \end{arglist}
 
+Returns new argv-style array (\code{char**})
+
+\descr
 Copy an argv array, including copying all of its strings.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Set Environment Variable}
-\declaremacro{PMIX_SETENV}
+\declareapiProvisional{PMIx_Setenv}
 
 %%%%
 \summary
 
 Set an environment variable in a \code{NULL}-terminated, env-style array.
 
-\cspecificstart
-\begin{codepar}
-PMIX_SETENV(r, name, value, env);
-\end{codepar}
-\cspecificend
-
+\copySignature{PMIx_Setenv}{6.0}{
+pmix_status_t \\
+PMIx_Setenv(const char *name, \\
+\hspace*{4\sigspace}const char *value, \\
+\hspace*{4\sigspace}bool overwrite, \\
+\hspace*{4\sigspace}char ***env);
+}
 
 \begin{arglist}
-\argout{r}{Status code indicating success or failure of the operation (\refstruct{pmix_status_t})}
 \argin{name}{Argument name (string)}
 \argin{value}{Argument value (string)}
+\argin{overwrite}{Indicate if any existing value is to be overwritten (\code{bool})}
 \arginout{env}{Environment array to update (pointer to array of strings)}
 \end{arglist}
+
+Returns status code indicating success or failure of the operation (\refstruct{pmix_status_t})
 
 %%%%
 \descr
@@ -2487,7 +2621,7 @@ Query structure (\refstruct{pmix_query_t}).
 \declareconstitemvalue{PMIX_COMPRESSED_STRING}{42}
 String compressed with zlib (\code{char*}).
 %
-\declareconstitemvalueProvisional{PMIX_COMPRESSED_BYTE_OBJECT}{59}
+\declareconstitemvalue{PMIX_COMPRESSED_BYTE_OBJECT}{59}
 Byte object whose bytes have been compressed with zlib (\code{pmix_byte_object_t}).
 %
 \declareconstitemvalue{PMIX_ALLOC_DIRECTIVE}{43}
