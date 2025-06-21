@@ -198,6 +198,13 @@ The requested operation was performed atomically - no callback function will be 
 \declareconstitemvalue{PMIX_ERR_PARTIAL_SUCCESS}{-52}
 The operation is considered successful but not all elements of the operation were concluded (e.g., some members of a group construct operation chose not to participate).
 %
+\declareconstitemvalueProvisional{PMIX_ERR_LOST_PRECISION}{-400}
+The returned value is of a data type that may have lost precision when converted from the original value - e.g., when converting a \code{float} to an \code{int}.
+%
+\declareconstitemvalueProvisional{PMIX_ERR_CHANGE_SIGN}{-401}
+The returned value is of a data type that would cause a change in sign when converted from the original value - e.g., when converting a negative integer to a \code{size_t}.
+%
+
 \end{constantdesc}
 
 
@@ -1168,26 +1175,38 @@ Copy the data in the source \refstruct{pmix_value_t} into the destination \refst
 
 %%%%%%%%%%%
 \littleheader{Retrieve a numerical value from a value struct}
-\declaremacro{PMIX_VALUE_GET_NUMBER}
+\declareapiProvisional{PMIx_Value_get_number}
 
 Retrieve a numerical value from a \refstruct{pmix_value_t} structure.
 
-\copySignature{PMIX_VALUE_GET_NUMBER}{3.0}{
-PMIX_VALUE_GET_NUMBER(s, m, n, t)
+\copySignature{PMIx_Value_get_number}{6.0}{
+pmix_status_t \\
+PMIx_Value_get_number(pmix_value_t *m,
+\hspace*{24\sigspace}void *d,
+\hspace*{24\sigspace}pmix_data_type_t t);
 }
 
 \begin{arglist}
-\argout{s}{Status code for the request (\refstruct{pmix_status_t})}
 \argin{m}{Pointer to the\refstruct{pmix_value_t} structure (handle)}
-\argout{n}{Variable to be set to the value}
-\argin{t}{Type of number to be returned in \refarg{m} (\code{C data type})}
+\argout{d}{Pointer to the variable to be set to the value (\code{void*})}
+\argin{t}{Type of number to be returned in \refarg{d} (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
-Sets the provided variable equal to the numerical value contained in the given \refstruct{pmix_value_t}, returning success if the data type of the value is a recognized numerical type - the \refconst{PMIX_ERR_BAD_PARAM} error is
-returned if the value contains a non-numerical type. The returned value is type cast to the
-provided C-language data type. It is therefore possible to lose precision - e.g., if the \refstruct{pmix_value_t}
-contains a \refconst{PMIX_FLOAT} and the macro invocation requests that the returned value be type cast to an
-\code{int}.
+Sets the destination variable equal to the numerical value contained in the given \refstruct{pmix_value_t}.
+The \refconst{PMIX_ERR_BAD_PARAM} error is returned if the \refstruct{pmix_value_t} contains a non-numerical
+type. If the destination type (as provided in the \refarg{t} parameter) matches that of the value, then
+the value is simply transferred across.
+
+If transfer of the value to the destination would result in a loss of precision - e.g., if the \refstruct{pmix_value_t}
+contains a \refconst{PMIX_FLOAT} and the function invocation passes an
+\code{int} for the destination, the value will not be transferred and the returned status will be \refconst{PMIX_ERR_LOST_PRECISION}.
+
+If the transfer could result in a change in sign - e.g., if the \refstruct{pmix_value_t} contains a negative
+integer while the function invocation passes a \code{size_t} for the destination, value will not be
+transferred and the returned status will be \refconst{PMIX_ERR_CHANGE_SIGN}.
+
+In all other cases (e.g., the value contains a \code{uint8_t} while the destination is a \code{uint16_t}), the value will
+be transferred to the destination and a \refconst{PMIX_SUCCESS} status will be returned.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Info Structure}

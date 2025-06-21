@@ -1632,8 +1632,9 @@ The following errors were corrected in v5.1:
 
 \subsection{Added Constants (Provisional)}
 
-%\begin{compactitemize}
-%\end{compactitemize}
+\begin{compactitemize}
+    \item \refconst{PMIX_ERR_LOST_PRECISION}
+\end{compactitemize}
 
 \subsection{Added Attributes}
 
@@ -1702,6 +1703,7 @@ official ABI and allows debuggers to step through them.
   \item \refapi{PMIx_Value_destruct}
   \item \refapi{PMIx_Value_create}
   \item \refapi{PMIx_Value_free}
+  \item \refapi{PMIx_Value_get_number}
   \item \refapi{PMIx_Info_construct}
   \item \refapi{PMIx_Info_destruct}
   \item \refapi{PMIx_Info_create}
@@ -1810,15 +1812,18 @@ official ABI and allows debuggers to step through them.
 
 \subsection{Deprecated constants}
 
-The following constants were deprecated in v5.1:
+The following constants were deprecated in v6.0:
 
 \subsection{Deprecated attributes}
 
-The following attributes were deprecated in v5.1:
+The following attributes were deprecated in v6.0:
 
 \subsection{Deprecated macros}
 
-The following macros were deprecated in v5.1:
+The following macros were deprecated in v6.0:
+
+\declaremacroDEP{PMIX_VALUE_GET_NUMBER} Replaced by the \refapi{PMIx_Value_get_number} \ac{API}. Note that this also
+includes a signature change, and a change in returned value.
 
 \subsection{Removed attributes}
 
