@@ -43,8 +43,8 @@ Event notifications provide the process identifier of the source of the event pl
 %
 \end{itemize}
 
-Users can specify the callback order of a handler within its category at the time of registration. 
-Users can specify that a given handler be executed before or after another target handler should both handlers appear in the event chain (the ordering is ignored if the other handler isn't included). 
+Users can specify the callback order of a handler within its category at the time of registration.
+Users can specify that a given handler be executed before or after another target handler should both handlers appear in the event chain (the ordering is ignored if the other handler isn't included).
 The ordering is dictated by providing the event handler name of the target.  The name must have been assigned when the target handler was registered.
 Note that ordering does not imply immediate relationships. For example, multiple handlers registered to be serviced after event handler \textit{A} will all be executed after \textit{A}, but are not guaranteed to be executed in any particular order amongst themselves.
 
@@ -115,7 +115,7 @@ has failed for an undetermined reason.
 \end{itemize}
 \returnend
 
-The callback function must not be executed prior to returning from the \ac{API}, and no events corresponding to this registration may be delivered prior to the completion of the registration callback function (\refarg{cbfunc}).
+No events corresponding to this registration may be delivered prior to the completion of the registration callback function (\refarg{cbfunc}).
 
 \reqattrstart
 The following attributes are required to be supported by all \ac{PMIx} libraries:
@@ -507,7 +507,7 @@ Host environments that support \ac{PMIx} event notification may offer notificati
 %%%%
 \descr
 
-Report an event for notification via any registered event handler. This function can be called by any \ac{PMIx} process, including application processes, \ac{PMIx} servers, and \ac{SMS} elements. 
+Report an event for notification via any registered event handler. This function can be called by any \ac{PMIx} process, including application processes, \ac{PMIx} servers, and \ac{SMS} elements.
 
 The \ac{PMIx} server calls this \ac{API} to report events it detected itself so that the host \ac{SMS} daemon can distribute and handle them, and to pass events given to it by its host down to any attached client processes for processing. Examples might include notification of the failure of another process, detection of an impending node failure due to rising temperatures, or an intent to preempt the application. Events may be locally generated or come from anywhere in the system.
 
@@ -578,7 +578,7 @@ The following status code may be returned by a handler to stop the handler chain
 \begin{constantdesc}
 %
 \declareconstitemvalue{PMIX_EVENT_ACTION_COMPLETE}{-334}
-Event handler: Action complete. 
+Event handler: Action complete.
 \end{constantdesc}
 %
 
