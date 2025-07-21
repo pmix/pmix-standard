@@ -955,7 +955,7 @@ As information not related to namespaces is considered \emph{static}, there is n
 
 A \code{NULL} \refarg{cbfunc} reference indicates that the function is to be executed as a blocking operation.
 % TODO: If this is one of those functions that can be blocking or non-blocking, then
-% it needs a full return code explanation, not the returnsimple 
+% it needs a full return code explanation, not the returnsimple
 
 \advicermend
 
@@ -1995,7 +1995,7 @@ typedef struct pmix_server_module_4_0_0_t \{
     /* v2x interfaces */
     pmix_server_notify_event_fn_t       notify_event;
     pmix_server_query_fn_t              query;
-    pmix_server_tool_connection_fn_t    tool_connected;
+    pmix_server_tool_connection_fn_t    tool_connected;    // DEPRECATED
     pmix_server_log_fn_t                log;
     pmix_server_alloc_fn_t              allocate;
     pmix_server_job_control_fn_t        job_control;
@@ -2009,6 +2009,7 @@ typedef struct pmix_server_module_4_0_0_t \{
     pmix_server_grp_fn_t                group;
     pmix_server_fabric_fn_t             fabric;
     pmix_server_client_connected2_fn_t  client_connected2;
+    pmix_server_tool_connection2_fn_t   tool_connected2;
 \} pmix_server_module_t;
 \end{codepar}
 \cspecificend
@@ -3246,8 +3247,9 @@ The \ac{PMIx} server library should not block in this function as the host envir
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{\code{pmix_server_tool_connection_fn_t}}
-\declareapi{pmix_server_tool_connection_fn_t}
+\versionMarkerProvisional{6.0}
+\subsection{\code{pmix_server_tool_connection2_fn_t}}
+\declareapi{pmix_server_tool_connection2_fn_t}
 
 %%%%
 \summary
@@ -3257,8 +3259,8 @@ Register that a tool has connected to the server.
 %%%%
 \format
 
-\copySignature{pmix_server_tool_connection_fn_t}{2.0}{
-typedef void (*pmix_server_tool_connection_fn_t)( \\
+\copySignature{pmix_server_tool_connection2_fn_t}{6.0}{
+typedef pmix_status_t (*pmix_server_tool_connection2_fn_t)( \\
 \hspace*{29\sigspace}pmix_info_t info[], size_t ninfo, \\
 \hspace*{29\sigspace}pmix_tool_connection_cbfunc_t cbfunc, \\
 \hspace*{29\sigspace}void *cbdata);
@@ -3270,6 +3272,15 @@ typedef void (*pmix_server_tool_connection_fn_t)( \\
 \argin{cbfunc}{Callback function \refapi{pmix_tool_connection_cbfunc_t} (function reference)}
 \argin{cbdata}{Data to be passed to the callback function (memory reference)}
 \end{arglist}
+
+Returns one of the following:
+
+\begin{itemize}
+    \item \refconst{PMIX_SUCCESS}, indicating that the request is being processed by the host environment - result will be returned in the provided \refarg{cbfunc}.
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will not be called
+    \item \refconst{PMIX_ERR_NOT_SUPPORTED}, indicating that the host environment does not support the request, even though the function entry was provided in the server module - the \refarg{cbfunc} will not be called
+    \item a PMIx error constant indicating either an error in the input or that the request was immediately processed and failed - the \refarg{cbfunc} will not be called
+\end{itemize}
 
 \reqattrstart
 \ac{PMIx} libraries are required to pass the following attributes in the \refarg{info} array:
@@ -3307,7 +3318,8 @@ for authentication purposes.
 If the tool already has an assigned process identifier, then this must be
 indicated in the \refarg{info} array. The host is responsible for checking
 that the provided namespace does not conflict with any currently known
-assignments, returning an appropriate error in the callback function if a conflict is found.
+assignments, returning an appropriate error (either directly or in the
+callback function) if a conflict is found.
 
 The host environment is solely responsible for authenticating and authorizing
 the connection using whatever means it deems appropriate. If certificates or
@@ -3315,11 +3327,11 @@ other authentication information are required, then the tool must provide them.
 The conclusion of those operations shall be communicated back to the \ac{PMIx}
 server library via the callback function.
 
-Approval or rejection of the connection request shall be returned in the
+Approval or rejection of the connection request shall be returned either directly
+or in the
 \refarg{status} parameter of the \refapi{pmix_tool_connection_cbfunc_t}. If
 the connection is refused, the \ac{PMIx} server library must terminate the
-connection attempt. The host must not execute the callback function prior to
-returning from the \ac{API}.
+connection attempt.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Tool connection attributes}
@@ -3373,6 +3385,61 @@ The host environment shall provide a namespace/rank identifier for the connectin
 It is assumed that \code{rank=0} will be the normal assignment, but allow for the future possibility of a parallel set of tools connecting, and thus each process requiring a unique rank.
 \advicermend
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{\code{pmix_server_tool_connection_fn_t}}
+\declareapi{pmix_server_tool_connection_fn_t}
+
+%%%%
+\summary
+
+Register that a tool has connected to the server.
+
+%%%%
+\format
+
+\copySignature{pmix_server_tool_connection_fn_t}{2.0}{
+typedef pmix_status_t (*pmix_server_tool_connection_fn_t)( \\
+\hspace*{29\sigspace}pmix_info_t info[], size_t ninfo, \\
+\hspace*{29\sigspace}pmix_tool_connection_cbfunc_t cbfunc, \\
+\hspace*{29\sigspace}void *cbdata);
+}
+
+\begin{arglist}
+\argin{info}{Array of \refstruct{pmix_info_t} structures (array of handles)}
+\argin{ninfo}{Number of elements in the \refarg{info} array (integer)}
+\argin{cbfunc}{Callback function \refapi{pmix_tool_connection_cbfunc_t} (function reference)}
+\argin{cbdata}{Data to be passed to the callback function (memory reference)}
+\end{arglist}
+
+\reqattrstart
+\ac{PMIx} libraries are required to pass the following attributes in the \refarg{info} array:
+
+\pasteAttributeItem{PMIX_USERID}
+\pasteAttributeItem{PMIX_GRPID}
+\pasteAttributeItemBegin{PMIX_TOOL_NSPACE}This must be included only if the tool already has an assigned namespace.
+\pasteAttributeItemEnd{}
+\pasteAttributeItemBegin{PMIX_TOOL_RANK}This must be included only if the tool already has an assigned rank.
+\pasteAttributeItemEnd{}
+\pasteAttributeItem{PMIX_CREDENTIAL}
+
+\reqattrend
+
+
+\optattrstart
+The following attributes are optional for host environments that support this operation:
+
+\pasteAttributeItem{PMIX_FWD_STDOUT}
+\pasteAttributeItem{PMIX_FWD_STDERR}
+\pasteAttributeItem{PMIX_FWD_STDIN}
+\pasteAttributeItem{PMIX_VERSION_INFO}
+
+\optattrend
+
+%%%%
+\descr
+
+This function module entry has been \textbf{DEPRECATED} in favor of \refapi{pmix_server_tool_connection2_fn_t}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{pmix_server_log_fn_t}}
