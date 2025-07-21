@@ -436,7 +436,7 @@
 %  \pasteAttributeItem             Paste a copy of the Attribute declaration
 %  \pasteAttributeItemBegin        Paste a copy of the Attribute declaration
 %  \pasteAttributeItemEnd            with space to extend the description.
-%  
+%
 %  \refconst                       Reference a Constant
 %
 
@@ -537,7 +537,7 @@
 %  \pasteAttributeItem             Paste a copy of the Attribute declaration
 %  \pasteAttributeItemBegin        Paste a copy of the Attribute declaration
 %  \pasteAttributeItemEnd            with space to extend the description.
-%  
+%
 %  \refAttributeItem or \refattr   Reference an Attribute
 %
 
@@ -897,7 +897,7 @@
 \newcommand{\returnstart}{Returns PMIX_SUCCESS or one of the following error codes when the condition described occurs:}
 \newcommand{\returnend}{If none of the above return codes are appropriate, then an implementation must return either a general \ac{PMIx} error code or an implementation defined error code as described in Section \ref{api:struct:errors}.}
 \newcommand{\returnsimple}{Returns \refconst{PMIX_SUCCESS} or a negative value indicating the error.}
-\newcommand{\returnsimplenb}{A successful return indicates that the request is being processed and the result will be returned in the provided \refarg{cbfunc}. Note that the library must not invoke the callback function prior to returning from the \ac{API}.  The callback function, \refarg{cbfunc}, is only called when \refconst{PMIX_SUCCESS} is returned.}
+\newcommand{\returnsimplenb}{A successful return indicates that the request is being processed and the result will be returned in the provided \refarg{cbfunc}. The callback function, \refarg{cbfunc}, is only called when \refconst{PMIX_SUCCESS} is returned.}
 
 % Rationale
 \newcommand{\rationalestart}{\VSPb\ratline{-1}{dashed}{Rationale}{7em}\VSPa}

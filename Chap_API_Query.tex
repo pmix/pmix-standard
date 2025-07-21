@@ -6,18 +6,18 @@
 
 This chapter presents mechanisms for generalized queries that
 access information about the host environment and the system in general.
-The chapter presents the concept of a query followed by a detailed explanation 
+The chapter presents the concept of a query followed by a detailed explanation
 of the query \acp{API} provided.  The chapter compares the use of these \acp{API} with \refapi{PMIx_Get}.  The chapter concludes with detailed information about how to use
 the query interface to access information about what \ac{PMIx} \acp{API} an implementation supports as well as what attributes each supported \ac{API} supports.
 
 \section{PMIx_Query_info}
 As the level of interaction between applications and the host \ac{SMS} grows, so too does the need for the application to query the \ac{SMS} regarding its capabilities and state information. \ac{PMIx} provides a generalized query interface for this purpose, along with a set of standardized attribute keys to support a range of requests. This includes requests to determine the status of scheduling queues and active allocations, the scope of \ac{API} and attribute support offered by the \ac{SMS}, namespaces of active jobs, location and information about a job's processes, and information regarding available resources.
 
-An example use-case for the \refapi{PMIx_Query_info_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully (e.g., to write a checkpoint before termination) it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.  
-\ac{PMIx} supports this use-case by defining an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_info_nb} interface to obtain the number of seconds remaining in the current job allocation. 
+An example use-case for the \refapi{PMIx_Query_info_nb} \ac{API} is to ensure clean job completion. Time-shared systems frequently impose maximum run times when assigning jobs to resource allocations. To shut down gracefully (e.g., to write a checkpoint before termination) it is necessary for an application to periodically query the resource manager for the time remaining in its allocation. This is especially true on systems for which allocation times may be shortened or lengthened from the original time limit. Many resource managers provide \acp{API} to dynamically obtain this information, but each \ac{API} is specific to the resource manager.
+\ac{PMIx} supports this use-case by defining an attribute key (\refattr{PMIX_TIME_REMAINING}) that can be used with the \refapi{PMIx_Query_info_nb} interface to obtain the number of seconds remaining in the current job allocation.
 
-\ac{PMIx} sometimes provides multiple methods by which an application can obtain information or services.  For this example, 
-note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time. 
+\ac{PMIx} sometimes provides multiple methods by which an application can obtain information or services.  For this example,
+note that one could alternatively use the \refapi{PMIx_Register_event_handler} \ac{API} to register for an event indicating incipient job termination, and then use the \refapi{PMIx_Job_control_nb} \ac{API} to request that the host \ac{SMS} generate an event a specified amount of time prior to reaching the maximum run time.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Query Structure}
@@ -105,7 +105,7 @@ A call to this \ac{API} can specify multiple queries.  Each query is composed of
 \pasteAttributeItem{PMIX_HOST_ATTRIBUTES}
 \pasteAttributeItem{PMIX_TOOL_ATTRIBUTES}
 
-Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.  Directives which are not applicable to a key are ignored. 
+Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.  Directives which are not applicable to a key are ignored.
 
 % Use of pmix_server_query_fn is covered in server interfaces chapter
 \reqattrend
@@ -187,8 +187,7 @@ PMIx_Query_info_nb(pmix_query_t queries[], size_t nqueries, \\
 \end{arglist}
 
 A successful return indicates that the request has been accepted for processing.
-The provided callback function will only be executed upon successful return of the operation.
-Note that the library must not invoke the callback function prior to returning from the \ac{API}.
+The provided callback function will only be executed upon successful completion of the operation.
 
 \returnsimple
 
@@ -228,7 +227,7 @@ The \refarg{info} array shall contain an element for each query key that returne
 \pasteAttributeItem{PMIX_HOST_ATTRIBUTES}
 \pasteAttributeItem{PMIX_TOOL_ATTRIBUTES}
 
-Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.  Directives which are not applicable to a key are ignored. 
+Note that inclusion of both the \refattr{PMIX_PROCID} directive and either the \refattr{PMIX_NSPACE} or the \refattr{PMIX_RANK} attribute will return a \refconst{PMIX_ERR_BAD_PARAM} result, and that the inclusion of a process identifier must apply to all keys in that \refstruct{pmix_query_t}. Queries for information on multiple specific processes therefore requires submitting multiple \refstruct{pmix_query_t} structures, each referencing one process.  Directives which are not applicable to a key are ignored.
 
 % Use of pmix_server_query_fn is covered in server interfaces chapter
 \reqattrend
@@ -267,7 +266,7 @@ Non-blocking form of the \refapi{PMIx_Query_info} \ac{API}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% NOTE: This is not used anywhere.  If this is supposed to be returned by
-%% the query API's, it was never indicated.  They currently return 
+%% the query API's, it was never indicated.  They currently return
 %% PMIX_ERR_PARTIAL_SUCCESS
 %%\subsection{Query-specific constants}
 %%\label{api:struct:constants:query}
@@ -384,7 +383,7 @@ Average Megabytes of memory used by client processes on node. OPTIONAL QUALIFERS
 \subsection{Query attributes}
 \label{api:struct:attributes:query}
 
-Attributes used to direct behavior of the 
+Attributes used to direct behavior of the
 \refapi{PMIx_Query_info} and \refapi{PMIx_Query_info_nb} \acp{API}:
 
 \declareAttribute{PMIX_QUERY_RESULTS}{"pmix.qry.res"}{pmix_data_array_t}{
