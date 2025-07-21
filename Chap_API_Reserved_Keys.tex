@@ -14,7 +14,7 @@ posting reserved keys.
 %% TODO: Should we note that although values are required to be available at
 %% client start of execution, that some values can change during execution?
 
-Host environments may opt to define non-standardized reserved keys. 
+Host environments may opt to define non-standardized reserved keys.
 All reserved keys, whether standardized or non-standardized, follow the same retrieval rules.
 Users
 are advised to check both the local \ac{PMIx} implementation and host environment documentation
@@ -107,9 +107,9 @@ A string name for the cluster this allocation is on.
 }
 %
 \declareAttribute{PMIX_UNIV_SIZE}{"pmix.univ.size"}{uint32_t}{
-Maximum number of process that can be simultaneously executing in 
+Maximum number of process that can be simultaneously executing in
 a session. Note that this attribute is equivalent to
-the \refattr{PMIX_MAX_PROCS} attribute for the \refterm{session} realm - it 
+the \refattr{PMIX_MAX_PROCS} attribute for the \refterm{session} realm - it
 is included in the \ac{PMIx} Standard for historical reasons.
 }
 %
@@ -196,7 +196,7 @@ Job-related information can be retrieved by requesting a key which defaults
 to the job realm or by including the \refattr{PMIX_JOB_INFO} attribute
 in the \refarg{info} array passed to \refapi{PMIx_Get}.
 For job-related keys the target job is specified by setting the namespace of the target
-job in the \refarg{proc} argument and specifying a rank of \refconst{PMIX_RANK_WILDCARD} 
+job in the \refarg{proc} argument and specifying a rank of \refconst{PMIX_RANK_WILDCARD}
 in the \refarg{proc} argument passed to \refapi{PMIx_Get}.
 
 % Removing because it is only true until we add a key that defaults to another
@@ -258,7 +258,7 @@ process mapping in Argonne National Laboratory's PMI-1/PMI-2 notation of the pro
 Command line used to execute the specified job (e.g., "mpirun -n 2 --map-by foo ./myapp : -n 4 ./myapp2").
 If the job was created by a call to \refapi{PMIx_Spawn}, the string is an inorder
 concatenation of the
-values of \refattr{PMIX_APP_ARGV} for each application in the 
+values of \refattr{PMIX_APP_ARGV} for each application in the
 job using the character ':' as a separator.
 }
 %
@@ -303,7 +303,7 @@ query shall return the corresponding value for the given application within the
 namespace specified in the \refarg{proc} argument of the query (a \code{NULL}
 value for the \refarg{proc} argument equates to the namespace of the caller).
 If the \refattr{PMIX_APPNUM} qualifier is not included, then the retrieval
-shall default to the application containing the process specified by \refarg{proc}. 
+shall default to the application containing the process specified by \refarg{proc}.
 If the rank specified in \refarg{proc} is \refconst{PMIX_RANK_WILDCARD},
 then the application number shall default to that of the calling process if the
 namespace is its own job, or a value of zero if the namespace is that of a
@@ -373,8 +373,8 @@ Process-related information can be retrieved by requesting a key which defaults
 to the process realm or by including the \refattr{PMIX_PROC_INFO} attribute
 in the \refarg{info} array passed to \refapi{PMIx_Get}.
 The target process is specified by the namespace
-and rank of the \refarg{proc} argument to \refapi{PMIx_Get}. 
-For process-related keys (other than \refattr{PMIX_PROCID} and \refattr{PMIX_NSPACE}) 
+and rank of the \refarg{proc} argument to \refapi{PMIx_Get}.
+For process-related keys (other than \refattr{PMIX_PROCID} and \refattr{PMIX_NSPACE})
 the target process is specified by setting the namespace and rank
 of the target process in the \refarg{proc} argument passed to \refapi{PMIx_Get}.
 If information
@@ -432,7 +432,7 @@ Exit code returned when the specified process terminated.
 }
 %
 \declareAttribute{PMIX_PROCID}{"pmix.procid"}{pmix_proc_t}{
-The caller's process identifier.  
+The caller's process identifier.
 The value returned is identical to what \refapi{PMIx_Init} or \refapi{PMIx_tool_init} provides.
 The process identifier in the \refapi{PMIx_Get} call is ignored when requesting this key.
 }
@@ -492,9 +492,9 @@ in the \refarg{info} array passed to \refapi{PMIx_Get}.
 The target node defaults to the local node unless a different node is specified
 in the \refarg{info} array using
 either the \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID}.
-Some node related keys are an exception to this rule and are 
+Some node related keys are an exception to this rule and are
 listed separately at the end of this section.
-These special keys can only target the local node and also require that a namespace 
+These special keys can only target the local node and also require that a namespace
 be specified using the \refarg{proc} argument to \refapi{PMIx_Get}.
 
 
@@ -526,7 +526,7 @@ Total available physical memory on a node.
 Array of \refstruct{pmix_proc_t} of all processes executing on the local node -- shortcut for \refapi{PMIx_Resolve_peers} for the local node and a \code{NULL} namespace argument. The process identifier is ignored for this attribute.
 }
 %
-\declareAttributeProvisional{PMIX_NODE_OVERSUBSCRIBED}{"pmix.ndosub"}{bool}{
+\declareAttribute{PMIX_NODE_OVERSUBSCRIBED}{"pmix.ndosub"}{bool}{
 True if the number of processes from this job on this node exceeds the number of slots allocated to it
 }
 
@@ -539,7 +539,7 @@ In addition, node-level information includes functional attributes directly asso
 \section{Retrieval rules for reserved keys}
 \label{chap:api_rsvd_keys:retrules}
 
-The retrieval rules for reserved keys are relatively simple as the keys, if provided by 
+The retrieval rules for reserved keys are relatively simple as the keys, if provided by
 an implementation, are
 required, by definition, to be available when the client begins execution.
 Accordingly, \refapi{PMIx_Get} for a reserved key first checks the local

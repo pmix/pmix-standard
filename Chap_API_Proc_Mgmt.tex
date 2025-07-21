@@ -139,13 +139,13 @@ A \code{NULL} value in that location indicates that the caller does not wish to 
 The \refarg{nspace} array must be at least of size one more than \refconst{PMIX_MAX_NSLEN}.
 
 By default, the spawned processes will be PMIx ``connected'' to the parent process upon successful launch (see Section \ref{chap:api_proc_mgmt:connect}
-for details).  
+for details).
 Both the parent process and members of the child job will receive notification of errors from processes in their combined assemblage.
 
 \advicermstart
 It is recommended that an implementation will cause the parent process to be given a copy of the new job's job-level
-information so it can query job-level info without incurring any communication penalties.  Similarly, the newly 
-spawned child processes should receive a copy of the parent processes' job-level info due to the high likelihood 
+information so it can query job-level info without incurring any communication penalties.  Similarly, the newly
+spawned child processes should receive a copy of the parent processes' job-level info due to the high likelihood
 that the child will make subsequent queries about its parent.
 \advicermend
 
@@ -342,16 +342,16 @@ The launcher was unable to map the processes for the specified job request.
 \declareconstitemvalue{PMIX_ERR_JOB_FAILED_TO_LAUNCH}{-181}
 One or more processes in the job request failed to launch.
 %
-\declareconstitemvalueProvisional{PMIX_ERR_JOB_EXE_NOT_FOUND}{-190}
+\declareconstitemvalue{PMIX_ERR_JOB_EXE_NOT_FOUND}{-190}
 Specified executable not found
 %
-\declareconstitemvalueProvisional{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}{-234}
+\declareconstitemvalue{PMIX_ERR_JOB_INSUFFICIENT_RESOURCES}{-234}
 Insufficient resources to spawn job
 %
-\declareconstitemvalueProvisional{PMIX_ERR_JOB_SYS_OP_FAILED}{-235}
+\declareconstitemvalue{PMIX_ERR_JOB_SYS_OP_FAILED}{-235}
 System library operation failed
 %
-\declareconstitemvalueProvisional{PMIX_ERR_JOB_WDIR_NOT_FOUND}{-233}
+\declareconstitemvalue{PMIX_ERR_JOB_WDIR_NOT_FOUND}{-233}
 Specified working directory not found
 %
 \end{constantdesc}
@@ -372,7 +372,7 @@ Comma-delimited list of hosts to use for spawned processes.
 }
 %
 \declareAttribute{PMIX_HOSTFILE}{"pmix.hostfile"}{char*}{
-Hostfile to use for spawned processes.  
+Hostfile to use for spawned processes.
 The format of this file is determined by the host environment, therefore a file may not be portable across different host environments.
 }
 %
@@ -381,7 +381,7 @@ Comma-delimited list of hosts to add to the allocation.
 }
 %
 \declareAttribute{PMIX_ADD_HOSTFILE}{"pmix.addhostfile"}{char*}{
-Hostfile containing hosts to add to existing allocation.  
+Hostfile containing hosts to add to existing allocation.
 The format of this file is determined by the host environment, therefore a file may not be portable across different host environments.
 }
 %
@@ -450,7 +450,7 @@ Direct output into files of form \code{"<directory>/\allowbreak <jobid>/\allowbr
 }
 %
 \declareAttribute{PMIX_INDEX_ARGV}{"pmix.indxargv"}{bool}{
-If set to true, will use the given name of the executable (\code{argv[0]}) as a base name and each rank will be invoked with \code{argv[0]} set to the base name with the string "-<\emph{rank}>" appended to it, where \emph{rank} is the \ac{PMIx} rank of the process being invoked (e.g. a.out-0, a.out-1, etc.).  The executable invoked will remain the same for all processes, only the value of \code{argv[0]} will be different for each process.   
+If set to true, will use the given name of the executable (\code{argv[0]}) as a base name and each rank will be invoked with \code{argv[0]} set to the base name with the string "-<\emph{rank}>" appended to it, where \emph{rank} is the \ac{PMIx} rank of the process being invoked (e.g. a.out-0, a.out-1, etc.).  The executable invoked will remain the same for all processes, only the value of \code{argv[0]} will be different for each process.
 }
 %
 \declareAttribute{PMIX_CPUS_PER_PROC}{"pmix.cpuperproc"}{uint32_t}{
@@ -486,7 +486,7 @@ Maximum number of times to restart a process - when accessed using \refapi{PMIx_
 }
 %
 \declareAttribute{PMIX_SPAWN_TOOL}{"pmix.spwn.tool"}{bool}{
-Indicate that the job being spawned is a tool.  The repercussions of setting this attribute varies based on the underlying host environment.  For example, some host environments may not perform cpu-binding on a process marked as a tool. 
+Indicate that the job being spawned is a tool.  The repercussions of setting this attribute varies based on the underlying host environment.  For example, some host environments may not perform cpu-binding on a process marked as a tool.
 }
 %
 \declareAttribute{PMIX_TIMEOUT_STACKTRACES}{"pmix.tim.stack"}{bool}{
@@ -564,16 +564,16 @@ corresponding job; the identity (\refattr{PMIX_PROCID}) and exit status
 Do not generate a \refconst{PMIX_EVENT_JOB_END} event when this job normally terminates.
 }
 %
-\declareAttributeProvisional{PMIX_ENVARS_HARVESTED}{"pmix.evar.hvstd"}{bool}{
+\declareAttribute{PMIX_ENVARS_HARVESTED}{"pmix.evar.hvstd"}{bool}{
 Environmental parameters have been harvested by the spawn requestor - the server
 does not need to harvest them.
 }
 %
-\declareAttributeProvisional{PMIX_JOB_TIMEOUT}{"pmix.job.time"}{int}{
+\declareAttribute{PMIX_JOB_TIMEOUT}{"pmix.job.time"}{int}{
 Time in seconds before the spawned job should time out and be terminated (0 => infinite), defined as the total runtime of the job (equivalent to the walltime limit of typical batch schedulers).
 }
 %
-\declareAttributeProvisional{PMIX_SPAWN_TIMEOUT}{"pmix.sp.time"}{int}{
+\declareAttribute{PMIX_SPAWN_TIMEOUT}{"pmix.sp.time"}{int}{
 Time in seconds before spawn operation should time out (0 => infinite).
 Logically equivalent to passing the \refattr{PMIX_TIMEOUT} attribute to the
 \refapi{PMIx_Spawn} \ac{API}, it is provided as a separate attribute to distinguish
@@ -639,7 +639,7 @@ The following macros are provided to support the \refstruct{pmix_app_t} structur
 
 %%%%
 \littleheader{Static initializer for the app structure}
-\declaremacroProvisional{PMIX_APP_STATIC_INIT}
+\declaremacro{PMIX_APP_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_app_t} fields.
 
@@ -651,14 +651,19 @@ PMIX_APP_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{App structure support functions}
+The following functions are provided to support the \refstruct{pmix_app_t} structure.
+
 %%%%%%%%%%%
 \littleheader{Initialize the app structure}
-\declaremacro{PMIX_APP_CONSTRUCT}
+\declareapiProvisional{PMIx_App_construct}
 
 Initialize the \refstruct{pmix_app_t} fields
 
-\copySignature{PMIX_APP_CONSTRUCT}{1.0}{
-PMIX_APP_CONSTRUCT(m)
+\copySignature{PMIx_App_construct}{6.0}{
+void \\
+PMIx_App_construct(pmix_app_t *m);
 }
 
 \begin{arglist}
@@ -667,12 +672,13 @@ PMIX_APP_CONSTRUCT(m)
 
 %%%%%%%%%%%
 \littleheader{Destruct the app structure}
-\declaremacro{PMIX_APP_DESTRUCT}
+\declareapiProvisional{PMIx_App_destruct}
 
 Destruct the \refstruct{pmix_app_t} fields
 
-\copySignature{PMIX_APP_DESTRUCT}{1.0}{
-PMIX_APP_DESTRUCT(m)
+\copySignature{PMIx_App_destruct}{6.0}{
+void \\
+PMIx_App_destruct(pmix_app_t *m);
 }
 
 \begin{arglist}
@@ -681,27 +687,30 @@ PMIX_APP_DESTRUCT(m)
 
 %%%%%%%%%%%
 \littleheader{Create an app array}
-\declaremacro{PMIX_APP_CREATE}
+\declareapiProvisional{PMIx_App_create}
 
 Allocate and initialize an array of \refstruct{pmix_app_t} structures
 
-\copySignature{PMIX_APP_CREATE}{1.0}{
-PMIX_APP_CREATE(m, n)
+\copySignature{PMIx_App_destruct}{6.0}{
+pmix_app_t* \\
+PMIx_App_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_app_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
+Returns pointer to the array of \refstruct{pmix_app_t} structures (handle)
+
 %%%%%%%%%%%
 \littleheader{Free an app structure}
-\declaremacro{PMIX_APP_RELEASE}
+\declareapiProvisional{PMIx_App_release}
 
 Release a \refstruct{pmix_app_t} structure
 
-\copySignature{PMIX_APP_RELEASE}{4.0}{
-PMIX_APP_RELEASE(m)
+\copySignature{PMIx_App_release}{6.0}{
+void \\
+PMIx_App_release(pmix_app_t *m);
 }
 
 \begin{arglist}
@@ -710,12 +719,14 @@ PMIX_APP_RELEASE(m)
 
 %%%%%%%%%%%
 \littleheader{Free an app array}
-\declaremacro{PMIX_APP_FREE}
+\declareapiProvisional{PMIx_App_free}
 
 Release an array of \refstruct{pmix_app_t} structures
 
-\copySignature{PMIX_APP_FREE}{1.0}{
-PMIX_APP_FREE(m, n)
+\copySignature{PMIx_App_free}{6.0}{
+void \\
+PMIx_App_free(pmix_app_t *m,
+\hspace*{24\sigspace}size_t n);
 }
 
 \begin{arglist}
@@ -725,12 +736,14 @@ PMIX_APP_FREE(m, n)
 
 %%%%%%%%%%%
 \littleheader{Create the info array of application directives}
-\declaremacro{PMIX_APP_INFO_CREATE}
+\declareapiProvisional{PMIx_App_info_create}
 
 Create an array of \refstruct{pmix_info_t} structures for passing application-level directives, updating the \refarg{ninfo} field of the \refstruct{pmix_app_t} structure.
 
-\copySignature{PMIX_APP_INFO_CREATE}{2.2}{
-PMIX_APP_INFO_CREATE(m, n)
+\copySignature{PMIx_App_info_create}{6.0}{
+void \\
+PMIx_App_info_create(pmix_app_t *m,
+\hspace*{24\sigspace}size_t n);
 }
 
 \begin{arglist}
@@ -782,7 +795,7 @@ A successful return indicates that the requested processes are in a terminated s
 
 %%%%
 \descr
-Request that the host resource manager abort the provided array of procs.   If the design of the host resource manager allows, the provided message should be associated with any record it prints or logs of the operation.   
+Request that the host resource manager abort the provided array of procs.   If the design of the host resource manager allows, the provided message should be associated with any record it prints or logs of the operation.
 If the processes were launched by an application designed to launch the processes and which exists for the lifetime of the processes, than this application should terminate with the return code provided if the system allows.
 A \code{NULL} for the \refarg{procs} array indicates that all processes in the caller's namespace are to be aborted, including itself - this is the equivalent of passing a \refstruct{pmix_proc_t} array element containing the caller's namespace and a rank value of \refconst{PMIX_RANK_WILDCARD}. While it is permitted for a caller to request abort of processes from namespaces other than its own, not all environments will support such requests.
 Passing a \code{NULL} \refarg{msg} parameter is allowed.
@@ -802,8 +815,8 @@ Note that race conditions caused by multiple processes calling \refapi{PMIx_Abor
 \section{Connecting and Disconnecting Processes}
 \label{chap:api_proc_mgmt:connect}
 
-This section defines functions to connect and disconnect processes in two or more separate \ac{PMIx} namespaces. 
-The \ac{PMIx} definition of \textit{connected} solely implies that the host environment should treat the failure of any process in the assemblage as a reportable event, taking action on the assemblage as if it were a single application. 
+This section defines functions to connect and disconnect processes in two or more separate \ac{PMIx} namespaces.
+The \ac{PMIx} definition of \textit{connected} solely implies that the host environment should treat the failure of any process in the assemblage as a reportable event, taking action on the assemblage as if it were a single application.
 The call requests that \ac{PMIx}, together with the \ac{RM}, should treat connected processes as a single assemblage for the purposes of event notification and responses to abnormal process termination.
 For example, if the environment defaults (in the absence of any application directives) to terminating an application upon failure of any process in that application, then the environment should terminate all processes in the connected assemblage upon failure of any member.
 
@@ -861,8 +874,8 @@ The following attributes are optional for host environments that support this op
 %%%%
 \descr
 
-Record the processes specified by the \refarg{procs} array as \textit{connected}.  
-The \ac{PMIx} definition of \textit{connected} solely implies that the host environment should treat the failure of any process in the assemblage as a reportable event, taking action on the assemblage as if it were a single application. 
+Record the processes specified by the \refarg{procs} array as \textit{connected}.
+The \ac{PMIx} definition of \textit{connected} solely implies that the host environment should treat the failure of any process in the assemblage as a reportable event, taking action on the assemblage as if it were a single application.
 The function will return once all processes identified in \refarg{procs} have called either \refapi{PMIx_Connect} or its non-blocking version, \textit{and} the host environment has completed any supporting operations required to meet the terms of the \ac{PMIx} definition of \textit{connected} processes.
 
 A process can only engage in one connect operation involving the identical \refarg{procs} array at a time.
@@ -1099,8 +1112,8 @@ The relative locality of processes is often used to optimize their interactions 
 There are times, however, when relative locality and other \ac{PMIx}-provided
 information does not include some element required by the application. In these
 instances, the application may need access to the full description of the
-local hardware topology. 
-\ac{PMIx} is not required to generate a description but offers an abstraction 
+local hardware topology.
+\ac{PMIx} is not required to generate a description but offers an abstraction
 method by which users can obtain a pointer to
 the description. This transparently enables support for different methods of
 sharing the topology between the host environment (which may well have already
@@ -1207,7 +1220,7 @@ The following macros support the \refstruct{pmix_topology_t} structure.
 
 %%%%
 \littleheader{Static initializer for the topology structure}
-\declaremacroProvisional{PMIX_TOPOLOGY_STATIC_INIT}
+\declaremacro{PMIX_TOPOLOGY_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_topology_t} fields.
 
@@ -1219,13 +1232,19 @@ PMIX_TOPOLOGY_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Topology support functions}
+
+The following functions support the \refstruct{pmix_topology_t} structure.
+
 \littleheader{Initialize the topology structure}
-\declaremacro{PMIX_TOPOLOGY_CONSTRUCT}
+\declareapiProvisional{PMIx_Topology_construct}
 
 Initialize the \refstruct{pmix_topology_t} fields to \code{NULL}
 
-\copySignature{PMIX_TOPOLOGY_CONSTRUCT}{4.0}{
-PMIX_TOPOLOGY_CONSTRUCT(m)
+\copySignature{PMIx_Topology_construct}{6.0}{
+void \\
+PMIx_Topology_construct(pmix_topology_t *m);
 }
 
 \begin{arglist}
@@ -1262,18 +1281,38 @@ PMIx_Topology_destruct(pmix_topology_t *topo);
 Release any memory storage held by the \refstruct{pmix_topology_t} structure
 
 \littleheader{Create a topology array}
-\declaremacro{PMIX_TOPOLOGY_CREATE}
+\declareapiProvisional{PMIx_Topology_create}
 
 Allocate and initialize a \refstruct{pmix_topology_t} array.
 
-\copySignature{PMIX_TOPOLOGY_CREATE}{4.0}{
-PMIX_TOPOLOGY_CREATE(m, n)
+\copySignature{PMIx_Topology_create}{6.0}{
+pmix_topology_t* \\
+PMIx_Topology_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_topology_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (size_t)}
 \end{arglist}
+
+Returns pointer to the array of \refstruct{pmix_topology_t} structures (handle)
+
+
+\littleheader{Release a topology array}
+\declareapiProvisional{PMIx_Topology_free}
+
+Release a \refstruct{pmix_topology_t} array.
+
+\copySignature{PMIx_Topology_free}{6.0}{
+void \\
+PMIx_Topology_free(pmix_topology_t *p,
+\hspace*{24\sigspace}size_t n);
+}
+
+\begin{arglist}
+\argin{p} Pointer to the array of \refstruct{pmix_topology_t}
+\argin{n}{Number of structures to be allocated (size_t)}
+\end{arglist}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1628,7 +1667,7 @@ The following macros are provided to support the \refstruct{pmix_device_distance
 
 %%%%
 \littleheader{Static initializer for the device distance structure}
-\declaremacroProvisional{PMIX_DEVICE_DIST_STATIC_INIT}
+\declaremacro{PMIX_DEVICE_DIST_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_device_distance_t} fields.
 
@@ -1640,14 +1679,21 @@ PMIX_DEVICE_DIST_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Device distance support functions}
+\label{api:netenddist:macros}
+
+The following functions are provided to support the \refstruct{pmix_device_distance_t} structure.
+
 %%%%
 \littleheader{Initialize the device distance structure}
-\declaremacro{PMIX_DEVICE_DIST_CONSTRUCT}
+\declareapiProvisional{PMIx_Device_distance_construct}
 
 Initialize the \refstruct{pmix_device_distance_t} fields.
 
-\copySignature{PMIX_DEVICE_DIST_CONSTRUCT}{4.0}{
-PMIX_DEVICE_DIST_CONSTRUCT(m)
+\copySignature{PMIx_Device_distance_construct}{6.0}{
+void \\
+PMIx_Device_distance_construct(pmix_device_distance_t *m)
 }
 
 \begin{arglist}
@@ -1656,12 +1702,13 @@ PMIX_DEVICE_DIST_CONSTRUCT(m)
 
 %%%%
 \littleheader{Destruct the device distance structure}
-\declaremacro{PMIX_DEVICE_DIST_DESTRUCT}
+\declareapiProvisional{PMIx_Device_distance_destruct}
 
 Destruct the \refstruct{pmix_device_distance_t} fields.
 
-\copySignature{PMIX_DEVICE_DIST_DESTRUCT}{4.0}{
-PMIX_DEVICE_DIST_DESTRUCT(m)
+\copySignature{PMIx_Device_distance_destruct}{6.0}{
+void \\
+PMIx_Device_distance_destruct(pmix_device_distance_t *m)
 }
 
 \begin{arglist}
@@ -1670,27 +1717,31 @@ PMIX_DEVICE_DIST_DESTRUCT(m)
 
 %%%%
 \littleheader{Create an device distance array}
-\declaremacro{PMIX_DEVICE_DIST_CREATE}
+\declareapiProvisional{PMIx_Device_distance_create}
 
 Allocate and initialize a \refstruct{pmix_device_distance_t} array.
 
-\copySignature{PMIX_DEVICE_DIST_CREATE}{4.0}{
-PMIX_DEVICE_DIST_CREATE(m, n)
+\copySignature{PMIx_Device_distance_create}{6.0}{
+pmix_device_distance_t* \\
+PMIx_Device_distance_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_device_distance_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
+Returns pointer to the array of \refstruct{pmix_device_distance_t} (handle)
+
 %%%%
 \littleheader{Release an device distance array}
-\declaremacro{PMIX_DEVICE_DIST_FREE}
+\declareapiProvisional{PMIx_Device_distance_free}
 
 Release an array of \refstruct{pmix_device_distance_t} structures.
 
-\copySignature{PMIX_DEVICE_DIST_FREE}{4.0}{
-PMIX_DEVICE_DIST_FREE(m, n)
+\copySignature{PMIx_Device_distance_create}{6.0}{
+void \\
+PMIx_Device_distance_free(pmix_device_distance_t *m,
+\hspace*{24\sigspace}size_t n);
 }
 
 \begin{arglist}

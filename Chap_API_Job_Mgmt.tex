@@ -756,7 +756,7 @@ Non-blocking form of the \refapi{PMIx_Process_monitor} \ac{API}. The \refarg{cbf
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Heartbeat}}
-\declaremacro{PMIx_Heartbeat}
+\declareapiProvisional{PMIx_Heartbeat}
 
 %%%%
 \summary
@@ -766,15 +766,16 @@ Send a heartbeat to the \ac{PMIx} server library
 %%%%
 \format
 
-\copySignature{PMIx_Heartbeat}{2.0}{
-PMIx_Heartbeat();
+\copySignature{PMIx_Heartbeat}{6.0}{
+void \\
+PMIx_Heartbeat(\code{void});
 }
 
 
 %%%%
 \descr
 
-A simplified macro wrapping \refapi{PMIx_Process_monitor_nb} that sends a heartbeat to the \ac{PMIx} server library.
+A simplified function wrapping \refapi{PMIx_Process_monitor_nb} that sends a heartbeat to the \ac{PMIx} server library.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Monitoring events}
