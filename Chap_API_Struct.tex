@@ -2557,7 +2557,7 @@ Definitions should always be based on the \refconst{PMIX_DATA_TYPE_MAX} constant
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{General Callback Functions}
+\section{Callback Functions}
 
 PMIx provides blocking and nonblocking versions of most APIs.
 In the nonblocking versions, a callback is activated upon completion of the the operation.
@@ -2588,6 +2588,107 @@ typedef void (*pmix_release_cbfunc_t) \\
 \descr
 
 Since the data is ``owned'' by the host server, provide a callback function to notify the host server that we are done with the data so it can be released.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\versionMarkerProvisional{5.0}
+\subsection{Publish Datastore Callback Function}
+\declareapi{pmix_publish_datastore_cbfunc_t}
+
+%%%%
+\summary
+
+The \refapi{pmix_publish_datastore_cbfunc_t} is used by \refapi{PMIx_Publish_datastore_nb} to return the handle of the published data.
+
+\copySignature{pmix_publish_datastore_cbfunc_t}{5.0}{
+typedef void (*pmix_publish_datastore_cbfunc_t) \\
+\hspace*{4\sigspace}(pmix_status_t status, \\
+\hspace*{5\sigspace}pmix_publish_id_t publish_epoch, \\
+\hspace*{5\sigspace}void *cbdata);
+}
+
+\begin{arglist}
+\argin{status}{Status associated with the operation (handle)}
+\argin{publish_epoch}{Epoch number of the publishing operation}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+A callback function for calls to \refapi{PMIx_Lookup_nb}.
+The function will be called upon completion of the \refapi{PMIx_Lookup_nb} \ac{API} with the \refarg{status} indicating the success or failure of the request.
+Any retrieved data will be returned in an array of \refstruct{pmix_pdata_t} structs.
+The namespace and rank of the process that provided each data element is also returned.
+
+Note that the \refstruct{pmix_pdata_t} structures will be released upon return from the callback
+function, so the receiver must copy/protect the data prior to returning if it needs to be retained.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Lookup Callback Function}
+
+\declareapi{pmix_lookup_datastore_cbfunc_t}
+
+%%%%
+\summary
+
+The \refapi{pmix_lookup_datastore_cbfunc_t} is used by \refapi{PMIx_Lookup_datastore_nb} to return data.
+
+\versionMarkerProvisional{5.1}
+typedef void (*pmix_lookup_datastore_cbfunc_t) \\
+\hspace*{4\sigspace}(pmix_status_t status, \\
+\hspace*{5\sigspace}pmix_pdsdata_t data[], size_t ndata, \\
+\hspace*{5\sigspace}void *cbdata);
+
+\begin{arglist}
+\argin{status}{Status associated with the operation (handle)}
+\argin{data}{Array of data returned (\refstruct{pmix_pdsdata_t})}
+\argin{ndata}{Number of elements in the \argref{data} array (\code{size_t})}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+A callback function for calls to \refapi{PMIx_Lookup_nb}.
+The function will be called upon completion of the \refapi{PMIx_Lookup_nb} \ac{API} with the \refarg{status} indicating the success or failure of the request.
+Any retrieved data will be returned in an array of \refstruct{pmix_pdsdata_t} structs.
+The namespace and rank of the process that provided each data element is also returned.
+
+Note that the \refstruct{pmix_pdsdata_t} structures will be released upon return from the callback
+function, so the receiver must copy/protect the data prior to returning if it needs to be retained.
+
+\declareapi{pmix_lookup_cbfunc_t}
+
+%%%%
+\summary
+
+The \refapi{pmix_lookup_cbfunc_t} is used by \refapi{PMIx_Lookup_nb} to return data.
+
+\copySignature{pmix_lookup_cbfunc_t}{1.0}{
+typedef void (*pmix_lookup_cbfunc_t) \\
+\hspace*{4\sigspace}(pmix_status_t status, \\
+\hspace*{5\sigspace}pmix_pdata_t data[], size_t ndata, \\
+\hspace*{5\sigspace}void *cbdata);
+}
+
+\begin{arglist}
+\argin{status}{Status associated with the operation (handle)}
+\argin{data}{Array of data returned (\refstruct{pmix_pdata_t})}
+\argin{ndata}{Number of elements in the \argref{data} array (\code{size_t})}
+\argin{cbdata}{Callback data passed to original API call (memory reference)}
+\end{arglist}
+
+%%%%
+\descr
+
+A callback function for calls to \refapi{PMIx_Lookup_nb}.
+The function will be called upon completion of the \refapi{PMIx_Lookup_nb} \ac{API} with the \refarg{status} indicating the success or failure of the request.
+Any retrieved data will be returned in an array of \refstruct{pmix_pdata_t} structs.
+The namespace and rank of the process that provided each data element is also returned.
+
+Note that the \refstruct{pmix_pdata_t} structures will be released upon return from the callback
+function, so the receiver must copy/protect the data prior to returning if it needs to be retained.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
