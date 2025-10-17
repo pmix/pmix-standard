@@ -605,7 +605,6 @@ Comma-delimited list of filenames that are not to be removed.
 When recursively cleaning subdirectories, do not remove the top-level directory (the one given in the cleanup request).
 }
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Process and Job Monitoring}
@@ -617,7 +616,7 @@ result in a significant waste of resources as the \ac{SMS} is unaware of the pro
 job. Various watchdog methods have been developed for detecting this situation, including requiring a periodic ``heartbeat''
 from the application and monitoring a specified file for changes in size and/or modification time.
 
-The following \acp{API} allow applications to request monitoring, directing what is to be monitored, the frequency of the associated check, whether or not the application is to be notified (via the event notification subsystem) of stall detection, and other characteristics of the operation.
+The following \acp{API} allow applications to request monitoring, directing what is to be monitored, the frequency of the associated check, whether or not the application is to be notified (via the event notification subsystem) of stall detection, and other characteristics of the operation. In addition, statistics on the resource usage at the individual process level and/or overall node level (including usage information on disks and/or network interfaces) can be measured and periodically reported back to the requestor.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Process_monitor}}
@@ -640,8 +639,8 @@ PMIx_Process_monitor(const pmix_info_t *monitor, \\
 }
 
 \begin{arglist}
-\argin{monitor}{info (handle)}
-\argin{error}{status (integer)}
+\argin{monitor}{Pointer to \refstruct{pmix_info_t} specifying monitoring action (handle)}
+\argin{error}{\ac{PMIx} constant that is to be used when generating an associated monitoring event (integer)}
 \argin{directives}{Array of info structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
 \arginout{results}{Address where a pointer to an array of \refstruct{pmix_info_t} containing the results of the request can be returned (memory reference)}
@@ -653,42 +652,92 @@ A successful return indicates that the results have been placed in the \refarg{r
 \returnsimple
 
 \optattrstart
-The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the requesting process:
+The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If an attribute is supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment unless the requested action involves other nodes. In addition, the library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the requesting process to the directives array when it passes actions to its host.
 
-\pasteAttributeItem{PMIX_MONITOR_ID}
-\pasteAttributeItem{PMIX_MONITOR_CANCEL}
-\pasteAttributeItem{PMIX_MONITOR_APP_CONTROL}
-\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT}
-\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
-\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
-\pasteAttributeItem{PMIX_MONITOR_FILE}
-\pasteAttributeItem{PMIX_MONITOR_FILE_SIZE}
-\pasteAttributeItem{PMIX_MONITOR_FILE_ACCESS}
-\pasteAttributeItem{PMIX_MONITOR_FILE_MODIFY}
-\pasteAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
-\pasteAttributeItem{PMIX_MONITOR_FILE_DROPS}
-\pasteAttributeItem{PMIX_SEND_HEARTBEAT}
+The \refarg{monitor} argument may contain any of the following actions:
 
+\begin{itemize}
+    \item \refattr{PMIX_MONITOR_CANCEL}
+    \item \refattr{PMIX_MONITOR_HEARTBEAT} The associated \refarg{directives} array may include any of the following:
+    \begin{itemize}
+        \item \refattr{PMIX_MONITOR_HEARTBEAT_TIME}
+        \item \refattr{PMIX_MONITOR_HEARTBEAT_DROPS}
+    \end{itemize}
+    \item \refattr{PMIX_SEND_HEARTBEAT}
+    \item \refattr{PMIX_MONITOR_FILE_CHANGES} The associated \refarg{directives} array may include any of the following:
+    \begin{itemize}
+        \item \refattr{PMIX_MONITOR_FILE_CHECK_TIME}
+        \item \refattr{PMIX_MONITOR_FILE_DROPS}
+        \item \refattr{PMIX_MONITOR_TARGET_FILES}
+        \item \refattr{PMIX_MONITOR_TARGET_NODES}. Monitor the given files on the specified nodes, where present.
+        \item \refattr{PMIX_MONITOR_TARGET_NODEIDS}. Monitor the given files on the specified nodes, where present.
+    \end{itemize}
+    \item \refattr{PMIX_MONITOR_PROC_RESOURCE_USAGE} The associated \refarg{directives} array may include any of the following:
+    \begin{itemize}
+        \item \refattr{PMIX_MONITOR_RESOURCE_RATE}
+        \item \refattr{PMIX_MONITOR_TARGET_PROCS}
+        \item \refattr{PMIX_MONITOR_TARGET_PIDS}
+        \item \refattr{PMIX_MONITOR_TARGET_NODES}. All processes on the specified nodes are to be monitored.
+        \item \refattr{PMIX_MONITOR_TARGET_NODEIDS}. All processes on the specified nodes are to be monitored.
+    \end{itemize}
+    \item \refattr{PMIX_MONITOR_NODE_RESOURCE_USAGE} The associated \refarg{directives} array may include any of the following:
+    \begin{itemize}
+        \item \refattr{PMIX_MONITOR_RESOURCE_RATE}
+        \item \refattr{PMIX_MONITOR_TARGET_NODES}
+        \item \refattr{PMIX_MONITOR_TARGET_NODEIDS}
+        \item \refattr{PMIX_MONITOR_TARGET_PROCS}. Monitor the nodes where the specified processes are located.
+    \end{itemize}
+    \item \refattr{PMIX_MONITOR_DISK_RESOURCE_USAGE} The associated \refarg{directives} array may include any of the following:
+    \begin{itemize}
+        \item \refattr{PMIX_MONITOR_RESOURCE_RATE}
+        \item \refattr{PMIX_MONITOR_TARGET_DISKS}
+        \item \refattr{PMIX_MONITOR_TARGET_NODES}
+        \item \refattr{PMIX_MONITOR_TARGET_NODEIDS}
+        \item \refattr{PMIX_MONITOR_TARGET_PROCS}. Monitor the nodes where the specified processes are located.
+    \end{itemize}
+    \item \refattr{PMIX_MONITOR_NETWORK_RESOURCE_USAGE} The associated \refarg{directives} array may include any of the following:
+    \begin{itemize}
+        \item \refattr{PMIX_MONITOR_RESOURCE_RATE}
+        \item \refattr{PMIX_MONITOR_TARGET_NETS}
+        \item \refattr{PMIX_MONITOR_TARGET_NODES}
+        \item \refattr{PMIX_MONITOR_TARGET_NODEIDS}
+        \item \refattr{PMIX_MONITOR_TARGET_PROCS}. Monitor the nodes where the specified processes are located.
+    \end{itemize}
+\end{itemize}
+
+In addition to action-specific directives, the \refarg{directives} array may include:
+
+\begin{itemize}
+    \item \refattr{PMIX_MONITOR_ID}
+    \item \refattr{PMIX_MONITOR_APP_CONTROL}
+    \item \refattr{PMIX_RANGE} Non-default range to be used when generating the associated event for this monitoring action.
+    \item \refattr{PMIX_MONITOR_LOCAL_ONLY}
+\end{itemize}
 \optattrend
 
 %%%%
 \descr
 
-Request that application processes be monitored via several possible methods.
-For example, that the server monitor this process for periodic heartbeats as an indication that the process has not become ``wedged''.
-When a monitor detects the specified alarm condition, it will generate an event notification using the provided error code and passing along any available relevant information.
-It is up to the caller to register a corresponding event handler.
+This \ac{API} can be used for two purposes:
+
+\begin{itemize}
+    \item Request that application processes and/or files be monitored for activity via several possible methods. For example, that the server monitor a given process for periodic heartbeats as an indication that the process has not become ``wedged''. When a monitor detects the specified alarm condition, it will generate an event notification using the provided error code and passing along any available relevant information. It is up to the caller to register a corresponding event handler.
+    \item Report resource usage statistics for processes and/or nodes, including disk and network interfaces attached to nodes. This can be done on a per-request basis, or periodically updated on a time interval specified by the \refattr{PMIX_MONITOR_RESOURCE_RATE} attribute.
+\end{itemize}
 
 The \refarg{monitor} argument is an attribute indicating the type of monitor being requested.
-For example, \refattr{PMIX_MONITOR_FILE} to indicate that the requestor is asking that a file be monitored.
+For example, \refattr{PMIX_MONITOR_FILE_CHANGES} to indicate that the requestor is asking that a file be monitored, or \refattr{PMIX_MONITOR_PROC_RESOURCE_USAGE} to obtain a report on process resource usage.
 
-The \refarg{error} argument is the status code to be used when generating an event notification alerting that the monitor has been triggered.
-The range of the notification defaults to \refconst{PMIX_RANGE_NAMESPACE}.
-This can be changed by providing a \refattr{PMIX_RANGE} directive.
+The \refarg{error} argument is the status code to be used when generating an event notification alerting that the monitor has been triggered or to receive a periodic resource usage update.
+The range of the notification defaults to \refconst{PMIX_RANGE_NAMESPACE} for alarm events, and to \refconst{PMIX_RANGE_CUSTOM} for resource usage updates to ensure delivery solely to the requesting process. This can be changed by providing a \refattr{PMIX_RANGE} directive.
 
-The \refarg{directives} argument characterizes the monitoring request (e.g., monitor file size) and frequency of checking to be done
+The \refarg{directives} argument characterizes the monitoring request (e.g., monitor file size or specific resource usage metrics to be measured) and frequency of checking to be done.
 
-The returned \refarg{status} indicates whether or not the request was granted, and information as to the reason for any denial of the request shall be returned in the \refarg{results} array.
+The returned \refarg{status} indicates whether or not the request was granted, and information as to the reason for any denial of the request shall be returned in the \refarg{results} array. If the request was successful, then any measured values will be returned in the \refarg{results}.
+
+\adviceuserstart
+A \refconst{PMIX_SUCCESS} return status only indicates that no error was encountered when executing the request and does not guarantee a non-\code{NULL} value for \refarg{results} when requesting resource usage statistics. For example, a request for resource usage by processes on a specified node that is not currently executing any user-level processes will return success to indicate that the request was executed without error, but a \code{NULL} \refarg{results} array because no statistics were returned.
+\adviceuserend
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Process_monitor_nb}}
@@ -712,8 +761,8 @@ PMIx_Process_monitor_nb(const pmix_info_t *monitor, \\
 }
 
 \begin{arglist}
-\argin{monitor}{info (handle)}
-\argin{error}{status (integer)}
+\argin{monitor}{Pointer to \refstruct{pmix_info_t} specifying monitoring action (handle)}
+\argin{error}{\ac{PMIx} constant that is to be used when generating an associated monitoring event (integer)}
 \argin{directives}{Array of info structures (array of handles)}
 \argin{ndirs}{Number of elements in the \refarg{directives} array (integer)}
 \argin{cbfunc}{Callback function \refapi{pmix_info_cbfunc_t} (function reference)}
@@ -726,33 +775,14 @@ Returns one of the following:
 
 \returnstart
 \begin{itemize}
-    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called
+    \item \refconst{PMIX_OPERATION_SUCCEEDED}, indicating that the request was immediately processed and returned \textit{success} - the \refarg{cbfunc} will \textit{not} be called, and no resource usage results will be returned by the \ac{API} itself.
 \end{itemize}
 \returnend
-
-\optattrstart
-The following attributes may be implemented by a \ac{PMIx} library or by the host environment. If supported by the \ac{PMIx} server library, then the library must not pass the supported attributes to the host environment. All attributes not directly supported by the server library must be passed to the host environment if it supports this operation, and the library is \textit{required} to add the \refAttributeItem{PMIX_USERID} and the \refAttributeItem{PMIX_GRPID} attributes of the requesting process:
-
-\pasteAttributeItem{PMIX_MONITOR_ID}
-\pasteAttributeItem{PMIX_MONITOR_CANCEL}
-\pasteAttributeItem{PMIX_MONITOR_APP_CONTROL}
-\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT}
-\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_TIME}
-\pasteAttributeItem{PMIX_MONITOR_HEARTBEAT_DROPS}
-\pasteAttributeItem{PMIX_MONITOR_FILE}
-\pasteAttributeItem{PMIX_MONITOR_FILE_SIZE}
-\pasteAttributeItem{PMIX_MONITOR_FILE_ACCESS}
-\pasteAttributeItem{PMIX_MONITOR_FILE_MODIFY}
-\pasteAttributeItem{PMIX_MONITOR_FILE_CHECK_TIME}
-\pasteAttributeItem{PMIX_MONITOR_FILE_DROPS}
-\pasteAttributeItem{PMIX_SEND_HEARTBEAT}
-
-\optattrend
 
 %%%%
 \descr
 
-Non-blocking form of the \refapi{PMIx_Process_monitor} \ac{API}. The \refarg{cbfunc} function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures.
+Non-blocking form of the \refapi{PMIx_Process_monitor} \ac{API}. The \refarg{cbfunc} function provides a \refarg{status} to indicate whether or not the request was granted, and to provide some information as to the reason for any denial in the \refapi{pmix_info_cbfunc_t} array of \refstruct{pmix_info_t} structures. Any resource usage data generated by the function will be returned there as well.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\code{PMIx_Heartbeat}}
@@ -791,7 +821,99 @@ Heartbeat failed to arrive within specified window. The process that triggered t
 \declareconstitemvalue{PMIX_MONITOR_FILE_ALERT}{-110}
 File failed its monitoring detection criteria. The file that triggered this alert will be identified in the event.
 %
+\declareconstitemvalueProvisional{PMIX_MONITOR_RESUSAGE_UPDATE}{-112}
+Resource usage update - the report will be included in the event information.
+%
 \end{constantdesc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Monitoring Datatypes}
+
+The following datatype definitions have been created to support monitoring operations and information.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Node PID Structure}
+\declarestructProvisional{pmix_node_pid_t}
+
+The \refstruct{pmix_node_pid_t} structure contains the hostname (or nodeID) and pid of a process executing on that host.
+Since a pid is uniquely associated with a given host, this creates a conjugate pair.
+
+\copySignature{pmix_node_pid_t}{6.0}{
+typedef struct pmix_node_pid \{ \\
+\hspace*{4\sigspace}char *hostname; \\
+\hspace*{4\sigspace}uint32_t nodeid; \\
+\hspace*{4\sigspace}pid_t pid; \\
+\} pmix_node_pid_t;
+}
+
+The \refarg{pid} field contains the \code{pid_t} of the process, while the \refarg{hostname} and/or \refarg{nodeid} identify the node where the process is executing.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Node PID support functions}
+
+The following functions are provided for convenience when working with \refstruct{pmix_node_pid_t} structures.
+
+\littleheader{Initialize the node_pid structure}
+\declareapiProvisional{PMIx_Nodepid_construct}
+
+Initialize the \refstruct{pmix_node_pid_t} fields.
+
+\copySignature{PMIx_Nodepid_construct}{6.0}{
+void
+PMIx_Nodepid_construct(pmix_node_pid_t *p);
+}
+
+\begin{arglist}
+\argin{p}{Pointer to the structure to be initialized(pointer to \refstruct{pmix_node_pid_t})}
+\end{arglist}
+
+\littleheader{Destruct the node_pid structure}
+\declareapiProvisional{PMIx_Nodepid_destruct}
+
+Destruct the \refstruct{pmix_node_pid_t} fields.
+
+\copySignature{PMIx_Nodepid_destruct}{6.0}{
+void
+PMIx_Nodepid_destruct(pmix_node_pid_t *p);
+}
+
+\begin{arglist}
+\argin{p}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_node_pid_t})}
+\end{arglist}
+
+\littleheader{Create an array of node_pid structures}
+\declareapiProvisional{PMIx_Nodepid_create}
+
+Allocate and initialize an array of \refstruct{pmix_node_pid_t} structures.
+
+\copySignature{PMIx_Nodepid_create}{6.0}{
+pmix_node_pid_t*
+PMIx_Nodepid_create(size_t n);
+}
+
+\begin{arglist}
+\argin{n}{Number of \refstruct{pmix_node_pid_t} structures to allocate}
+\end{arglist}
+
+Returns \refstruct{pmix_node_pid_t} pointer to the allocated array
+
+\littleheader{Release an array of node_pid structures}
+\declareapiProvisional{PMIx_Nodepid_free}
+
+Free all allocated memory in an array of \refstruct{pmix_node_pid_t} structures.
+
+\copySignature{PMIx_Nodepid_free}{6.0}{
+void
+PMIx_Nodepid_free(pmix_node_pid_t *p,
+\hspace*{4\sigspace}size_t n);
+}
+
+\begin{arglist}
+\argin{p}{Pointer to the array to be released (pointer to \refstruct{pmix_node_pid_t})}
+\argin{n}{Number of \refstruct{pmix_node_pid_t} structures in array}
+\end{arglist}
+
 
 %%%%%%%%%%%
 \subsection{Monitoring attributes}
@@ -828,20 +950,34 @@ Time in seconds before declaring heartbeat missed.
 Number of heartbeats that can be missed before generating the event.
 }
 %
-\declareAttribute{PMIX_MONITOR_FILE}{"pmix.monitor.fmon"}{char*}{
-Register to monitor file for signs of life.
+\declareAttributeProvisional{PMIX_MONITOR_FILE_CHANGES}{"pmix.monitor.fchg"}{pmix_data_array_t*}{
+Monitor the file characteristics specified in the provided \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t}. If the provided array
+is \code{NULL}, then all optional file characteristics shall be monitored. Target filenames **must** be provided in the associated
+\refarg{directives} array. If no target nodes are specified, then the target files will be monitored on all nodes in the session where they are present.  Note that the values in the provided structures will be
+ignored (i.e., only the attribute keys are relevant) except where noted. Optional
+attributes include:
+
+    \begin{itemize}
+        \item \refattr{PMIX_MONITOR_FILE_SIZE}
+        \item \refattr{PMIX_MONITOR_FILE_ACCESS}
+        \item \refattr{PMIX_MONITOR_FILE_MODIFY}
+    \end{itemize}
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_TARGET_FILES}{"pmix.monitor.fmon"}{pmix_data_array_t*}{
+Array of string filenames to be monitored for signs of life.
 }
 %
 \declareAttribute{PMIX_MONITOR_FILE_SIZE}{"pmix.monitor.fsize"}{bool}{
-Monitor size of given file is growing to determine if the application is running.
+Monitor that file is growing in size to determine if the application is running.
 }
 %
-\declareAttribute{PMIX_MONITOR_FILE_ACCESS}{"pmix.monitor.faccess"}{char*}{
-Monitor time since last access of given file to determine if the application is running.
+\declareAttribute{PMIX_MONITOR_FILE_ACCESS}{"pmix.monitor.faccess"}{bool}{
+Monitor that time since last access has changed to determine if the application is running.
 }
 %
-\declareAttribute{PMIX_MONITOR_FILE_MODIFY}{"pmix.monitor.fmod"}{char*}{
-Monitor time since last modified of given file to determine if the application is running.
+\declareAttribute{PMIX_MONITOR_FILE_MODIFY}{"pmix.monitor.fmod"}{bool}{
+Monitor that time since last modified has changed to determine if the application is running.
 }
 %
 \declareAttribute{PMIX_MONITOR_FILE_CHECK_TIME}{"pmix.monitor.ftime"}{uint32_t}{
@@ -850,6 +986,367 @@ Time in seconds between checking the file.
 %
 \declareAttribute{PMIX_MONITOR_FILE_DROPS}{"pmix.monitor.fdrop"}{uint32_t}{
 Number of file checks that can be missed before generating the event.
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_TARGET_PROCS}{"pmix.monitor.tgtproc"}{pmix_data_array_t*}{
+Arrray of process IDs specifying the processes to be monitored. Can include a
+\refconst{PMIX_RANK_WILDCARD} to indicate that all processes
+from a given namespace are to be included. If omitted, then
+all processes in the session will be monitored. May be included
+multiple times to fully specify all processes to be included.
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_TARGET_PIDS}{"pmix.monitor.tgtpid"}{pmix_data_array_t*}{
+Array of \refstruct{pmix_node_pid_t} structures to be monitored. Can include a
+structure containing a hostname with a pid value of \code{-1} to indicate all
+processes on that node are to be included. May be included
+multiple times to fully specify all processes to be included.
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_TARGET_NODES}{"pmix.monitor.tgtnode"}{pmix_data_array_t*}{
+Array of string host names to be monitored
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_TARGET_NODEIDS}{"pmix.monitor.tgtndids"}{pmix_data_array_t*}{
+Array of node IDs (\code{uint32_t}) to be monitored
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_TARGET_DISKS}{"pmix.monitor.tgtdks"}{pmix_data_array_t*}{
+Array of strings representing \refattr{PMIX_DISK_ID}s to be monitored
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_TARGET_NETS}{"pmix.monitor.tgtnets"}{pmix_data_array_t*}{
+Array of strings representing \refattr{PMIX_NETWORK_ID}s to be monitored
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_RESOURCE_RATE}{"pmix.monitor.resrate"}{uint32_t}{
+Monitor resource usage every N seconds, where N is the value provided by the attribute.
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_LOCAL_ONLY}{"pmix.monitor.local"}{bool}{
+Restrict data collection to the local host, regardless of any provided targets
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_PROC_RESOURCE_USAGE}{"pmix.monitor.presuse"}{pmix_data_array_t*}{
+Monitor the resources specified in the provided \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t}. If the provided array
+is \code{NULL}, then all resources shall be monitored. If no targets are provided in the associated
+\refarg{directives} array, then
+all processes in the session will be monitored.  Note that the values in the provided structures will be
+ignored (i.e., only the attribute keys are relevant) except where noted, and that the
+\refattr{PMIX_PROC_SAMPLE_TIME} will always be included in the returned data (there is no
+need to include it in the request). Optional
+attributes include:
+
+    \begin{itemize}
+        \item \refattr{PMIX_HOSTNAME}. Report the hostname where the process is located.
+        \item \refattr{PMIX_NODEID}. Report the node ID where the process is located.
+        \item \refattr{PMIX_PROC_PID}
+        \item \refattr{PMIX_PROC_OS_STATE}
+        \item \refattr{PMIX_PROC_TIME}
+        \item \refattr{PMIX_PROC_PERCENT_CPU}
+        \item \refattr{PMIX_PROC_PRIORITY}
+        \item \refattr{PMIX_PROC_NUM_THREADS}
+        \item \refattr{PMIX_PROC_PSS}
+        \item \refattr{PMIX_PROC_VSIZE}
+        \item \refattr{PMIX_PROC_RSS}
+        \item \refattr{PMIX_PROC_PEAK_VSIZE}
+        \item \refattr{PMIX_PROC_CPU}
+        \item \refattr{PMIX_PROC_SAMPLE_TIME}.
+    \end{itemize}
+}
+%
+\declareAttributeProvisional{PMIX_MONITOR_NODE_RESOURCE_USAGE}{"pmix.monitor.ndresuse"}{pmix_data_array_t*}{
+Monitor the resources specified in the provided \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t}. If the provided array
+is \code{NULL}, then all resources shall be monitored. If no targets are provided in the associated
+\refarg{directives} array, then
+all nodes in the session will be monitored. Note that the values in the provided structures will be
+ignored (i.e., only the attribute keys are relevant) except where noted, and that the
+\refattr{PMIX_NODE_SAMPLE_TIME} will always be included in the returned data (there is no
+need to include it in the request). Optional
+attributes include:
+
+    \begin{itemize}
+        \item \refattr{PMIX_NODE_LOAD_AVG}
+        \item \refattr{PMIX_NODE_LOAD_AVG5}
+        \item \refattr{PMIX_NODE_LOAD_AVG15}
+        \item \refattr{PMIX_NODE_MEM_TOTAL}
+        \item \refattr{PMIX_NODE_MEM_FREE}
+        \item \refattr{PMIX_NODE_MEM_BUFFERS}
+        \item \refattr{PMIX_NODE_MEM_CACHED}
+        \item \refattr{PMIX_NODE_MEM_SWAP_CACHED}
+        \item \refattr{PMIX_NODE_MEM_SWAP_TOTAL}
+        \item \refattr{PMIX_NODE_MEM_SWAP_FREE}
+        \item \refattr{PMIX_NODE_MEM_MAPPED}
+        \item \refattr{PMIX_NODE_SAMPLE_TIME}.
+    \end{itemize}
+}
+
+\declareAttributeProvisional{PMIX_MONITOR_DISK_RESOURCE_USAGE}{"pmix.monitor.dkresuse"}{pmix_data_array_t*}{
+Monitor the resources specified in the provided \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t}. If the provided array
+is \code{NULL}, then all disk resources shall be monitored. If no \refattr{PMIX_DISK_ID} targets are provided in the associated
+\refarg{directives} array, then
+all disks on the local node (or on the specified target nodes, if given) will be monitored. Note that the values in the provided structures will be
+ignored (i.e., only the attribute keys are relevant) except where noted, and that the
+\refattr{PMIX_DISK_SAMPLE_TIME} will always be included in the returned data (there is no
+need to include it in the request). Optional attributes include:
+
+    \begin{itemize}
+        \item \refattr{PMIX_DISK_READ_COMPLETED}
+        \item \refattr{PMIX_DISK_READ_MERGED}
+        \item \refattr{PMIX_DISK_READ_SECTORS}
+        \item \refattr{PMIX_DISK_READ_MILLISEC}
+        \item \refattr{PMIX_DISK_WRITE_COMPLETED}
+        \item \refattr{PMIX_DISK_WRITE_MERGED}
+        \item \refattr{PMIX_DISK_WRITE_SECTORS}
+        \item \refattr{PMIX_DISK_WRITE_MILLISEC}
+        \item \refattr{PMIX_DISK_IO_IN_PROGRESS}
+        \item \refattr{PMIX_DISK_IO_MILLISEC}
+        \item \refattr{PMIX_DISK_IO_WEIGHTED}
+        \item \refattr{PMIX_DISK_SAMPLE_TIME}
+    \end{itemize}
+}
+
+\declareAttributeProvisional{PMIX_MONITOR_NETWORK_RESOURCE_USAGE}{"pmix.monitor.netresuse"}{pmix_data_array_t*}{
+Monitor the resources specified in the provided \refstruct{pmix_data_array_t} of \refstruct{pmix_info_t}. If the provided array
+is \code{NULL}, then all network resources shall be monitored. If no \refattr{PMIX_NETWORK_ID} targets are provided in the associated
+\refarg{directives} array, then
+all network interfaces on the local node (or on the specified target nodes, if given) will be monitored. Note that the values in the provided structures will be
+ignored (i.e., only the attribute keys are relevant) except where noted, and that the
+\refattr{PMIX_NET_SAMPLE_TIME} will always be included in the returned data (there is no
+need to include it in the request). Optional attributes include:
+
+    \begin{itemize}
+        \item \refattr{PMIX_NET_RECVD_BYTES}
+        \item \refattr{PMIX_NET_RECVD_PCKTS}
+        \item \refattr{PMIX_NET_RECVD_ERRS}
+        \item \refattr{PMIX_NET_SENT_BYTES}
+        \item \refattr{PMIX_NET_SENT_PCKTS}
+        \item \refattr{PMIX_NET_SENT_ERRS}
+        \item \refattr{PMIX_NET_SAMPLE_TIME}.
+    \end{itemize}
+}
+
+%%%%%%%%%%%
+\versionMarkerProvisional{6.0}
+\subsection{Resource usage attributes}
+\label{api:struct:attributes:resusage}
+
+Operating systems typically maintain a running measure of resource utilization by active processes,
+attached disks, and local network interfaces.
+Though the precise values being tracked can vary by \ac{OS} flavor and local configuration, the following
+attributes are defined to provide a means for requesting and returning the available metrics.
+
+\subsubsection{Process resource usage}
+
+\declareAttributeProvisional{PMIX_PROC_RESOURCE_USAGE}{"pmix.proc.res"}{pmix_data_array_t*}{
+An array of \refstruct{pmix_info_t} describing the resource usage of the specified process, with
+the first element containing the ID of the process (marked by either the \refattr{PMIX_PROCID}
+or \refattr{PMIX_PROC_PID} key)
+whose usage is reported in the array. The list of included information may vary across
+implementations and \acp{OS}, depending upon availability and access restrictions, and the
+provided list of requested values. Except for
+the process ID as the first element, ordering of information in the array is arbitrary.
+}
+
+Optional information that may be included (see \href{https://www.kernel.org/doc/html/latest/filesystems/proc.html}{PROCSTATS} for a detailed description of the following fields):
+\begin{itemize}
+\item \refattr{PMIX_PROCID}
+\item \refattr{PMIX_PROC_PID}
+\item \refattr{PMIX_HOSTNAME}
+\item \refattr{PMIX_NODEID}
+\item \refattr{PMIX_CMD_LINE}. Typically limited solely to the argv[0] for the process
+\item \declareAttributeProvisional{PMIX_PROC_OS_STATE}{"pmix.proc.osstate"}{char*}{
+    The state of the process as reported by the \ac{OS} - for Linux, this is expressed as a single character.
+}
+\item \declareAttributeProvisional{PMIX_PROC_TIME}{"pmix.proc.time"}{struct timeval}{
+    Cumulative CPU time
+}
+\item \declareAttributeProvisional{PMIX_PROC_PERCENT_CPU}{"pmix.proc.pcpu"}{float}{
+    Percent cpu utilization by the process. Often, it is the CPU time used divided by the time the process has
+    been running (cputime/realtime ratio), expressed as a percentage.
+}
+\item \declareAttributeProvisional{PMIX_PROC_PRIORITY}{"pmix.proc.pri"}{int32_t}{
+    Priority of the process.  Higher number means higher priority.
+}
+\item \declareAttributeProvisional{PMIX_PROC_NUM_THREADS}{"pmix.proc.nthr"}{uint16_t}{
+    Number of threads operating in the process
+}
+\item \declareAttributeProvisional{PMIX_PROC_PSS}{"pmix.proc.pss"}{float}{
+    Proportional share size, the non-swapped physical memory, with shared memory
+    proportionally accounted to all tasks mapping it (MBytes)
+}
+\item \declareAttributeProvisional{PMIX_PROC_VSIZE}{"pmix.proc.vsize"}{float}{
+    Virtual memory size of the process (MBytes)
+}
+\item \declareAttributeProvisional{PMIX_PROC_RSS}{"pmix.proc.rss"}{float}{
+    Resident set size, the non-swapped physical memory that a task has used (MBytes)
+}
+\item \declareAttributeProvisional{PMIX_PROC_PEAK_VSIZE}{"pmix.proc.pkvsize"}{float}{
+    Peak virtual memory size of the process (MBytes)
+}
+\item \declareAttributeProvisional{PMIX_PROC_CPU}{"pmix.proc.cpu"}{uint16_t}{
+    Processor that process last executed on
+}
+\item \declareAttributeProvisional{PMIX_PROC_SAMPLE_TIME}{"pmix.proc.samptime"}{time_t}{
+    Time when sample was taken
+}
+\end{itemize}
+
+
+\subsubsection{Disk resource usage}
+
+\declareAttributeProvisional{PMIX_DISK_ID}{"pmix.disk.id"}{char*}{
+String identifier of a disk
+}
+
+\declareAttributeProvisional{PMIX_DISK_RESOURCE_USAGE}{"pmix.disk.res"}{pmix_data_array_t*}{
+An array of \refstruct{pmix_info_t} describing the resource usage of the specified disk, with
+the first element containing the string name of the disk (marked by the \refattr{PMIX_DISK_ID} key)
+whose usage is reported in the array. The list of included information may vary across
+implementations and \acp{OS}, depending upon availability and access restrictions, and the
+provided list of requested values. Except for
+the disk ID as the first element, ordering of information in the array is arbitrary.
+}
+
+Optional information that may be included (see \href{https://www.kernel.org/doc/html/latest/admin-guide/iostats.html)}{IOSTATS} for a detailed description of the following fields):
+\begin{itemize}
+\item \refattr{PMIX_DISK_ID}
+\item \declareAttributeProvisional{PMIX_DISK_READ_COMPLETED}{"pmix.disk.rdscomp"}{uint64_t}{
+Number of completed read operations
+}
+\item \declareAttributeProvisional{PMIX_DISK_READ_MERGED}{"pmix.disk.rdsmrgd"}{uint64_t}{
+Number of merged reads
+}
+\item \declareAttributeProvisional{PMIX_DISK_READ_SECTORS}{"pmix.disk.rdsct"}{uint64_t}{
+Number of sectors read
+}
+\item \declareAttributeProvisional{PMIX_DISK_READ_MILLISEC}{"pmix.disk.rdms"}{uint64_t}{
+Number of milliseconds spent reading the disk
+}
+\item \declareAttributeProvisional{PMIX_DISK_WRITE_COMPLETED}{"pmix.disk.wtscomp"}{uint64_t}{
+Number of completed write operations
+}
+\item \declareAttributeProvisional{PMIX_DISK_WRITE_MERGED}{"pmix.disk.wtsmrgd"}{uint64_t}{
+Number of merged write operations
+}
+\item \declareAttributeProvisional{PMIX_DISK_WRITE_SECTORS}{"pmix.disk.wtsct"}{uint64_t}{
+Number of sectors written
+}
+\item \declareAttributeProvisional{PMIX_DISK_WRITE_MILLISEC}{"pmix.disk.wtms"}{uint64_t}{
+Number of milliseconds spent writing to the disk
+}
+\item \declareAttributeProvisional{PMIX_DISK_IO_IN_PROGRESS}{"pmix.disk.ios"}{uint64_t}{
+Number of disk IO operations in progress
+}
+\item \declareAttributeProvisional{PMIX_DISK_IO_MILLISEC}{"pmix.disk.ioms"}{uint64_t}{
+Number of milliseconds spent in IO operations
+}
+\item \declareAttributeProvisional{PMIX_DISK_IO_WEIGHTED}{"pmix.disk.iowght"}{uint64_t}{
+Number of IOs in progress times the number of milliseconds spent doing IO since
+last update of the field - indicator of backlog that may be accumulating
+}
+\item \declareAttributeProvisional{PMIX_DISK_SAMPLE_TIME}{"pmix.disk.samptime"}{time_t}{
+    Time when sample was taken
+}
+\end{itemize}
+
+\subsubsection{Network resource usage}
+
+\declareAttributeProvisional{PMIX_NETWORK_ID}{"pmix.net.id"}{char*}{
+String identifier of a network interface
+}
+
+\declareAttributeProvisional{PMIX_NETWORK_RESOURCE_USAGE}{"pmix.net.res"}{pmix_data_array_t*}{
+An array of \refstruct{pmix_info_t} describing the resource usage of the specified network, with
+the first element containing the string name of the interface (marked by the \refattr{PMIX_NETWORK_ID} key)
+whose usage is reported in the array. The list of included information may vary across
+implementations and \acp{OS}, depending upon availability and access restrictions, and the
+provided list of requested values. Except for
+the network ID as the first element, ordering of information in the array is arbitrary.
+}
+
+Optional information that may be included (see \href{https://www.kernel.org/doc/html/latest/networking/statistics.html}{NETSTATS} for a detailed description of the following fields):
+\begin{itemize}
+\item \refattr{PMIX_NETWORK_ID}
+\item \declareAttributeProvisional{PMIX_NET_RECVD_BYTES}{"pmix.net.rcb"}{uint64_t}{
+Number of bytes received
+}
+\item \declareAttributeProvisional{PMIX_NET_RECVD_PCKTS}{"pmix.net.rcp"}{uint64_t}{
+Number of packets received
+}
+\item \declareAttributeProvisional{PMIX_NET_RECVD_ERRS}{"pmix.net.rcerr"}{uint64_t}{
+Number of receive errors
+}
+\item \declareAttributeProvisional{PMIX_NET_SENT_BYTES}{"pmix.net.sntb"}{uint64_t}{
+Number of bytes sent
+}
+\item \declareAttributeProvisional{PMIX_NET_SENT_PCKTS}{"pmix.net.sntp"}{uint64_t}{
+Number of packets sent
+}
+\item \declareAttributeProvisional{PMIX_NET_SENT_ERRS}{"pmix.net.snterr"}{uint64_t}{
+Number of send errors
+}
+\item \declareAttributeProvisional{PMIX_NET_SAMPLE_TIME}{"pmix.net.samptime"}{time_t}{
+    Time when sample was taken
+}
+\end{itemize}
+
+
+\subsubsection{Node resource usage}
+
+\declareAttributeProvisional{PMIX_NODE_RESOURCE_USAGE}{"pmix.node.res"}{pmix_data_array_t*}{
+An array of \refstruct{pmix_info_t} describing the overall resource usage on the specified node,
+with the first element containing
+the ID of the node (marked by the \refattr{PMIX_HOSTNAME} or \refattr{PMIX_NODEID} key) whose usage
+is reported in the array. The list of included information may vary across
+implementations and \acp{OS}, depending upon availability and access restrictions, and the
+provided list of requested values. Except for
+the node ID as the first element, ordering of information in the array is arbitrary.
+
+Optional information that may be included (see \href{https://www.kernel.org/doc/html/latest/filesystems/proc.html\#kernel-data}{KERNEL} and \href{https://www.kernel.org/doc/html/latest/filesystems/proc.html\#meminfo}{MEMINFO} for a detailed description of the following fields):
+\begin{itemize}
+    \item \refattr{PMIX_HOSTNAME}
+    \item \refattr{PMIX_NODEID}
+    \item \declareAttributeProvisional{PMIX_NODE_LOAD_AVG}{"pmix.node.la"}{float}{
+    Load average of last minute
+    }
+    \item \declareAttributeProvisional{PMIX_NODE_LOAD_AVG5}{"pmix.node.la5"}{float}{
+    Load average of last five minutes
+    }
+    \item \declareAttributeProvisional{PMIX_NODE_LOAD_AVG15}{"pmix.node.la15"}{float}{
+    Load average of last fifteen minutes
+    }
+    \item \declareAttributeProvisional{PMIX_NODE_MEM_TOTAL}{"pmix.node.mtot"}{float}{
+    Total usable RAM (i.e., physical RAM minus reserved bits and kernel binary code). In MBytes
+    }
+    \item \declareAttributeProvisional{PMIX_NODE_MEM_FREE}{"pmix.node.mfree"}{float}{
+    Total free RAM. In MBytes
+    }
+    \item \declareAttributeProvisional{PMIX_NODE_MEM_BUFFERS}{"pmix.node.mbuf"}{float}{
+    Temporary storage for raw disk blocks. In MBytes
+    }
+    \item \declareAttributeProvisional{PMIX_NODE_MEM_CACHED}{"pmix.node.mcache"}{float}{
+    In-memory cache for files read from the disk (the pagecache) as well as tmpfs and shmem. In MBytes.
+    Doesn't include \refattr{PMIX_NODE_MEM_SWAP_CACHED}.
+    }
+    \item \declareAttributeProvisional{PMIX_NODE_MEM_SWAP_CACHED}{"pmix.node.mswpc"}{float}{
+    Memory that once was swapped out, is swapped back in but still also is in the swapfile. In MBytes
+    }
+    \item \declareAttributeProvisional{PMIX_NODE_MEM_SWAP_TOTAL}{"pmix.node.mswpt"}{float}{
+    Total amount of swap space available. In MBytes
+    }
+    \item \declareAttributeProvisional{PMIX_NODE_MEM_SWAP_FREE}{"pmix.node.mswpfree"}{float}{
+    Memory which has been evicted from RAM, and is temporarily on the disk. In MBytes
+    }
+    \item \declareAttributeProvisional{PMIX_NODE_MEM_MAPPED}{"pmix.node.mmap"}{float}{
+    files which have been mmapped, such as libraries. Note that some kernel configurations might consider all pages part of a larger allocation (e.g., THP) as “mapped”, as soon as a single page is mapped. In MBytes
+    }
+    \item \refattr{PMIX_DISK_RESOURCE_USAGE} One for each disk attached to the node, if requested.
+    \item \refattr{PMIX_NETWORK_RESOURCE_USAGE} One for each network interface on the node, if requested.
+    \item \declareAttributeProvisional{PMIX_NODE_SAMPLE_TIME}{"pmix.node.samptime"}{time_t}{
+        Time when sample was taken
+    }
+\end{itemize}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -310,6 +310,7 @@
 \newcommand{\argin}[2]{\item[IN ~~~~\code{#1}] #2}
 \newcommand{\argout}[2]{\item[OUT ~~~\code{#1}] #2}
 \newcommand{\arginout}[2]{\item[INOUT ~\code{#1}] #2}
+\newcommand{\argreturn}[2]{\item[RETURN ~\code{#1}] #2}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -971,6 +972,9 @@
 \newcommand{\refsection}[2]{\hyperref[#1]{#2}}
 
 \newcommand{\declarestruct}[1]{\index[index_struct]{#1|indexfmt} \label{struct:#1}}
+
+\newcommand{\declarestructProvisional}[1]{\index[index_struct]{#1|indexfmt} \label{struct:#1} \provisionalMarker{}}
+
 \newcommand{\refstruct}[1]{\index[index_struct]{#1}\hyperref[struct:#1]{\code{#1}}}
 \newcommand{\structref}[1] {\refstruct{#1}}
 \newcommand{\specrefstruct}[1]{Section~\ref{struct:#1} on page~\pageref{struct:#1}}
