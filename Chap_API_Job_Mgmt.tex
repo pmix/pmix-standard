@@ -887,25 +887,34 @@ PMIx_Log(const pmix_info_t data[], size_t ndata, \\
 \returnsimple
 
 \reqattrstart
-If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
+If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{directives} array:
 
 \pasteAttributeItem{PMIX_USERID}
 \pasteAttributeItem{PMIX_GRPID}
 
-Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes:
+Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes when provided as part of the \refarg{data} array:
 
 \pasteAttributeItem{PMIX_LOG_STDERR}
 \pasteAttributeItem{PMIX_LOG_STDOUT}
 \pasteAttributeItem{PMIX_LOG_SYSLOG}
-\pasteAttributeItem{PMIX_LOG_LOCAL_SYSLOG}
-\pasteAttributeItem{PMIX_LOG_GLOBAL_SYSLOG}
+
+Similarly, the following attributes must be supported when provided as part of the \refarg{directives} array:
+
 \pasteAttributeItem{PMIX_LOG_SYSLOG_PRI}
 \pasteAttributeItem{PMIX_LOG_ONCE}
 
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments or \ac{PMIx} libraries that support this operation:
+The following attributes are optional for host environments or \ac{PMIx} libraries that support this operation when provided as part of the \refarg{data} array:
+
+\pasteAttributeItem{PMIX_LOG_EMAIL}
+\pasteAttributeItem{PMIX_LOG_JOB_RECORD}
+\pasteAttributeItem{PMIX_LOG_GLOBAL_DATASTORE}
+\pasteAttributeItem{PMIX_LOG_LOCAL_SYSLOG}
+\pasteAttributeItem{PMIX_LOG_GLOBAL_SYSLOG}
+
+Similarly, the following attributes are optional when provided as part of the \refarg{directives} array:
 
 \pasteAttributeItem{PMIX_LOG_SOURCE}
 \pasteAttributeItem{PMIX_LOG_TIMESTAMP}
@@ -913,22 +922,24 @@ The following attributes are optional for host environments or \ac{PMIx} librari
 \pasteAttributeItem{PMIX_LOG_TAG_OUTPUT}
 \pasteAttributeItem{PMIX_LOG_TIMESTAMP_OUTPUT}
 \pasteAttributeItem{PMIX_LOG_XML_OUTPUT}
-\pasteAttributeItem{PMIX_LOG_EMAIL}
-\pasteAttributeItem{PMIX_LOG_EMAIL_ADDR}
-\pasteAttributeItem{PMIX_LOG_EMAIL_SENDER_ADDR}
-\pasteAttributeItem{PMIX_LOG_EMAIL_SERVER}
-\pasteAttributeItem{PMIX_LOG_EMAIL_SRVR_PORT}
-\pasteAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
-\pasteAttributeItem{PMIX_LOG_EMAIL_MSG}
-\pasteAttributeItem{PMIX_LOG_JOB_RECORD}
-\pasteAttributeItem{PMIX_LOG_GLOBAL_DATASTORE}
+
 
 \optattrend
 
 %%%%
 \descr
 
-Log data subject to the services offered by the host environment. The data to be logged is provided in the \refarg{data} array. The (optional) \refarg{directives} can be used to direct the choice of logging channel.
+Log data subject to the services offered by the host environment. The \refarg{data} array is used to specify the information that is to be logged, while the \refarg{directives} array is used to control formatting and other output options. For example, a user can:
+
+\begin{itemize}
+\item log a message to \code{stderr} by including \refattr{PMIX_LOG_STDERR} in the \refarg{data} array, with the message itself provided as a string value in that \refstruct{pmix_info_t} element. They can also have that message time-stamped by including the \refattr{PMIX_LOG_TIMESTAMP} attribute in the \refarg{directives} array.
+\item send an email to one or more recipients by including \refattr{PMIX_LOG_EMAIL} in the \refarg{data} array, with the \refstruct{pmix_data_array_t} value containing the message, recipient, and any required server information. Note that any \refarg{directives} (e.g., \refattr{PMIX_LOG_GENERATE_TIMESTAMP}) will be applied to the email request.
+\item log a message to the syslog on the system console by including \refattr{PMIX_LOG_GLOBAL_SYSLOG} in the \refarg{data} array, with the message itself provided as a string value in that \refstruct{pmix_info_t} element. The syslog priority could be set with \refattr{PMIX_LOG_SYSLOG_PRI} in the \refarg{directives} array.
+\end{itemize}
+
+Note that it is possible to log multiple messages to different channels using a single call to \refapi{PMIx_Log}. For instance, the above examples could be combined into a single call to \refapi{PMIx_Log}. In this case, only directives that are applicable to a channel will be used in outputting to that channel. For this example, a directive such as \refattr{PMIX_LOG_TIMESTAMP} would cause all three messages to be time-stamped, but a \refattr{PMIX_LOG_SYSLOG_PRI} directive would only be applied to the syslog channel.
+
+Multiple instances of the same attribute can be included in the \refarg{data} array - e.g., to send different emails to various recipients.
 
 \adviceuserstart
 It is strongly recommended that the \refapi{PMIx_Log} API not be used by applications for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon. Note that a return of \refconst{PMIX_SUCCESS} only denotes that the data was successfully handed to the appropriate system call (for local channels) or the host environment and does not indicate receipt at the final destination.
@@ -974,25 +985,34 @@ Return codes are one of the following:
 \returnend
 
 \reqattrstart
-If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{info} array:
+If the \ac{PMIx} library does not itself perform this operation, then it is required to pass any attributes provided by the client to the host environment for processing. In addition, it must include the following attributes in the passed \refarg{directives} array:
 
 \pasteAttributeItem{PMIX_USERID}
 \pasteAttributeItem{PMIX_GRPID}
 
-Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes:
+Host environments or \ac{PMIx} libraries that implement support for this operation are required to support the following attributes when provided as part of the \refarg{data} array:
 
 \pasteAttributeItem{PMIX_LOG_STDERR}
 \pasteAttributeItem{PMIX_LOG_STDOUT}
 \pasteAttributeItem{PMIX_LOG_SYSLOG}
-\pasteAttributeItem{PMIX_LOG_LOCAL_SYSLOG}
-\pasteAttributeItem{PMIX_LOG_GLOBAL_SYSLOG}
+
+Similarly, the following attributes must be supported when provided as part of the \refarg{directives} array:
+
 \pasteAttributeItem{PMIX_LOG_SYSLOG_PRI}
 \pasteAttributeItem{PMIX_LOG_ONCE}
 
 \reqattrend
 
 \optattrstart
-The following attributes are optional for host environments or \ac{PMIx} libraries that support this operation:
+The following attributes are optional for host environments or \ac{PMIx} libraries that support this operation when provided as part of the \refarg{data} array:
+
+\pasteAttributeItem{PMIX_LOG_EMAIL}
+\pasteAttributeItem{PMIX_LOG_JOB_RECORD}
+\pasteAttributeItem{PMIX_LOG_GLOBAL_DATASTORE}
+\pasteAttributeItem{PMIX_LOG_LOCAL_SYSLOG}
+\pasteAttributeItem{PMIX_LOG_GLOBAL_SYSLOG}
+
+Similarly, the following attributes are optional when provided as part of the \refarg{directives} array:
 
 \pasteAttributeItem{PMIX_LOG_SOURCE}
 \pasteAttributeItem{PMIX_LOG_TIMESTAMP}
@@ -1000,23 +1020,14 @@ The following attributes are optional for host environments or \ac{PMIx} librari
 \pasteAttributeItem{PMIX_LOG_TAG_OUTPUT}
 \pasteAttributeItem{PMIX_LOG_TIMESTAMP_OUTPUT}
 \pasteAttributeItem{PMIX_LOG_XML_OUTPUT}
-\pasteAttributeItem{PMIX_LOG_EMAIL}
-\pasteAttributeItem{PMIX_LOG_EMAIL_ADDR}
-\pasteAttributeItem{PMIX_LOG_EMAIL_SENDER_ADDR}
-\pasteAttributeItem{PMIX_LOG_EMAIL_SERVER}
-\pasteAttributeItem{PMIX_LOG_EMAIL_SRVR_PORT}
-\pasteAttributeItem{PMIX_LOG_EMAIL_SUBJECT}
-\pasteAttributeItem{PMIX_LOG_EMAIL_MSG}
-\pasteAttributeItem{PMIX_LOG_JOB_RECORD}
-\pasteAttributeItem{PMIX_LOG_GLOBAL_DATASTORE}
+
 
 \optattrend
 
 %%%%
 \descr
 
-Log data subject to the services offered by the host environment. The data to be logged is provided in the \refarg{data} array. The (optional) \refarg{directives} can be used to direct the choice of logging channel.
-The callback function will be executed when the log operation has been completed. The \refarg{data} and \refarg{directives} arrays must be maintained until the callback is provided.
+Log data subject to the services offered by the host environment. See the description in \refapi{PMIx_Log} for details on use of the \refarg{data} and \refarg{directives} arrays.
 
 \adviceuserstart
 It is strongly recommended that the \refapi{PMIx_Log_nb} API not be used by applications for streaming data as it is not a ``performant'' transport and can perturb the application since it involves the local \ac{PMIx} server and host \ac{SMS} daemon. Note that a return of \refconst{PMIX_SUCCESS} only denotes that the data was successfully handed to the appropriate system call (for local channels) or the host environment and does not indicate receipt at the final destination.
@@ -1085,12 +1096,14 @@ Print the output stream in \ac{XML} format.
 Only log this once with whichever channel can first support it, taking the channels in priority order.
 }
 %
-\declareAttribute{PMIX_LOG_MSG}{"pmix.log.msg"}{pmix_byte_object_t}{
-Message blob to be sent somewhere.
-}
-%
 \declareAttribute{PMIX_LOG_EMAIL}{"pmix.log.email"}{pmix_data_array_t}{
-Log via email based on \refstruct{pmix_info_t} containing directives.
+Log via email based on \refstruct{pmix_info_t} containing directives. The array must contain at least one of
+the \refattr{PMIX_LOG_BLOB} or \refattr{PMIX_LOG_MSG} attributes containing the body of the
+message. In addition, it must contain at least the \refattr{PMIX_LOG_EMAIL_ADDR} and \refattr{PMIX_LOG_EMAIL_SUBJECT}
+attributes identifying the intended recipients and the subject for the message. The array can optionally include
+the server information (\refattr{PMIX_LOG_EMAIL_SERVER} and \refattr{PMIX_LOG_EMAIL_SRVR_PORT}) if required by the
+local system, and a return email address for the sender (\refattr{PMIX_LOG_EMAIL_SENDER_ADDR}. No specific ordering
+of these directives is required.
 }
 %
 \declareAttribute{PMIX_LOG_EMAIL_ADDR}{"pmix.log.emaddr"}{char*}{
@@ -1105,8 +1118,12 @@ Return email address of sender.
 Subject line for email.
 }
 %
-\declareAttribute{PMIX_LOG_EMAIL_MSG}{"pmix.log.emmsg"}{char*}{
-Message to be included in email.
+\declareAttribute{PMIX_LOG_MSG}{"pmix.log.msg"}{char*}{
+Message to be included in a log operation.
+}
+%
+\declareAttributeProvisional{PMIX_LOG_BLOB}{"pmix.log.blob"}{pmix_byte_object_t}{
+Message blob (e.g., PDF attachment) to be included in a log operation.
 }
 %
 \declareAttribute{PMIX_LOG_EMAIL_SERVER}{"pmix.log.esrvr"}{char*}{
@@ -1117,12 +1134,17 @@ Hostname (or \ac{IP} address) of SMTP server.
 Port the email server is listening to.
 }
 %
-\declareAttribute{PMIX_LOG_GLOBAL_DATASTORE}{"pmix.log.gstore"}{bool}{
-Store the log data in a global data store (e.g., database).
+\declareAttributeProvisional{PMIX_LOG_GLOBAL_DATASTORE}{"pmix.log.gstore"}{pmix_data_array_t}{
+Store the log data in a global data store (e.g., database). Directs the host environment to
+store the provided message in a data store available
+to the host. The associated array must contain at least one of
+the \refattr{PMIX_LOG_BLOB} or \refattr{PMIX_LOG_MSG} attributes containing the data to be
+stored.
 }
 %
-\declareAttribute{PMIX_LOG_JOB_RECORD}{"pmix.log.jrec"}{bool}{
-Log the provided information to the host environment's job record.
+\declareAttributeProvisional{PMIX_LOG_JOB_RECORD}{"pmix.log.jrec"}{char*}{
+Log the provided message to the host environment's job record. An error must be returned if the host
+does not support this service.
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
