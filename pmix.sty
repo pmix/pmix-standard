@@ -575,6 +575,11 @@
     \InternaldeclareAttributeBody{#1}{#2}{#3}{#4}%
 }
 
+\newcommand{\pasteAttributeRM}[1]{%
+   {\color{red!80!black}\code{#1}}%
+    \index[index_attribute]{Z_#1@\emph{#1}!\textbf{Removed}|indexrmfmt} \label{attr:#1}%
+}
+
 \newcommand{\pasteAttributeItemBegin}[1]{
   \refAttributeItem{#1} ~~\StdPaste{str:#1}~~(\StdPaste{attr:#1})
   \vspace{-1.3ex}
@@ -666,6 +671,10 @@
   \declaremacroDEPNODISP{#1}%
 }
 
+\newcommand{\declaremacroRM}[1]{%
+  {\color{red!80!black}\code{#1}}%
+  \index[index_macro]{Z_#1@#1!\textbf{(Removed)}|indexrmfmt} \label{macro:#1}%
+}
 
 %-------------------------------
 % Terms

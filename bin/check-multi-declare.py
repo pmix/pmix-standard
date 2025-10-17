@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
         # subsection.A is Appendix A: Python Bindings
         # subsection.B is Appendix C: Revision History
-        p = subprocess.Popen("grep \"newlabel{"+ref_str+"\" pmix-standard.aux | grep -v \"subsection.A\|subsection.C\"",
+        p = subprocess.Popen("grep \"newlabel{"+ref_str+"\" pmix-standard.aux | grep -v \"subsection.A\\|subsection.C\"",
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, close_fds=True)
         sout = p.communicate()[0].decode("utf-8").splitlines()
         if p.returncode != 0:
@@ -72,7 +72,7 @@ if __name__ == "__main__":
                     std_removed[value] = std_removed[value] + 1
                 else:
                     std_removed[value] = 1
-                
+
             #print("Found \""+ref_str+"\" : "+value+" on line " + line)
             std_all_refs[value] = -1
             if ref_str == "attr":

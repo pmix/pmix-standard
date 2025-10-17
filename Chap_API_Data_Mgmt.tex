@@ -40,11 +40,11 @@ typedef struct pmix_data_buffer \{ \\
 \section{Support Macros}
 \label{chap:datamgt:macros}
 
-\ac{PMIx} provides a set of convenience macros for creating, initiating, and releasing data buffers.
+\ac{PMIx} provides a convenience macro for statically initiating data buffers.
 
 %%%%
 \littleheader{Static initializer for the data buffer structure}
-\declaremacroProvisional{PMIX_DATA_BUFFER_STATIC_INIT}
+\declaremacro{PMIX_DATA_BUFFER_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_data_buffer_t} fields.
 
@@ -56,30 +56,38 @@ PMIX_DATA_BUFFER_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Support Functions}
+\label{chap:datamgt:functions}
+
+\ac{PMIx} provides a set of convenience functions for creating, initiating, and releasing data buffers.
+
 %%%%%%%%%%%
-\littleheader{\code{PMIX_DATA_BUFFER_CREATE}}
-\declaremacro{PMIX_DATA_BUFFER_CREATE}
+\littleheader{\code{PMIx_Data_buffer_create}}
+\declareapiProvisional{PMIx_Data_buffer_create}
 
 Allocate memory for a \refstruct{pmix_data_buffer_t} object and initialize it.
-This macro uses \textit{calloc} to allocate memory for the buffer and initialize all fields in it
+This function uses \textit{calloc} to allocate memory for the buffer and initialize all fields in it
 
-\copySignature{PMIX_DATA_BUFFER_CREATE}{2.0}{
-PMIX_DATA_BUFFER_CREATE(buffer);
+\copySignature{PMIx_Data_buffer_create}{6.0}{
+pmix_data_buffer_t* \\
+PMIx_Data_buffer_create(\code{void});
 }
 
-\begin{arglist}
-\argout{buffer}{Variable to be assigned the pointer to the allocated \refstruct{pmix_data_buffer_t} (handle)}
-\end{arglist}
+Returns a pointer to the allocated \refstruct{pmix_data_buffer_t} (handle)
+
 
 %%%%%%%%%%%
-\littleheader{\code{PMIX_DATA_BUFFER_RELEASE}}
-\declaremacro{PMIX_DATA_BUFFER_RELEASE}
+\littleheader{\code{PMIx_Data_buffer_release}}
+\declareapiProvisional{PMIx_Data_buffer_release}
 
 Free a \refstruct{pmix_data_buffer_t} object and the data it contains.
 Free's the data contained in the buffer, and then free's the buffer itself
 
-\copySignature{PMIX_DATA_BUFFER_RELEASE}{2.0}{
-PMIX_DATA_BUFFER_RELEASE(buffer);
+\copySignature{PMIx_Data_buffer_release}{6.0}{
+void \\
+PMIx_Data_buffer_release(pmix_data_buffer_t *buffer);
 }
 
 \begin{arglist}
@@ -88,13 +96,14 @@ PMIX_DATA_BUFFER_RELEASE(buffer);
 
 
 %%%%%%%%%%%
-\littleheader{\code{PMIX_DATA_BUFFER_CONSTRUCT}}
-\declaremacro{PMIX_DATA_BUFFER_CONSTRUCT}
+\littleheader{\code{PMIx_Data_buffer_construct}}
+\declareapiProvisional{PMIx_Data_buffer_construct}
 
 Initialize the fields of a previously allocated \refstruct{pmix_data_buffer_t} object.
 
-\copySignature{PMIX_DATA_BUFFER_CONSTRUCT}{2.0}{
-PMIX_DATA_BUFFER_CONSTRUCT(buffer);
+\copySignature{PMIx_Data_buffer_construct}{6.0}{
+void \\
+PMIx_Data_buffer_construct(pmix_data_buffer_t *buffer);
 }
 
 \begin{arglist}
@@ -102,13 +111,14 @@ PMIX_DATA_BUFFER_CONSTRUCT(buffer);
 \end{arglist}
 
 %%%%%%%%%%%
-\littleheader{\code{PMIX_DATA_BUFFER_DESTRUCT}}
-\declaremacro{PMIX_DATA_BUFFER_DESTRUCT}
+\littleheader{\code{PMIx_Data_buffer_destruct}}
+\declareapiProvisional{PMIx_Data_buffer_destruct}
 
 Release the data contained in a \refstruct{pmix_data_buffer_t} object.
 
-\copySignature{PMIX_DATA_BUFFER_DESTRUCT}{2.0}{
-PMIX_DATA_BUFFER_DESTRUCT(buffer);
+\copySignature{PMIx_Data_buffer_destruct}{6.0}{
+void \\
+PMIx_Data_buffer_destruct(pmix_data_buffer_t *buffer);
 }
 
 \begin{arglist}
@@ -117,14 +127,17 @@ PMIX_DATA_BUFFER_DESTRUCT(buffer);
 
 
 %%%%%%%%%%%
-\littleheader{\code{PMIX_DATA_BUFFER_LOAD}}
-\declaremacro{PMIX_DATA_BUFFER_LOAD}
+\littleheader{\code{PMIx_Data_buffer_load}}
+\declareapiProvisional{PMIx_Data_buffer_load}
 
 Load a blob into a \refstruct{pmix_data_buffer_t} object.
 Load the given data into the provided \refstruct{pmix_data_buffer_t} object, usually done in preparation for unpacking the provided data. Note that the data is \textit{not} copied into the buffer - thus, the blob must not be released until after operations on the buffer have completed.
 
-\copySignature{PMIX_DATA_BUFFER_LOAD}{2.0}{
-PMIX_DATA_BUFFER_LOAD(buffer, data, size);
+\copySignature{PMIx_Data_buffer_load}{6.0}{
+void \\
+PMIx_Data_buffer_load(pmix_data_buffer_t *buffer,
+\hspace*{24\sigspace}char *data,
+\hspace*{24\sigspace}size_t size);
 }
 
 \begin{arglist}
@@ -134,20 +147,23 @@ PMIX_DATA_BUFFER_LOAD(buffer, data, size);
 \end{arglist}
 
 %%%%%%%%%%%
-\littleheader{\code{PMIX_DATA_BUFFER_UNLOAD}}
-\declaremacro{PMIX_DATA_BUFFER_UNLOAD}
+\littleheader{\code{PMIx_Data_buffer_unload}}
+\declareapiProvisional{PMIx_Data_buffer_unload}
 
 Unload the data from a \refstruct{pmix_data_buffer_t} object.
 Extract the data in a buffer, assigning the pointer to the data (and the number of bytes in the blob) to the provided variables, usually done to transmit the blob to a remote process for unpacking. The buffer's internal pointer will be set to NULL to protect the data upon buffer destruct or release - thus, the user is responsible for releasing the blob when done with it.
 
-\copySignature{PMIX_DATA_BUFFER_UNLOAD}{2.0}{
-PMIX_DATA_BUFFER_UNLOAD(buffer, data, size);
+\copySignature{PMIx_Data_buffer_unload}{6.0}{
+void \\
+PMIx_Data_buffer_unload(pmix_data_buffer_t *buffer,
+\hspace*{24\sigspace}char **data,
+\hspace*{24\sigspace}size_t *size);
 }
 
 \begin{arglist}
 \argin{buffer}{Pointer to the \refstruct{pmix_data_buffer_t} whose data is to be extracted (handle)}
-\argout{data}{Variable to be assigned the pointer to the extracted blob (\code{void*})}
-\argout{size}{Variable to be assigned the number of bytes in the blob {\code{size_t}}}
+\argout{data}{Pointer to variable to be assigned the pointer to the extracted blob (\code{char**})}
+\argout{size}{Pointer to variable to be assigned the number of bytes in the blob {\code{size_t*}}}
 \end{arglist}
 
 
@@ -198,12 +214,12 @@ PMIx_Data_pack(const pmix_proc_t *target, \\
 \descr
 
 The pack function packs one or more values of a specified type into the specified buffer.  The buffer must have already been
-initialized via the \refmacro{PMIX_DATA_BUFFER_CREATE} or \refmacro{PMIX_DATA_BUFFER_CONSTRUCT}
-macros.
+initialized via the \refapi{PMIx_Data_buffer_create} or \refapi{PMIx_Data_buffer_construct}
+functions.
 The buffer may already contain packed data, in which case the new data is appended to the buffer.
 Providing an unsupported type flag will likewise be reported as an error.
 
-Note that packing data using a type that 
+Note that packing data using a type that
 does not explicitly specifiy its size
 may lose precision when unpacked
 by a non-homogeneous recipient.  The \refapi{PMIx_Data_pack} function will do its best to deal
@@ -245,7 +261,7 @@ PMIx_Data_unpack(const pmix_proc_t *source, \\
 
 
 \begin{arglist}
-\argin{source}{Pointer to a \refstruct{pmix_proc_t} structure of the process that packed the provided buffer. A NULL value may be used to indicate that the source is based on the same \ac{PMIx} version as the caller. 
+\argin{source}{Pointer to a \refstruct{pmix_proc_t} structure of the process that packed the provided buffer. A NULL value may be used to indicate that the source is based on the same \ac{PMIx} version as the caller.
 Only the namespace is used to determine the packing version as all processes in a namespace are required to use the same \ac{PMIx} version.  (handle)}
 \argin{buffer}{A pointer to the buffer from which the value will be extracted. (handle)}
 \arginout{dest}{A pointer to the memory location into which the data is to be stored. Note that these values will be stored contiguously in memory. For strings, this pointer must be to (char**) to provide a means of supporting multiple string operations. The unpack function will allocate memory for each string in the array, but the caller must provide adequate memory for the array of pointers. (\code{void*})}
@@ -264,7 +280,7 @@ Only the namespace is used to determine the packing version as all processes in 
 %%%%
 \descr
 
-The unpack function unpacks the next value (or values) from the given buffer. 
+The unpack function unpacks the next value (or values) from the given buffer.
 An attempt to read an uninitialized buffer or read beyond the end of the stored data held in the buffer will return an error.
 
 Unpacking values is a "nondestructive" process --- i.e., the values are not removed from the buffer. It is therefore possible for the caller to re-unpack a value from the same buffer by resetting the unpack_ptr.
@@ -404,14 +420,11 @@ Unload a buffer into a byte object
 %%%%
 \format
 
-\versionMarkerProvisional{4.1}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Data_unload(pmix_data_buffer_t *src,
-                 pmix_byte_object_t *dest);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Data_unload}{4.1}{
+pmix_status_t \\
+PMIx_Data_unload(pmix_data_buffer_t *src, \\
+\hspace*{24\sigspace}pmix_byte_object_t *dest);
+}
 
 \begin{arglist}
 \argin{src}{Pointer to the source \refstruct{pmix_data_buffer_t} (handle)}
@@ -455,14 +468,11 @@ Load a buffer with the provided payload
 %%%%
 \format
 
-\versionMarkerProvisional{4.1}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Data_load(pmix_data_buffer_t *dest,
-               pmix_byte_object_t *src);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Data_load}{4.1}{
+pmix_status_t \\
+PMIx_Data_load(pmix_data_buffer_t *dest, \\
+\hspace*{24\sigspace}pmix_byte_object_t *src);
+}
 
 \begin{arglist}
 \argin{dest}{Pointer to the destination \refstruct{pmix_data_buffer_t} (handle)}
@@ -507,14 +517,11 @@ Perform a lossless compression on the provided data
 %%%%
 \format
 
-\versionMarkerProvisional{4.1}
-\cspecificstart
-\begin{codepar}
-bool
+\copySignature{PMIx_Data_compress}{4.1}{
+bool \\
 PMIx_Data_compress(const uint8_t *inbytes, size_t size,
-                   uint8_t **outbytes, size_t *nbytes);
-\end{codepar}
-\cspecificend
+\hspace*{24\sigspace}uint8_t **outbytes, size_t *nbytes);
+}
 
 \begin{arglist}
 \argin{inbytes}{Pointer to the source data (handle)}
@@ -535,8 +542,8 @@ Returns one of the following:
 Compress the provided data block. Destination memory
 will be allocated if operation is successfully concluded. Caller
 is responsible for release of the allocated region. The input
-data block will remain unaltered.  
-The method of compressing and uncompressing data is implementation dependent. 
+data block will remain unaltered.
+The method of compressing and uncompressing data is implementation dependent.
 
 Note: the compress function will return \code{False} if the operation
 would not result in a smaller data block.
@@ -555,14 +562,11 @@ Decompress the provided data
 %%%%
 \format
 
-\versionMarkerProvisional{4.1}
-\cspecificstart
-\begin{codepar}
-bool
-PMIx_Data_decompress(const uint8_t *inbytes, size_t size,
-                     uint8_t **outbytes, size_t *nbytes);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Data_decompress}{4.1}{
+bool \\
+PMIx_Data_decompress(const uint8_t *inbytes, size_t size, \\
+\hspace*{24\sigspace}uint8_t **outbytes, size_t *nbytes);
+}
 
 \begin{arglist}
 \argin{inbytes}{Pointer to the source data (handle)}
@@ -584,7 +588,7 @@ Decompress the provided data block. Destination memory
 will be allocated if operation is successfully concluded. Caller
 is responsible for release of the allocated region. The input
 data block will remain unaltered.
-The method of compressing and uncompressing data is implementation dependent. 
+The method of compressing and uncompressing data is implementation dependent.
 
 Only data compressed by the \refapi{PMIx_Data_compress} \ac{API}
 can be decompressed by this function. Passing data that has not
@@ -594,7 +598,7 @@ undefined behavior.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{\code{PMIx_Data_embed}}
-\declareapiProvisional{PMIx_Data_embed}
+\declareapi{PMIx_Data_embed}
 
 %%%%
 \summary
@@ -604,14 +608,11 @@ Embed a data payload into a buffer
 %%%%
 \format
 
-\versionMarker{5.0}
-\cspecificstart
-\begin{codepar}
-pmix_status_t
-PMIx_Data_embed(pmix_data_buffer_t *buffer,
-                const pmix_byte_object_t *payload);
-\end{codepar}
-\cspecificend
+\copySignature{PMIx_Data_embed}{5.0}{
+pmix_status_t \\
+PMIx_Data_embed(pmix_data_buffer_t *buffer, \\
+\hspace*{24\sigspace}const pmix_byte_object_t *payload);
+}
 
 \begin{arglist}
 \argout{buffer}{Address of the buffer where the payload is to be embedded (handle)}
@@ -629,6 +630,6 @@ Returns one of the following:
 \descr
 
 The embed function is identical in operation to \refapi{PMIx_Data_load}
-except that it does \emph{not} clear the payload object upon completion.  The data is copied from the payload to the buffer and remains in the payload. 
+except that it does \emph{not} clear the payload object upon completion.  The data is copied from the payload to the buffer and remains in the payload.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

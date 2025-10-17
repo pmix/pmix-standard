@@ -4,7 +4,7 @@
 \chapter{Publish/Lookup Operations}
 \label{chap:pub}
 
-Chapter~\ref{chap:api_rsvd_keys} and Chapter~\ref{chap:data_sharing:non_rsvd_keys} 
+Chapter~\ref{chap:api_rsvd_keys} and Chapter~\ref{chap:data_sharing:non_rsvd_keys}
 discussed how reserved and non-reserved keys dealt with
 information that either was associated with a specific process (i.e., the
 retrieving process knew the identifier of the process that posted it) or
@@ -417,7 +417,7 @@ The following macros are provided to support the \refstruct{pmix_pdata_t} struct
 
 %%%%
 \littleheader{Static initializer for the pdata structure}
-\declaremacroProvisional{PMIX_LOOKUP_STATIC_INIT}
+\declaremacro{PMIX_LOOKUP_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_pdata_t} fields.
 
@@ -429,71 +429,84 @@ PMIX_LOOKUP_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Lookup data structure support functions}
+
+The following functions are provided to support the \refstruct{pmix_pdata_t} structure.
+
+%%%%
 \littleheader{Initialize the pdata structure}
-\declaremacro{PMIX_PDATA_CONSTRUCT}
+\declareapiProvisional{PMIx_Pdata_construct}
 
 Initialize the \refstruct{pmix_pdata_t} fields
 
-\copySignature{PMIX_PDATA_CONSTRUCT}{1.0}{
-PMIX_PDATA_CONSTRUCT(m)
+\copySignature{PMIx_Pdata_construct}{6.0}{
+void \\
+PMIx_Pdata_construct(pmix_pdata_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_pdata_t})}
+\argin{p}{Pointer to the structure to be initialized (pointer to \refstruct{pmix_pdata_t})}
 \end{arglist}
 
 \littleheader{Destruct the pdata structure}
-\declaremacro{PMIX_PDATA_DESTRUCT}
+\declareapiProvisional{PMIx_Pdata_destruct}
 
 Destruct the \refstruct{pmix_pdata_t} fields
 
-\copySignature{PMIX_PDATA_DESTRUCT}{1.0}{
-PMIX_PDATA_DESTRUCT(m)
+\copySignature{PMIx_Pdata_destruct}{6.0}{
+void \\
+PMIx_Pdata_destruct(pmix_pdata_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_pdata_t})}
+\argin{p}{Pointer to the structure to be destructed (pointer to \refstruct{pmix_pdata_t})}
 \end{arglist}
 
 %%%%%%%%%%%
 \littleheader{Create a pdata array}
-\declaremacro{PMIX_PDATA_CREATE}
+\declareapiProvisional{PMIx_Pdata_create}
 
 Allocate and initialize an array of \refstruct{pmix_pdata_t} structures
 
-\copySignature{PMIX_PDATA_CREATE}{1.0}{
-PMIX_PDATA_CREATE(m, n)
+\copySignature{PMIx_Pdata_create}{6.0}{
+pmix_pdata_t* \\
+PMIx_Pdata_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_pdata_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
+
+Returns pointer to the array of \refstruct{pmix_pdata_t} structures (handle)
 
 
 %%%%%%%%%%%
 \littleheader{Free a pdata structure}
-\declaremacro{PMIX_PDATA_RELEASE}
+\declareapiProvisional{PMIx_Pdata_release}
 
 Release a \refstruct{pmix_pdata_t} structure
 
-\copySignature{PMIX_PDATA_RELEASE}{4.0}{
-PMIX_PDATA_RELEASE(m)
+\copySignature{PMIx_Pdata_release}{6.0}{
+void \\
+PMIx_Pdata_release(pmix_pdata_t *p);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to a \refstruct{pmix_pdata_t} structure (handle)}
+\argin{p}{Pointer to a \refstruct{pmix_pdata_t} structure (handle)}
 \end{arglist}
 
 
 %%%%%%%%%%%
 \littleheader{Free a pdata array}
-\declaremacro{PMIX_PDATA_FREE}
+\declareapiProvisional{PMIx_Pdata_free}
 
 Release an array of \refstruct{pmix_pdata_t} structures
 
-\copySignature{PMIX_PDATA_FREE}{1.0}{
-PMIX_PDATA_FREE(m, n)
+\copySignature{PMIx_Pdata_free}{6.0}{
+void \\
+PMIx_Pdata_free(pmix_pdata_t *p, \\
+\hspace*{24\sigspace}size_t n);
 }
 
 \begin{arglist}
@@ -503,34 +516,41 @@ PMIX_PDATA_FREE(m, n)
 
 %%%%%%%%%%%
 \littleheader{Load a lookup data structure}
-\declaremacro{PMIX_PDATA_LOAD}
+\declareapiProvisional{PMIx_Pdata_load}
 
-This macro simplifies the loading of key, process identifier, and data into a \refstruct{pmix_pdata_t} by correctly assigning values to the structure's fields.
+This function simplifies the loading of key, process identifier, and data into a \refstruct{pmix_pdata_t} by correctly assigning values to the structure's fields.
 
-\copySignature{PMIX_PDATA_LOAD}{1.0}{
-PMIX_PDATA_LOAD(m, p, k, d, t);
+\copySignature{PMIx_Data_load}{6.0}{
+void \\
+PMIx_Pdata_load(pmix_pdata_t *dest, \\
+\hspace*{24\sigspace}const pmix_proc_t *p, \\
+\hspace*{24\sigspace}const char *key, \\
+\hspace*{24\sigspace}const void *data, \\
+\hspace*{24\sigspace}pmix_data_type_t type);
 }
 
 \begin{arglist}
-\argin{m}{Pointer to the \refstruct{pmix_pdata_t} structure into which the key and data are to be loaded (pointer to \refstruct{pmix_pdata_t})}
+\argin{dest}{Pointer to the \refstruct{pmix_pdata_t} structure into which the key and data are to be loaded (pointer to \refstruct{pmix_pdata_t})}
 \argin{p}{Pointer to the \refstruct{pmix_proc_t} structure containing the identifier of the process being referenced (pointer to \refstruct{pmix_proc_t})}
-\argin{k}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
-\argin{d}{Pointer to the data value to be loaded (handle)}
-\argin{t}{Type of the provided data value (\refstruct{pmix_data_type_t})}
+\argin{key}{String key to be loaded - must be less than or equal to \refconst{PMIX_MAX_KEYLEN} in length (handle)}
+\argin{data}{Pointer to the data value to be loaded (handle)}
+\argin{type}{Type of the provided data value (\refstruct{pmix_data_type_t})}
 \end{arglist}
 
 \adviceuserstart
-Key, process identifier, and data will all be copied into the \refstruct{pmix_pdata_t} - thus, the source information can be modified or free'd without affecting the copied data once the macro has completed.
+Key, process identifier, and data will all be copied into the \refstruct{pmix_pdata_t} - thus, the source information can be modified or free'd without affecting the copied data once the function has completed.
 \adviceuserend
 
 %%%%%%%%%%%
 \littleheader{Transfer a lookup data structure}
-\declaremacro{PMIX_PDATA_XFER}
+\declareapiProvisional{PMIx_Pdata_xfer}
 
 This macro simplifies the transfer of key, process identifier, and data value between two\refstruct{pmix_pdata_t} structures.
 
-\copySignature{PMIX_PDATA_XFER}{2.0}{
-PMIX_PDATA_XFER(d, s);
+\copySignature{PMIx_Data_xfer}{6.0}{
+void \\
+PMIx_Pdata_xfer(pmix_pdata_t *d, \\
+\hspace*{24\sigspace}const pmix_pdata_t *s);
 }
 
 \begin{arglist}
@@ -539,7 +559,7 @@ PMIX_PDATA_XFER(d, s);
 \end{arglist}
 
 \adviceuserstart
-Key, process identifier, and data will all be copied into the destination \refstruct{pmix_pdata_t} - thus, the source \refstruct{pmix_pdata_t} may free'd without affecting the copied data once the macro has completed.
+Key, process identifier, and data will all be copied into the destination \refstruct{pmix_pdata_t} - thus, the source \refstruct{pmix_pdata_t} may be modified or free'd without affecting the copied data once the function has completed.
 \adviceuserend
 
 

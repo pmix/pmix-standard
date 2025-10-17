@@ -125,7 +125,7 @@ The following macros are provided to support the \refstruct{pmix_endpoint_t} str
 
 %%%%
 \littleheader{Static initializer for the endpoint structure}
-\declaremacroProvisional{PMIX_ENDPOINT_STATIC_INIT}
+\declaremacro{PMIX_ENDPOINT_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_endpoint_t} fields.
 
@@ -137,14 +137,21 @@ PMIX_ENDPOINT_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fabric endpoint support functions}
+\label{api:netend:functions}
+
+The following functions are provided to support the \refstruct{pmix_endpoint_t} structure.
+
 %%%%
 \littleheader{Initialize the endpoint structure}
-\declaremacro{PMIX_ENDPOINT_CONSTRUCT}
+\declareapiProvisional{PMIx_Endpoint_construct}
 
 Initialize the \refstruct{pmix_endpoint_t} fields.
 
-\copySignature{PMIX_ENDPOINT_CONSTRUCT}{4.0}{
-PMIX_ENDPOINT_CONSTRUCT(m)
+\copySignature{PMIx_Endpoint_construct}{6.0}{
+void \\
+PMIx_Endpoint_construct(pmix_endpoint_t *m);
 }
 
 \begin{arglist}
@@ -153,12 +160,13 @@ PMIX_ENDPOINT_CONSTRUCT(m)
 
 %%%%
 \littleheader{Destruct the endpoint structure}
-\declaremacro{PMIX_ENDPOINT_DESTRUCT}
+\declareapiProvisional{PMIx_Endpoint_destruct}
 
 Destruct the \refstruct{pmix_endpoint_t} fields.
 
-\copySignature{PMIX_ENDPOINT_DESTRUCT}{4.0}{
-PMIX_ENDPOINT_DESTRUCT(m)
+\copySignature{PMIx_Endpoint_destruct}{6.0}{
+void \\
+PMIx_Endpoint_destruct(pmix_endpoint_t *m);
 }
 
 \begin{arglist}
@@ -167,27 +175,31 @@ PMIX_ENDPOINT_DESTRUCT(m)
 
 %%%%
 \littleheader{Create an endpoint array}
-\declaremacro{PMIX_ENDPOINT_CREATE}
+\declareapiProvisional{PMIx_Endpoint_create}
 
 Allocate and initialize a \refstruct{pmix_endpoint_t} array.
 
-\copySignature{PMIX_ENDPOINT_CREATE}{4.0}{
-PMIX_ENDPOINT_CREATE(m, n)
+\copySignature{PMIx_Endpoint_create}{6.0}{
+pmix_endpoint_t* \\
+PMIx_Endpoint_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_endpoint_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
+Returns pointer to the array of \refstruct{pmix_endpoint_t} structures (handle)
+
 %%%%
 \littleheader{Release an endpoint array}
-\declaremacro{PMIX_ENDPOINT_FREE}
+\declareapiProvisional{PMIx_Endpoint_free}
 
 Release an array of \refstruct{pmix_endpoint_t} structures.
 
-\copySignature{PMIX_ENDPOINT_FREE}{4.0}{
-PMIX_ENDPOINT_FREE(m, n)
+\copySignature{PMIx_Endpoint_free}{6.0}{
+void \\
+PMIx_Endpoint_free(pmix_endpoint_t *m) \\
+\hspace*{24\sigspace}size_t n);
 }
 
 \begin{arglist}
@@ -226,7 +238,7 @@ The following macros are provided to support the \refstruct{pmix_coord_t} struct
 
 %%%%
 \littleheader{Static initializer for the coord structure}
-\declaremacroProvisional{PMIX_COORD_STATIC_INIT}
+\declaremacro{PMIX_COORD_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_coord_t} fields.
 
@@ -238,14 +250,21 @@ PMIX_COORD_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fabric coordinate support functions}
+\label{api:netcoord:functions}
+
+The following functions are provided to support the \refstruct{pmix_coord_t} structure.
+
 %%%%
 \littleheader{Initialize the coord structure}
-\declaremacro{PMIX_COORD_CONSTRUCT}
+\declareapiProvisional{PMIx_Coord_construct}
 
 Initialize the \refstruct{pmix_coord_t} fields.
 
-\copySignature{PMIX_COORD_CONSTRUCT}{4.0}{
-PMIX_COORD_CONSTRUCT(m)
+\copySignature{PMIx_Coord_construct}{6.0}{
+void \\
+PMIx_Coord_construct(pmix_coord_t *m)
 }
 
 \begin{arglist}
@@ -254,12 +273,13 @@ PMIX_COORD_CONSTRUCT(m)
 
 %%%%
 \littleheader{Destruct the coord structure}
-\declaremacro{PMIX_COORD_DESTRUCT}
+\declareapiProvisional{PMIx_Coord_destruct}
 
 Destruct the \refstruct{pmix_coord_t} fields.
 
-\copySignature{PMIX_COORD_DESTRUCT}{4.0}{
-PMIX_COORD_DESTRUCT(m)
+\copySignature{PMIx_Coord_destruct}{6.0}{
+void \\
+PMIx_Coord_destruct(pmix_coord_t *m)
 }
 
 \begin{arglist}
@@ -268,12 +288,13 @@ PMIX_COORD_DESTRUCT(m)
 
 %%%%
 \littleheader{Create a coord array}
-\declaremacro{PMIX_COORD_CREATE}
+\declareapiProvisional{PMIx_Coord_create}
 
 Allocate and initialize a \refstruct{pmix_coord_t} array.
 
-\copySignature{PMIX_COORD_CREATE}{4.0}{
-PMIX_COORD_CREATE(m, n)
+\copySignature{PMIx_Coord_create}{6.0}{
+pmix_coord_t* \\
+PMIx_Coord_create(size_t n);
 }
 
 \begin{arglist}
@@ -283,12 +304,14 @@ PMIX_COORD_CREATE(m, n)
 
 %%%%
 \littleheader{Release a coord array}
-\declaremacro{PMIX_COORD_FREE}
+\declareapiProvisional{PMIx_Coord_free}
 
 Release an array of \refstruct{pmix_coord_t} structures.
 
-\copySignature{PMIX_COORD_FREE}{4.0}{
-PMIX_COORD_FREE(m, n)
+\copySignature{PMIx_Coord_free}{6.0}{
+void \\
+PMIx_Coord_free(pmix_coord_t *m) \\
+\hspace*{24\sigspace}size_t n);
 }
 
 \begin{arglist}
@@ -330,7 +353,7 @@ The following macros are provided to support the \refstruct{pmix_geometry_t} str
 
 %%%%
 \littleheader{Static initializer for the geometry structure}
-\declaremacroProvisional{PMIX_GEOMETRY_STATIC_INIT}
+\declaremacro{PMIX_GEOMETRY_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_geometry_t} fields.
 
@@ -342,14 +365,21 @@ PMIX_GEOMETRY_STATIC_INIT
 \cspecificend
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fabric geometry support functions}
+\label{api:netgeom:functions}
+
+The following functions are provided to support the \refstruct{pmix_geometry_t} structure.
+
 %%%%
 \littleheader{Initialize the geometry structure}
-\declaremacro{PMIX_GEOMETRY_CONSTRUCT}
+\declareapiProvisional{PMIx_Geometry_construct}
 
 Initialize the \refstruct{pmix_geometry_t} fields.
 
-\copySignature{PMIX_GEOMETRY_CONSTRUCT}{4.0}{
-PMIX_GEOMETRY_CONSTRUCT(m)
+\copySignature{PMIx_Geometry_construct}{6.0}{
+void \\
+PMIx_Geometry_construct(pmix_geometry_t *m);
 }
 
 \begin{arglist}
@@ -358,12 +388,13 @@ PMIX_GEOMETRY_CONSTRUCT(m)
 
 %%%%
 \littleheader{Destruct the geometry structure}
-\declaremacro{PMIX_GEOMETRY_DESTRUCT}
+\declareapiProvisional{PMIx_Geometry_destruct}
 
 Destruct the \refstruct{pmix_geometry_t} fields.
 
-\copySignature{PMIX_GEOMETRY_DESTRUCT}{4.0}{
-PMIX_GEOMETRY_DESTRUCT(m)
+\copySignature{PMIx_Geometry_destruct}{6.0}{
+void \\
+PMIx_Geometry_destruct(pmix_geometry_t *m);
 }
 
 \begin{arglist}
@@ -372,27 +403,31 @@ PMIX_GEOMETRY_DESTRUCT(m)
 
 %%%%
 \littleheader{Create a geometry array}
-\declaremacro{PMIX_GEOMETRY_CREATE}
+\declareapiProvisional{PMIx_Geometry_create}
 
 Allocate and initialize a \refstruct{pmix_geometry_t} array.
 
-\copySignature{PMIX_GEOMETRY_CREATE}{4.0}{
-PMIX_GEOMETRY_CREATE(m, n)
+\copySignature{PMIx_Geometry_create}{6.0}{
+pmix_geometry_t* \\
+PMIx_Geometry_create(size_t n);
 }
 
 \begin{arglist}
-\arginout{m}{Address where the pointer to the array of \refstruct{pmix_geometry_t} structures shall be stored (handle)}
 \argin{n}{Number of structures to be allocated (\code{size_t})}
 \end{arglist}
 
+Returns pointer to the array of \refstruct{pmix_geometry_t} structures (handle)
+
 %%%%
 \littleheader{Release a geometry array}
-\declaremacro{PMIX_GEOMETRY_FREE}
+\declareapiProvisional{PMIx_Geometry_free}
 
 Release an array of \refstruct{pmix_geometry_t} structures.
 
-\copySignature{PMIX_GEOMETRY_FREE}{4.0}{
-PMIX_GEOMETRY_FREE(m, n)
+\copySignature{PMIx_Geometry_free}{6.0}{
+void \\
+PMIx_Geometry_free(pmix_geometry_t *m) \\
+\hspace*{24\sigspace}size_t n);
 }
 
 \begin{arglist}
@@ -537,7 +572,7 @@ While unusual due to scaling issues, implementations may include an array of \re
 
 %%%%
 \subsubsection{Static initializer for the fabric structure}
-\declaremacroProvisional{PMIX_FABRIC_STATIC_INIT}
+\declaremacro{PMIX_FABRIC_STATIC_INIT}
 
 Provide a static initializer for the \refstruct{pmix_fabric_t} fields.
 
@@ -551,12 +586,13 @@ PMIX_FABRIC_STATIC_INIT
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Initialize the fabric structure}
-\declaremacro{PMIX_FABRIC_CONSTRUCT}
+\declareapiProvisional{PMIx_Fabric_construct}
 
 Initialize the \refstruct{pmix_fabric_t} fields.
 
-\copySignature{PMIX_FABRIC_CONSTRUCT}{4.0}{
-PMIX_FABRIC_CONSTRUCT(m)
+\copySignature{PMIx_Fabric_construct}{6.0}{
+void \\
+PMIx_Fabric_construct(pmix_fabric_t *m)
 }
 
 \begin{arglist}
